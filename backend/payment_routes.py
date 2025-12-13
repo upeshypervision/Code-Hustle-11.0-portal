@@ -33,6 +33,6 @@ def save_payment_route():
         "role": "student"
     })
 
-    send_registration_email(leader["email"], team_id, password_plain)
+    #send_registration_email(leader["email"], team_id, password_plain)
 
     return jsonify({"success": True})

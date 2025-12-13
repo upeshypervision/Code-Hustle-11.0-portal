@@ -51,6 +51,7 @@ def register_team_route():
     # PASSWORD GENERATION (6 CHAR)
     # -------------------------------------------------------
     password_plain = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    print(password_plain)
     password_hashed = password_plain[::-1]   # reversible custom hash
 
     # -------------------------------------------------------
