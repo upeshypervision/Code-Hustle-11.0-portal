@@ -7,7 +7,7 @@ from flask_session import Session  # required for server side sessions
 
 Session(app) #initialize Flask-Session
 
-app = Flask(__name__)
+app = Flask(__name__) #hiiiiiii
 CORS(app, origins=["http://localhost:5173"])
 
 @app.route("/api/validate-hypervision", methods=["POST"])
