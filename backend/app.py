@@ -5,7 +5,7 @@ from register_team import register_team_route
 from payment_routes import save_payment_route
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
+CORS(app, origins=["http://localhost:5173"]) #cors
 
 @app.route("/api/validate-hypervision", methods=["POST"])
 def validate_hypervision():
