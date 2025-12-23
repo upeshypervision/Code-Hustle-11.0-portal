@@ -2,7 +2,7 @@ from flask import request, jsonify
 from datetime import datetime
 from database import get_db
 from email_service import send_registration_email
-
+import bcrypt
 db = get_db()
 
 def save_payment_route():
@@ -10,7 +10,10 @@ def save_payment_route():
 
     team_id = data["team_id"]
     password_plain = data["password_plain"]
-    password_hashed = password_plain[::-1]  # same reversible hash
+    password_hashed = bcrypt.hashpw(
+        password_plain.encode(),
+        bcrypt.gensalt()
+    ).decode()
 
     leader = data["leader"]
     members = data["members"]

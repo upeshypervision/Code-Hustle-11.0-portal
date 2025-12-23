@@ -2,6 +2,7 @@ from flask import jsonify, request
 from database import get_db
 from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 import razorpay, random, string
+import bcrypt
 
 db = get_db()
 
@@ -50,9 +51,20 @@ def register_team_route():
     # -------------------------------------------------------
     # PASSWORD GENERATION (6 CHAR)
     # -------------------------------------------------------
-    password_plain = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-    print(password_plain)
-    password_hashed = password_plain[::-1]   # reversible custom hash
+    # generate random password
+    password_plain = ''.join(
+        random.choices(string.ascii_letters + string.digits, k=6)
+    )
+
+    # hash using bcrypt
+    password_hashed = bcrypt.hashpw(
+        password_plain.encode(),
+        bcrypt.gensalt()
+    ).decode()
+
+    print("Generated password:", password_plain)
+    print("Hashed password:", password_hashed)
+    # reversible custom hash
 
     # -------------------------------------------------------
     # CREATE ORDER IN RAZORPAY
