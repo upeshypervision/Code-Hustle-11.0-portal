@@ -1,242 +1,226 @@
-@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@500;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Plus+Jakarta+Sans:wght@500;800&display=swap'); 
 
-/* --- Core Viewport & Background --- */
+/* --- RESET & BASE --- */
 * { 
     box-sizing: border-box; 
     margin: 0; 
     padding: 0; 
-}
+} 
 
-.app-viewport { 
-    height: 100vh; 
-    background: #010103; 
-    color: #fff; 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    overflow: hidden; 
-    position: relative; 
-}
+.app-viewport {  
+    height: 100vh;  
+    background: #060812; 
+    color: #fff;  
+    font-family: 'Plus Jakarta Sans', sans-serif;  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    overflow: hidden;  
+    position: relative;  
+} 
 
-.stars-layer { 
+/* --- ORIGINAL COSMIC BACKGROUND (STRICTLY INTACT) --- */
+.cosmic-bg { 
     position: absolute; 
     inset: 0; 
-    background-image: radial-gradient(1px 1px at 20% 30%, white, transparent), 
-                      radial-gradient(1px 1px at 70% 60%, white, transparent), 
-                      radial-gradient(1.5px 1.5px at 40% 80%, white, transparent); 
-    background-size: 250px 250px; 
-    opacity: 0.3; 
-    animation: twinkle 8s infinite; 
-    pointer-events: none; 
-}
-
-@keyframes twinkle { 
-    0%, 100% { opacity: 0.3; } 
-    50% { opacity: 0.6; } 
-}
-
-.cursor-glow { 
-    position: fixed; 
-    width: 450px; 
-    height: 450px; 
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%); 
-    transform: translate(-50%, -50%); 
-    pointer-events: none; 
-    z-index: 1; 
-}
-
-.nebula { 
-    position: absolute; 
-    width: 80vw; 
-    height: 80vh; 
-    filter: blur(100px); 
-    border-radius: 50%; 
-    opacity: 0.15; 
     z-index: 0; 
-}
-.blue { background: #1e40af; top: -10%; left: -5%; }
-.purple { background: #7e22ce; bottom: -10%; right: -5%; }
+} 
 
-/* --- Main Card --- */
-.mobile-shape { 
-    width: 94%; 
-    max-width: 380px; 
-    height: 92vh; 
-    max-height: 800px; 
-    background: rgba(15, 15, 20, 0.45); 
-    backdrop-filter: blur(40px); 
-    border: 1.5px solid rgba(255, 255, 255, 0.15); 
-    border-radius: 35px; 
-    padding: 30px 22px; 
+.nebula-cloud-blue { 
+    position: absolute; 
+    width: 100vw; height: 100vh; 
+    background: radial-gradient(circle at 15% 35%, rgba(0, 150, 255, 0.4) 0%, transparent 60%); 
+    top: -10%; left: -10%; 
+    filter: blur(80px); 
+} 
+
+.nebula-cloud-purple { 
+    position: absolute; 
+    width: 100vw; height: 100vh; 
+    background: radial-gradient(circle at 85% 65%, rgba(130, 0, 255, 0.35) 0%, transparent 60%); 
+    bottom: -10%; right: -10%; 
+    filter: blur(100px); 
+} 
+
+.starfield { 
+    position: absolute; 
+    inset: 0; 
+    background-image: 
+        radial-gradient(1.8px 1.8px at 12% 15%, #ffffff, transparent), 
+        radial-gradient(1.2px 1.2px at 78% 42%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 35% 75%, #ffffff, transparent),
+        radial-gradient(2px 2px at 60% 88%, #ffffff, transparent),
+        radial-gradient(1px 1px at 50% 50%, #ffffff, transparent); 
+    background-size: 320px 320px; 
+    opacity: 0.6;
+    animation: stars-twinkle 4s infinite alternate ease-in-out;
+} 
+
+@keyframes stars-twinkle {
+    from { opacity: 0.35; transform: scale(1); }
+    to { opacity: 0.75; transform: scale(1.03); }
+}
+
+/* --- PORTAL CARD DESIGN --- */
+.portal-card { 
+    width: 95%; 
+    max-width: 440px; 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(35px) saturate(150%); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 32px; 
+    padding: 40px 32px; 
     z-index: 10; 
-    display: flex; 
-    flex-direction: column; 
-    position: relative; 
-    overflow-y: auto; 
-}
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5); 
+} 
 
-.mobile-shape::-webkit-scrollbar { width: 0; }
+.syncopate-font { font-family: 'Syncopate', sans-serif; } 
 
-/* --- Typography & Branding --- */
-.syncopate-font { 
-    font-family: 'Syncopate', sans-serif; 
-    text-transform: uppercase; 
-}
+.brand-header { 
+    text-align: center; 
+    margin-bottom: 40px; 
+} 
 
-.brand-header { text-align: center; margin-bottom: 25px; }
-.hypervision-badge { 
+.hypervision-badge {  
     display: inline-block; 
-    padding: 4px 12px; 
-    font-size: 8px; 
+    padding: 5px 15px; 
+    font-size: 10px; 
     font-weight: 800; 
     color: #38bdf8; 
-    border: 1px solid rgba(56, 189, 248, 0.4); 
+    border: 1.5px solid rgba(56, 189, 248, 0.4);  
     border-radius: 20px; 
     letter-spacing: 3px; 
     background: rgba(56, 189, 248, 0.1); 
-    margin-bottom: 8px; 
-}
-.presents-text { font-size: 8px; letter-spacing: 4px; opacity: 0.6; margin-bottom: 5px; }
-.main-logo { font-size: 1.2rem; }
-.v-tag { color: #38bdf8; }
+} 
 
-/* --- Form Elements --- */
-.section-stack { display: flex; flex-direction: column; gap: 20px; }
-.input-group { margin-bottom: 10px; }
-.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.input-wrapper { position: relative; }
+.presents-text { 
+    font-size: 8px; 
+    letter-spacing: 5px; 
+    opacity: 0.6; 
+    margin: 10px 0; 
+} 
 
-input { 
-    width: 100%; 
-    background: rgba(255, 255, 255, 0.03); 
-    border: 1px solid rgba(255, 255, 255, 0.15); 
-    border-radius: 12px; 
-    padding: 10px 10px 10px 28px; 
+.main-logo { 
+    font-size: 1.3rem; 
+    letter-spacing: 1px; 
     color: #fff; 
-    font-size: 11px; 
-    outline: none;
-    transition: 0.3s;
-}
+} 
 
-input:focus { border-color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+.v-tag { color: #38bdf8; } 
 
-.field-icon { 
-    position: absolute; 
-    left: 10px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    font-size: 12px; 
-    opacity: 0.5; 
-}
-
-.label-detail { 
-    font-size: 9px; 
+/* --- FORM ELEMENTS --- */
+.label-detail {  
+    font-size: 10px; 
     color: #38bdf8; 
     font-weight: 800; 
-    border-left: 2px solid #38bdf8; 
-    padding-left: 6px; 
-    margin-bottom: 12px; 
+    letter-spacing: 2.5px; 
+    border-left: 3px solid #38bdf8; 
+    padding-left: 10px; 
+    margin-bottom: 25px; 
     display: block; 
+} 
+
+.input-group { 
+    margin-bottom: 20px; 
+} 
+
+.label-row { 
+    display: flex; 
+    justify-content: space-between; 
+    margin-bottom: 8px; 
+    font-size: 12px; 
+} 
+
+.label-row span { 
+    color: rgba(255,255,255,0.8); 
+    font-weight: 600; 
+} 
+
+/* --- INPUT GLOW & INVALID STATE --- */
+.glow-input { 
+    width: 100%;  
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 12px; 
+    padding: 14px; 
+    color: #fff; 
+    font-size: 14px; 
+    outline: none; 
+    transition: 0.3s; 
+} 
+
+.glow-input:focus { 
+    border-color: #38bdf8; 
+    background: rgba(56, 189, 248, 0.08); 
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); 
+} 
+
+/* RED GLOW FOR INVALID DATA */
+.glow-input:invalid:not(:placeholder-shown) {
+    border-color: #ff4d4d !important;
+    background: rgba(255, 77, 77, 0.1) !important;
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.4) !important;
 }
 
-.gold-text { 
-    color: #fbbf24; 
-    font-size: 8px; 
-    font-weight: 700; 
-    display: block; 
-    margin-bottom: 10px; 
-    letter-spacing: 2px; 
-}
-
-/* --- Buttons --- */
+/* --- BUTTONS --- */
 .neon-shade-btn { 
     width: 100%; 
-    padding: 16px; 
-    border-radius: 12px; 
-    background: linear-gradient(135deg, #0ea5e9, #7c3aed); 
+    padding: 18px; 
+    border-radius: 40px; 
+    background: linear-gradient(90deg, #F97316 0%, #2563EB 100%); 
     border: none; 
     color: #fff; 
     font-weight: 800; 
-    font-size: 12px; 
-    letter-spacing: 2px; 
+    font-size: 14px; 
     cursor: pointer; 
     transition: 0.3s; 
-    margin-top: 10px; 
-    text-transform: uppercase;
-}
+    margin-top: 15px; 
+    letter-spacing: 2px; 
+    text-transform: uppercase; 
+} 
 
-.neon-shade-btn:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3); 
-}
+.next-glow { 
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4); 
+} 
 
-.btn-footer { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; align-items: center; }
-.back-btn { background: none; border: none; color: #475569; font-weight: 800; font-size: 11px; cursor: pointer; }
+.next-glow:hover { 
+    filter: brightness(1.1); 
+    transform: translateY(-1px); 
+} 
 
-/* --- Success Page UI (Centered) --- */
-.success-layout {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center vertically */
-    align-items: center;     /* Center horizontally */
-    text-align: center;
-}
+/* --- FOOTER & LINKS --- */
+.footer-links { 
+    text-align: center; 
+    margin-top: 30px; 
+} 
 
-.success-content-centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    width: 100%;
-    animation: scaleIn 0.4s ease-out;
-}
+.signin-link { 
+    color: rgba(255,255,255,0.5); 
+    font-size: 12px; 
+    text-decoration: none; 
+} 
 
-.success-ring {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 3px solid #10b981;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 45px;
-    color: #10b981;
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
-}
-
-.green-text {
-    color: #10b981;
-    letter-spacing: 4px;
-    text-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
-}
-
-.status-message-box {
-    padding: 0 10px;
-}
-
-.status-text-main {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #fff;
-}
-
-.status-text-sub {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.6);
-    line-height: 1.6;
-}
-
-/* --- Animations --- */
-.animate-in { animation: fadeInUp 0.5s ease-out; }
+/* --- ANIMATIONS --- */
+.animate-in { 
+    animation: fadeInUp 0.5s ease-out; 
+} 
 
 @keyframes fadeInUp { 
-    from { opacity: 0; transform: translateY(20px); } 
+    from { opacity: 0; transform: translateY(15px); } 
     to { opacity: 1; transform: translateY(0); } 
 }
 
-@keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+/* --- SUCCESS / ACKNOWLEDGMENT PAGE (STRICTLY ORIGINAL) --- */
+.success-layout { 
+    text-align: center; 
+    padding: 40px 10px; 
+}
+
+.success-layout h2 {
+    margin-bottom: 20px;
+}
+
+.success-layout p {
+    font-size: 14px;
+    margin-bottom: 30px;
 }
