@@ -41,7 +41,6 @@ const Registration = () => {
     if (!value) return ""; 
     if (name === 'sapid') {
       if (value.length !== 9) return "SAP ID must be 9 digits";
-      if (!value.startsWith("5900")) return "Must start with 5900";
     }
     if (name === 'email' && !value.includes("@")) return "Invalid email format";
     if (name === 'phone' && value.length !== 10) return "Phone must be 10 digits";
