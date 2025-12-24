@@ -2,15 +2,22 @@ from flask import request, jsonify
 from datetime import datetime
 from database import get_db
 from email_service import send_registration_email
-
+import random
+import string
+import bcrypt
 db = get_db()
 
 def save_payment_route():
     data = request.json
 
     team_id = data["team_id"]
-    password_plain = data["password_plain"]
-    password_hashed = password_plain[::-1]  # same reversible hash
+    password_plain = ''.join(
+        random.choices(string.ascii_letters + string.digits, k=6)
+    )
+    password_hashed = bcrypt.hashpw(
+        password_plain.encode(),
+        bcrypt.gensalt()
+    ).decode()
 
     leader = data["leader"]
     members = data["members"]
