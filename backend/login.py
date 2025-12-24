@@ -1,77 +1,70 @@
-from flask import request, jsonify, session
+import jwt
+import datetime
+import bcrypt
+from flask import request, jsonify
 from database import get_db
+from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_HOURS
 
 db = get_db()
 
-# STUDENT LOGIN
+def verify_password(stored_hash, password):
+    return bcrypt.checkpw(password.encode(), stored_hash.encode())
+
 def student_login_route():
-    data = request.get_json(silent=True) or {}
+    data = request.json or {}
 
-    sapid = str(data.get("sapid", "")).strip()
-    password = str(data.get("password", "")).strip()
+    team_id = data.get("team_id", "").strip()
+    password = data.get("password", "").strip()
 
-    if not sapid or not password:
-        return jsonify({"error": "SAP ID and password are required"}), 400
+    if not team_id or not password:
+        return jsonify({"error": "Team ID and password required"}), 400
 
-    # Same reversible hash used during registration
-    password_hashed = password[::-1]
+    team = db["teams"].find_one({"team_id": team_id})
+    if not team or not verify_password(team["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
 
-    team = db.teams.find_one({
-        "$or": [
-            {"leader.sapid": sapid},
-            {"members.sapid": sapid}
-        ],
-        "password_hashed": password_hashed
-    })
-
-    if not team:
-        return jsonify({"error": "Invalid SAP ID or password"}), 401
-
-    # Create secure session
-    session.clear()
-    session["logged_in"] = True
-    session["role"] = "student"
-    session["team_id"] = team["team_id"]
-    session["sapid"] = sapid
-
-    return jsonify({
-        "success": True,
+    payload = {
+        "team_id": team_id,
         "role": "student",
-        "team_id": team["team_id"]
-    })
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
 
-# ADMIN LOGIN
-def admin_login_route():
-    data = request.get_json(silent=True) or {}
-
-    login_id = str(data.get("login_id", "")).strip()
-    password = str(data.get("password", "")).strip()
-
-    if not login_id or not password:
-        return jsonify({"error": "Login ID and password are required"}), 400
-
-    password_hashed = password[::-1]
-
-    admin = db.admins.find_one({
-        "login_id": login_id,
-        "password_hashed": password_hashed
-    })
-
-    if not admin:
-        return jsonify({"error": "Invalid Login ID or password"}), 401
-
-    session.clear()
-    session["logged_in"] = True
-    session["role"] = "admin"
-    session["login_id"] = login_id
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     return jsonify({
         "success": True,
-        "role": "admin"
+        "token": token,
+        "team_id": team["team_id"],
+        "leader": team["leader"],
+        "members": team["members"],
+        "hypervision_member": team.get("hypervision_member"),
+        "status": team["status"]
     })
 
+def admin_login_route():
+    data = request.json or {}
 
-# ROUTE REGISTRATION
+    login_id = data.get("login_id", "").strip()
+    password = data.get("password", "").strip()
+
+    admin = db["admins"].find_one({"login_id": login_id})
+    if not admin or not verify_password(admin["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    payload = {
+        "login_id": login_id,
+        "role": "admin",
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    return jsonify({"success": True, "token": token})
+
 def setup_login_routes(app):
     app.route("/api/student-login", methods=["POST"])(student_login_route)
     app.route("/api/admin-login", methods=["POST"])(admin_login_route)
