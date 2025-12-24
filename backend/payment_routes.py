@@ -10,7 +10,7 @@ db = get_db()
 def save_payment_route():
     data = request.json
 
-    team_id = data["team_id"
+    team_id = data["team_id"]
     password_plain = ''.join(
         random.choices(string.ascii_letters + string.digits, k=6)
     )
