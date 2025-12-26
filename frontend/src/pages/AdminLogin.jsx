@@ -16,31 +16,36 @@ export default function AdminLogin() {
     }
   };
 
-  const handleSubmit = (e) => {
+  // Inside AdminLogin.js - Updating handleSubmit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = {};
-
-    if (!formData.adminId.trim()) {
-      newErrors.adminId = true;
-    }
-    if (!formData.password || formData.password.length < 10) {
-      newErrors.password = true;
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setMessage({
-        type: 'error',
-        text: 'Please provide a valid admin ID and sufficiently strong password.'
-      });
-      return;
-    }
-
     setIsSubmitting(true);
-    setMessage({ type: 'success', text: 'Admin login successful. Redirecting…' });
-    setTimeout(() => {
-      navigate('/admin-panel');
-    }, 900);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // CRITICAL: This allows the browser to receive and store the cookie
+        credentials: 'include',
+        body: JSON.stringify({
+          login_id: formData.adminId,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Access granted. Redirecting...' });
+        setTimeout(() => navigate('/admin-panel'), 900);
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Login failed' });
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Server connection failed.' });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -93,9 +98,9 @@ export default function AdminLogin() {
               </div>
             )}
 
-            <button 
-              type="submit" 
-              className="button-primary" 
+            <button
+              type="submit"
+              className="button-primary"
               disabled={isSubmitting}
             >
               Enter Admin Panel

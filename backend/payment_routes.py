@@ -9,6 +9,7 @@ def save_payment_route():
     data = request.json
 
     team_id = data["team_id"]
+    team_name = data.get("team_name")  # New: Accept team name
     password_plain = data["password_plain"]
     password_hashed = bcrypt.hashpw(
         password_plain.encode(),
@@ -24,6 +25,7 @@ def save_payment_route():
 
     db["teams"].insert_one({
         "team_id": team_id,
+        "team_name": team_name,
         "password_hashed": password_hashed,
         "leader": leader,
         "members": members,

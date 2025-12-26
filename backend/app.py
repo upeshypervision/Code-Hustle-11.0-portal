@@ -3,10 +3,14 @@ from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route
 from payment_routes import save_payment_route
-from login import student_login_route,admin_login_route
+from login import student_login_route,admin_login_route, check_auth_route
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"]) #cors
+CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
+
+@app.route("/api/check-auth", methods=["GET"])
+def check_auth():
+    return check_auth_route()
 
 @app.route("/api/validate-hypervision", methods=["POST"])
 def validate_hypervision():
