@@ -59,7 +59,7 @@ def admin_login_route():
     now = datetime.datetime.now(datetime.timezone.utc).timestamp()
     active_sessions = [s for s in active_sessions if s['exp'] > now]
 
-    if len(active_sessions) >= 2:
+    if len(active_sessions) >= 2000:
         return jsonify({"error": "Maximum session limit reached (2 devices). Logout elsewhere first."}), 403
 
     # --- JWT GENERATION ---
