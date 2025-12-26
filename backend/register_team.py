@@ -34,6 +34,7 @@ def register_team_route():
 
     leader = data["leader"]
     members = data["members"]
+    team_name = data.get("team_name") # Optional: Validated if needed
     hypervision_member = data["hypervision_member"]
     amount = data["amount"]
 
