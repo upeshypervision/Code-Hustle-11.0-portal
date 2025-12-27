@@ -31,6 +31,7 @@ const Registration = () => {
     m3: { fullName: '', sapid: '', email: '', phone: '' }
   });
 
+  const [teamName, setTeamName] = useState("");
   const [discount, setDiscount] = useState({ hyperId: "", verifySapId: "" });
 
   useEffect(() => {
@@ -138,6 +139,32 @@ const Registration = () => {
     rz.open();
   };
 
+  const handleStep1Next = async () => {
+    if (!teamName.trim()) {
+      setErrorBadge("Please enter a Team Name");
+      return;
+    }
+    setErrorBadge("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/check-team-name`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ team_name: teamName })
+      });
+      const data = await res.json();
+      if (data.exists) {
+        setErrorBadge("Team name already taken. Choose another.");
+      } else {
+        setStep(2);
+      }
+    } catch (err) {
+      setErrorBadge("Could not validate team name. Server error.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleRegistrationFlow = async () => {
     const membersList = [team.m1, team.m2, team.m3].filter(m => m.fullName !== "");
     if (membersList.length < 1) {
@@ -151,6 +178,7 @@ const Registration = () => {
       const teamPayload = {
         leader: team.leader,
         members: membersList,
+        team_name: teamName,
         hypervision_member: hyperMemberData
       };
 
@@ -203,12 +231,21 @@ const Registration = () => {
 
           {step === 1 && (
             <div className="animate-in">
+              <span className="label-detail">TEAM NAME</span>
+              <div className="input-group">
+                <div className="label-row"><span>Team Name</span></div>
+                <div className="glow-input-container">
+                  <input className="glow-input" placeholder="Enter Team Name" value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)} />
+                </div>
+              </div>
+
               <span className="label-detail">TEAM LEADER</span>
               {renderInput('leader', 'fullName', 'Full Name', 'Name')}
               {renderInput('leader', 'sapid', 'SAP ID', '5900XXXXX')}
               {renderInput('leader', 'email', 'Email Address', 'Email')}
               {renderInput('leader', 'phone', 'Phone Number', 'Phone')}
-              <button className={`neon-shade-btn next-glow ${!isStepValid('leader') ? 'btn-locked' : ''}`} disabled={!isStepValid('leader')} onClick={() => setStep(2)}>NEXT</button>
+              <button className={`neon-shade-btn next-glow ${(!isStepValid('leader') || !teamName) ? 'btn-locked' : ''}`} disabled={!isStepValid('leader') || !teamName} onClick={handleStep1Next}>{loading ? "Checking..." : "NEXT"}</button>
             </div>
           )}
 

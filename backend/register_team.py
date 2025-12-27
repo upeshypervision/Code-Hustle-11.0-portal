@@ -27,14 +27,43 @@ def get_next_team_id():
 
 
 # -------------------------------------------------------
+# CHECK TEAM NAME ROUTE
+# -------------------------------------------------------
+def check_team_name_route():
+    data = request.json
+    team_name = data.get("team_name")
+    
+    if not team_name:
+        return jsonify({"exists": False, "error": "No name provided"}), 400
+
+    # CASE-INSENSITIVE CHECK (Optional but recommended)
+    # Using regex for case insensitivity: {'$regex': f'^{team_name}$', '$options': 'i'}
+    existing = db["teams"].find_one({"team_name": {"$regex": f"^{team_name.strip()}$", "$options": "i"}})
+    
+    if existing:
+        return jsonify({"exists": True})
+    
+    return jsonify({"exists": False})
+
+
+# -------------------------------------------------------
 # MAIN REGISTRATION ROUTE
 # -------------------------------------------------------
 def register_team_route():
     data = request.json
     leader = data["leader"]
     members = data["members"]
-    team_name = data.get("team_name") # Optional: Validated if needed
+    team_name = data.get("team_name", "").strip() 
     hypervision_member = data["hypervision_member"]
+
+    if not team_name:
+        return jsonify({"error": "Team Name is required"}), 400
+
+    # -------------------------------------------------------
+    # DUPLICATE TEAM NAME CHECK (Double Safety)
+    # -------------------------------------------------------
+    if db["teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
+        return jsonify({"error": "Team name already taken"}), 400
 
     amount = 380 if hypervision_member else 450
 
