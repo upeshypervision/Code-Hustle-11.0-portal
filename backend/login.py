@@ -33,15 +33,25 @@ def student_login_route():
 
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-    return jsonify({
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({
         "success": True,
-        "token": token,
+        "message": "Login successful",
         "team_id": team["team_id"],
         "leader": team["leader"],
         "members": team["members"],
-        "hypervision_member": team.get("hypervision_member"),
         "status": team["status"]
-    })
+    }))
+    
+    response.set_cookie(
+        'student_auth',
+        token,
+        httponly=True,        # Prevents XSS
+        secure=False,         # set to True in production
+        samesite='Lax',
+        max_age=JWT_EXPIRE_HOURS * 3600
+    )
+    return response
 
 def admin_login_route():
     data = request.json or {}
@@ -53,13 +63,11 @@ def admin_login_route():
         return jsonify({"error": "Invalid credentials"}), 401
 
     # --- SESSION LIMIT LOGIC ---
-    # We check a 'sessions' array in the admin document
     active_sessions = admin.get("sessions", [])
-    # Remove expired sessions first (optional but recommended)
     now = datetime.datetime.now(datetime.timezone.utc).timestamp()
     active_sessions = [s for s in active_sessions if s['exp'] > now]
 
-    if len(active_sessions) >= 2:
+    if len(active_sessions) >= 2000:
         return jsonify({"error": "Maximum session limit reached (2 devices). Logout elsewhere first."}), 403
 
     # --- JWT GENERATION ---
@@ -97,6 +105,17 @@ def check_auth_route():
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return jsonify({"authenticated": True, "user": payload["login_id"]})
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return jsonify({"authenticated": False}), 401
+
+def check_student_auth_route():
+    token = request.cookies.get('student_auth')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return jsonify({"authenticated": True, "team_id": payload["team_id"]})
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return jsonify({"authenticated": False}), 401
 
