@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function ViewSubmissions() {
     const demoSubmissions = [
-        { teamId: "CH-TEAM-001", teamName: "HyperCoders", ps: "PS001", fileName: "solution-round1.pptx", submittedAt: "Dec 15, 2025 3:45 PM" },
-        { teamId: "CH-TEAM-002", teamName: "Bit Benders", ps: "PS002", fileName: "innovation-deck.pptx", submittedAt: "Dec 15, 2025 4:12 PM" },
-        { teamId: "CH-TEAM-005", teamName: "Code Ninjas", ps: "PS001", fileName: "campus-solution.pptx", submittedAt: "Dec 16, 2025 10:30 AM" }
+        { teamId: "CH-TEAM-001", team_name: "HyperCoders", ps: "PS001", fileName: "solution-round1.pptx", submittedAt: "Dec 15, 2025 3:45 PM" },
+        { teamId: "CH-TEAM-002", team_name: "Bit Benders", ps: "PS002", fileName: "innovation-deck.pptx", submittedAt: "Dec 15, 2025 4:12 PM" },
+        { teamId: "CH-TEAM-005", team_name: "Code Ninjas", ps: "PS001", fileName: "campus-solution.pptx", submittedAt: "Dec 16, 2025 10:30 AM" }
     ];
 
     return (
@@ -23,7 +23,7 @@ export default function ViewSubmissions() {
                         <div key={sub.teamId} className="submission-card">
                             <div className="submission-info">
                                 <p className="submission-team">
-                                    {sub.teamName} ({sub.teamId})
+                                    {sub.team_name} ({sub.teamId})
                                 </p>
                                 <p className="submission-meta">
                                     PS: <strong>{sub.ps}</strong> · File: {sub.fileName} · {sub.submittedAt}

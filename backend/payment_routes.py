@@ -11,6 +11,7 @@ def save_payment_route():
     data = request.json
 
     team_id = data["team_id"]
+    team_name = data.get("team_name")
     password_plain = ''.join(
         random.choices(string.ascii_letters + string.digits, k=6)
     )
@@ -26,8 +27,11 @@ def save_payment_route():
     order_id = data["order_id"]
     amount = data["amount"]
 
+    print(f"--- DATA SAVING TO DB: {data.get('team_name')} ---")
+
     db["teams"].insert_one({
         "team_id": team_id,
+        "team_name": team_name,
         "password_hashed": password_hashed,
         "leader": leader,
         "members": members,

@@ -20,10 +20,10 @@ export default function ProblemStatements() {
             track: "Smart Cities",
             selections: 12,
             teams: [
-                { teamId: "CH-TEAM-001", teamName: "HyperCoders", leader: "Ananya Sharma" },
-                { teamId: "CH-TEAM-003", teamName: "Debug Demons", leader: "Rahul Verma" },
-                { teamId: "CH-TEAM-007", teamName: "Code Crushers", leader: "Priya Singh" },
-                { teamId: "CH-TEAM-012", teamName: "Tech Titans", leader: "Arjun Patel" }
+                { teamId: "CH-TEAM-001", team_name: "HyperCoders", leader: "Ananya Sharma" },
+                { teamId: "CH-TEAM-003", team_name: "Debug Demons", leader: "Rahul Verma" },
+                { teamId: "CH-TEAM-007", team_name: "Code Crushers", leader: "Priya Singh" },
+                { teamId: "CH-TEAM-012", team_name: "Tech Titans", leader: "Arjun Patel" }
             ]
         },
         {
@@ -32,9 +32,9 @@ export default function ProblemStatements() {
             track: "DevTools",
             selections: 8,
             teams: [
-                { teamId: "CH-TEAM-002", teamName: "Bit Benders", leader: "Sneha Gupta" },
-                { teamId: "CH-TEAM-005", teamName: "Code Ninjas", leader: "Vikram Kumar" },
-                { teamId: "CH-TEAM-009", teamName: "Logic Lords", leader: "Neha Reddy" }
+                { teamId: "CH-TEAM-002", team_name: "Bit Benders", leader: "Sneha Gupta" },
+                { teamId: "CH-TEAM-005", team_name: "Code Ninjas", leader: "Vikram Kumar" },
+                { teamId: "CH-TEAM-009", team_name: "Logic Lords", leader: "Neha Reddy" }
             ]
         },
         {
@@ -43,11 +43,11 @@ export default function ProblemStatements() {
             track: "Sustainability",
             selections: 15,
             teams: [
-                { teamId: "CH-TEAM-004", teamName: "Eco Warriors", leader: "Amit Joshi" },
-                { teamId: "CH-TEAM-006", teamName: "Green Geeks", leader: "Riya Malhotra" },
-                { teamId: "CH-TEAM-008", teamName: "Sustain Squad", leader: "Karan Mehta" },
-                { teamId: "CH-TEAM-011", teamName: "Planet Protectors", leader: "Divya Iyer" },
-                { teamId: "CH-TEAM-013", teamName: "Carbon Coders", leader: "Rohan Das" }
+                { teamId: "CH-TEAM-004", team_name: "Eco Warriors", leader: "Amit Joshi" },
+                { teamId: "CH-TEAM-006", team_name: "Green Geeks", leader: "Riya Malhotra" },
+                { teamId: "CH-TEAM-008", team_name: "Sustain Squad", leader: "Karan Mehta" },
+                { teamId: "CH-TEAM-011", team_name: "Planet Protectors", leader: "Divya Iyer" },
+                { teamId: "CH-TEAM-013", team_name: "Carbon Coders", leader: "Rohan Das" }
             ]
         }
     ];
@@ -234,7 +234,7 @@ export default function ProblemStatements() {
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                                         <strong style={{ color: '#60a5fa' }}>{team.teamId}</strong>
-                                        <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{team.teamName}</span>
+                                        <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{team.team_name}</span>
                                     </div>
                                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                                         Leader: {team.leader}

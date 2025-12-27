@@ -4,7 +4,7 @@ export default function EditTeams() {
     const [expandedTeam, setExpandedTeam] = useState(null);
     const [editingTeam, setEditingTeam] = useState(null);
     const [editTeamData, setEditTeamData] = useState({
-        teamName: '', leaderId: '', members: []
+        team_name: '', leaderId: '', members: []
     });
 
     const demoTeams = [
@@ -46,7 +46,7 @@ export default function EditTeams() {
     const handleEditTeam = (team) => {
         setEditingTeam(team.id);
         setEditTeamData({
-            teamName: team.name,
+            team_name: team.name,
             leaderId: team.leaderId,
             members: team.members
         });
@@ -106,8 +106,8 @@ export default function EditTeams() {
                                                 <input
                                                     className="form-input"
                                                     type="text"
-                                                    value={editTeamData.teamName}
-                                                    onChange={(e) => setEditTeamData({ ...editTeamData, teamName: e.target.value })}
+                                                    value={editTeamData.team_name}
+                                                    onChange={(e) => setEditTeamData({ ...editTeamData, team_name: e.target.value })}
                                                 />
                                             </div>
                                             <div className="form-row">
