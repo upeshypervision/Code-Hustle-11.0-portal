@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function StudentLogin() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ sapId: '', password: '' });
+  const [formData, setFormData] = useState({ teamId: '', password: '' });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,14 +16,14 @@ export default function StudentLogin() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!/^[0-9]{8,12}$/.test(formData.sapId.trim())) {
-      newErrors.sapId = true;
+    if (!formData.teamId.trim()) {
+      newErrors.teamId = true;
     }
-    if (!formData.password || formData.password.length < 8) {
+    if (!formData.password || formData.password.length < 5) {
       newErrors.password = true;
     }
 
@@ -31,16 +31,39 @@ export default function StudentLogin() {
       setErrors(newErrors);
       setMessage({
         type: 'error',
-        text: 'Invalid credentials format. Check SAP ID and password length.'
+        text: 'Please enter a valid Team ID and Password.'
       });
       return;
     }
 
     setIsSubmitting(true);
-    setMessage({ type: 'success', text: 'Login successful. Redirecting…' });
-    setTimeout(() => {
-      navigate('/student-dashboard');
-    }, 900);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/student-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          team_id: formData.teamId,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Login successful. Entering the arena...' });
+        setTimeout(() => {
+          navigate('/Arena');
+        }, 800);
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Invalid credentials' });
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Unable to connect to server.' });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -53,23 +76,22 @@ export default function StudentLogin() {
           </div>
           <h1 className="heading-main">Enter the Arena</h1>
           <p className="heading-subtitle">
-            Use your SAP ID and the password sent to your university email.
-            Never share your password publicly or in screenshots.
+            Use your <strong>Team ID</strong> and the password sent to your leader email to enter the arena.
           </p>
 
           <form onSubmit={handleSubmit} className="form">
             <div className="form-row">
-              <label className="form-label" htmlFor="sapId">
-                SAP ID
+              <label className="form-label" htmlFor="teamId">
+                Team ID
               </label>
               <input
-                id="sapId"
-                name="sapId"
-                className={`form-input ${errors.sapId ? 'error' : ''}`}
+                id="teamId"
+                name="teamId"
+                className={`form-input ${errors.teamId ? 'error' : ''}`}
                 type="text"
-                value={formData.sapId}
+                value={formData.teamId}
                 onChange={handleChange}
-                placeholder="SAP ID"
+                placeholder="e.g., CH-TEAM-001"
               />
             </div>
 
@@ -84,7 +106,7 @@ export default function StudentLogin() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Portal password"
+                placeholder="Team password"
               />
             </div>
 
@@ -94,9 +116,9 @@ export default function StudentLogin() {
               </div>
             )}
 
-            <button 
-              type="submit" 
-              className="button-primary" 
+            <button
+              type="submit"
+              className="button-primary"
               disabled={isSubmitting}
             >
               Login to Dashboard
@@ -106,10 +128,10 @@ export default function StudentLogin() {
           <div className="status-row">
             <span className="status-chip">
               <span className="status-dot-live"></span>
-              Secure session · Prototype
+              Secure · Team Access
             </span>
             <Link to="/" className="text-link">
-              Need to register first?
+              Register New Team
             </Link>
           </div>
         </div>

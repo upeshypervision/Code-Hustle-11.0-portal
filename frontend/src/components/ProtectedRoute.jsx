@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
-export default function ProtectedRoute({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(null); // null = loading
+export default function ProtectedRoute({ children, role = 'admin' }) {
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
 
     useEffect(() => {
         const verifyAuth = async () => {
+            const endpoint = role === 'student'
+                ? 'http://localhost:5000/api/check-student-auth'
+                : 'http://localhost:5000/api/check-auth';
+
             try {
-                const res = await fetch('http://localhost:5000/api/check-auth', {
-                    // CRITICAL: Send cookies with request
+                const res = await fetch(endpoint, {
                     credentials: 'include'
                 });
                 if (res.ok) {
@@ -21,15 +24,17 @@ export default function ProtectedRoute({ children }) {
             }
         };
         verifyAuth();
-    }, []);
+    }, [role]);
 
     if (isAuthenticated === null) {
-        // You can return a spinner here
-        return <div style={{ color: '#fff', padding: '20px' }}>Verifying access...</div>;
+        return <div style={{ color: '#fff', padding: '20px', textAlign: 'center' }}>
+            {role === 'student' ? 'Authenticating Session...' : 'Verifying Access...'}
+        </div>;
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/admin-login" replace />;
+        const redirectPath = role === 'student' ? '/userlogin' : '/admin-login';
+        return <Navigate to={redirectPath} replace />;
     }
 
     return children;

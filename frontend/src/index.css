@@ -1,22 +1,7 @@
-body {
-  font-family: "Poppins", sans-serif;
-  background: #f0f2f5;
-  margin: 0;
-  padding: 0;
-}
-
 .main {
   display: flex;
   justify-content: center;
   padding: 40px;
-}
-
-.card {
-  width: 700px;
-  background: white;
-  padding: 35px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 .title {
