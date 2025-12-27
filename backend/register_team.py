@@ -1,8 +1,8 @@
 from flask import jsonify, request
 from database import get_db
 from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
-import razorpay, random, string
-import bcrypt
+import razorpay
+from datetime import datetime
 
 db = get_db()
 
@@ -31,12 +31,12 @@ def get_next_team_id():
 # -------------------------------------------------------
 def register_team_route():
     data = request.json
-
     leader = data["leader"]
     members = data["members"]
     team_name = data.get("team_name") # Optional: Validated if needed
     hypervision_member = data["hypervision_member"]
-    amount = data["amount"]
+
+    amount = 380 if hypervision_member else 450
 
     # VALIDATION: HyperVision SAPID must be inside team
     team_sapids = [leader["sapid"]] + [m["sapid"] for m in members]
@@ -50,30 +50,27 @@ def register_team_route():
     team_id = get_next_team_id()
 
     # -------------------------------------------------------
-    # PASSWORD GENERATION (6 CHAR)
-    # -------------------------------------------------------
-    # generate random password
-    password_plain = ''.join(
-        random.choices(string.ascii_letters + string.digits, k=6)
-    )
-
-    # hash using bcrypt
-    password_hashed = bcrypt.hashpw(
-        password_plain.encode(),
-        bcrypt.gensalt()
-    ).decode()
-
-    print("Generated password:", password_plain)
-    print("Hashed password:", password_hashed)
-    # reversible custom hash
-
-    # -------------------------------------------------------
     # CREATE ORDER IN RAZORPAY
     # -------------------------------------------------------
     order = razor_client.order.create({
         "amount": amount * 100,   # Razorpay requires paise
         "currency": "INR",
         "payment_capture": 1
+    })
+
+    # 💾 SAVE TEAM AS 'PENDING PAYMENT' IMMEIDATELY
+    # This ensures we don't lose data if frontend fails after payment
+    db["teams"].insert_one({
+        "team_id": team_id,
+        "team_name": team_name,
+        "leader": leader,
+        "members": members,
+        "hypervision_member": hypervision_member,
+        "order_id": order["id"],
+        "amount": amount,
+        "status": "Pending Payment",
+        "role": "student",
+        "timestamp": datetime.utcnow().isoformat()
     })
 
     # -------------------------------------------------------
@@ -84,7 +81,5 @@ def register_team_route():
         "order_id": order["id"],
         "amount": amount,
         "key_id": RAZORPAY_KEY_ID,
-        "team_id": team_id,
-        "password_plain": password_plain,
-        "password_hashed": password_hashed
+        "team_id": team_id
     })

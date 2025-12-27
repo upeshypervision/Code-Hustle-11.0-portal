@@ -108,10 +108,6 @@ export default function AdminLogin() {
           </form>
 
           <div className="status-row">
-            <span className="status-chip">
-              <span className="status-dot-live"></span>
-              Access logged · Prototype
-            </span>
             <Link to="/student-login" className="text-link">
               Go to student login
             </Link>
