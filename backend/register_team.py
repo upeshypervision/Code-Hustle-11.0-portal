@@ -3,6 +3,12 @@ from database import get_db
 from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 import razorpay
 from datetime import datetime
+import jwt
+import bcrypt
+import random
+import string
+from config import JWT_SECRET, JWT_ALGORITHM
+from email_service import send_registration_email
 
 db = get_db()
 
@@ -111,4 +117,66 @@ def register_team_route():
         "amount": amount,
         "key_id": RAZORPAY_KEY_ID,
         "team_id": team_id
+    })
+
+
+# -------------------------------------------------------
+# MANUAL TEAM REGISTRATION BY ADMIN
+# -------------------------------------------------------
+def register_manual_team_route():
+    # 1. VERIFY ADMIN AUTH
+    token = request.cookies.get('admin_auth')
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        admin_id = payload["login_id"]
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+
+    data = request.json
+    leader = data["leader"]
+    members = data["members"]
+    team_name = data.get("team_name", "").strip()
+
+    if not team_name:
+        return jsonify({"error": "Team Name is required"}), 400
+
+    # 2. DUPLICATE CHECK
+    if db["teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
+        return jsonify({"error": "Team name already taken"}), 400
+
+    # 3. GENERATE CREDENTIALS
+    team_id = get_next_team_id()
+    password_plain = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    password_hashed = bcrypt.hashpw(password_plain.encode(), bcrypt.gensalt()).decode()
+
+    # 4. INSERT INTO DB
+    db["teams"].insert_one({
+        "team_id": team_id,
+        "team_name": team_name,
+        "leader": leader,
+        "members": members,
+        "hypervision_member": None,
+        "order_id": "MANUAL_ENTRY",
+        "payment_id": "MANUAL_ENTRY",
+        "amount": 0,
+        "password_hashed": password_hashed,
+        "status": f"Manual by Admin {admin_id}",
+        "role": "student",
+        "timestamp": datetime.utcnow().isoformat()
+    })
+
+    # 5. SEND EMAIL
+    # try:
+    #     send_registration_email(leader["email"], team_id, password_plain)
+    # except Exception as e:
+    #     print(f"Failed to send email: {e}")
+
+    return jsonify({
+        "success": True,
+        "message": "Team added manually",
+        "team_id": team_id,
+        "password": password_plain
     })

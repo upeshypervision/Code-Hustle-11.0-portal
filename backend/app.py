@@ -1,10 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
-from register_team import register_team_route, check_team_name_route
+from register_team import register_team_route, check_team_name_route, register_manual_team_route
+from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
+from logout import logout_route
+from user_access import fetch_teams_route, get_user_info_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
@@ -41,10 +44,26 @@ def razorpay_webhook():
 def student_login():
     return student_login_route()
 
+@app.route("/api/admin/add-team", methods=["POST"])
+def register_manual_team():
+    return register_manual_team_route()
+
+@app.route("/api/admin/teams", methods=["GET"])
+def fetch_teams():
+    return fetch_teams_route()
+
 #login route for admin
 @app.route("/api/admin-login", methods=["POST"])
 def admin_login():
     return admin_login_route()
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    return logout_route()
+
+@app.route("/api/user-info", methods=["GET"])
+def get_user_info():
+    return get_user_info_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

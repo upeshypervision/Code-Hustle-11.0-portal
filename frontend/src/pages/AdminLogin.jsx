@@ -108,7 +108,7 @@ export default function AdminLogin() {
           </form>
 
           <div className="status-row">
-            <Link to="/student-login" className="text-link">
+            <Link to="/userlogin" className="text-link">
               Go to student login
             </Link>
           </div>

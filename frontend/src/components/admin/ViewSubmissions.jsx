@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function ViewSubmissions() {
-    const demoSubmissions = [
-        { teamId: "CH-TEAM-001", teamName: "HyperCoders", ps: "PS001", fileName: "solution-round1.pptx", submittedAt: "Dec 15, 2025 3:45 PM" },
-        { teamId: "CH-TEAM-002", teamName: "Bit Benders", ps: "PS002", fileName: "innovation-deck.pptx", submittedAt: "Dec 15, 2025 4:12 PM" },
-        { teamId: "CH-TEAM-005", teamName: "Code Ninjas", ps: "PS001", fileName: "campus-solution.pptx", submittedAt: "Dec 16, 2025 10:30 AM" }
-    ];
+    const [teams, setTeams] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        fetchTeams();
+    }, []);
+
+    const fetchTeams = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/api/admin/teams', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setTeams(data.teams);
+            } else {
+                setError(data.error || 'Failed to fetch teams');
+            }
+        } catch (err) {
+            setError('Server connection failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <div className="admin-section"><p>Loading Submissions...</p></div>;
+    if (error) return <div className="admin-section" style={{ color: '#ef4444' }}>Error: {error}</div>;
 
     return (
         <div className="admin-section">
@@ -19,27 +43,29 @@ export default function ViewSubmissions() {
                         All Round 1 PPT submissions from teams. Click "View" to download or preview.
                     </p>
 
-                    {demoSubmissions.map((sub) => (
-                        <div key={sub.teamId} className="submission-card">
-                            <div className="submission-info">
-                                <p className="submission-team">
-                                    {sub.teamName} ({sub.teamId})
-                                </p>
-                                <p className="submission-meta">
-                                    PS: <strong>{sub.ps}</strong> · File: {sub.fileName} · {sub.submittedAt}
-                                </p>
-                            </div>
-                            <div className="submission-actions">
-                                <button className="btn-small">View PPT</button>
-                                <button className="btn-small">Download</button>
-                            </div>
-                        </div>
-                    ))}
-
-                    {demoSubmissions.length === 0 && (
+                    {teams.length === 0 ? (
                         <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
-                            No submissions yet
+                            No teams registered yet.
                         </p>
+                    ) : (
+                        teams.map((team, index) => (
+                            <div key={team.team_id} className="submission-card">
+                                <div className="submission-info">
+                                    {/* Clean UI Style: TeamName (TeamID) */}
+                                    <p className="submission-team">
+                                        {team.team_name} <span style={{ opacity: 0.5, fontWeight: 400 }}>({team.team_id})</span>
+                                    </p>
+                                    <p className="submission-meta">
+                                        {/* Mock Data for now as requested */}
+                                        PS: <strong>{index % 2 === 0 ? 'PS001' : 'PS005'}</strong> · File: {index % 3 === 0 ? 'solution.pptx' : 'pitch_deck_v2.pdf'} · Submitted: Dec 28, 2025
+                                    </p>
+                                </div>
+                                <div className="submission-actions">
+                                    <button className="btn-small">View PPT</button>
+                                    <button className="btn-small">Download</button>
+                                </div>
+                            </div>
+                        ))
                     )}
                 </div>
             </div>

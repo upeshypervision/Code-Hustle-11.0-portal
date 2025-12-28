@@ -6,6 +6,7 @@ import bcrypt
 import random
 import string
 from datetime import datetime
+from email_service import send_registration_email
 
 db = get_db()
 razor_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
@@ -66,8 +67,11 @@ def verify_payment_route():
         return jsonify({"success": False, "error": "Registration session expired or invalid"}), 400
 
     print("it worked verified ")
-    # 📧 Optional: Send email (currently commented)
-    # send_registration_email(team_payload["leader"]["email"], team_payload["team_id"], password_plain)
+    # 📧 Send email
+    # try:
+    #     send_registration_email(team_payload["leader"]["email"], team_payload["team_id"], password_plain)
+    # except Exception as e:
+    #     print(f"Failed to send email: {e}")
 
     return jsonify({
         "success": True,

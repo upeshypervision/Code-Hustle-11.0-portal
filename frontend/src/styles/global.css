@@ -321,8 +321,8 @@ h1, h2, h3 {
 }
 
 .nav-logout:hover {
-  background: rgba(15,23,42,0.9);
-  border-color: #f97316;
+  background: rgba(15, 23, 42, 0.9);
+  border-color: #090808;
 }
 
 .dashboard-page {
@@ -547,9 +547,7 @@ h1, h2, h3 {
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, rgba(56,189,248,0.14) 0, transparent 55%), 
-              radial-gradient(circle at bottom right, rgba(249,115,22,0.12) 0, transparent 60%), 
-              #020617;
+  background: #040e1c;
 }
 
 .admin-sidebar {
@@ -808,7 +806,7 @@ input:checked + .toggle-slider:before {
   .admin-sidebar {
     width: 200px;
   }
-  
+
   .admin-content {
     padding: 16px;
   }
@@ -818,7 +816,7 @@ input:checked + .toggle-slider:before {
   .admin-layout {
     flex-direction: column;
   }
-  
+
   .admin-sidebar {
     width: 100%;
     height: auto;

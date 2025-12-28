@@ -1,12 +1,29 @@
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 
 export default function UserPortal() {
+    const [userInfo, setUserInfo] = useState({ team_name: 'Loading...', team_id: '' });
+
+    useEffect(() => {
+        // Fetch user info on component mount
+        fetch('http://localhost:5000/api/user-info', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.role === 'student') {
+                    setUserInfo({ team_name: data.team_name, team_id: data.team_id });
+                }
+            })
+            .catch(err => console.error('Error fetching user info:', err));
+    }, []);
     return (
         <div className="dashboard-page">
             <Navbar
                 userInfo={
                     <>
-                        Role: <strong>Team Leader</strong> · Code Hustle 11
+                        Team: <strong>{userInfo.team_name}</strong>
                     </>
                 }
                 isAdmin={false}

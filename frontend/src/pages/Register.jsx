@@ -317,7 +317,7 @@ const Registration = () => {
             </div>
           )}
 
-          <footer className="footer-links"><a href="#" className="signin-link">Already registered? Sign In</a></footer>
+          <footer className="footer-links"><a href="/userlogin" className="signin-link">Already registered? Sign In</a></footer>
         </div>
       ) : (
         <div className="portal-card animate-in success-layout" style={{ textAlign: 'center' }}>

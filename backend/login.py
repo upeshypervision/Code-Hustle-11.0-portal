@@ -2,7 +2,7 @@ import jwt
 import datetime
 import bcrypt
 from database import get_db
-from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_HOURS
+from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_HOURS, COOKIE_SECURE
 from flask import request, jsonify, make_response
 
 db = get_db()
@@ -47,7 +47,7 @@ def student_login_route():
         'student_auth',
         token,
         httponly=True,        # Prevents XSS
-        secure=False,         # set to True in production
+        secure=COOKIE_SECURE, # Auto-set based on environment
         samesite='Lax',
         max_age=JWT_EXPIRE_HOURS * 3600
     )
@@ -91,7 +91,7 @@ def admin_login_route():
         'admin_auth',
         token,
         httponly=True,        # Prevents XSS (JS can't see this)
-        secure=False,          # Only sent over HTTPS (False for localhost)
+        secure=COOKIE_SECURE, # Auto-set based on environment
         samesite='Lax',       # Lax is better for localhost than None (which needs Secure)
         max_age=7 * 24 * 60 * 60  # 7 days in seconds
     )
