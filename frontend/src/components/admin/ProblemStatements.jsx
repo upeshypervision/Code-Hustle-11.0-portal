@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import Modal from '../../components/Modal';
+const API_BASE = "http://localhost:8000";
 
 export default function ProblemStatements() {
     const [psVisible, setPsVisible] = useState(false);
@@ -11,7 +13,23 @@ export default function ProblemStatements() {
     const [selectedPs, setSelectedPs] = useState(null);
     const [newPs, setNewPs] = useState({ id: '', title: '', track: '' });
     const [psMessage, setPsMessage] = useState({ type: '', text: '' });
-
+    useEffect(() => {
+        fetch(`${API_BASE}/admin/settings`)
+          .then(res => res.json())
+          .then(data => setPsVisible(data.psVisible))
+          .catch(err => console.error("Failed to load settings", err));
+      }, []);
+      
+      useEffect(() => {
+        const socket = io(API_BASE);
+      
+        socket.on("PS_VISIBILITY_UPDATED", (data) => {
+          setPsVisible(data.psVisible);
+        });
+      
+        return () => socket.disconnect();
+      }, []);
+      
     // Demo data
     const demoPs = [
         {
@@ -51,7 +69,16 @@ export default function ProblemStatements() {
             ]
         }
     ];
-
+    
+    const toggleGlobalVisibility = async (checked) => {
+        setPsVisible(checked);
+      
+        await fetch(
+          `${API_BASE}/admin/settings/ps-visibility?visible=${checked}`,
+          { method: "POST" }
+        );
+      };
+      
     const handleAddPs = (e) => {
         e.preventDefault();
         if (!newPs.id.trim() || !newPs.title.trim()) {
@@ -87,11 +114,12 @@ export default function ProblemStatements() {
                         Global PS Visibility
                     </span>
                     <div className="toggle-switch">
-                        <input
-                            type="checkbox"
-                            checked={psVisible}
-                            onChange={(e) => setPsVisible(e.target.checked)}
-                        />
+                    <input
+                        type="checkbox"
+                        checked={psVisible}
+                        onChange={(e) => toggleGlobalVisibility(e.target.checked)}
+                    />
+
                         <span className="toggle-slider"></span>
                     </div>
                 </label>
