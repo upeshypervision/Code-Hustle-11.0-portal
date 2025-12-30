@@ -8,6 +8,7 @@ from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
 from user_access import fetch_teams_route, get_user_info_route
+from submit_ppt import submit_ppt_route # Import the new route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
@@ -64,6 +65,11 @@ def logout():
 @app.route("/api/user-info", methods=["GET"])
 def get_user_info():
     return get_user_info_route()
+
+# --- New Submission Route ---
+@app.route('/api/submit-ppt', methods=['POST'])
+def submit_ppt():
+    return submit_ppt_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

@@ -17,3 +17,9 @@ JWT_EXPIRE_HOURS = 24
 # Set to True when deploying to production with HTTPS
 IS_PRODUCTION = False
 COOKIE_SECURE = IS_PRODUCTION  # Auto-sets secure flag based on environment
+
+# --- S3 Configuration ---
+S3_BUCKET_NAME = "codehustle"
+AWS_ACCESS_KEY_ID = "AKIA6LDM2GZ2B5XFQH7F"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_REGION = "ap-south-1"
