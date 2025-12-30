@@ -18,10 +18,10 @@ const Registration = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errorBadge, setErrorBadge] = useState("");
   const [valErrors, setValErrors] = useState({});
-  const [finalPrice, setFinalPrice] = useState(450); 
+  const [finalPrice, setFinalPrice] = useState(450);
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
-  
+
   const API_BASE = "http://localhost:5000/api";
 
   const [team, setTeam] = useState({
@@ -31,6 +31,7 @@ const Registration = () => {
     m3: { fullName: '', sapid: '', email: '', phone: '' }
   });
 
+  const [teamName, setTeamName] = useState("");
   const [discount, setDiscount] = useState({ hyperId: "", verifySapId: "" });
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const Registration = () => {
   }, []);
 
   const validate = (name, value) => {
-    if (!value) return ""; 
+    if (!value) return "";
     if (name === 'sapid') {
       if (value.length !== 9) return "SAP ID must be 9 digits";
     }
@@ -87,24 +88,26 @@ const Registration = () => {
     setLoading(false);
   };
 
-  const savePayment = async (payment_id, order_id, amount, teamPayload) => {
+  const verifyPayment = async (razorpay_payment_id, razorpay_order_id, razorpay_signature, teamPayload) => {
     setLoading(true);
     try {
-      const payRes = await fetch(`${API_BASE}/save-payment`, {
+      const payRes = await fetch(`${API_BASE}/verify-payment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          ...teamPayload,
-          payment_id: payment_id, 
-          order_id: order_id,
-          amount: amount
+        body: JSON.stringify({
+          razorpay_payment_id,
+          razorpay_order_id,
+          razorpay_signature,
+          teamPayload
         }),
       });
       const data = await payRes.json();
-      if (data.success) setSubmitted(true);
-      else setErrorBadge("Error saving: " + data.error);
+      if (data.success) {
+        setSubmitted(true);
+      }
+      else setErrorBadge("Payment verification failed: " + data.error);
     } catch (err) {
-      setErrorBadge("Network Error: Could not reach server to save payment.");
+      setErrorBadge("Network Error: Could not verify payment.");
     }
     setLoading(false);
   };
@@ -118,7 +121,12 @@ const Registration = () => {
       description: "Team Registration",
       order_id: order_id,
       handler: function (response) {
-        savePayment(response.razorpay_payment_id, order_id, finalAmount, teamPayload);
+        verifyPayment(
+          response.razorpay_payment_id,
+          response.razorpay_order_id,
+          response.razorpay_signature,
+          teamPayload
+        );
       },
       prefill: {
         name: teamPayload.leader.fullName,
@@ -129,6 +137,32 @@ const Registration = () => {
     };
     const rz = new window.Razorpay(options);
     rz.open();
+  };
+
+  const handleStep1Next = async () => {
+    if (!teamName.trim()) {
+      setErrorBadge("Please enter a Team Name");
+      return;
+    }
+    setErrorBadge("");
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/check-team-name`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ team_name: teamName })
+      });
+      const data = await res.json();
+      if (data.exists) {
+        setErrorBadge("Team name already taken. Choose another.");
+      } else {
+        setStep(2);
+      }
+    } catch (err) {
+      setErrorBadge("Could not validate team name. Server error.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegistrationFlow = async () => {
@@ -144,8 +178,8 @@ const Registration = () => {
       const teamPayload = {
         leader: team.leader,
         members: membersList,
-        hypervision_member: hyperMemberData,
-        amount: finalPrice,
+        team_name: teamName,
+        hypervision_member: hyperMemberData
       };
 
       const res = await fetch(`${API_BASE}/register-team`, {
@@ -157,8 +191,7 @@ const Registration = () => {
       if (data.success) {
         await openRazorpay(data.order_id, data.amount, data.key_id, {
           ...teamPayload,
-          team_id: data.team_id,
-          password_plain: data.password_plain,
+          team_id: data.team_id
         });
       } else {
         setErrorBadge(data.error || "Registration failed");
@@ -174,8 +207,8 @@ const Registration = () => {
     <div className="input-group">
       <div className="label-row"><span>{label}</span></div>
       <div className={`glow-input-container ${valErrors[`${member}_${name}`] ? 'error-border' : ''}`}>
-        <input className="glow-input" placeholder={placeholder} value={team[member][name]} 
-          onChange={(e) => setTeam({...team, [member]: {...team[member], [name]: e.target.value}})}
+        <input className="glow-input" placeholder={placeholder} value={team[member][name]}
+          onChange={(e) => setTeam({ ...team, [member]: { ...team[member], [name]: e.target.value } })}
           onBlur={(e) => handleBlur(member, name, e.target.value)} />
       </div>
       {valErrors[`${member}_${name}`] && <p className="error-message-inline">{valErrors[`${member}_${name}`]}</p>}
@@ -198,12 +231,21 @@ const Registration = () => {
 
           {step === 1 && (
             <div className="animate-in">
+              <span className="label-detail">TEAM NAME</span>
+              <div className="input-group">
+                <div className="label-row"><span>Team Name</span></div>
+                <div className="glow-input-container">
+                  <input className="glow-input" placeholder="Enter Team Name" value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)} />
+                </div>
+              </div>
+
               <span className="label-detail">TEAM LEADER</span>
               {renderInput('leader', 'fullName', 'Full Name', 'Name')}
               {renderInput('leader', 'sapid', 'SAP ID', '5900XXXXX')}
               {renderInput('leader', 'email', 'Email Address', 'Email')}
               {renderInput('leader', 'phone', 'Phone Number', 'Phone')}
-              <button className={`neon-shade-btn next-glow ${!isStepValid('leader') ? 'btn-locked' : ''}`} disabled={!isStepValid('leader')} onClick={() => setStep(2)}>NEXT</button>
+              <button className={`neon-shade-btn next-glow ${(!isStepValid('leader') || !teamName) ? 'btn-locked' : ''}`} disabled={!isStepValid('leader') || !teamName} onClick={handleStep1Next}>{loading ? "Checking..." : "NEXT"}</button>
             </div>
           )}
 
@@ -214,11 +256,11 @@ const Registration = () => {
               {renderInput('m1', 'sapid', 'SAP ID', '5900XXXXX')}
               {renderInput('m1', 'email', 'Email Address', 'Email')}
               {renderInput('m1', 'phone', 'Phone Number', 'Phone')}
-              <div className="dual-button-row" style={{display:'flex', gap:'10px', marginTop:'20px'}}>
-                <button className="secondary-add-btn" style={{flex:1, height:'50px', borderRadius:'30px', background:'transparent', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', fontSize:'10px', fontWeight:800}} onClick={() => setStep(3)}>+ MEMBER 2</button>
-                <button className={`neon-shade-btn next-glow ${!isStepValid('m1') ? 'btn-locked' : ''}`} style={{flex:1, marginTop:0}} disabled={!isStepValid('m1')} onClick={() => setStep(6)}>PROCEED</button>
+              <div className="dual-button-row" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button className="secondary-add-btn" style={{ flex: 1, height: '50px', borderRadius: '30px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '10px', fontWeight: 800 }} onClick={() => setStep(3)}>+ MEMBER 2</button>
+                <button className={`neon-shade-btn next-glow ${!isStepValid('m1') ? 'btn-locked' : ''}`} style={{ flex: 1, marginTop: 0 }} disabled={!isStepValid('m1')} onClick={() => setStep(6)}>PROCEED</button>
               </div>
-              <p className="signin-link" style={{marginTop:'15px', textAlign:'center', cursor:'pointer'}} onClick={() => setStep(1)}>← BACK</p>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(1)}>← BACK</p>
             </div>
           )}
 
@@ -229,11 +271,11 @@ const Registration = () => {
               {renderInput('m2', 'sapid', 'SAP ID', '5900XXXXX')}
               {renderInput('m2', 'email', 'Email Address', 'Email')}
               {renderInput('m2', 'phone', 'Phone Number', 'Phone')}
-              <div className="dual-button-row" style={{display:'flex', gap:'10px', marginTop:'20px'}}>
-                <button className="secondary-add-btn" style={{flex:1, height:'50px', borderRadius:'30px', background:'transparent', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', fontSize:'10px', fontWeight:800}} onClick={() => setStep(4)}>+ MEMBER 3</button>
-                <button className="neon-shade-btn next-glow" style={{flex:1, marginTop:0}} onClick={() => setStep(6)}>PROCEED</button>
+              <div className="dual-button-row" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button className="secondary-add-btn" style={{ flex: 1, height: '50px', borderRadius: '30px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontSize: '10px', fontWeight: 800 }} onClick={() => setStep(4)}>+ MEMBER 3</button>
+                <button className="neon-shade-btn next-glow" style={{ flex: 1, marginTop: 0 }} onClick={() => setStep(6)}>PROCEED</button>
               </div>
-              <p className="signin-link" style={{marginTop:'15px', textAlign:'center', cursor:'pointer'}} onClick={() => setStep(2)}>← BACK</p>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(2)}>← BACK</p>
             </div>
           )}
 
@@ -245,7 +287,7 @@ const Registration = () => {
               {renderInput('m3', 'email', 'Email Address', 'Email')}
               {renderInput('m3', 'phone', 'Phone Number', 'Phone')}
               <button className="neon-shade-btn next-glow" onClick={() => setStep(6)}>PROCEED TO PAY</button>
-              <p className="signin-link" style={{marginTop:'15px', textAlign:'center', cursor:'pointer'}} onClick={() => setStep(3)}>← BACK</p>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(3)}>← BACK</p>
             </div>
           )}
 
@@ -254,38 +296,47 @@ const Registration = () => {
               <span className="label-detail">DISCOUNT & PAYMENT</span>
               <div className="input-group">
                 <div className="label-row"><span>HV ID (Optional)</span></div>
-                <div className="glow-input-container"><input className="glow-input" placeholder="HV-XXXX" value={discount.hyperId} onChange={(e) => setDiscount({...discount, hyperId: e.target.value.toUpperCase()})} /></div>
+                <div className="glow-input-container"><input className="glow-input" placeholder="HV-XXXX" value={discount.hyperId} onChange={(e) => setDiscount({ ...discount, hyperId: e.target.value.toUpperCase() })} /></div>
               </div>
               <div className="input-group">
                 <div className="label-row"><span>Verify Member SAP ID</span></div>
-                <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} onChange={(e) => setDiscount({...discount, verifySapId: e.target.value})} /></div>
+                <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} onChange={(e) => setDiscount({ ...discount, verifySapId: e.target.value })} /></div>
               </div>
-              
-              <button className="secondary-add-btn" style={{width:'100%', padding:'12px', border:'1px solid #38bdf8', color:'#38bdf8', marginBottom:'15px', borderRadius:'30px', background:'rgba(56, 189, 248, 0.1)', fontWeight:800}} onClick={handleVerifyDiscount}>APPLY DISCOUNT</button>
 
-              <div style={{textAlign:'center', margin:'15px 0', padding:'15px', background:'rgba(255,255,255,0.05)', borderRadius:'15px', border:'1px solid rgba(255,255,255,0.1)'}}>
-                 <p style={{fontSize:'12px', opacity:0.6}}>Total Payable:</p>
-                 <h2 style={{fontSize:'28px', color: isDiscounted ? '#10b981' : '#fff'}}>
-                    {isDiscounted ? <><span style={{textDecoration:'line-through', opacity:0.4, fontSize:'16px', marginRight:'10px'}}>₹450</span>₹{finalPrice}</> : `₹${finalPrice}`}
-                 </h2>
+              <button className="secondary-add-btn" style={{ width: '100%', padding: '12px', border: '1px solid #38bdf8', color: '#38bdf8', marginBottom: '15px', borderRadius: '30px', background: 'rgba(56, 189, 248, 0.1)', fontWeight: 800 }} onClick={handleVerifyDiscount}>APPLY DISCOUNT</button>
+
+              <div style={{ textAlign: 'center', margin: '15px 0', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <p style={{ fontSize: '12px', opacity: 0.6 }}>Total Payable:</p>
+                <h2 style={{ fontSize: '28px', color: isDiscounted ? '#10b981' : '#fff' }}>
+                  {isDiscounted ? <><span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '16px', marginRight: '10px' }}>₹450</span>₹{finalPrice}</> : `₹${finalPrice}`}
+                </h2>
               </div>
 
               <button className="neon-shade-btn next-glow" disabled={loading} onClick={handleRegistrationFlow}>{loading ? "PROCESSING..." : "REGISTER & PAY"}</button>
-              <p className="signin-link" style={{marginTop:'15px', textAlign:'center', cursor:'pointer'}} onClick={() => setStep(2)}>← BACK</p>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(2)}>← BACK</p>
             </div>
           )}
 
-          <footer className="footer-links"><a href="#" className="signin-link">Already registered? Sign In</a></footer>
+          <footer className="footer-links"><a href="/userlogin" className="signin-link">Already registered? Sign In</a></footer>
         </div>
       ) : (
-        <div className="portal-card animate-in success-layout" style={{textAlign:'center'}}>
-            <h2 className="syncopate-font" style={{color: '#38bdf8', fontSize: '1.2rem'}}>REGISTRATION CONFIRMED!</h2>
-            <p style={{marginTop: '20px', opacity: 0.8, lineHeight: '1.6', fontSize: '14px'}}>
-              Payment verified.<br/>Access credentials and event details will be dispatched to your registered email shortly.
+        <div className="portal-card animate-in success-layout" style={{ textAlign: 'center' }}>
+          <h2 className="syncopate-font" style={{ color: '#10b981', fontSize: '1.4rem' }}>✅ PAYMENT VERIFIED!</h2>
+
+          <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '30px', borderRadius: '12px', border: '2px solid rgba(16, 185, 129, 0.5)', margin: '30px 0' }}>
+            <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.8' }}>
+              Your registration is complete!<br />
+              <strong style={{ color: '#10b981' }}>Team credentials</strong> have been sent to your registered email address.
             </p>
-            <button className="neon-shade-btn next-glow" onClick={() => window.location.reload()} style={{marginTop: '30px'}}>
-              ACKNOWLEDGE
-            </button>
+          </div>
+
+          <p style={{ marginTop: '20px', opacity: 0.7, fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
+            Check your inbox for your Team ID and Password.<br />
+            Use them to login to the User Portal.
+          </p>
+          <button className="neon-shade-btn next-glow" onClick={() => window.location.href = '/userlogin'} style={{ marginTop: '25px' }}>
+            GO TO LOGIN →
+          </button>
         </div>
       )}
     </div>

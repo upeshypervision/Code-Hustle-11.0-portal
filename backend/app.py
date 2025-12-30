@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
-from register_team import register_team_route
-from payment_routes import save_payment_route
-from login import student_login_route,admin_login_route, check_auth_route
+from register_team import register_team_route, check_team_name_route, register_manual_team_route
+from register_team import register_team_route, check_team_name_route, register_manual_team_route
+from verify_payment import verify_payment_route
+from webhook_handler import razorpay_webhook_handler
+from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
+from logout import logout_route
+from user_access import fetch_teams_route, get_user_info_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
@@ -11,6 +15,10 @@ CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
     return check_auth_route()
+
+@app.route("/api/check-student-auth", methods=["GET"])
+def check_student_auth():
+    return check_student_auth_route()
 
 @app.route("/api/validate-hypervision", methods=["POST"])
 def validate_hypervision():
@@ -20,18 +28,42 @@ def validate_hypervision():
 def register_team():
     return register_team_route()
 
-@app.route("/api/save-payment", methods=["POST"])
-def save_payment():
-    return save_payment_route()
+@app.route("/api/check-team-name", methods=["POST"])
+def check_team_name():
+    return check_team_name_route()
+
+@app.route("/api/verify-payment", methods=["POST"])
+def verify_payment():
+    return verify_payment_route()
+
+@app.route("/api/razorpay-webhook", methods=["POST"])
+def razorpay_webhook():
+    return razorpay_webhook_handler()
 
 @app.route("/api/student-login", methods=["POST"])
 def student_login():
     return student_login_route()
 
+@app.route("/api/admin/add-team", methods=["POST"])
+def register_manual_team():
+    return register_manual_team_route()
+
+@app.route("/api/admin/teams", methods=["GET"])
+def fetch_teams():
+    return fetch_teams_route()
+
 #login route for admin
 @app.route("/api/admin-login", methods=["POST"])
 def admin_login():
     return admin_login_route()
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    return logout_route()
+
+@app.route("/api/user-info", methods=["GET"])
+def get_user_info():
+    return get_user_info_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
