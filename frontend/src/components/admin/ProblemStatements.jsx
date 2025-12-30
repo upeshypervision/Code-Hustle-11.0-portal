@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Modal from '../../components/Modal';
+import Modal from '../Modal';
 
 export default function ProblemStatements() {
     const [psVisible, setPsVisible] = useState(false);
