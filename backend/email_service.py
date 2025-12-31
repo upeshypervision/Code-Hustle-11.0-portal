@@ -8,38 +8,89 @@ def send_registration_email(email_id,team_id,password):
         "to": f"{email_id}",
         "subject": "Code Hustle 11.0 Team Credentials",
         "html": f"""
-    <table width="100%" bgcolor="#1c1c1c" cellpadding="0" cellspacing="0">
-    <tr>
-        <td align="center">
+<table width="100%" bgcolor="#242424" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center">
 
-        <!-- Top image -->
+      <!-- Top image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0top.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
+
+      <!-- HTML content -->
+      <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
+        <tr>
+          <td
+          align="centre"
+          style="font-family:Arial, sans-serif; font-size:18px; color:#FFFFFF;">
+            <CENTRE><strong>TEAM ID:</strong> <span style="font-size:22px; font-weight:bold;">
+  {team_id}
+</span><br><br></CENTRE>
+            <CENTRE><strong>PASSWORD:</strong><span style="font-size:22px; font-weight:bold;">
+  {password}
+</span></CENTRE>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Bottom image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
+
+<!-- Social media footer -->
+<table width="600" cellpadding="16" cellspacing="0" bgcolor="#242424">
+  
+  <!-- WhatsApp text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc;">
+      Join the Whatsapp Group for further updates
+    </td>
+  </tr>
+
+  <!-- WhatsApp icon -->
+  <tr>
+    <td align="center">
+      <a href="WA link here">
         <img
-            src="https://i.postimg.cc/xTNH1Gfh/CODE-HUSTLE-11-0top.png"
-            width="600"
-            style="display:block;"
-            alt=""
-        />
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/main/download.png"
+          width="48"
+          alt="Whatsapp"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
 
-        <!-- HTML content -->
-        <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
-            <tr>
-            <td style="font-family:Arial, sans-serif; font-size:16px; color:#FFFFFF;">
-                <CENTRE><strong>TEAM ID:</strong> {team_id}<br><br></CENTRE>
-                <CENTRE><strong>PASSWORD:</strong> {password}</CENTRE>
-            </td>
-            </tr>
-        </table>
+  <!-- Portal text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc; padding-top:12px;">
+      Login into the portal
+    </td>
+  </tr>
 
-        <!-- Bottom image -->
+  <!-- Website icon -->
+  <tr>
+    <td align="center">
+      <a href="https://codehustle11.upeshypervision.in/userlogin">
         <img
-            src="https://i.postimg.cc/QC2FTP86/CODE-HUSTLE-11-0bottom.png"
-            width="600"
-            style="display:block;"
-            alt=""
-        />
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png"
+          width="68"
+          alt="Website"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
 
-        </td>
-    </tr>
-    </table>
-    """
+</table>
+</table>
+"""
+
     })
