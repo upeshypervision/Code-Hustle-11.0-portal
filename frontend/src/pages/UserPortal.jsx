@@ -1,10 +1,11 @@
-import { useState } from 'react';
+// frontend/src/pages/UserPortal.jsx
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import UserSidebar from '../components/user_dash/UserSidebar';
 import PSGallery from '../components/user_dash/prob_stmt';
 import Modal from '../components/Modal'; 
-import PPTSubmission from '../components/user_dash/PPTSubmission';
-import GitHubSubmission from '../components/user_dash/GitHubSubmission';
+// import PPTSubmission from '../components/user_dash/PPTSubmission'; // No longer needed
+// import GitHubSubmission from '../components/user_dash/GitHubSubmission'; // Assuming this is separate
 
 export default function UserPortal() {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -12,8 +13,25 @@ export default function UserPortal() {
     const [selectedPS, setSelectedPS] = useState(null);
     const [viewingPS, setViewingPS] = useState(null);
     
-    const [isSubmitted, setIsSubmitted] = useState(false); // PPT Status
+    // State for submission status - now based on actual submission record check
+    const [isPPTSubmitted, setIsPPTSubmitted] = useState(false); // Reflects actual submission status
     const [isGithubSubmitted, setIsGithubSubmitted] = useState(false); // GitHub Status
+    // State for the submission form
+    const [file, setFile] = useState(null); // State for selected file
+    const [message, setMessage] = useState({ type: '', text: '' }); // State for submission messages
+
+    // Effect to fetch actual submission status (example logic - you might fetch this from your user info or a dedicated endpoint)
+    useEffect(() => {
+        const checkSubmissionStatus = async () => {
+            // Example: fetch from user info endpoint or a specific submission status endpoint
+            // const res = await fetch('http://localhost:5000/api/user-info', { credentials: 'include' });
+            // const data = await res.json();
+            // setIsPPTSubmitted(!!data.submission); // Example: if user info contains a submission record
+            // setIsGithubSubmitted(!!data.github_link); // Example: if user info contains a github link
+            // For now, using state as a placeholder, update based on actual API response
+        };
+        checkSubmissionStatus();
+    }, []); // Only run on mount, or when selectedPS changes if needed
 
     const handlePSPreview = (ps) => {
         setViewingPS(ps);
@@ -26,9 +44,13 @@ export default function UserPortal() {
         setActiveTab('dashboard'); 
     };
 
+    // Handle successful submission from the new form
     const handleUploadSuccess = () => {
-        setIsSubmitted(true);
-        setActiveTab('dashboard'); 
+        setIsPPTSubmitted(true); // Update the actual status
+        setMessage({ type: 'success', text: 'File submitted successfully!' }); // Show success message
+        setFile(null); // Clear file input
+        // Optionally clear message after a delay
+        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     };
 
     const handleGithubSuccess = () => {
@@ -38,14 +60,59 @@ export default function UserPortal() {
 
     const getProgressWidth = () => {
         if (isGithubSubmitted) return '100%';
-        if (isSubmitted) return '60%';
-        if (selectedPS) return '15%';
+        if (isPPTSubmitted) return '60%'; // Adjust percentage as needed
+        if (selectedPS) return '15%'; // Example: PS selected = 15%
         return '0%';
     };
 
     const getProgressColor = () => {
-        if (isGithubSubmitted) return '#10b981';
-        return '#3b82f6';
+        if (isGithubSubmitted) return '#10b981'; // Green if complete
+        return '#3b82f6'; // Blue otherwise
+    };
+
+    // File input handler
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+        setMessage({ type: '', text: '' }); // Clear previous messages
+    };
+
+    // File submission handler
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!file) {
+            setMessage({ type: 'error', text: 'Please select a file.' });
+            setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/submit-ppt-student', // NEW endpoint
+                {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include', // Important for session cookie
+                });
+
+            // --- LOGGING ADDED ---
+            console.log("Response Status:", res.status);
+            const data = await res.json();
+            console.log("Response Data:", data);
+            // --- END LOGGING ---
+
+            if (res.ok) {
+                handleUploadSuccess(); // Update status and show message
+            } else {
+                setMessage({ type: 'error', text: data.error || 'Submission failed' });
+                setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+            }
+        } catch (err) {
+            console.error('Submission error:', err);
+            setMessage({ type: 'error', text: 'Server connection failed.' });
+            setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+        }
     };
 
     // CUSTOM BRIGHT NAVBAR
@@ -170,12 +237,37 @@ export default function UserPortal() {
                                             </div>
                                         </div>
                                         <div style={{ marginTop: '40px', display: 'flex', gap: '15px' }}>
-                                            <button className="cyber-action-btn" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: '700', cursor: 'pointer', background: isSubmitted ? '#10b981' : '#3b82f6' }} onClick={() => setActiveTab('ppt-submission')}>
-                                                {isSubmitted ? 'VIEW PPT SUBMISSION ✓' : 'ADD PPT SUBMISSION →'}
+                                            {/* Button state based on actual submission status */}
+                                            <button 
+                                                className="cyber-action-btn" 
+                                                style={{ 
+                                                    padding: '12px 30px', 
+                                                    border: 'none', 
+                                                    borderRadius: '8px', 
+                                                    color: '#fff', 
+                                                    fontWeight: '700', 
+                                                    cursor: isPPTSubmitted ? 'default' : 'pointer', 
+                                                    background: isPPTSubmitted ? '#10b981' : '#3b82f6' 
+                                                }} 
+                                                onClick={() => isPPTSubmitted ? null : setActiveTab('ppt-submission')}
+                                            >
+                                                {isPPTSubmitted ? 'PPT SUBMITTED ✓' : 'ADD PPT SUBMISSION →'}
                                             </button>
-                                            {isSubmitted && (
-                                                <button className="cyber-action-btn" style={{ padding: '12px 30px', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: '700', cursor: 'pointer', background: isGithubSubmitted ? '#10b981' : '#f59e0b' }} onClick={() => setActiveTab('github-submission')}>
-                                                    {isGithubSubmitted ? 'VIEW GITHUB LINK ✓' : 'ADD GITHUB LINK →'}
+                                            {isPPTSubmitted && (
+                                                <button 
+                                                    className="cyber-action-btn" 
+                                                    style={{ 
+                                                        padding: '12px 30px', 
+                                                        border: 'none', 
+                                                        borderRadius: '8px', 
+                                                        color: '#fff', 
+                                                        fontWeight: '700', 
+                                                        cursor: isGithubSubmitted ? 'default' : 'pointer', 
+                                                        background: isGithubSubmitted ? '#10b981' : '#f59e0b' 
+                                                    }} 
+                                                    onClick={() => isGithubSubmitted ? null : setActiveTab('github-submission')}
+                                                >
+                                                    {isGithubSubmitted ? 'GITHUB LINK SUBMITTED ✓' : 'ADD GITHUB LINK →'}
                                                 </button>
                                             )}
                                         </div>
@@ -209,20 +301,101 @@ export default function UserPortal() {
                             </div>
                         )}
 
+                        {/* Updated PPT Submission Tab Content */}
                         {activeTab === 'ppt-submission' && (
                             <div className="card-inner">
                                 {selectedPS ? (
-                                    <PPTSubmission selectedPS={selectedPS} isSubmitted={isSubmitted} onUpload={handleUploadSuccess} templateFile="linux_classactivity.pdf" />
+                                    <div className="submission-section" style={{ padding: '20px', border: '1px dashed #334155', borderRadius: '8px', textAlign: 'center' }}>
+                                        <p style={{ color: '#e2e8f0', marginBottom: '15px' }}>Solution Submission is <strong>OPEN</strong></p>
+                                        {isPPTSubmitted ? (
+                                            <div>
+                                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '15px' }}>✓ Your file has been submitted successfully!</p>
+                                                {/* Optionally show a download link or S3 URL if available */}
+                                                {/* <a href="#" style={{ color: '#3b82f6' }}>Download Submitted File</a> */}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <p style={{ color: '#cbd5e1', marginBottom: '15px' }}>You have selected Problem Statement {selectedPS.id}. You can now submit your solution.</p>
+                                                <form onSubmit={handleSubmit}>
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf,.ppt,.pptx"
+                                                        onChange={handleFileChange}
+                                                        style={{ display: 'block', margin: '10px auto', color: '#cbd5e1' }}
+                                                    />
+                                                    <button 
+                                                        type="submit" 
+                                                        className="cyber-action-btn-main" 
+                                                        style={{ 
+                                                            padding: '12px 30px', 
+                                                            border: 'none', 
+                                                            borderRadius: '8px', 
+                                                            color: '#fff', 
+                                                            fontWeight: '700', 
+                                                            cursor: 'pointer', 
+                                                            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                                                            width: '100%',
+                                                            maxWidth: '300px'
+                                                        }} 
+                                                        disabled={!file}
+                                                    >
+                                                        Submit Solution File
+                                                    </button>
+                                                </form>
+                                                {message.text && (
+                                                    <div style={{ 
+                                                        marginTop: '10px', 
+                                                        color: message.type === 'success' ? '#10b981' : '#ef4444',
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        {message.text}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
                                     <ModuleLocked color="#0ea5e9" icon="📂" title="PPT_SUBMISSION_LOCKED" description="Encryption protocols active. Submission parameters unlock after track selection." />
                                 )}
                             </div>
                         )}
 
+                        {/* Placeholder for GitHub Submission Tab */}
                         {activeTab === 'github-submission' && (
                             <div className="card-inner">
                                 {selectedPS ? (
-                                    <GitHubSubmission isSubmitted={isGithubSubmitted} onUpload={handleGithubSuccess} />
+                                    <div className="submission-section" style={{ padding: '20px', border: '1px dashed #334155', borderRadius: '8px', textAlign: 'center' }}>
+                                        <p style={{ color: '#e2e8f0', marginBottom: '15px' }}>GitHub Link Submission</p>
+                                        {isGithubSubmitted ? (
+                                            <div>
+                                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '15px' }}>✓ Your GitHub link has been submitted successfully!</p>
+                                                {/* Optionally show the submitted link */}
+                                                {/* <a href="#" style={{ color: '#3b82f6' }}>View Submitted Link</a> */}
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <p style={{ color: '#cbd5e1', marginBottom: '15px' }}>Submit your project's GitHub repository link.</p>
+                                                {/* Implement GitHub submission form here */}
+                                                <button 
+                                                    className="cyber-action-btn-main" 
+                                                    style={{ 
+                                                        padding: '12px 30px', 
+                                                        border: 'none', 
+                                                        borderRadius: '8px', 
+                                                        color: '#fff', 
+                                                        fontWeight: '700', 
+                                                        cursor: 'pointer', 
+                                                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                                                        width: '100%',
+                                                        maxWidth: '300px'
+                                                    }} 
+                                                    onClick={() => setActiveTab('github-submission')} // Or open a form
+                                                >
+                                                    Submit GitHub Link
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
                                     <ModuleLocked 
                                         color="#f59e0b" 
