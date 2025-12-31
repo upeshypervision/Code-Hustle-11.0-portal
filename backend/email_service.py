@@ -26,8 +26,12 @@ def send_registration_email(email_id,team_id,password):
           <td
           align="centre"
           style="font-family:Arial, sans-serif; font-size:18px; color:#FFFFFF;">
-            <CENTRE><strong>TEAM ID:</strong> {team_id}<br><br></CENTRE>
-            <CENTRE><strong>PASSWORD:</strong> {password}</CENTRE>
+            <CENTRE><strong>TEAM ID:</strong> <span style="font-size:22px; font-weight:bold;">
+  {team_id}
+</span><br><br></CENTRE>
+            <CENTRE><strong>PASSWORD:</strong><span style="font-size:22px; font-weight:bold;">
+  {password}
+</span></CENTRE>
           </td>
         </tr>
       </table>
@@ -77,7 +81,7 @@ def send_registration_email(email_id,team_id,password):
       <a href="https://codehustle11.upeshypervision.in/userlogin">
         <img
           src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png"
-          width="48"
+          width="68"
           alt="Website"
           style="display:block;"
         >
