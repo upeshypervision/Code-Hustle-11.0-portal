@@ -1,29 +1,45 @@
-import requests
-from config import RESEND_API_KEY
+from config import RESEND_APIKEY
 import resend
 
-resend.api_key = "re_cEmz7vrE_LqmzYCNnJxAq91rDrtypuhuL"
-
-def send_registration_email(to_email, team_id, password):
-    url ="https://api.resend.com/emails"
-
-    r = resend.Emails.send({
-        "from": "CodeHustle <no-reply@codehustle.com>",
-        "to": to_email,
-        "subject": "Your CodeHustle Hackathon Team Credentials",
+resend.api_key = RESEND_APIKEY
+def send_registration_email(email_id,team_id,password):
+    resend.Emails.send({
+        "from": "noreply@upeshypervision.in",
+        "to": f"{email_id}",
+        "subject": "Code Hustle 11.0 Team Credentials",
         "html": f"""
-            <h2>Registration Successful!</h2>
-            <p>Your team has been registered in the <b>CodeHustle Hackathon</b>.</p>
-            <p><b>Team ID:</b> {team_id}</p>
-            <p><b>Password:</b> {password}</p>
-            <br>
-            <p>Use these credentials to log in to the portal.</p>
-        """
+    <table width="100%" bgcolor="#1c1c1c" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center">
+
+        <!-- Top image -->
+        <img
+            src="https://i.postimg.cc/xTNH1Gfh/CODE-HUSTLE-11-0top.png"
+            width="600"
+            style="display:block;"
+            alt=""
+        />
+
+        <!-- HTML content -->
+        <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
+            <tr>
+            <td style="font-family:Arial, sans-serif; font-size:16px; color:#FFFFFF;">
+                <CENTRE><strong>TEAM ID:</strong> {team_id}<br><br></CENTRE>
+                <CENTRE><strong>PASSWORD:</strong> {password}</CENTRE>
+            </td>
+            </tr>
+        </table>
+
+        <!-- Bottom image -->
+        <img
+            src="https://i.postimg.cc/QC2FTP86/CODE-HUSTLE-11-0bottom.png"
+            width="600"
+            style="display:block;"
+            alt=""
+        />
+
+        </td>
+    </tr>
+    </table>
+    """
     })
-
-    headers = {
-        "Authorization": f"Bearer {RESEND_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    requests.post(url, json=r, headers=headers)

@@ -1,77 +1,125 @@
-from flask import request, jsonify, session
+import jwt
+import datetime
+import bcrypt
 from database import get_db
+from config import JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRE_HOURS, COOKIE_SECURE
+from flask import request, jsonify, make_response
 
 db = get_db()
 
-# STUDENT LOGIN
+def verify_password(stored_hash, password):
+    return bcrypt.checkpw(password.encode(), stored_hash.encode())
+
 def student_login_route():
-    data = request.get_json(silent=True) or {}
+    data = request.json or {}
 
-    sapid = str(data.get("sapid", "")).strip()
-    password = str(data.get("password", "")).strip()
+    team_id = data.get("team_id", "").strip()
+    password = data.get("password", "").strip()
 
-    if not sapid or not password:
-        return jsonify({"error": "SAP ID and password are required"}), 400
+    if not team_id or not password:
+        return jsonify({"error": "Team ID and password required"}), 400
 
-    # Same reversible hash used during registration
-    password_hashed = password[::-1]
+    team = db["teams"].find_one({"team_id": team_id})
+    if not team or not verify_password(team["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
 
-    team = db.teams.find_one({
-        "$or": [
-            {"leader.sapid": sapid},
-            {"members.sapid": sapid}
-        ],
-        "password_hashed": password_hashed
-    })
-
-    if not team:
-        return jsonify({"error": "Invalid SAP ID or password"}), 401
-
-    # Create secure session
-    session.clear()
-    session["logged_in"] = True
-    session["role"] = "student"
-    session["team_id"] = team["team_id"]
-    session["sapid"] = sapid
-
-    return jsonify({
-        "success": True,
+    payload = {
+        "team_id": team_id,
         "role": "student",
-        "team_id": team["team_id"]
-    })
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
 
-# ADMIN LOGIN
-def admin_login_route():
-    data = request.get_json(silent=True) or {}
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-    login_id = str(data.get("login_id", "")).strip()
-    password = str(data.get("password", "")).strip()
-
-    if not login_id or not password:
-        return jsonify({"error": "Login ID and password are required"}), 400
-
-    password_hashed = password[::-1]
-
-    admin = db.admins.find_one({
-        "login_id": login_id,
-        "password_hashed": password_hashed
-    })
-
-    if not admin:
-        return jsonify({"error": "Invalid Login ID or password"}), 401
-
-    session.clear()
-    session["logged_in"] = True
-    session["role"] = "admin"
-    session["login_id"] = login_id
-
-    return jsonify({
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({
         "success": True,
-        "role": "admin"
-    })
+        "message": "Login successful",
+        "team_id": team["team_id"],
+        "leader": team["leader"],
+        "members": team["members"],
+        "status": team["status"]
+    }))
+    
+    response.set_cookie(
+        'student_auth',
+        token,
+        httponly=True,        # Prevents XSS
+        secure=COOKIE_SECURE, # Auto-set based on environment
+        samesite='Lax',
+        max_age=JWT_EXPIRE_HOURS * 3600
+    )
+    return response
 
+def admin_login_route():
+    data = request.json or {}
+    login_id = data.get("login_id", "").strip()
+    password = data.get("password", "").strip()
 
-# ROUTE REGISTRATION
+    admin = db["admins"].find_one({"login_id": login_id})
+    if not admin or not verify_password(admin["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    # --- SESSION LIMIT LOGIC ---
+    active_sessions = admin.get("sessions", [])
+    now = datetime.datetime.now(datetime.timezone.utc).timestamp()
+    active_sessions = [s for s in active_sessions if s['exp'] > now]
+
+    if len(active_sessions) >= 2000:
+        return jsonify({"error": "Maximum session limit reached (2 devices). Logout elsewhere first."}), 403
+
+    # --- JWT GENERATION ---
+    expire_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+    payload = {
+        "login_id": login_id,
+        "role": "admin",
+        "exp": expire_date
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    # Update DB with new session info
+    db["admins"].update_one(
+        {"_id": admin["_id"]},
+        {"$push": {"sessions": {"token": token, "exp": expire_date.timestamp()}}}
+    )
+
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({"success": True, "message": "Login successful"}))
+    response.set_cookie(
+        'admin_auth',
+        token,
+        httponly=True,        # Prevents XSS (JS can't see this)
+        secure=COOKIE_SECURE, # Auto-set based on environment
+        samesite='Lax',       # Lax is better for localhost than None (which needs Secure)
+        max_age=7 * 24 * 60 * 60  # 7 days in seconds
+    )
+    return response
+
+def check_auth_route():
+    token = request.cookies.get('admin_auth')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return jsonify({"authenticated": True, "user": payload["login_id"]})
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return jsonify({"authenticated": False}), 401
+
+def check_student_auth_route():
+    token = request.cookies.get('student_auth')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return jsonify({"authenticated": True, "team_id": payload["team_id"]})
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return jsonify({"authenticated": False}), 401
+
 def setup_login_routes(app):
     app.route("/api/student-login", methods=["POST"])(student_login_route)
     app.route("/api/admin-login", methods=["POST"])(admin_login_route)
+    app.route("/api/check-auth", methods=["GET"])(check_auth_route)

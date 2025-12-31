@@ -1,0 +1,148 @@
+/* --- Manual PPT Submission - Navy Blue Theme --- */
+/* Extends the base navy theme used in ViewTeams */
+
+.manual-ppt-container {
+    padding: 20px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #cbd5e1;
+    max-width: 900px;
+    /* Slightly narrower for focus */
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Header Section */
+.ppt-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.ppt-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.ppt-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+/* List/Grid Container */
+.ppt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Individual Team Row Card */
+.ppt-row {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.ppt-row:hover {
+    border-color: #334155;
+    background: #111a30;
+    transform: translateY(-1px);
+}
+
+/* Team Info (Left Side) */
+.ppt-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ppt-team-header {
+    font-size: 0.95rem;
+    /* slightly larger than 0.9rem for readability */
+    font-weight: 600;
+    color: #e2e8f0;
+    margin: 0;
+    letter-spacing: 0.2px;
+}
+
+/* Actions (Right Side) */
+.ppt-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Submit Button */
+.btn-submit-ppt {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-submit-ppt:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
+}
+
+.btn-submit-ppt:active {
+    transform: translateY(0);
+}
+
+/* Status: Submitted (Mock UI) */
+.submitted-badge {
+    color: #10b981;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .ppt-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .ppt-action {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .btn-submit-ppt {
+        width: 100%;
+        text-align: center;
+    }
+}
