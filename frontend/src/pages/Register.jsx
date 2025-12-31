@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import "./Registration.css";
-
-export default function StudentRegistration() {
-  const [page, setPage] = useState(1);
-  const [submitted, setSubmitted] = useState(false);
-=======
 import React, { useState, useEffect } from 'react';
 import './Registration.css';
 
@@ -22,7 +14,6 @@ const loadScript = (src) => {
 
 const Registration = () => {
   const [step, setStep] = useState(1);
->>>>>>> 45ca6ce1b01f466aaf9e47689a7ff4682ef28cc8
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorBadge, setErrorBadge] = useState("");
@@ -31,19 +22,6 @@ const Registration = () => {
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
 
-<<<<<<< HEAD
-  const [team, setTeam] = useState({
-    leader: { name: "", sapid: "", email: "", phone: "" },
-    member1: { name: "", sapid: "", email: "", phone: "" },
-    member2: { name: "", sapid: "", email: "", phone: "" },
-    member3: { name: "", sapid: "", email: "", phone: "" },
-  });
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-=======
   const API_BASE = "http://localhost:5000/api";
 
   const [team, setTeam] = useState({
@@ -183,102 +161,10 @@ const Registration = () => {
     } catch (err) {
       setErrorBadge("Could not validate team name. Server error.");
     } finally {
->>>>>>> 45ca6ce1b01f466aaf9e47689a7ff4682ef28cc8
       setLoading(false);
-      setSubmitted(true);
-    }, 1500);
+    }
   };
 
-<<<<<<< HEAD
-  const renderFields = (memberKey) => {
-    return (
-      <div className="member-grid">
-        {['name', 'sapid', 'email', 'phone'].map((f) => (
-          <div className="cyber-input-box" key={`${memberKey}-${f}`}>
-            <input 
-              placeholder=" " 
-              value={team[memberKey][f]}
-              onChange={(e) => setTeam({...team, [memberKey]: {...team[memberKey], [f]: e.target.value}})} 
-            />
-            <label>{f.toUpperCase()}</label>
-            <div className="input-bar"></div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  if (submitted) {
-    return (
-      <div className="hustle-universe">
-        <div className="moving-grid-v2"></div>
-        <div className="nebula-blue"></div>
-        <div className="nebula-purple"></div>
-        <div className="glass-terminal success-view">
-          <h1 className="hologram-title">SUCCESS</h1>
-          <p className="success-msg">
-            Rest of the credentials will be shared through the mail. <br/>
-            Thank you for your interest.
-          </p>
-          <button className="super-shine-btn" onClick={() => window.location.reload()}>
-            FINISH
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="hustle-universe">
-      <div className="moving-grid-v2"></div>
-      <div className="nebula-blue"></div>
-      <div className="nebula-purple"></div>
-
-      <main className="glass-terminal">
-        <header className="brand-section">
-          <p className="organized-by">HYPERVISION PRESENTS</p>
-          <h1 className="hologram-title">CODEHUSTLE 11.0</h1>
-          <div className="title-underline"></div>
-        </header>
-
-        <form onSubmit={handleRegister}>
-          {page === 1 ? (
-            <div className="page-transition">
-              <div className="member-module">
-                <div className="module-tag">TEAM LEADER</div>
-                {renderFields('leader')}
-              </div>
-              <div className="member-module">
-                <div className="module-tag">MEMBER 1</div>
-                {renderFields('member1')}
-              </div>
-              <button type="button" className="super-shine-btn" onClick={() => setPage(2)}>
-                NEXT STEP
-                <div className="shine-swipe"></div>
-              </button>
-            </div>
-          ) : (
-            <div className="page-transition">
-              <div className="member-module">
-                <div className="module-tag">MEMBER 2</div>
-                {renderFields('member2')}
-              </div>
-              <div className="member-module">
-                <div className="module-tag">MEMBER 3</div>
-                {renderFields('member3')}
-              </div>
-              <div className="btn-group">
-                <button type="button" className="back-link" onClick={() => setPage(1)}>BACK</button>
-                <button type="submit" className="super-shine-btn">
-                  {loading ? "PROCESSING..." : "REGISTER NOW"}
-                  <div className="shine-swipe"></div>
-                </button>
-              </div>
-            </div>
-          )}
-        </form>
-      </main>
-=======
   const handleRegistrationFlow = async () => {
     const membersList = [team.m1, team.m2, team.m3].filter(m => m.fullName !== "");
     if (membersList.length < 1) {
@@ -326,7 +212,6 @@ const Registration = () => {
           onBlur={(e) => handleBlur(member, name, e.target.value)} />
       </div>
       {valErrors[`${member}_${name}`] && <p className="error-message-inline">{valErrors[`${member}_${name}`]}</p>}
->>>>>>> 45ca6ce1b01f466aaf9e47689a7ff4682ef28cc8
     </div>
   );
 
