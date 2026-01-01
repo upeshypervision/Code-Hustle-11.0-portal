@@ -107,6 +107,7 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
     """
     Handles the HTTP request for PPT/PDF submission from the student dashboard.
     Requires student authentication via JWT cookie (only team_id needed).
+    Checks if a submission already exists for the team to prevent re-submission.
     Saves submission details (team_id, file_name, file_path, submitted_at) to a separate 'submissions' collection.
     """
     db = get_db()
@@ -126,6 +127,11 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
         return jsonify({"success": False, "error": "Session expired."}), 401
     except jwt.InvalidTokenError:
         return jsonify({"success": False, "error": "Invalid session."}), 401
+
+    # --- NEW CHECK: Verify if a submission already exists for this team ---
+    existing_submission = db.submissions.find_one({"team_id": team_id})
+    if existing_submission:
+        return jsonify({"success": False, "error": "A submission has already been made for this team. Re-submission is not allowed."}), 400
 
     # 2. Validate File in Request
     if 'file' not in request.files:

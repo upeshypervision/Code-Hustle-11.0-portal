@@ -9,6 +9,7 @@ from login import student_login_route,admin_login_route, check_auth_route, check
 from logout import logout_route
 from user_access import fetch_teams_route, get_user_info_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
+from user_access import fetch_teams_route, get_user_info_route, check_submission_status_route, select_problem_statement_route #needed for locking problem statement
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
@@ -66,6 +67,11 @@ def logout():
 def get_user_info():
     return get_user_info_route()
 
+# --- NEW Route for selecting problem statement ---
+@app.route("/api/select-problem-statement", methods=["POST"])
+def select_problem_statement():
+    return select_problem_statement_route()
+
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
 def submit_ppt():
@@ -74,7 +80,6 @@ def submit_ppt():
 @app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
 def submit_ppt_student():
     return submit_ppt_student_route()
-
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

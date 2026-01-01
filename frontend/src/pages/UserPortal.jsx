@@ -10,7 +10,7 @@ import Modal from '../components/Modal';
 export default function UserPortal() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedPS, setSelectedPS] = useState(null);
+    const [selectedPS, setSelectedPS] = useState(null); // State for selected problem statement
     const [viewingPS, setViewingPS] = useState(null);
     
     // State for submission status - now based on actual submission record check
@@ -20,28 +20,89 @@ export default function UserPortal() {
     const [file, setFile] = useState(null); // State for selected file
     const [message, setMessage] = useState({ type: '', text: '' }); // State for submission messages
 
-    // Effect to fetch actual submission status (example logic - you might fetch this from your user info or a dedicated endpoint)
+    // Effect to fetch user info (including selected PS) and submission status on component mount
     useEffect(() => {
-        const checkSubmissionStatus = async () => {
-            // Example: fetch from user info endpoint or a specific submission status endpoint
-            // const res = await fetch('http://localhost:5000/api/user-info', { credentials: 'include' });
-            // const data = await res.json();
-            // setIsPPTSubmitted(!!data.submission); // Example: if user info contains a submission record
-            // setIsGithubSubmitted(!!data.github_link); // Example: if user info contains a github link
-            // For now, using state as a placeholder, update based on actual API response
+        const fetchUserInfo = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/user-info', {
+                    method: 'GET',
+                    credentials: 'include', // Important for session cookie
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.role === 'student') {
+                        // Update frontend state based on backend info
+                        if (data.selected_ps_id) {
+                            setSelectedPS({ id: data.selected_ps_id }); // Simplified object for display
+                        }
+                    }
+                } else {
+                    console.error("Failed to fetch user info:", res.status);
+                }
+            } catch (error) {
+                console.error("Error fetching user info:", error);
+            }
         };
-        checkSubmissionStatus();
-    }, []); // Only run on mount, or when selectedPS changes if needed
+
+        const checkSubmissionStatus = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/check-submission-status', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setIsPPTSubmitted(data.submitted);
+                } else {
+                    console.error("Failed to check submission status:", res.status);
+                }
+            } catch (error) {
+                console.error("Error fetching submission status:", error);
+            }
+        };
+
+        fetchUserInfo(); // Fetch user info first
+        checkSubmissionStatus(); // Then check submission status
+    }, []); // Run once on mount
 
     const handlePSPreview = (ps) => {
         setViewingPS(ps);
         setIsModalOpen(true); //updated//
     };
 
-    const handleConfirmSelection = () => {
-        setSelectedPS(viewingPS);
-        setIsModalOpen(false);
-        setActiveTab('dashboard'); 
+    const handleConfirmSelection = async () => { // Make it async
+        if (!viewingPS) return; // Guard clause
+
+        try {
+            const res = await fetch('http://localhost:5000/api/select-problem-statement', { // NEW endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ps_id: viewingPS.id }), // Send the PS ID
+                credentials: 'include', // Important for session cookie
+            });
+
+            const data = await res.json();
+            console.log("PS Selection Response:", res.status, data); // Log for debugging
+
+            if (res.ok && data.success) {
+                setSelectedPS(viewingPS); // Update frontend state
+                setIsModalOpen(false);
+                setActiveTab('dashboard'); // Or wherever you want to redirect
+                // Optionally show a success message
+                setMessage({ type: 'success', text: data.message });
+                setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+            } else {
+                // Handle backend errors (e.g., already selected, not allowed)
+                setMessage({ type: 'error', text: data.error || 'Failed to select Problem Statement.' });
+                setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+            }
+        } catch (err) {
+            console.error('PS Selection error:', err);
+            setMessage({ type: 'error', text: 'Server connection failed.' });
+            setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+        }
     };
 
     // Handle successful submission from the new form
@@ -214,19 +275,19 @@ export default function UserPortal() {
                                     <div className="active-project-card" style={{ position: 'relative', padding: '40px', background: 'rgba(30, 41, 59, 0.4)', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
                                         <div className="watermark-text">{selectedPS.id}</div>
                                         <span className="sub-tag">Active Project Track</span>
-                                        <h1 className="project-heading">{selectedPS.title}</h1>
+                                        <h1 className="project-heading">{selectedPS.title || selectedPS.id}</h1> {/* Fallback to ID if title not available in state */}
                                         <div className="meta-grid">
                                             <div className="meta-item">
                                                 <p className="meta-label">CLASSIFICATION</p>
-                                                <p className="meta-value" style={{ color: '#fbbf24' }}>{selectedPS.track}</p>
+                                                <p className="meta-value" style={{ color: '#fbbf24' }}>{selectedPS.track || 'N/A'}</p>
                                             </div>
                                             <div className="meta-separator"></div>
                                             <div className="meta-item">
                                                 <p className="meta-label">TECHNICAL RANK</p>
-                                                <p className="meta-value" style={{ color: '#3b82f6' }}>{selectedPS.difficulty}</p>
+                                                <p className="meta-value" style={{ color: '#3b82f6' }}>{selectedPS.difficulty || 'N/A'}</p>
                                             </div>
                                         </div>
-                                        <p className="ps-description">{selectedPS.description}</p>
+                                        <p className="ps-description">{selectedPS.description || 'Description not available.'}</p>
                                         <div className="progress-container">
                                             <div className="progress-info">
                                                 <span>MISSION EVOLUTION</span>
@@ -293,10 +354,11 @@ export default function UserPortal() {
 
                         {activeTab === 'ps-selection' && (
                             <div className="card-inner">
-                                {!selectedPS ? (
+                                {/* Show PS gallery only if no PS is selected */}
+                                {!selectedPS ? ( // Use the frontend state to determine if PS is selected
                                     <PSGallery onSelect={handlePSPreview} />
                                 ) : (
-                                    <ModuleLocked color="#3b82f6" icon="🔒" title="PROBLEM STATEMENT LOCKED" description="Your team has already committed to a Problem Statement. Initial project parameters are active." />
+                                    <ModuleLocked color="#3b82f6" icon="🔒" title="PROBLEM STATEMENT LOCKED" description={`Your team has already selected Problem Statement: ${selectedPS.id}.`} />
                                 )}
                             </div>
                         )}
@@ -309,7 +371,7 @@ export default function UserPortal() {
                                         <p style={{ color: '#e2e8f0', marginBottom: '15px' }}>Solution Submission is <strong>OPEN</strong></p>
                                         {isPPTSubmitted ? (
                                             <div>
-                                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '15px' }}>✓ Your file has been submitted successfully!</p>
+                                                <p style={{ color: '#10b981', fontWeight: 'bold', marginBottom: '15px' }}>✓ Your file has been submitted successfully! Re-submission is not allowed.</p>
                                                 {/* Optionally show a download link or S3 URL if available */}
                                                 {/* <a href="#" style={{ color: '#3b82f6' }}>Download Submitted File</a> */}
                                             </div>
