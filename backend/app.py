@@ -8,9 +8,11 @@ from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
 from user_access import fetch_teams_route, get_user_info_route
+from problemstatement import create_problem_statement_route, get_all_problem_statements_route 
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
+
 
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
@@ -64,6 +66,14 @@ def logout():
 @app.route("/api/user-info", methods=["GET"])
 def get_user_info():
     return get_user_info_route()
+
+@app.route('/api/createproblem-statements', methods=['POST'])
+def create_problem_statement():
+    return create_problem_statement_route()
+
+@app.route('/api/getallproblem-statements', methods=['GET'])
+def get_all_problem_statements():
+    return get_all_problem_statements_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
