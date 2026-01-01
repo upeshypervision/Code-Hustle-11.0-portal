@@ -107,7 +107,7 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
     """
     Handles the HTTP request for PPT/PDF submission from the student dashboard.
     Requires student authentication via JWT cookie (only team_id needed).
-    Saves submission details (team_id, file_name, submitted_at) to a separate 'submissions' collection.
+    Saves submission details (team_id, file_name, file_path, submitted_at) to a separate 'submissions' collection.
     """
     db = get_db()
 
@@ -152,12 +152,12 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
     s3_url = upload_file_to_s3(file.read(), s3_key, content_type)
 
     if s3_url:
-        # 7. Insert into NEW 'submissions' Collection in Database (Simplified structure)
+        # 7. Insert into NEW 'submissions' Collection in Database (Updated structure)
         submission_data = {
             "team_id": team_id,
             # "team_name": team_name, # No longer included
             "file_name": file.filename,
-            # "file_path": s3_url, # No longer included
+            "file_path": s3_url, # <-- ADD S3 URL (file_path) to the stored document
             "submitted_at": datetime.utcnow().isoformat() + "Z" # ISO format with Z for UTC
         }
         # Insert the new submission document into the 'submissions' collection
