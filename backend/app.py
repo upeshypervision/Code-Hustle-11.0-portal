@@ -1,7 +1,7 @@
+# backend/app.py
 from flask import Flask
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
-from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
@@ -9,9 +9,11 @@ from login import student_login_route,admin_login_route, check_auth_route, check
 from logout import logout_route
 from user_access import fetch_teams_route, get_user_info_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route 
+from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
+from user_access import fetch_teams_route, get_user_info_route, check_submission_status_route, select_problem_statement_route #needed for locking problem statement
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"],supports_credentials=True) #cors
+CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
 
 
 @app.route("/api/check-auth", methods=["GET"])
@@ -74,6 +76,20 @@ def create_problem_statement():
 @app.route('/api/getallproblem-statements', methods=['GET'])
 def get_all_problem_statements():
     return get_all_problem_statements_route()
+
+# --- NEW Route for selecting problem statement ---
+@app.route("/api/select-problem-statement", methods=["POST"])
+def select_problem_statement():
+    return select_problem_statement_route()
+
+# --- New Submission Routes ---
+@app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
+def submit_ppt():
+    return submit_ppt_route()
+
+@app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
+def submit_ppt_student():
+    return submit_ppt_student_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
