@@ -6,17 +6,18 @@ import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
 import PPTSubmission from '../components/user_dash/PPTSubmission';
 import GitHubSubmission from '../components/user_dash/GitHubSubmission';
-import './UserPortal.css'; // Imported styles
+import HostedLinkSub from '../components/user_dash/HostedLinkSub'; 
+import './UserPortal.css'; 
 
 export default function UserPortal() {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [selectedPS, setSelectedPS] = useState(null);
     const [isPPTSubmitted, setIsPPTSubmitted] = useState(false);
     const [isGithubSubmitted, setIsGithubSubmitted] = useState(false);
+    const [isHostedSubmitted, setIsHostedSubmitted] = useState(false); 
     const [teamInfo, setTeamInfo] = useState({ login_id: 'Loading...' });
 
     useEffect(() => {
-        // Fetch team info on component mount
         fetch('http://localhost:5000/api/user-info', {
             method: 'GET',
             credentials: 'include'
@@ -44,6 +45,11 @@ export default function UserPortal() {
         setActiveTab('dashboard');
     };
 
+    const handleHostedSuccess = () => {
+        setIsHostedSubmitted(true);
+        setActiveTab('dashboard');
+    };
+
     return (
         <div className="dashboard-page">
             <Navbar
@@ -59,41 +65,49 @@ export default function UserPortal() {
                 <UserSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
                 <main className="panel">
-                    <div className="panel-inner">
-                        {activeTab === 'dashboard' && (
-                            <DashboardView
+                    {activeTab === 'dashboard' && (
+                        <DashboardView
+                            selectedPS={selectedPS}
+                            isPPTSubmitted={isPPTSubmitted}
+                            isGithubSubmitted={isGithubSubmitted}
+                            isHostedSubmitted={isHostedSubmitted}
+                            setActiveTab={setActiveTab}
+                        />
+                    )}
+
+                    {activeTab === 'ps-selection' && (
+                        <div className="card-inner" style={{ padding: '20px', width: '100%' }}>
+                            <PSGallery onSelect={handlePSSelect} />
+                        </div>
+                    )}
+
+                    {activeTab === 'ppt-submission' && (
+                        <div className="card-inner" style={{ padding: '20px', width: '100%' }}>
+                            <PPTSubmission
                                 selectedPS={selectedPS}
-                                isPPTSubmitted={isPPTSubmitted}
-                                isGithubSubmitted={isGithubSubmitted}
-                                setActiveTab={setActiveTab}
+                                isSubmitted={isPPTSubmitted}
+                                onUploadSuccess={handleUploadSuccess}
                             />
-                        )}
+                        </div>
+                    )}
 
-                        {activeTab === 'ps-selection' && (
-                            <div className="card-inner">
-                                <PSGallery onSelect={handlePSSelect} />
-                            </div>
-                        )}
+                    {activeTab === 'github-submission' && (
+                        <div className="card-inner" style={{ padding: '20px', width: '100%' }}>
+                            <GitHubSubmission
+                                isSubmitted={isGithubSubmitted}
+                                onUpload={handleGithubSuccess}
+                            />
+                        </div>
+                    )}
 
-                        {activeTab === 'ppt-submission' && (
-                            <div className="card-inner">
-                                <PPTSubmission
-                                    selectedPS={selectedPS}
-                                    isSubmitted={isPPTSubmitted}
-                                    onUploadSuccess={handleUploadSuccess}
-                                />
-                            </div>
-                        )}
-
-                        {activeTab === 'github-submission' && (
-                            <div className="card-inner">
-                                <GitHubSubmission
-                                    isSubmitted={isGithubSubmitted}
-                                    onUpload={handleGithubSuccess}
-                                />
-                            </div>
-                        )}
-                    </div>
+                    {activeTab === 'hosted-link' && (
+                        <div className="card-inner" style={{ padding: '20px', width: '100%' }}>
+                            <HostedLinkSub 
+                                isSubmitted={isHostedSubmitted}
+                                onUpload={handleHostedSuccess}
+                            />
+                        </div>
+                    )}
                 </main>
             </div>
         </div>

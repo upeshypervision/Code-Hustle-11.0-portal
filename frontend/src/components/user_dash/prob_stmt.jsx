@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function PSGallery({ onSelect }) {
+export default function PSGallery({ onSelect, teamName }) {
     const [expandedId, setExpandedId] = useState(null);
+    const [psStatus, setPsStatus] = useState({ isLocked: false, counts: {} });
+    const [showModal, setShowModal] = useState(false);
+    const [pendingPs, setPendingPs] = useState(null);
+
+    useEffect(() => {
+        fetch('http://localhost:5000/api/ps-status')
+            .then(res => res.json())
+            .then(data => setPsStatus(data))
+            .catch(err => console.error("Sync Error:", err));
+    }, []);
 
     const problemStatements = [
         {
@@ -9,169 +19,183 @@ export default function PSGallery({ onSelect }) {
             title: "Smart Campus Mobility",
             track: "IOT & URBAN TECH",
             difficulty: "Advanced",
-            selections: 12,
             tags: ["#React", "#Node.js", "#Arduino"],
-            description: "Design an end-to-end framework to optimize intra-campus logistics. The solution must integrate real-time sensor data to minimize wait times and maximize vehicle utility.",
-            technical_brief: "System must interface with distributed sensor nodes via MQTT. High priority on developing a heuristic-based load balancing algorithm for autonomous fleet management.",
-            constraints: ["Max latency < 200ms", "End-to-end encryption", "Low-power edge nodes"]
+            description: "Design an end-to-end framework to optimize intra-campus logistics using real-time sensor data and autonomous fleet management logic.",
+            constraints: ["Max latency < 200ms", "End-to-end encryption", "Battery life > 48h"]
         },
         {
             id: "PS-02",
-            title: "Dev Productivity Insights",
-            track: "DEVELOPER TOOLS",
-            difficulty: "Intermediate",
-            selections: 8,
-            tags: ["#Python", "#Git API", "#LLMs"],
-            description: "Analyze behavioral patterns in version control systems to generate actionable insights for engineering leads to reduce technical debt and burnout.",
-            technical_brief: "Integrate with GitHub REST/GraphQL APIs to ingest commit history. Implement NLP models to categorize commit messages and sentiment for developer wellness tracking.",
-            constraints: ["OAuth2 compliance", "Scalable data ingestion", "Privacy-first processing"]
+            title: "Cyber-Sentinel AI",
+            track: "CYBERSECURITY",
+            difficulty: "Expert",
+            tags: ["#Python", "#TensorFlow", "#Scapy"],
+            description: "Develop a neural-network-based IDS that predicts zero-day exploits by analyzing packet entropy and temporal anomaly detection.",
+            constraints: ["99.9% Accuracy", "Real-time stream processing", "SOC Integration"]
         },
         {
             id: "PS-03",
-            title: "Green Energy Monitor",
-            track: "SUSTAINABILITY",
-            difficulty: "Expert",
-            selections: 15,
-            tags: ["#Data Science", "#Sensors", "#AWS"],
-            description: "A predictive maintenance system for distributed energy resources. Use historical weather data to forecast energy output and detect hardware anomalies.",
-            technical_brief: "Utilization of Time-Series Forecasting (LSTM/Prophet) to model energy decay. Data must be aggregated via AWS Kinesis and visualized for maintenance field crews.",
-            constraints: ["99.9% prediction accuracy", "Edge gateway reliability", "Solar IR sensor integration"]
+            title: "Bio-Sync Health Mesh",
+            track: "HEALTH-TECH",
+            difficulty: "Intermediate",
+            tags: ["#Flutter", "#Firebase", "#BLE"],
+            description: "A decentralized mesh network for emergency patient data transmission in low-connectivity zones using P2P syncing.",
+            constraints: ["HIPAA Compliant", "Mesh range > 50m", "Offline-first architecture"]
         }
     ];
 
+    const triggerLockSequence = (ps) => {
+        setPendingPs(ps);
+        setShowModal(true);
+    };
+
+    const confirmLock = async () => {
+        const ps = pendingPs;
+        if (onSelect) onSelect(ps);
+        setShowModal(false);
+        fetch('http://localhost:5000/api/lock-team-ps', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ team_name: teamName, ps_id: ps.id })
+        }).catch(err => console.error("Update failed:", err));
+    };
+
     return (
-        <div className="ps-container" style={{ color: '#fff', fontFamily: 'sans-serif' }}>
-            {/* Header */}
-            <div style={{ 
-                borderLeft: '4px solid #3b82f6', 
-                background: 'rgba(59, 130, 246, 0.1)', 
-                padding: '12px 20px', 
-                marginBottom: '25px',
-                borderRadius: '4px'
-            }}>
-                <p style={{ fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-                    <span style={{ color: '#3b82f6' }}>IMPORTANT:</span>Project selection is final and limited to one track. Review all dossiers carefully before confirming.
+        <div className="ps-container" style={{ color: '#fff', position: 'relative', minHeight: '500px', paddingBottom: '50px' }}>
+            
+            {showModal && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)'
+                }}>
+                    <div style={{
+                        width: '400px', padding: '30px', background: '#0f172a', border: '2px solid #f472b6', borderRadius: '20px',
+                        boxShadow: '0 0 30px rgba(244, 114, 182, 0.3)', textAlign: 'center'
+                    }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '15px' }}>⚠️</div>
+                        <h2 style={{ color: '#f472b6', letterSpacing: '2px' }}>NOTE</h2>
+                        <p style={{ color: '#94a3b8', margin: '20px 0', lineHeight: '1.5' }}>
+                            Your Problem Statement is:- <strong style={{color: '#fff'}}>{pendingPs?.id}</strong> Once this problem statement is locked, any subsequent changes or alternative choices will be restricted.
+                        </p>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button onClick={() => setShowModal(false)} style={{ flex: 1, background: 'transparent', color: '#64748b', border: '1px solid #334155', padding: '12px', borderRadius: '10px', cursor: 'pointer' }}>ABORT</button>
+                            <button onClick={confirmLock} style={{ flex: 1, background: 'linear-gradient(90deg, #f472b6, #6366f1)', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>LOCK</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div style={{ borderLeft: '4px solid #f472b6', background: 'rgba(244, 114, 182, 0.05)', padding: '15px 20px', marginBottom: '25px', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#f472b6' }}>
+                    CAUTION: Track allocation is final. Review technical dossiers before initializing lock.
                 </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {problemStatements.map((ps) => (
-                    <div key={ps.id} style={{
-                        background: 'rgba(30, 41, 59, 0.5)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '24px',
-                        transition: 'all 0.3s ease'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                {/* Title Area */}
-                                <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                                        <span style={{ color: '#fbbf24', fontSize: '0.7rem', border: '1px solid #fbbf24', padding: '2px 8px', borderRadius: '10px' }}>{ps.track}</span>
-                                        <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>• {ps.difficulty}</span>
-                                    </div>
-                                    <h3 style={{ fontSize: '1.4rem', margin: '0 0 10px 0' }}>{ps.id}: {ps.title}</h3>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                        {ps.tags.map(tag => (
-                                            <span key={tag} style={{ color: '#94a3b8', fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>{tag}</span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+                {problemStatements.map((ps) => {
+                    const count = psStatus.counts[ps.id] || 0;
+                    const target = 20; 
+                    const barWidth = Math.min((count / target) * 100, 100);
 
-                            {/* Right Side Stats & Button */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#3b82f6' }}>{ps.selections}</div>
-                                    <div style={{ fontSize: '0.6rem', color: '#64748b', textTransform: 'uppercase' }}>Teams Joined</div>
-                                    <div style={{ width: '60px', height: '3px', background: '#334155', marginTop: '5px' }}>
-                                        <div style={{ width: '60%', height: '100%', background: '#3b82f6' }}></div>
+                    return (
+                        <div key={ps.id} style={{
+                            background: 'rgba(30, 41, 59, 0.5)',
+                            border: '1px solid rgba(244, 114, 182, 0.1)',
+                            borderRadius: '20px', padding: '24px'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
+                                        <span style={{ color: '#f472b6', fontSize: '0.65rem', fontWeight: '800', border: '1px solid #f472b6', padding: '2px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>{ps.track}</span>
+                                        <span style={{ color: '#6366f1', fontSize: '0.65rem' }}>• {ps.difficulty}</span>
                                     </div>
-                                </div>
-
-                                <button 
-                                    onClick={() => setExpandedId(expandedId === ps.id ? null : ps.id)}
-                                    style={{
-                                        background: 'linear-gradient(90deg, #f59e0b, #d97706)',
-                                        color: 'white',
-                                        border: 'none',
-                                        padding: '12px 24px',
-                                        borderRadius: '30px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 0 15px rgba(245, 158, 11, 0.4)',
-                                        fontSize: '0.8rem',
-                                        textTransform: 'uppercase'
-                                    }}
-                                >
-                                    {expandedId === ps.id ? 'CLOSE SPECS ↑' : 'VIEW DETAILS →'}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Detailed Expanded Info */}
-                        {expandedId === ps.id && (
-                            <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.1)', animation: 'fadeIn 0.4s ease' }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '30px' }}>
-                                    <div>
-                                        <h4 style={{ color: '#3b82f6', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '10px' }}>Core Objective</h4>
-                                        <p style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.6' }}>{ps.description}</p>
-                                        
-                                        <h4 style={{ color: '#3b82f6', fontSize: '0.8rem', textTransform: 'uppercase', marginTop: '20px', marginBottom: '10px' }}>Technical Requirement</h4>
-                                        <div style={{ padding: '15px', background: 'rgba(0,0,0,0.2)', border: '1px solid #334155', borderRadius: '4px', fontSize: '0.85rem', color: '#94a3b8' }}>
-                                            {ps.technical_brief}
+                                    <h3 style={{ fontSize: '1.6rem', marginBottom: '15px', color: '#fff', fontWeight: '800' }}>{ps.id}: {ps.title}</h3>
+                                    
+                                    <div style={{ width: '250px', marginBottom: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#94a3b8', marginBottom: '5px' }}>
+                                            <span>Global Interest Level</span>
+                                            <span>{count} Teams Committed</span>
+                                        </div>
+                                        <div style={{ height: '6px', background: '#1e293b', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+                                            <div style={{ 
+                                                width: `${barWidth}%`, 
+                                                height: '100%', 
+                                                background: 'linear-gradient(90deg, #6366f1, #f472b6, #6366f1)',
+                                                backgroundSize: '200% 100%',
+                                                animation: 'shimmer 3s linear infinite',
+                                                borderRadius: '10px',
+                                                transition: 'width 1s ease-in-out'
+                                            }}></div>
                                         </div>
                                     </div>
-
-                                    <div>
-                                        <h4 style={{ color: '#3b82f6', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '10px' }}>Operational Constraints</h4>
-                                        <ul style={{ paddingLeft: '20px', color: '#94a3b8', fontSize: '0.85rem' }}>
-                                            {ps.constraints.map(c => <li key={c} style={{ marginBottom: '8px' }}>{c}</li>)}
-                                        </ul>
-
-                                        <button 
-                                            onClick={() => onSelect(ps)}
-                                            style={{
-                                                marginTop: '20px',
-                                                width: '100%',
-                                                padding: '16px',
-                                                background: 'rgba(59, 130, 246, 0.05)', // Subtle transparent blue
-                                                color: '#3b82f6', // Neon blue text
-                                                border: '1px solid #3b82f6', // Sharp neon border
-                                                borderRadius: '4px',
-                                                fontWeight: '800',
-                                                fontSize: '0.85rem',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '2px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.3s ease',
-                                                position: 'relative',
-                                                overflow: 'hidden',
-                                                boxShadow: '0 0 10px rgba(59, 130, 246, 0.2)', // Soft initial glow
-                                            }}
-                                            onMouseEnter={(e) => {
-                                                e.target.style.background = '#3b82f6';
-                                                e.target.style.color = '#fff';
-                                                e.target.style.boxShadow = '0 0 25px rgba(59, 130, 246, 0.6)';
-                                                e.target.style.transform = 'translateY(-2px)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.target.style.background = 'rgba(59, 130, 246, 0.05)';
-                                                e.target.style.color = '#3b82f6';
-                                                e.target.style.boxShadow = '0 0 10px rgba(59, 130, 246, 0.2)';
-                                                e.target.style.transform = 'translateY(0)';
-                                            }}
-                                        >
-                                            Choose this Problem Statement
-                                        </button>
-                                    </div>
                                 </div>
+                                <button onClick={() => setExpandedId(expandedId === ps.id ? null : ps.id)}
+                                    style={{ background: expandedId === ps.id ? '#334155' : 'linear-gradient(135deg, #6366f1 0%, #f472b6 100%)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                    {expandedId === ps.id ? 'CLOSE' : 'VIEW DETAILS'}
+                                </button>
                             </div>
-                        )}
-                    </div>
-                ))}
+
+                            {expandedId === ps.id && (
+                                <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <p style={{ color: '#cbd5e1', lineHeight: '1.7', fontSize: '1rem', background: 'rgba(244, 114, 182, 0.03)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(244, 114, 182, 0.1)', marginBottom: '20px' }}>
+                                        {ps.description}
+                                    </p>
+                                    
+                                    {/* IMPROVED BUTTON WITH SHINE & LIFE */}
+                                    <button onClick={() => triggerLockSequence(ps)}
+                                        className="shine-button"
+                                        style={{ 
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            width: '100%', 
+                                            padding: '18px', 
+                                            background: 'rgba(244, 114, 182, 0.1)', 
+                                            color: '#f472b6', 
+                                            border: '2px solid #f472b6', 
+                                            borderRadius: '15px', 
+                                            fontWeight: '900', 
+                                            cursor: 'pointer', 
+                                            textTransform: 'uppercase', 
+                                            letterSpacing: '2px',
+                                            animation: 'pulseGlow 2s infinite ease-in-out'
+                                        }}>
+                                        LOCK this Problem Statement
+                                        <div className="shine-effect"></div>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
+
+            <style>{`
+                @keyframes shimmer { 0% { background-position: 100% 0%; } 100% { background-position: -100% 0%; } }
+                
+                @keyframes pulseGlow {
+                    0%, 100% { box-shadow: 0 0 5px rgba(244, 114, 182, 0.2); transform: scale(1); }
+                    50% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.5); transform: scale(1.01); }
+                }
+
+                .shine-button:hover .shine-effect {
+                    left: 100%;
+                    transition: 0.7s;
+                }
+
+                .shine-effect {
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 50%;
+                    height: 100%;
+                    background: linear-gradient(
+                        90deg, 
+                        transparent, 
+                        rgba(255, 255, 255, 0.4), 
+                        transparent
+                    );
+                    transform: skewX(-25deg);
+                    transition: 0.7s;
+                }
+            `}</style>
         </div>
     );
 }
