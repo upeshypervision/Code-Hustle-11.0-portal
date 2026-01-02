@@ -76,9 +76,8 @@ def submit_link_route():
         return jsonify({"success": False, "error": "Invalid link format."}), 400
 
     # ---------- OPTIONAL: prevent re-submission ----------
-    existing = db.submissions.find_one({
+    existing = db.github_submission.find_one({
         "team_id": team_id,
-        "type": "link"
     })
 
     if existing:
@@ -88,20 +87,95 @@ def submit_link_route():
         }), 400
 
     # ---------- DB ----------
+    team = db["teams"].find_one({"team_id": team_id})
     submission_data = {
         "team_id": team_id,
-        "type": "link",
+        "team_name":team["team_name"],
         "link": link,
         "submitted_via": submitted_via,  # student / admin
         "submitted_at": datetime.utcnow().isoformat() + "Z"
     }
 
-    result = db.submissions.insert_one(submission_data)
+    result = db.github_submissions.insert_one(submission_data)
 
     if result.inserted_id:
         return jsonify({
             "success": True,
             "message": f"Link submitted successfully by {submitted_via}.",
+            "link": link
+        }), 200
+
+    return jsonify({
+        "success": False,
+        "error": "Failed to save submission."
+    }), 500
+
+def admin_manual_submission_route():
+    db = get_db()
+
+    # ---------------- AUTH ----------------
+    admin_cookie = request.cookies.get('admin_auth')
+    if not admin_cookie:
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+
+    try:
+        admin_payload = jwt.decode(
+            admin_cookie,
+            JWT_SECRET,
+            algorithms=[JWT_ALGORITHM]
+        )
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Admin session expired."}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid admin session."}), 401
+
+    # ---------------- INPUT ----------------
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Invalid request body"}), 400
+
+    team_id = data.get("team_id")
+    link = data.get("link")
+
+    if not team_id or not link:
+        return jsonify({
+            "success": False,
+            "error": "team_id and link are required"
+        }), 400
+
+    # ---------------- TEAM EXISTS ----------------
+    team = db.teams.find_one({"team_id": team_id})
+    if not team:
+        return jsonify({
+            "success": False,
+            "error": "Team not found"
+        }), 404
+
+    # ---------------- DUPLICATE CHECK ----------------
+    already_submitted = db.github_submissions.find_one({
+        "team_id": team_id
+    })
+
+    if already_submitted:
+        return jsonify({
+            "success": False,
+            "error": "GitHub link already submitted for this team"
+        }), 409
+
+    # ---------------- INSERT ----------------
+    submission_data = {
+        "team_id": team_id,
+        "team_name":team["team_name"],
+        "link": link,
+        "submitted_via": "admin",
+        "submitted_at": datetime.utcnow().isoformat() + "Z"}
+
+    result = db.github_submissions.insert_one(submission_data)
+
+    if result.inserted_id:
+        return jsonify({
+            "success": True,
+            "message": f"Link submitted successfully by admin.",
             "link": link
         }), 200
 

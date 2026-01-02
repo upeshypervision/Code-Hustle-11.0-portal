@@ -14,7 +14,7 @@ export default function GitHubSubmission({ onUpload, isSubmitted }) {
         setError('');
 
         try {
-            const res = await fetch('/api/submit-link', {
+            const res = await fetch('http://localhost:5000/api/submit-link', {
                 method: 'POST', // ✅ MATCHES BACKEND
                 headers: {
                     'Content-Type': 'application/json'
