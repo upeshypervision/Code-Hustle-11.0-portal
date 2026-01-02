@@ -7,10 +7,9 @@ from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
-from user_access import fetch_teams_route, get_user_info_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route 
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
-from user_access import fetch_teams_route, get_user_info_route, check_submission_status_route, select_problem_statement_route #needed for locking problem statement
+from user_access import fetch_teams_route, get_user_info_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
@@ -76,11 +75,6 @@ def create_problem_statement():
 @app.route('/api/getallproblem-statements', methods=['GET'])
 def get_all_problem_statements():
     return get_all_problem_statements_route()
-
-# --- NEW Route for selecting problem statement ---
-@app.route("/api/select-problem-statement", methods=["POST"])
-def select_problem_statement():
-    return select_problem_statement_route()
 
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
