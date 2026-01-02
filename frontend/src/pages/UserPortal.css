@@ -1,0 +1,254 @@
+.dashboard-main {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+.panel {
+    flex: 1;
+}
+
+.panel-inner {
+    min-height: 80vh;
+}
+
+/* Team Name Badge Styles */
+.team-name-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.team-name-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.team-name-value {
+    font-size: 0.875rem;
+    color: #fff;
+    font-weight: 700;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.round-live-tag {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+    color: #10b981;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px #10b981;
+    }
+
+    50% {
+        box-shadow: 0 0 15px #10b981;
+    }
+}
+
+.empty-dashboard-landing {
+    height: 520px;
+    border-radius: 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    text-align: center;
+}
+
+.team-details-label {
+    color: #3b82f6;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.hero-text {
+    font-size: 3.5rem;
+    color: #fff;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero-text span {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtext {
+    color: #94a3b8;
+    max-width: 550px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+}
+
+.cyber-action-btn-main {
+    padding: 18px 50px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f59e0b, #3b82f6);
+    background-size: 200% auto;
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.4s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+.cyber-action-btn-main:hover {
+    background-position: right center;
+    transform: translateY(-3px);
+}
+
+.btn-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+    animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.active-project-card {
+    overflow: hidden;
+}
+
+.watermark-text {
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    opacity: 0.05;
+    font-size: 6rem;
+    font-weight: 900;
+    color: #fff;
+    pointer-events: none;
+}
+
+.sub-tag {
+    color: #3b82f6;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.project-heading {
+    color: #fff;
+    font-size: 2.5rem;
+    margin: 10px 0 30px;
+    font-weight: 900;
+}
+
+.meta-grid {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meta-label {
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.meta-value {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.meta-separator {
+    width: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ps-description {
+    color: #94a3b8;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin-bottom: 40px;
+}
+
+.progress-container {
+    margin-top: 20px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    color: #64748b;
+}
+
+.progress-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: 1s ease-in-out;
+}
+
+.cyber-action-btn {
+    transition: 0.3s;
+}
+
+.cyber-action-btn:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+}

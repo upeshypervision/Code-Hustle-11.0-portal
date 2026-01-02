@@ -1,52 +1,101 @@
+// frontend/src/pages/UserPortal.jsx
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
+import UserSidebar from '../components/user_dash/UserSidebar';
+import PSGallery from '../components/user_dash/prob_stmt';
+import DashboardView from '../components/user_dash/DashboardView';
+import PPTSubmission from '../components/user_dash/PPTSubmission';
+import GitHubSubmission from '../components/user_dash/GitHubSubmission';
+import './UserPortal.css'; // Imported styles
 
 export default function UserPortal() {
-    const [userInfo, setUserInfo] = useState({ team_name: 'Loading...', team_id: '' });
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [selectedPS, setSelectedPS] = useState(null);
+    const [isPPTSubmitted, setIsPPTSubmitted] = useState(false);
+    const [isGithubSubmitted, setIsGithubSubmitted] = useState(false);
+    const [teamInfo, setTeamInfo] = useState({ login_id: 'Loading...' });
 
     useEffect(() => {
-        // Fetch user info on component mount
+        // Fetch team info on component mount
         fetch('http://localhost:5000/api/user-info', {
             method: 'GET',
             credentials: 'include'
         })
             .then(res => res.json())
             .then(data => {
-                if (data.success && data.role === 'student') {
-                    setUserInfo({ team_name: data.team_name, team_id: data.team_id });
+                if (data.success) {
+                    setTeamInfo({ login_id: data.team_name });
                 }
             })
-            .catch(err => console.error('Error fetching user info:', err));
+            .catch(err => console.error('Error fetching team info:', err));
     }, []);
+
+    const handlePSSelect = (ps) => {
+        setSelectedPS(ps);
+        setActiveTab('dashboard');
+    };
+
+    const handleUploadSuccess = () => {
+        setIsPPTSubmitted(true);
+    };
+
+    const handleGithubSuccess = () => {
+        setIsGithubSubmitted(true);
+        setActiveTab('dashboard');
+    };
+
     return (
         <div className="dashboard-page">
             <Navbar
                 userInfo={
-                    <>
-                        Team: <strong>{userInfo.team_name}</strong>
-                    </>
+                    <div className="team-name-badge">
+                        <span className="team-name-label">TEAM:</span>
+                        <span className="team-name-value">{teamInfo.login_id}</span>
+                    </div>
                 }
-                isAdmin={false}
             />
 
-            <main className="dashboard-main" style={{ display: 'block' }}>
-                <div className="panel">
-                    <div className="panel-inner">
-                        <div className="panel-header">
-                            <h2 className="panel-title">Your Team Dashboard</h2>
-                            <span className="status-pill pass">Active</span>
-                        </div>
-                        <p style={{ color: 'var(--text-muted)', marginTop: '10px' }}>
-                            Welcome to the participant portal. Here you will be able to submit your solutions and track your progress.
-                        </p>
+            <div className="dashboard-main">
+                <UserSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                        <div style={{ marginTop: '30px', padding: '20px', border: '1px dashed #334155', borderRadius: '8px', textAlign: 'center' }}>
-                            <p>Selection Round is <strong>LIVE</strong></p>
-                            <button className="button-primary" style={{ width: 'auto' }}>Select Problem Statement</button>
-                        </div>
+                <main className="panel">
+                    <div className="panel-inner">
+                        {activeTab === 'dashboard' && (
+                            <DashboardView
+                                selectedPS={selectedPS}
+                                isPPTSubmitted={isPPTSubmitted}
+                                isGithubSubmitted={isGithubSubmitted}
+                                setActiveTab={setActiveTab}
+                            />
+                        )}
+
+                        {activeTab === 'ps-selection' && (
+                            <div className="card-inner">
+                                <PSGallery onSelect={handlePSSelect} />
+                            </div>
+                        )}
+
+                        {activeTab === 'ppt-submission' && (
+                            <div className="card-inner">
+                                <PPTSubmission
+                                    selectedPS={selectedPS}
+                                    isSubmitted={isPPTSubmitted}
+                                    onUploadSuccess={handleUploadSuccess}
+                                />
+                            </div>
+                        )}
+
+                        {activeTab === 'github-submission' && (
+                            <div className="card-inner">
+                                <GitHubSubmission
+                                    isSubmitted={isGithubSubmitted}
+                                    onUpload={handleGithubSuccess}
+                                />
+                            </div>
+                        )}
                     </div>
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
     );
 }
