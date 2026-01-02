@@ -152,3 +152,18 @@ html, body {
     .panel-inner { padding: 20px; }
     .hero-text { font-size: 2.2rem; }
 }
+
+/* Force all major containers to be transparent so the App.jsx background shows through */
+.dashboard-page, 
+.dashboard-main, 
+.ps-container, 
+nav, 
+aside {
+    background-color: transparent !important;
+}
+
+/* Ensure the body itself doesn't have a solid color blocking the fixed div */
+body {
+    background-color: #000; 
+    margin: 0;
+}

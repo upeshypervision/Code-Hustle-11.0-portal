@@ -1,3 +1,4 @@
+// prob_stmt.jsx
 import React, { useState, useEffect } from 'react';
 
 export default function PSGallery({ onSelect, teamName }) {
@@ -19,27 +20,21 @@ export default function PSGallery({ onSelect, teamName }) {
             title: "Smart Campus Mobility",
             track: "IOT & URBAN TECH",
             difficulty: "Advanced",
-            tags: ["#React", "#Node.js", "#Arduino"],
-            description: "Design an end-to-end framework to optimize intra-campus logistics using real-time sensor data and autonomous fleet management logic.",
-            constraints: ["Max latency < 200ms", "End-to-end encryption", "Battery life > 48h"]
+            elaboration: "Design an end-to-end framework to optimize intra-campus logistics using real-time sensor data and autonomous fleet management logic. The system should focus on reducing latency and improving security."
         },
         {
             id: "PS-02",
             title: "Cyber-Sentinel AI",
             track: "CYBERSECURITY",
             difficulty: "Expert",
-            tags: ["#Python", "#TensorFlow", "#Scapy"],
-            description: "Develop a neural-network-based IDS that predicts zero-day exploits by analyzing packet entropy and temporal anomaly detection.",
-            constraints: ["99.9% Accuracy", "Real-time stream processing", "SOC Integration"]
+            elaboration: "Develop a neural-network-based IDS that predicts zero-day exploits by analyzing packet entropy and temporal anomaly detection. This requires deep learning models capable of processing high-velocity network streams."
         },
         {
             id: "PS-03",
             title: "Bio-Sync Health Mesh",
             track: "HEALTH-TECH",
             difficulty: "Intermediate",
-            tags: ["#Flutter", "#Firebase", "#BLE"],
-            description: "A decentralized mesh network for emergency patient data transmission in low-connectivity zones using P2P syncing.",
-            constraints: ["HIPAA Compliant", "Mesh range > 50m", "Offline-first architecture"]
+            elaboration: "A decentralized mesh network for emergency patient data transmission in low-connectivity zones using P2P syncing. The architecture must prioritize data integrity and offline functionality."
         }
     ];
 
@@ -60,141 +55,145 @@ export default function PSGallery({ onSelect, teamName }) {
     };
 
     return (
-        <div className="ps-container" style={{ color: '#fff', position: 'relative', minHeight: '500px', paddingBottom: '50px' }}>
+        <div className="ps-container" style={{ 
+            color: '#fff', 
+            position: 'relative', 
+            minHeight: '100vh', 
+            width: '150%',
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            padding: '40px 0',
+            background: 'transparent'
+        }}>
+            
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                backgroundImage: `url('https://wallpapers.com/images/featured/money-heist-99r9899128919191.jpg')`,
+                backgroundSize: 'cover', backgroundPosition: 'center', zIndex: -2,
+            }} />
+            <div style={{
+                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                background: 'rgba(0, 0, 0, 0.88)', backdropFilter: 'blur(5px)', zIndex: -1,
+            }} />
             
             {showModal && (
                 <div style={{
-                    position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)'
+                    position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(15px)'
                 }}>
                     <div style={{
-                        width: '400px', padding: '30px', background: '#0f172a', border: '2px solid #f472b6', borderRadius: '20px',
-                        boxShadow: '0 0 30px rgba(244, 114, 182, 0.3)', textAlign: 'center'
+                        width: '420px', padding: '40px', background: '#0a0a0a', border: '2px solid #dc2626', borderRadius: '4px',
+                        boxShadow: '0 0 50px rgba(220, 38, 38, 0.4)', textAlign: 'center', position: 'relative'
                     }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '15px' }}>⚠️</div>
-                        <h2 style={{ color: '#f472b6', letterSpacing: '2px' }}>NOTE</h2>
-                        <p style={{ color: '#94a3b8', margin: '20px 0', lineHeight: '1.5' }}>
-                            Your Problem Statement is:- <strong style={{color: '#fff'}}>{pendingPs?.id}</strong> Once this problem statement is locked, any subsequent changes or alternative choices will be restricted.
+                        <div style={{ position: 'absolute', top: '-2px', left: '-2px', width: '20px', height: '20px', borderTop: '4px solid #fff', borderLeft: '4px solid #fff' }}></div>
+                        <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', width: '20px', height: '20px', borderBottom: '4px solid #fff', borderRight: '4px solid #fff' }}></div>
+                        <div style={{ fontSize: '12px', color: '#dc2626', fontWeight: '900', letterSpacing: '5px', marginBottom: '10px' }}>CONFIRMATION REQUIRED</div>
+                        <h2 style={{ color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', fontStyle: 'italic' }}>LOCK TARGET?</h2>
+                        <p style={{ color: 'rgba(255,255,255,0.7)', margin: '25px 0', lineHeight: '1.6', fontSize: '14px' }}>
+                            You are about to commit to <strong style={{color: '#dc2626'}}>{pendingPs?.id}</strong>. Once breached, the vault stays locked.
                         </p>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button onClick={() => setShowModal(false)} style={{ flex: 1, background: 'transparent', color: '#64748b', border: '1px solid #334155', padding: '12px', borderRadius: '10px', cursor: 'pointer' }}>ABORT</button>
-                            <button onClick={confirmLock} style={{ flex: 1, background: 'linear-gradient(90deg, #f472b6, #6366f1)', color: '#fff', border: 'none', padding: '12px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>LOCK</button>
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <button onClick={() => setShowModal(false)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '14px', borderRadius: '2px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}>ABORT</button>
+                            <button onClick={confirmLock} style={{ flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '14px', borderRadius: '2px', cursor: 'pointer', fontWeight: '900', fontSize: '12px', boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)' }}>INITIALIZE LOCK</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div style={{ borderLeft: '4px solid #f472b6', background: 'rgba(244, 114, 182, 0.05)', padding: '15px 20px', marginBottom: '25px', borderRadius: '8px' }}>
-                <p style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#f472b6' }}>
-                    CAUTION: Track allocation is final. Review technical dossiers before initializing lock.
-                </p>
-            </div>
+            <div style={{ width: '100%', padding: '0 40px', zIndex: 1 }}>
+                <div style={{ borderLeft: '4px solid #dc2626', background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.2) 0%, transparent 100%)', padding: '15px 25px', marginBottom: '35px', borderRadius: '0 4px 4px 0', animation: 'pulseBorder 2s infinite' }}>
+                    <p style={{ fontSize: '11px', fontWeight: '900', color: '#dc2626', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                        <span style={{ marginRight: '10px' }}>⚠️</span> CAUTION: Track allocation is final. Review technical dossiers before initializing lock.
+                    </p>
+                </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-                {problemStatements.map((ps) => {
-                    const count = psStatus.counts[ps.id] || 0;
-                    const target = 20; 
-                    const barWidth = Math.min((count / target) * 100, 100);
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                    {problemStatements.map((ps) => {
+                        const count = psStatus.counts[ps.id] || 0;
+                        const target = 30; 
+                        const barWidth = Math.min((count / target) * 100, 100);
 
-                    return (
-                        <div key={ps.id} style={{
-                            background: 'rgba(30, 41, 59, 0.5)',
-                            border: '1px solid rgba(244, 114, 182, 0.1)',
-                            borderRadius: '20px', padding: '24px'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
-                                        <span style={{ color: '#f472b6', fontSize: '0.65rem', fontWeight: '800', border: '1px solid #f472b6', padding: '2px 10px', borderRadius: '20px', textTransform: 'uppercase' }}>{ps.track}</span>
-                                        <span style={{ color: '#6366f1', fontSize: '0.65rem' }}>• {ps.difficulty}</span>
-                                    </div>
-                                    <h3 style={{ fontSize: '1.6rem', marginBottom: '15px', color: '#fff', fontWeight: '800' }}>{ps.id}: {ps.title}</h3>
-                                    
-                                    <div style={{ width: '250px', marginBottom: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#94a3b8', marginBottom: '5px' }}>
-                                            <span>Global Interest Level</span>
-                                            <span>{count} Teams Committed</span>
+                        return (
+                            <div key={ps.id} className="ps-card" style={{
+                                background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                padding: '30px',
+                                position: 'relative',
+                                width: '100%',
+                                boxShadow: '0 10px 40px rgba(0,0,0,0.8)',
+                                transition: 'all 0.4s ease',
+                                overflow: 'hidden'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '12px' }}>
+                                            <span style={{ color: '#fff', background: '#dc2626', padding: '2px 8px', fontSize: '10px', fontWeight: '900', borderRadius: '2px' }}>{ps.id}</span>
+                                            <span style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', letterSpacing: '2px' }}>{ps.track}</span>
+                                            <span className="diff-tag">// {ps.difficulty.toUpperCase()}</span>
                                         </div>
-                                        <div style={{ height: '6px', background: '#1e293b', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
-                                            <div style={{ 
-                                                width: `${barWidth}%`, 
-                                                height: '100%', 
-                                                background: 'linear-gradient(90deg, #6366f1, #f472b6, #6366f1)',
-                                                backgroundSize: '200% 100%',
-                                                animation: 'shimmer 3s linear infinite',
-                                                borderRadius: '10px',
-                                                transition: 'width 1s ease-in-out'
-                                            }}></div>
+                                        <h3 style={{ fontSize: '1.8rem', margin: '0 0 20px 0', color: '#fff', fontWeight: '900', fontStyle: 'italic', textTransform: 'uppercase' }}>
+                                            {ps.title}
+                                        </h3>
+                                    </div>
+                                    
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '15px' }}>
+                                        <button onClick={() => setExpandedId(expandedId === ps.id ? null : ps.id)} className="view-btn">
+                                            {expandedId === ps.id ? 'CLOSE DOSSIER' : 'VIEW DOSSIER'}
+                                        </button>
+
+                                        <div className="heat-gauge-container">
+                                            <div className="heat-label">
+                                                <span className="heat-text">CONFLICT LEVEL</span>
+                                                <span className="heat-value">{count}/{target} UNITS</span>
+                                            </div>
+                                            <div className="heat-bar-wrapper">
+                                                <div className="heat-bar-fill" style={{ width: `${barWidth}%` }}>
+                                                    <div className="heat-glitch"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={() => setExpandedId(expandedId === ps.id ? null : ps.id)}
-                                    style={{ background: expandedId === ps.id ? '#334155' : 'linear-gradient(135deg, #6366f1 0%, #f472b6 100%)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}>
-                                    {expandedId === ps.id ? 'CLOSE' : 'VIEW DETAILS'}
-                                </button>
+
+                                {expandedId === ps.id && (
+                                    <div style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid rgba(220, 38, 38, 0.2)', animation: 'fadeIn 0.5s ease' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                            <div className="dossier-text">
+                                                <div style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', marginBottom: '5px' }}>ELABORATION</div>
+                                                <p style={{ color: '#eee', lineHeight: '1.8', fontSize: '15px', margin: 0 }}>{ps.elaboration}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <button onClick={() => triggerLockSequence(ps)} className="lock-shine-btn">
+                                            INITIALIZE TARGET LOCK
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-
-                            {expandedId === ps.id && (
-                                <div style={{ marginTop: '25px', paddingTop: '25px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <p style={{ color: '#cbd5e1', lineHeight: '1.7', fontSize: '1rem', background: 'rgba(244, 114, 182, 0.03)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(244, 114, 182, 0.1)', marginBottom: '20px' }}>
-                                        {ps.description}
-                                    </p>
-                                    
-                                    {/* IMPROVED BUTTON WITH SHINE & LIFE */}
-                                    <button onClick={() => triggerLockSequence(ps)}
-                                        className="shine-button"
-                                        style={{ 
-                                            position: 'relative',
-                                            overflow: 'hidden',
-                                            width: '100%', 
-                                            padding: '18px', 
-                                            background: 'rgba(244, 114, 182, 0.1)', 
-                                            color: '#f472b6', 
-                                            border: '2px solid #f472b6', 
-                                            borderRadius: '15px', 
-                                            fontWeight: '900', 
-                                            cursor: 'pointer', 
-                                            textTransform: 'uppercase', 
-                                            letterSpacing: '2px',
-                                            animation: 'pulseGlow 2s infinite ease-in-out'
-                                        }}>
-                                        LOCK this Problem Statement
-                                        <div className="shine-effect"></div>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
 
             <style>{`
-                @keyframes shimmer { 0% { background-position: 100% 0%; } 100% { background-position: -100% 0%; } }
-                
-                @keyframes pulseGlow {
-                    0%, 100% { box-shadow: 0 0 5px rgba(244, 114, 182, 0.2); transform: scale(1); }
-                    50% { box-shadow: 0 0 20px rgba(244, 114, 182, 0.5); transform: scale(1.01); }
-                }
-
-                .shine-button:hover .shine-effect {
-                    left: 100%;
-                    transition: 0.7s;
-                }
-
-                .shine-effect {
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 50%;
-                    height: 100%;
-                    background: linear-gradient(
-                        90deg, 
-                        transparent, 
-                        rgba(255, 255, 255, 0.4), 
-                        transparent
-                    );
-                    transform: skewX(-25deg);
-                    transition: 0.7s;
-                }
+                @keyframes pulseBorder { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes glitchSweep { 0% { left: -100%; } 100% { left: 100%; } }
+                .ps-card:hover { border-color: rgba(220, 38, 38, 0.6); transform: translateY(-5px); box-shadow: 0 15px 50px rgba(220, 38, 38, 0.2); }
+                .diff-tag { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); font-size: 10px; font-weight: 700; }
+                .heat-gauge-container { width: 180px; display: flex; flex-direction: column; gap: 6px; }
+                .heat-label { display: flex; justify-content: space-between; align-items: center; }
+                .heat-text { font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+                .heat-value { font-size: 10px; font-weight: 900; color: #dc2626; text-shadow: 0 0 8px rgba(220,38,38,0.6); }
+                .heat-bar-wrapper { height: 4px; width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(220,38,38,0.2); padding: 1px; overflow: hidden; position: relative; }
+                .heat-bar-fill { height: 100%; background: linear-gradient(90deg, #ff4d4d, #dc2626); box-shadow: 0 0 10px #dc2626; transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1); position: relative; }
+                .heat-glitch { position: absolute; top: 0; height: 100%; width: 30px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent); animation: glitchSweep 2s infinite linear; }
+                .view-btn { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 10px 24px; font-weight: 900; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+                .view-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; border-color: #fff; }
+                .lock-shine-btn { width: 100%; padding: 22px; margin-top: 30px; border: none; font-weight: 900; font-size: 14px; letter-spacing: 5px; cursor: pointer; position: relative; overflow: hidden; background: #dc2626; color: #fff; box-shadow: 0 0 20px rgba(220, 38, 38, 0.4); }
+                .lock-shine-btn::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%); animation: rotateShine 4s linear infinite; }
+                @keyframes rotateShine { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
             `}</style>
         </div>
     );

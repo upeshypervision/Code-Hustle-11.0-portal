@@ -16,74 +16,83 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
             minHeight: '100vh',
             display: 'flex', 
             flexDirection: 'column', 
-            gap: '10px', 
+            gap: '12px', 
             padding: '30px 20px',
-            background: 'rgba(5, 5, 5, 0.26)',
-            backdropFilter: 'blur(10px)',
-            borderRight: '1px solid rgba(220, 38, 38, 0.3)',
+            background: 'rgba(5, 5, 5, 0.8)',
+            backdropFilter: 'blur(20px)',
+            borderRight: '2px solid rgba(220, 38, 38, 0.4)',
             flexShrink: 0,
             zIndex: 10,
-            boxShadow: '20px 0 50px rgba(0, 0, 0, 0.33)'
+            position: 'relative',
+            boxShadow: '20px 0 50px rgba(0, 0, 0, 0.7)'
         }}>
+            {/* SHINING FIELD PATTERN */}
+            <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundImage: 'radial-gradient(circle, rgba(220, 38, 38, 0.1) 1px, transparent 1px)',
+                backgroundSize: '20px 20px',
+                pointerEvents: 'none',
+                zIndex: -1
+            }} />
+
             <style>{`
                 @keyframes scanner-line {
                     0% { top: 0%; opacity: 0; }
-                    50% { opacity: 0.5; }
+                    50% { opacity: 0.8; height: 3px; }
                     100% { top: 100%; opacity: 0; }
                 }
                 .side-nav-btn {
                     position: relative;
                     text-align: left;
-                    padding: min(2vh, 18px) 20px;
+                    padding: 18px 20px;
                     cursor: pointer;
-                    border-radius: 6px;
-                    font-size: 11px;
+                    border-radius: 4px;
+                    font-size: 10px;
                     font-weight: 900;
-                    letter-spacing: 1.5px;
-                    border: 1px solid rgba(255, 255, 255, 0.03);
-                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    background: rgba(20, 20, 20, 0.18);
-                    color: rgba(255, 255, 255, 0.4);
+                    letter-spacing: 2px;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    transition: all 0.3s ease;
+                    background: rgba(15, 15, 15, 0.6);
+                    color: rgba(255, 255, 255, 0.3);
                     text-transform: uppercase;
                     overflow: hidden;
                 }
                 .side-nav-btn:hover {
                     color: #fff;
-                    background: rgba(220, 38, 38, 0.3);
+                    background: rgba(220, 38, 38, 0.2);
                     border-color: rgba(220, 38, 38, 0.5);
-                    transform: scale(1.02);
+                    transform: translateX(8px);
                 }
                 .side-nav-btn.active {
-                    background: linear-gradient(90deg, rgba(220, 38, 38, 0.25) 0%, transparent 100%);
+                    background: linear-gradient(90deg, rgba(220, 38, 38, 0.4) 0%, transparent 100%);
                     color: #fff;
-                    border-left: 4px solid #dc2626;
-                    border-right: 1px solid rgba(220, 38, 38, 0.3);
-                    box-shadow: 0 0 20px rgba(220, 38, 38, 0.43);
+                    border-left: 5px solid #dc2626;
+                    box-shadow: 0 0 25px rgba(220, 38, 38, 0.3);
                 }
-                .side-nav-btn.active::before {
+                .side-nav-btn.active::after {
                     content: "";
                     position: absolute;
-                    left: 0; width: 100%; height: 2px;
-                    background: #dc2626;
-                    animation: scanner-line 3s linear infinite;
-                }
-                @media (max-width: 1024px) {
-                    aside { maxWidth: 220px; padding: 20px 15px; }
+                    left: 0; width: 100%; height: 1px;
+                    background: #ff4444;
+                    box-shadow: 0 0 10px #ff4444;
+                    animation: scanner-line 2.5s infinite linear;
                 }
             `}</style>
 
             <div style={{ 
-                color: '#cc6b6bff', 
-                fontSize: '9px', 
+                color: '#dc2626', 
+                fontSize: '11px', 
                 fontWeight: '900', 
-                marginBottom: '25px', 
-                letterSpacing: '5px',
+                marginBottom: '30px', 
+                letterSpacing: '6px',
                 textAlign: 'center',
-                padding: '10px',
-                border: '1px solid rgba(220, 38, 38, 0.2)',
-                background: 'rgba(220, 38, 38, 0)'
+                border: '1px solid rgba(220, 38, 38, 0.4)',
+                padding: '12px',
+                background: 'rgba(220, 38, 38, 0.05)',
+                textShadow: '0 0 8px rgba(220, 38, 38, 0.8)'
             }}>
-                SYSTEM_ACCESS_V.01
+                LA_CASA_ACCESS
             </div>
 
             {menuItems.map((item) => (
@@ -96,9 +105,10 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
                 </button>
             ))}
 
-            <div style={{ marginTop: 'auto', padding: '10px', textAlign: 'center' }}>
-                <div style={{ width: '100%', height: '1px', background: 'rgba(220, 38, 38, 0.2)', marginBottom: '10px' }} />
-                <span style={{ fontSize: '8px', color: '#444', letterSpacing: '2px' }}>SECURE_CONNECTION: ESTABLISHED</span>
+            <div style={{ marginTop: 'auto', textAlign: 'center', padding: '20px 0' }}>
+                <div style={{ fontSize: '7px', color: '#555', letterSpacing: '3px' }}>
+                    DATA_STREAM: ENCRYPTED
+                </div>
             </div>
         </aside>
     );
