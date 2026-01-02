@@ -8,6 +8,7 @@ from datetime import datetime
 import random
 import string
 import bcrypt
+from email_service import send_registration_email
 
 db = get_db()
 
@@ -126,9 +127,9 @@ def handle_payment_captured(event):
                 "note": "Activated pending team via webhook"
             }}
         )
-        
+
         # 📧 HERE YOU WOULD SEND THE EMAIL WITH PASSWORD_PLAIN
-        # send_email(pending_team['leader']['email'], pending_team['team_id'], password_plain)
+        send_registration_email(pending_team['leader']['email'], pending_team['team_id'], password_plain)
         
         return jsonify({"status": "activated_pending_team"}), 200
         

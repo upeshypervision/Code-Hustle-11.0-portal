@@ -68,10 +68,10 @@ def verify_payment_route():
 
     print("it worked verified ")
     # 📧 Send email
-    # try:
-    #     send_registration_email(team_payload["leader"]["email"], team_payload["team_id"], password_plain)
-    # except Exception as e:
-    #     print(f"Failed to send email: {e}")
+    try:
+        send_registration_email(team_payload["leader"]["email"], team_payload["team_id"], password_plain)
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
     return jsonify({
         "success": True,

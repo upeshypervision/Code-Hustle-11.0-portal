@@ -1,43 +1,96 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from config import MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_USE_TLS
+from config import RESEND_APIKEY
+import resend
 
-def send_registration_email(to_email, team_id, password):
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = f"CodeHustle Team <{MAIL_USERNAME}>"
-        msg['To'] = to_email
-        msg['Subject'] = "Your CodeHustle Hackathon Team Credentials"
+resend.api_key = RESEND_APIKEY
+def send_registration_email(email_id,team_id,password):
+    resend.Emails.send({
+        "from": "noreply@upeshypervision.in",
+        "to": f"{email_id}",
+        "subject": "Code Hustle 11.0 Team Credentials",
+        "html": f"""
+<table width="100%" bgcolor="#242424" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center">
 
-        html_content = f"""
-            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                <h2 style="color: #4F46E5;">Registration Successful!</h2>
-                <p>Your team has been successfully registered for the <b>CodeHustle Hackathon</b>.</p>
-                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><b>Team ID:</b> <span style="font-family: monospace; font-size: 1.2em;">{team_id}</span></p>
-                    <p style="margin: 5px 0;"><b>Password:</b> <span style="font-family: monospace; font-size: 1.2em;">{password}</span></p>
-                </div>
-                <p>Please use these credentials to log in to the participant portal.</p>
-                <br>
-                <p style="font-size: 0.9em; color: #666;">Best regards,<br>Team CodeHustle</p>
-            </div>
-        """
+      <!-- Top image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0top.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
 
-        msg.attach(MIMEText(html_content, 'html'))
+      <!-- HTML content -->
+      <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
+        <tr>
+          <td
+          align="centre"
+          style="font-family:Arial, sans-serif; font-size:18px; color:#FFFFFF;">
+            <CENTRE><strong>TEAM ID:</strong> <span style="font-size:22px; font-weight:bold;">
+  {team_id}
+</span><br><br></CENTRE>
+            <CENTRE><strong>PASSWORD:</strong><span style="font-size:22px; font-weight:bold;">
+  {password}
+</span></CENTRE>
+          </td>
+        </tr>
+      </table>
 
-        # SMTP Connection
-        server = smtplib.SMTP(MAIL_SERVER, MAIL_PORT)
-        if MAIL_USE_TLS:
-            server.starttls()
-        
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        
-        print(f"✅ Email sent successfully to {to_email}")
-        return True
+      <!-- Bottom image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
 
-    except Exception as e:
-        print(f"❌ Failed to send email: {e}")
-        return False
+<!-- Social media footer -->
+<table width="600" cellpadding="16" cellspacing="0" bgcolor="#242424">
+  
+  <!-- WhatsApp text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc;">
+      Join the Whatsapp Group for further updates
+    </td>
+  </tr>
+
+  <!-- WhatsApp icon -->
+  <tr>
+    <td align="center">
+      <a href="WA link here">
+        <img
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/main/download.png"
+          width="48"
+          alt="Whatsapp"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
+
+  <!-- Portal text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc; padding-top:12px;">
+      Login into the portal
+    </td>
+  </tr>
+
+  <!-- Website icon -->
+  <tr>
+    <td align="center">
+      <a href="https://codehustle11.upeshypervision.in/userlogin">
+        <img
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png"
+          width="68"
+          alt="Website"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
+
+</table>
+</table>
+"""
+
+    })
