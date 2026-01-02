@@ -11,5 +11,10 @@ JWT_EXPIRE_HOURS = 24
 IS_PRODUCTION = False
 COOKIE_SECURE = IS_PRODUCTION  # Auto-sets secure flag based on environment
 
+# --- S3 Configuration ---
+S3_BUCKET_NAME = "codehustle1"
+AWS_ACCESS_KEY_ID = "AKIATIOYK54T4QSTXN55"
+AWS_SECRET_ACCESS_KEY = "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"
+AWS_REGION = "ap-south-1"
 #Resend Configuration
 RESEND_APIKEY="re_P1UqJ27D_HyoJ32H2HxCYqT72DiLd3jPr"

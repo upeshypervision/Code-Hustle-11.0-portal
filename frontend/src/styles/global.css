@@ -543,7 +543,42 @@ h1, h2, h3 {
     padding: 4px 6px;
   }
 }
-/* Admin Panel Sidebar Styles */
+
+/* --- NEW USER SIDEBAR SPECIFIC STYLES --- */
+.sidebar-container {
+    height: calc(100vh - 60px); /* Full height minus Navbar */
+    position: sticky;
+    top: 60px;
+    overflow-y: auto;
+}
+
+.nav-logout.active-tab {
+    background: rgba(249, 115, 22, 0.1) !important;
+    border-color: var(--accent) !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .sidebar-container {
+        width: 100% !important;
+        height: auto;
+        display: flex !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(148,163,184,0.25);
+        padding: 10px 0 !important;
+    }
+    
+    .nav-logout {
+        margin: 0 8px !important;
+        padding: 6px 15px !important;
+        font-size: 0.7rem !important;
+    }
+}
+
+/* --- EXISTING ADMIN STYLES (Keep as is) --- */
 .admin-layout {
   display: flex;
   min-height: 100vh;
@@ -825,4 +860,3 @@ input:checked + .toggle-slider:before {
     border-bottom: 1px solid rgba(148,163,184,0.25);
   }
 }
-
