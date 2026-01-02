@@ -1,25 +1,18 @@
 import { useState, useRef } from 'react';
 
-export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
+export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess }) {
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
-    const [pendingFile, setPendingFile] = useState(null); // Step 1: Track chosen file
+    const [pendingFile, setPendingFile] = useState(null);
+    const [message, setMessage] = useState({ type: '', text: '' });
     const fileInputRef = useRef(null);
 
     // --- INTEGRATION: DOWNLOAD LOGIC ---
     const handleDownloadTemplate = () => {
         const link = document.createElement('a');
-        link.href = '/assets/docs/linux_classactivity.pdf'; 
+        link.href = '/assets/docs/linux_classactivity.pdf';
         link.download = 'linux_classactivity.pdf';
         link.click();
-    };
-
-    const handleUpload = () => {
-        setIsUploading(true);
-        setTimeout(() => {
-            setIsUploading(false);
-            onUpload();
-        }, 2500);
     };
 
     const handleFileAction = (e) => {
@@ -27,30 +20,55 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
         setDragActive(false);
         const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
         if (file) {
-            setPendingFile(file); // Show the "Confirm" button first
+            setPendingFile(file);
+            setMessage({ type: '', text: '' });
         }
     };
 
-    if (!selectedPS) {
-        return (
-            <div style={{ padding: '80px 40px', textAlign: 'center', border: '1px dashed #334155', borderRadius: '12px', background: 'rgba(255,255,255,0.01)' }}>
-                <h3 style={{ color: '#64748b', fontSize: '1rem', letterSpacing: '1px' }}>AWAITING PROJECT LOCK...</h3>
-            </div>
-        );
-    }
+    const handleUpload = async () => {
+        if (!pendingFile) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', pendingFile);
+
+        try {
+            const res = await fetch('http://localhost:5000/api/submit-ppt-student', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                onUploadSuccess();
+                setPendingFile(null);
+            } else {
+                setMessage({ type: 'error', text: data.error || 'Submission failed' });
+            }
+        } catch (err) {
+            console.error('Submission error:', err);
+            setMessage({ type: 'error', text: 'Server connection failed.' });
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     return (
         <div style={{ animation: 'fadeIn 0.5s ease-out', maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
-            
-            {/* PROBLEM ID BADGE */}
-            <div style={{ 
-                position: 'absolute', top: '-15px', right: '0', 
-                background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6',
-                padding: '5px 15px', borderRadius: '20px', fontSize: '0.65rem', 
-                color: '#3b82f6', fontWeight: '900', letterSpacing: '1.5px', zIndex: 10
-            }}>
-                ID: {selectedPS.id}
-            </div>
+
+            {/* PROBLEM ID BADGE - Hide if no PS selected */}
+            {selectedPS && (
+                <div style={{
+                    position: 'absolute', top: '-15px', right: '0',
+                    background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6',
+                    padding: '5px 15px', borderRadius: '20px', fontSize: '0.65rem',
+                    color: '#3b82f6', fontWeight: '900', letterSpacing: '1.5px', zIndex: 10
+                }}>
+                    ID: {selectedPS.id}
+                </div>
+            )}
 
             {/* --- SECTION 1: THE TECHNICAL BRIEF (TEMPLATE) --- */}
             <div style={{ marginBottom: '40px' }}>
@@ -59,10 +77,10 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                     <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px' }}>01. CHECK PPT TEMPLATE</h3>
                 </div>
 
-                <div style={{ 
-                    background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.5))', 
-                    border: '1px solid rgba(59, 130, 246, 0.2)', 
-                    borderRadius: '16px', 
+                <div style={{
+                    background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.5))',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    borderRadius: '16px',
                     padding: '30px',
                     display: 'flex',
                     alignItems: 'center',
@@ -82,10 +100,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
 
                     <div style={{ flex: 1 }}>
                         <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '20px' }}>
-                            Prior to initialization, participants are strictly required to review the <strong style={{color: '#fff'}}>Phase 01 Submission Protocol</strong>. 
+                            Prior to initialization, participants are strictly required to review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong>.
                             This document contains essential formatting rules, architectural requirements, and evaluation criteria necessary for a successful uplink.
                         </p>
-                        {/* UPDATED BUTTON TRIGGER */}
                         <button className="download-btn-creative" onClick={handleDownloadTemplate}>
                             DOWNLOAD TEMPLATE ↓
                         </button>
@@ -100,14 +117,14 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                     <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px' }}>02. UPLOAD YOUR PPT</h3>
                 </div>
 
-                <div 
+                <div
                     onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
                     onDragLeave={() => setDragActive(false)}
                     onDrop={handleFileAction}
-                    style={{ 
-                        border: isSubmitted ? '2px solid #10b981' : dragActive ? '2px dashed #3b82f6' : '2px dashed #334155', 
-                        borderRadius: '24px', 
-                        padding: '60px 40px', 
+                    style={{
+                        border: isSubmitted ? '2px solid #10b981' : dragActive ? '2px dashed #3b82f6' : '2px dashed #334155',
+                        borderRadius: '24px',
+                        padding: '60px 40px',
                         textAlign: 'center',
                         background: dragActive ? 'rgba(59, 130, 246, 0.05)' : isSubmitted ? 'rgba(16, 185, 129, 0.02)' : 'rgba(255,255,255,0.01)',
                         transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -116,7 +133,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                     onClick={() => !isSubmitted && !pendingFile && fileInputRef.current.click()}
                 >
                     <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAction} />
-                    
+
                     {!isSubmitted ? (
                         <>
                             <div className="upload-icon-wrapper">
@@ -124,24 +141,24 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                                     {pendingFile ? '📄' : '📤'}
                                 </div>
                             </div>
-                            
+
                             {pendingFile ? (
                                 <>
                                     <h4 style={{ color: '#fff', fontSize: '1.4rem', marginBottom: '5px', fontWeight: '600' }}>{pendingFile.name}</h4>
                                     <p style={{ color: '#3b82f6', fontSize: '0.85rem', marginBottom: '30px', fontWeight: 'bold' }}>FILE READY FOR UPLINK</p>
-                                    
+
                                     <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-                                        <button 
+                                        <button
                                             onClick={(e) => { e.stopPropagation(); handleUpload(); }}
                                             className="uplink-btn-neon"
                                             disabled={isUploading}
-                                            style={{ 
-                                                padding: '16px 40px', 
-                                                background: '#3b82f6', 
-                                                border: 'none', 
-                                                color: '#fff', 
-                                                fontWeight: '900', 
-                                                borderRadius: '6px', 
+                                            style={{
+                                                padding: '16px 40px',
+                                                background: '#3b82f6',
+                                                border: 'none',
+                                                color: '#fff',
+                                                fontWeight: '900',
+                                                borderRadius: '6px',
                                                 letterSpacing: '2px',
                                                 cursor: 'pointer',
                                                 boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)',
@@ -150,7 +167,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                                             {isUploading ? 'SYNCHRONIZING...' : 'CONFIRM & SUBMIT'}
                                         </button>
                                         {!isUploading && (
-                                            <button 
+                                            <button
                                                 onClick={(e) => { e.stopPropagation(); setPendingFile(null); }}
                                                 style={{ background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', padding: '12px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
                                             >
@@ -158,12 +175,17 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                                             </button>
                                         )}
                                     </div>
+                                    {message.text && (
+                                        <div style={{ marginTop: '20px', color: message.type === 'error' ? '#ef4444' : '#10b981', fontWeight: 'bold' }}>
+                                            {message.text}
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <>
                                     <h4 style={{ color: '#fff', fontSize: '1.4rem', marginBottom: '10px', fontWeight: '600' }}>Drop Your PPT here or <span style={{ color: '#3b82f6', textDecoration: 'underline', textUnderlineOffset: '4px' }}>browse</span></h4>
                                     <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '30px', letterSpacing: '0.5px' }}>Accepted Formats: PDF, PPTX (Max 15MB)</p>
-                                    
+
                                     <button className="uplink-btn-neon" style={{ padding: '16px 50px', background: '#3b82f6', border: 'none', color: '#fff', fontWeight: '900', borderRadius: '6px', letterSpacing: '2px', cursor: 'pointer', boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)' }}>
                                         SELECT FILE
                                     </button>
@@ -180,7 +202,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUpload }) {
                 </div>
             </div>
 
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 .template-card-visual {
                     width: 160px; height: 130px;
                     background: #1e293b;
