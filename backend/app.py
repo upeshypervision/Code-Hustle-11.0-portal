@@ -10,6 +10,7 @@ from logout import logout_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route 
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
+from git_submission import submit_link_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
@@ -84,6 +85,10 @@ def submit_ppt():
 @app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
 def submit_ppt_student():
     return submit_ppt_student_route()
+
+@app.route('/api/submit-link', methods=['POST'])
+def submit_link():
+    return submit_link_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
