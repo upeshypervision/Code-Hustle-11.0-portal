@@ -75,13 +75,13 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                 backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
                 backgroundSize: 'cover', backgroundPosition: 'center',
-                filter: 'grayscale(0%) brightness(50%) contrast(70%)',
+                filter: 'grayscale(0%) brightness(40%) contrast(70%)',
                 zIndex: -2,
             }} />
 
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                background: 'radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.9) 100%)',
+                background: 'radial-gradient(circle at center, transparent 0%, rgba(35, 33, 33, 0) 50%, rgba(59, 53, 53, 0) 100%)',
                 zIndex: -1,
             }} />
 

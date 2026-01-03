@@ -97,11 +97,11 @@ const DashboardView = ({
                         left: '0',
                         width: '100%',
                         height: '100%',
-                        backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4otxGPqIii92wFJAksBcqA97drEL-EvYZjw&s')`,
+                        backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        opacity: '0.1', 
+                        opacity: '1', 
                         zIndex: 0,
                         pointerEvents: 'none'
                     }}
@@ -110,7 +110,7 @@ const DashboardView = ({
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'radial-gradient(circle at 50% 50%, transparent 10%, rgba(60, 53, 52, 0.42) 100%)',
+                    background: 'radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)',
                     zIndex: 1,
                     pointerEvents: 'none'
                 }} />

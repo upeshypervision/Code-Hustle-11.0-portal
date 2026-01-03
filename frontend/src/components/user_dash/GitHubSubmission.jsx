@@ -83,7 +83,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
           width: "100vw",
           height: "100vh",
           background:
-            "radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.9) 100%)",
+            "radial-gradient(circle at center, transparent 0%, rgba(28, 25, 25, 0.4) 50%, rgba(0, 0, 0, 0.9) 100%)",
           zIndex: -1,
         }}
       />
