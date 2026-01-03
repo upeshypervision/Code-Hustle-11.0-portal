@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './Registration.css'; // Reusing the same CSS for consistency
 
 export default function StudentLogin() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function StudentLogin() {
     }
 
     setIsSubmitting(true);
+    setMessage({ type: '', text: '' });
 
     try {
       const response = await fetch('http://localhost:5000/api/student-login', {
@@ -67,75 +69,64 @@ export default function StudentLogin() {
   };
 
   return (
-    <main className="page-wrapper">
-      <section className="card">
-        <div className="card-inner">
-          <div className="heading-badge">
-            <span className="heading-badge-dot"></span>
-            STUDENT ACCESS
+    <div className="app-viewport">
+      <div className="cosmic-bg"><div className="nebula-cloud-blue"></div><div className="nebula-cloud-purple"></div><div className="starfield"></div></div>
+
+      <div className="portal-card animate-in">
+        <header className="brand-header">
+          <div className="hypervision-badge">HYPERVISION</div>
+          <p className="presents-text">PRESENTS</p>
+          <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
+        </header>
+
+        {message.text && (
+          <div className={`global-error-banner`} style={{ borderColor: message.type === 'success' ? '#10b981' : '#ff4d4d', color: message.type === 'success' ? '#10b981' : '#ff4d4d', background: message.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
+            {message.text}
           </div>
-          <h1 className="heading-main">Enter the Arena</h1>
-          <p className="heading-subtitle">
-            Use your <strong>Team ID</strong> and the password sent to your leader email to enter the arena.
-          </p>
+        )}
 
-          <form onSubmit={handleSubmit} className="form">
-            <div className="form-row">
-              <label className="form-label" htmlFor="teamId">
-                Team ID
-              </label>
-              <input
-                id="teamId"
-                name="teamId"
-                className={`form-input ${errors.teamId ? 'error' : ''}`}
-                type="text"
-                value={formData.teamId}
-                onChange={handleChange}
-                placeholder="e.g., CH-TEAM-001"
-              />
-            </div>
+        <div className="animate-in">
+          <span className="label-detail">ENTER YOUR ARENA</span>
 
-            <div className="form-row">
-              <label className="form-label" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                className={`form-input ${errors.password ? 'error' : ''}`}
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Team password"
-              />
-            </div>
-
-            {message.text && (
-              <div className={`message-box ${message.type}`}>
-                {message.text}
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <div className="label-row"><span>Team ID</span></div>
+              <div className={`glow-input-container ${errors.teamId ? 'error-border' : ''}`}>
+                <input
+                  className="glow-input"
+                  name="teamId"
+                  placeholder="e.g., CH-TEAM-001"
+                  value={formData.teamId}
+                  onChange={handleChange}
+                />
               </div>
-            )}
+            </div>
 
-            <button
-              type="submit"
-              className="button-primary"
-              disabled={isSubmitting}
-            >
-              Login to Dashboard
+            <div className="input-group">
+              <div className="label-row"><span>Password</span></div>
+              <div className={`glow-input-container ${errors.password ? 'error-border' : ''}`}>
+                <input
+                  className="glow-input"
+                  name="password"
+                  type="password"
+                  placeholder="Team password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <button type="submit" className="neon-shade-btn next-glow" disabled={isSubmitting}>
+              {isSubmitting ? "ENTERING..." : "LOGIN TO DASHBOARD"}
             </button>
           </form>
-
-          <div className="status-row">
-            <span className="status-chip">
-              <span className="status-dot-live"></span>
-              Secure · Team Access
-            </span>
-            <Link to="/" className="text-link">
-              Register New Team
-            </Link>
-          </div>
         </div>
-      </section>
-    </main>
+
+        <footer className="footer-links">
+          <Link to="/register" className="footer-btn">Register New Team</Link>
+          <a href="https://code-hustle-11.vercel.app/#contact" className="footer-btn" target="_blank" rel="noopener noreferrer">Contact Us</a>
+        </footer>
+      </div>
+    </div>
   );
 }
