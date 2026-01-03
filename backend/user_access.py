@@ -1,8 +1,9 @@
 # backend/user_access.py
 from flask import request, jsonify
 import jwt
+import boto3
 from database import get_db
-from config import JWT_SECRET, JWT_ALGORITHM
+from config import JWT_SECRET, JWT_ALGORITHM, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, S3_BUCKET_NAME
 
 # --- Module-level database connection ---
 db = get_db()
@@ -75,7 +76,6 @@ def fetch_teams_route():
     token = request.cookies.get('admin_auth')
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
-
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
@@ -175,7 +175,7 @@ def select_problem_statement_route(): # NEW: Allow team to select a problem stat
     if result.modified_count > 0:
         return jsonify({"success": True, "message": "Problem Statement selected and locked successfully."})
     else:
-        # This could happen if the team_id doesn't exist or if the update didn't match anything due to race conditions
+        # This could happen if the team_id doesn't exist in the DB or was modified concurrently
         return jsonify({"success": False, "error": "Failed to update team record. PS might already be selected."}), 500
 
 
@@ -206,8 +206,7 @@ def fetch_teams_pending_submission_route():
             for doc in db.submissions.find({}, {"team_id": 1, "_id": 0})
         ]
 
-        # 2. Get all teams that are NOT in the submitted list
-        # Use $nin operator for efficient filtering in MongoDB
+        # 2. Get all teams that are NOT in the submitted list using $nin
         pending_teams = list(
             db["teams"].find(
                 {"team_id": {"$nin": submitted_team_ids}},
@@ -262,3 +261,65 @@ def fetch_submissions_route():
     except Exception as e:
         print(f"Error fetching submissions: {e}")
         return jsonify({"error": "Failed to fetch submissions"}), 500
+
+
+def generate_presigned_url_route(team_id):
+    """
+    Admin-only route to generate a presigned S3 URL for viewing a submitted file.
+    Requires admin JWT authentication.
+    """
+    admin_cookie = request.cookies.get('admin_auth')
+    if not admin_cookie:
+        return jsonify({"error": "Admin authentication required"}), 401
+
+    try:
+        payload = jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        # --- CRITICAL CHECK: Verify admin role ---
+        if payload.get("role") != "admin":
+            return jsonify({"error": "Forbidden"}), 403
+        # --- END CRITICAL CHECK ---
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid session"}), 401
+
+    try:
+        # 1. Find the submission document for the given team_id
+        submission = db.submissions.find_one({"team_id": team_id})
+        if not submission:
+            return jsonify({"error": "Submission not found"}), 404
+
+        # 2. Extract the S3 key from the file_path
+        # Assuming file_path is stored as "https://bucket-name.s3.region.amazonaws.com/submissions/..."
+        file_path = submission.get("file_path", "")
+        if not file_path.startswith("https://"):
+            return jsonify({"error": "Invalid file path format"}), 500
+
+        # Parse the S3 key from the full URL
+        # Example: "https://codehustle.s3.ap-south-1.amazonaws.com/submissions/CH001/file.pdf"
+        # We want: "submissions/CH001/file.pdf"
+        try:
+            s3_key = file_path.split(f".amazonaws.com/", 1)[1]
+        except IndexError:
+            return jsonify({"error": "Malformed S3 file path"}), 500
+
+        # 3. Generate a presigned URL using boto3
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            region_name=AWS_REGION
+        )
+
+        # Generate URL valid for 10 minutes (600 seconds)
+        presigned_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': S3_BUCKET_NAME, 'Key': s3_key},
+            ExpiresIn=600
+        )
+
+        return jsonify({"success": True, "url": presigned_url}), 200
+
+    except Exception as e:
+        print(f"Error generating presigned URL: {e}")
+        return jsonify({"error": "Failed to generate view link"}), 500
