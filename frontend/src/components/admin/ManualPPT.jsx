@@ -5,7 +5,8 @@ import './ManualPPT.css';
 /**
  * ManualPPT Component
  * Allows admins to manually submit PPTs for teams.
- * Fetches all registered teams and displays a form to select a team and upload a file.
+ * Fetches ONLY teams that have NOT YET submitted from the backend.
+ * This ensures the list is always accurate and up-to-date.
  */
 export default function ManualPPT() {
     const [teams, setTeams] = useState([]);
@@ -15,6 +16,7 @@ export default function ManualPPT() {
     const [selectedTeamId, setSelectedTeamId] = useState('');
     const [file, setFile] = useState(null);
 
+    // --- CRITICAL CHANGE: Fetch ONLY pending teams from the new backend endpoint ---
     const fetchTeams = async () => {
         setLoading(true);
         setError('');
@@ -72,10 +74,10 @@ export default function ManualPPT() {
         formData.append('team_id', selectedTeamId); // Append the selected team ID
 
         try {
-            const res = await fetch('http://localhost:5000/api/submit-ppt', { // Use the same route
+            const res = await fetch('http://localhost:5000/api/submit-ppt', {
                 method: 'POST',
-                body: formData, // Send FormData
-                credentials: 'include', // Important for admin cookie
+                body: formData,
+                credentials: 'include',
             });
 
             const data = await res.json();
@@ -144,7 +146,7 @@ export default function ManualPPT() {
                         style={{ color: '#cbd5e1' }}
                     />
                     <button
-                        className="btn-submit-ppt" // Using existing CSS class if available, or define a new one
+                        className="btn-submit-ppt"
                         onClick={handleManualSubmit}
                         disabled={!selectedTeamId || !file}
                     >
@@ -156,33 +158,29 @@ export default function ManualPPT() {
                 </p>
             </div>
 
-            {/* Optional: List of teams that might need manual submission */}
-            {/* This part can be kept or modified based on specific admin needs */}
+            {/* List of teams that need manual submission (now accurate) */}
             <div className="ppt-list">
-                <h3 style={{ color: '#e2e8f0', marginBottom: '15px' }}>All Registered Teams</h3>
+                <h3 style={{ color: '#e2e8f0', marginBottom: '15px' }}>Teams Awaiting Manual Submission</h3>
                 {teams.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                        No teams registered yet.
+                        All active teams have submitted their PPTs.
                     </div>
                 ) : (
                     teams.map((team) => (
                         <div key={team.team_id} className="ppt-row">
-                            {/* Team Details */}
                             <div className="ppt-info">
                                 <p className="ppt-team-header">{team.team_name} <span style={{ opacity: 0.5, fontWeight: 400 }}>({team.team_id})</span></p>
-                                {/* Optionally show submission count or status */}
+                                {/* This count should now always be 0, which is correct */}
                                 <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: '4px 0 0 0' }}>
                                     Submissions: {team.submissions?.length || 0}
                                 </p>
                             </div>
-                            {/* Actions - Could add more specific actions here if needed */}
                             <div className="ppt-action">
-                                {/* Example: Button to view team details */}
                                 <button
-                                    className="btn-small" // Using existing CSS class
-                                    onClick={() => console.log("View team details for", team.team_id)}
+                                    className="btn-submit-ppt"
+                                    onClick={() => handleManualSubmit(team.team_id)}
                                 >
-                                    View Details
+                                    Submit PPT
                                 </button>
                             </div>
                         </div>

@@ -5,7 +5,7 @@ from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
+from login import setup_login_routes
 from logout import logout_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route, get_teams_by_ps_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
@@ -21,15 +21,14 @@ from user_access import (
 
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True) #cors
 
-
-@app.route("/api/check-auth", methods=["GET"])
-def check_auth():
-    return check_auth_route()
+# --- Register Login Routes using the setup function ---
+setup_login_routes(app)
 
 @app.route("/api/check-student-auth", methods=["GET"])
 def check_student_auth():
+    from login import check_student_auth_route
     return check_student_auth_route()
 
 @app.route("/api/validate-hypervision", methods=["POST"])
@@ -52,10 +51,6 @@ def verify_payment():
 def razorpay_webhook():
     return razorpay_webhook_handler()
 
-@app.route("/api/student-login", methods=["POST"])
-def student_login():
-    return student_login_route()
-
 @app.route("/api/admin/add-team", methods=["POST"])
 def register_manual_team():
     return register_manual_team_route()
@@ -72,10 +67,12 @@ def show_submissions():
 def fetch_teams():
     return fetch_teams_route()
 
-#login route for admin
-@app.route("/api/admin-login", methods=["POST"])
-def admin_login():
-    return admin_login_route()
+# --- NEW Route for generating presigned URL ---
+@app.route("/api/admin/submission/<team_id>", methods=["GET"])
+def get_submission_presigned_url(team_id):
+    return generate_presigned_url_route(team_id)
+
+#login route for admin - Now handled by setup_login_routes
 
 @app.route("/api/logout", methods=["POST"])
 def logout():
@@ -116,11 +113,11 @@ def get_submission_presigned_url(team_id):
     return generate_presigned_url_route(team_id)
 
 # --- New Submission Routes ---
-@app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
+@app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission
 def submit_ppt():
     return submit_ppt_route()
 
-@app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
+@app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission
 def submit_ppt_student():
     return submit_ppt_student_route()
 
