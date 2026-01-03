@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
+import socket from "../../socket";
 
 export default function ProblemStatements() {
     const [psVisible, setPsVisible] = useState(false);
@@ -19,7 +20,7 @@ export default function ProblemStatements() {
     const fetchProblemStatements = async () => {
         try {
             const res = await fetch(
-                'http://localhost:5000/api/getallproblem-statements',
+                'http://localhost:5000/api/admin/getallproblem-statements',
                 {
                     credentials: 'include'
                 }
@@ -43,7 +44,8 @@ export default function ProblemStatements() {
                 difficulty: ps.difficulty,
                 maxTeams: ps.max_count,
                 selections: ps.selections || 0,
-                visible: ps.visible
+                visible: Boolean(ps.visible)
+
             }));
     
             setProblemStatements(formatted);
@@ -55,6 +57,18 @@ export default function ProblemStatements() {
     
     useEffect(() => {
         fetchProblemStatements();
+    }, []);
+    
+    useEffect(() => {
+        const handlePsSelected = () => {
+            fetchProblemStatements();
+        };
+    
+        socket.on("ps_selected", handlePsSelected);
+    
+        return () => {
+            socket.off("ps_selected", handlePsSelected);
+        };
     }, []);
     
     const handleAddPs = async (e) => {

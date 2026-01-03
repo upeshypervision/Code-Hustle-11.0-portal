@@ -1,5 +1,6 @@
 // prob_stmt.jsx
 import React, { useState, useEffect } from 'react';
+import socket from "../../socket";
 
 export default function PSGallery() {
     const [expandedId, setExpandedId] = useState(null);
@@ -21,7 +22,28 @@ export default function PSGallery() {
             })
             .catch(err => console.error(err));
     }, []);
-
+    
+    useEffect(() => {
+        const handlePsSelected = () => {
+            fetch('http://localhost:5000/api/student/getallproblem-statements', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        setProblemStatements(data.problem_statements);
+                    }
+                })
+                .catch(err => console.error(err));
+        };
+    
+        socket.on("ps_selected", handlePsSelected);
+    
+        return () => {
+            socket.off("ps_selected", handlePsSelected);
+        };
+    }, []);
+    
     const openLockPopup = (ps) => {
         setPendingPs(ps);
         setShowModal(true);
@@ -32,12 +54,52 @@ export default function PSGallery() {
         setPendingPs(null);
     };
 
-    const confirmLock = () => {
-        // ❌ No API, no logic (you’ll add later)
-        console.log("LOCK CONFIRMED FOR:", pendingPs);
-        setShowModal(false);
-        setPendingPs(null);
+    const confirmLock = async () => {
+        if (!pendingPs) return;
+    
+        console.log("CONFIRMING PS:", pendingPs.problem_statement_id);
+    
+        try {
+            const res = await fetch(
+                "http://localhost:5000/api/student/select-problem-statement",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        problem_statement_id: pendingPs.problem_statement_id,
+                    }),
+                }
+            );
+    
+            const data = await res.json();
+            console.log("SELECT RESPONSE:", data);
+    
+            if (!res.ok) {
+                alert(data.error || "Selection failed");
+                return;
+            }
+    
+            // ✅ Refresh THIS student's UI immediately
+            const refresh = await fetch(
+                "http://localhost:5000/api/student/getallproblem-statements",
+                { credentials: "include" }
+            );
+            const refreshedData = await refresh.json();
+            if (refreshedData.success) {
+                setProblemStatements(refreshedData.problem_statements);
+            }
+    
+            setShowModal(false);
+            setPendingPs(null);
+    
+        } catch (err) {
+            console.error("SELECT ERROR:", err);
+        }
     };
+    
 
     return (
         <div className="ps-container" style={{

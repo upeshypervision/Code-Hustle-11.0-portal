@@ -1,5 +1,6 @@
 # backend/app.py
 from flask import Flask, request, jsonify
+from database import db
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
@@ -7,14 +8,25 @@ from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
-from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,toggle_problem_statement_visibility_route,get_all_visible_problem_statements_route
+from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
-
+from flask_socketio import SocketIO, emit
+from socketio_instance import socketio
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "http://localhost:5173"}},
+    supports_credentials=True
+)
 
+
+socketio.init_app(
+    app,
+    cors_allowed_origins=["http://localhost:5173"],
+    supports_credentials=True
+)
 
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
@@ -89,14 +101,14 @@ def student_get_all_problem_statements():
 
     return get_all_visible_problem_statements_route()
 
-
-@app.route("/api/select-problem-statement", methods=["POST"])
+@app.route("/api/student/select-problem-statement", methods=["POST", "OPTIONS"])
 def select_problem_statement():
+    # ✅ Handle CORS preflight
+    if request.method == "OPTIONS":
+        return "", 200
+
     return select_problem_statement_route()
 
-# @app.route("/api/admin/problem-statement/<problem_statement_id>/toggle-visibility",methods=["POST"])
-# def toggle_problem_statement_visibility(problem_statement_id):
-#     return toggle_problem_statement_visibility_route(problem_statement_id)
 
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
@@ -122,4 +134,4 @@ def update_settings():
     return jsonify({"success": True}), 200
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    socketio.run(app, host="127.0.0.1", port=5000, debug=True)
