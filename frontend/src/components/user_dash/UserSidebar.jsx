@@ -6,7 +6,6 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
     { id: 'ps-selection', label: 'Problem Statement Selection' },
     { id: 'ppt-submission', label: 'PPT Submission' },
     { id: 'github-submission', label: 'GitHub Link Submission' },
-    { id: 'manual-github', label: 'Manual GitHub Submission' },
 ];
 
 
