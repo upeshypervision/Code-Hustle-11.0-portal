@@ -11,6 +11,7 @@ from problemstatement import create_problem_statement_route, get_all_problem_sta
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
 
+
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
 
@@ -105,6 +106,20 @@ def submit_ppt():
 @app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
 def submit_ppt_student():
     return submit_ppt_student_route()
+
+@app.route("/api/admin/update-settings", methods=["POST"])
+def update_settings():
+    data = request.get_json()
+    # This updates the global config in your MongoDB
+    db.settings.update_one(
+        {"_id": "global_config"},
+        {"$set": {
+            "ps_selection_locked": data.get("ps_selection_locked"),
+            "ppt_upload_locked": data.get("ppt_upload_locked")
+        }},
+        upsert=True
+    )
+    return jsonify({"success": True}), 200
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

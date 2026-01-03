@@ -1,19 +1,91 @@
+/* --- FULL SCREEN LAYOUT RESET --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: #0a0a0f;
+}
+
+.dashboard-page-container {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- NAVBAR ALIGNMENT --- */
+.top-nav {
+    width: 100%;
+    background: rgba(10, 10, 15, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+}
+
+.top-nav-inner {
+    width: 100%;
+    padding: 12px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-img { height: 32px; }
+.logo-text { font-weight: 800; color: #fff; font-size: 1.1rem; }
+
+.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-logout {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: 0.3s;
+}
+.nav-logout:hover { background: rgba(255,255,255,0.1); }
+
+/* --- MIDDLE PART STRETCHING --- */
 .dashboard-main {
     display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    padding: 20px;
+    width: 100%;
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    align-items: centre;
 }
 
 .panel {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: centre;
+    justify-content: centre;
+    margin-right: 50px;
 }
 
 .panel-inner {
+    flex: 1;
+    width: 100%;
     min-height: 80vh;
+    padding: 40px; /* Internal breathing room only */
+    box-sizing: border-box;
 }
 
-/* Team Name Badge Styles */
+/* --- TEAM & UI STYLES (STRICTLY INTACT) --- */
 .team-name-badge {
     display: flex;
     align-items: center;
@@ -24,31 +96,8 @@
     border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.team-name-label {
-    font-size: 0.75rem;
-    color: #94a3b8;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.team-name-value {
-    font-size: 0.875rem;
-    color: #fff;
-    font-weight: 700;
-}
-
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+.team-name-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
+.team-name-value { font-size: 0.875rem; color: #fff; font-weight: 700; }
 
 .round-live-tag {
     background: rgba(16, 185, 129, 0.1);
@@ -64,35 +113,8 @@
 }
 
 @keyframes pulseGlow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 5px #10b981;
-    }
-
-    50% {
-        box-shadow: 0 0 15px #10b981;
-    }
-}
-
-.empty-dashboard-landing {
-    height: 520px;
-    border-radius: 32px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0f172a;
-    border: 1px solid rgba(59, 130, 246, 0.15);
-    text-align: center;
-}
-
-.team-details-label {
-    color: #3b82f6;
-    font-weight: 900;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
+    0%, 100% { box-shadow: 0 0 5px #10b981; }
+    50% { box-shadow: 0 0 15px #10b981; }
 }
 
 .hero-text {
@@ -100,7 +122,6 @@
     color: #fff;
     font-weight: 900;
     line-height: 1.1;
-    margin-bottom: 20px;
 }
 
 .hero-text span {
@@ -109,146 +130,40 @@
     -webkit-text-fill-color: transparent;
 }
 
-.hero-subtext {
-    color: #94a3b8;
-    max-width: 550px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-}
-
 .cyber-action-btn-main {
     padding: 18px 50px;
     border: none;
     border-radius: 12px;
     background: linear-gradient(135deg, #f59e0b, #3b82f6);
-    background-size: 200% auto;
     color: white;
     font-weight: 900;
     cursor: pointer;
     transition: 0.4s;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 }
 
-.cyber-action-btn-main:hover {
-    background-position: right center;
-    transform: translateY(-3px);
+/* --- RESPONSIVE FOR ALL DEVICES --- */
+@media (max-width: 1024px) {
+    .hero-text { font-size: 2.8rem; }
 }
 
-.btn-glow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
-    animation: rotate 4s linear infinite;
+@media (max-width: 768px) {
+    .dashboard-main { flex-direction: column; }
+    .top-nav-inner { padding: 0 15px; }
+    .panel-inner { padding: 20px; }
+    .hero-text { font-size: 2.2rem; }
 }
 
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
+/* Force all major containers to be transparent so the App.jsx background shows through */
+.dashboard-page, 
+.dashboard-main, 
+.ps-container, 
+nav, 
+aside {
+    background-color: transparent !important;
 }
 
-.active-project-card {
-    overflow: hidden;
-}
-
-.watermark-text {
-    position: absolute;
-    right: 40px;
-    top: 40px;
-    opacity: 0.05;
-    font-size: 6rem;
-    font-weight: 900;
-    color: #fff;
-    pointer-events: none;
-}
-
-.sub-tag {
-    color: #3b82f6;
-    font-weight: 800;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.project-heading {
-    color: #fff;
-    font-size: 2.5rem;
-    margin: 10px 0 30px;
-    font-weight: 900;
-}
-
-.meta-grid {
-    display: flex;
-    gap: 40px;
-    margin-bottom: 30px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.meta-label {
-    color: #64748b;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-bottom: 5px;
-}
-
-.meta-value {
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.meta-separator {
-    width: 1px;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.ps-description {
-    color: #94a3b8;
-    line-height: 1.6;
-    font-size: 1rem;
-    margin-bottom: 40px;
-}
-
-.progress-container {
-    margin-top: 20px;
-}
-
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    color: #64748b;
-}
-
-.progress-track {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    transition: 1s ease-in-out;
-}
-
-.cyber-action-btn {
-    transition: 0.3s;
-}
-
-.cyber-action-btn:hover {
-    opacity: 0.8;
-    transform: translateY(-2px);
+/* Ensure the body itself doesn't have a solid color blocking the fixed div */
+body {
+    background-color: #000; 
+    margin: 0;
 }
