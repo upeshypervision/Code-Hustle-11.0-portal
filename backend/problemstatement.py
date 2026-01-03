@@ -254,3 +254,45 @@ def get_teams_by_ps_route(problem_statement_id):
         "teams": selections,
         "count": len(selections)
     }), 200
+
+# =========================
+# ADMIN: TOGGLE PROBLEM STATEMENT VISIBILITY
+# =========================
+def toggle_ps_visibility_route(problem_statement_id):
+    """
+    Admin route to toggle the visibility of a problem statement
+    """
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
+    # Find the problem statement
+    ps = db.problem_statements.find_one({"problem_statement_id": problem_statement_id})
+    
+    if not ps:
+        return jsonify({"error": "Problem statement not found"}), 404
+    
+    # Toggle visibility
+    current_visibility = ps.get("visible", False)
+    new_visibility = not current_visibility
+    
+    # Update in database
+    result = db.problem_statements.update_one(
+        {"problem_statement_id": problem_statement_id},
+        {"$set": {"visible": new_visibility}}
+    )
+    
+    if result.modified_count > 0:
+        return jsonify({
+            "success": True,
+            "message": f"Problem statement visibility set to {new_visibility}",
+            "visible": new_visibility
+        }), 200
+    else:
+        return jsonify({"error": "Failed to update visibility"}), 500

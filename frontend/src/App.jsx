@@ -1,13 +1,18 @@
-import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminLogin from './pages/AdminLogin';
-import Userlogin from './pages/StudentLogin.jsx';
-import './styles/global.css';
+import { Suspense, lazy } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminLogin from "./pages/AdminLogin";
+import Userlogin from "./pages/StudentLogin.jsx";
+import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
 
-const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
 function App() {
   return (
@@ -31,7 +36,13 @@ function App() {
           path="/admin-panel"
           element={
             <ProtectedRoute role="admin">
-              <Suspense fallback={<div style={{ color: '#fff', padding: '20px' }}>Loading Console...</div>}>
+              <Suspense
+                fallback={
+                  <div style={{ color: "#fff", padding: "20px" }}>
+                    Loading Console...
+                  </div>
+                }
+              >
                 <AdminPanel />
               </Suspense>
             </ProtectedRoute>
@@ -41,7 +52,6 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
-    
   );
 }
 

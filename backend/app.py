@@ -7,7 +7,7 @@ from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
-from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route, get_teams_by_ps_route
+from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route, get_teams_by_ps_route, toggle_ps_visibility_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
 from git_submission import submit_link_route
@@ -133,5 +133,9 @@ def get_teams_with_ppt():
 def get_teams_by_ps(ps_id):
     return get_teams_by_ps_route(ps_id)
 
+@app.route('/api/admin/problem-statement/<ps_id>/toggle-visibility', methods=['POST'])
+def toggle_ps_visibility(ps_id):
+    return toggle_ps_visibility_route(ps_id)
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)

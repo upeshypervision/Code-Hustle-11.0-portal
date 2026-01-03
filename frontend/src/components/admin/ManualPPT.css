@@ -2,147 +2,393 @@
 /* Extends the base navy theme used in ViewTeams */
 
 .manual-ppt-container {
-    padding: 20px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: #cbd5e1;
-    max-width: 900px;
-    /* Slightly narrower for focus */
-    margin: 0 auto;
-    animation: fadeIn 0.4s ease-out;
+  padding: 20px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: #cbd5e1;
+  max-width: 900px;
+  /* Slightly narrower for focus */
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
 }
 
 /* Header Section */
 .ppt-header {
-    margin-bottom: 30px;
-    border-bottom: 1px solid #1e293b;
-    padding-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .ppt-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: 0.5px;
-    margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+  margin: 0;
 }
 
 .ppt-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 5px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 5px;
 }
 
 /* List/Grid Container */
 .ppt-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* Individual Team Row Card */
 .ppt-row {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s ease;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
 }
 
 .ppt-row:hover {
-    border-color: #334155;
-    background: #111a30;
-    transform: translateY(-1px);
+  border-color: #334155;
+  background: #111a30;
+  transform: translateY(-1px);
 }
 
 /* Team Info (Left Side) */
 .ppt-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .ppt-team-header {
-    font-size: 0.95rem;
-    /* slightly larger than 0.9rem for readability */
-    font-weight: 600;
-    color: #e2e8f0;
-    margin: 0;
-    letter-spacing: 0.2px;
+  font-size: 0.95rem;
+  /* slightly larger than 0.9rem for readability */
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
+  letter-spacing: 0.2px;
 }
 
 /* Actions (Right Side) */
 .ppt-action {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Submit Button */
 .btn-submit-ppt {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
 .btn-submit-ppt:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
 }
 
 .btn-submit-ppt:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 /* Status: Submitted (Mock UI) */
 .submitted-badge {
-    color: #10b981;
-    font-size: 12px;
-    font-weight: 700;
-    background: rgba(16, 185, 129, 0.1);
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Message Box */
+.message-box {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.message-box.success {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid #10b981;
+}
+
+.message-box.error {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+/* Upload PPT Button */
+.btn-upload-ppt {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-upload-ppt:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px rgba(59, 130, 246, 0.4);
+}
+
+.btn-small {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  background: #1e293b;
+  border-color: #475569;
+}
+
+/* Upload Modal */
+.upload-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.upload-modal-content {
+  background: #0a0a0a;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  padding: 40px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
+  animation: scaleIn 0.3s ease-out;
+}
+
+.upload-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+  padding-bottom: 15px;
+}
+
+.upload-modal-header h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-modal-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+/* Upload Dropbox */
+.upload-dropbox {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 40px 20px;
+  text-align: center;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 30, 30, 0.6) 0%,
+    rgba(10, 10, 10, 0.8) 100%
+  );
+  backdrop-filter: blur(10px);
+  transition: all 0.4s ease;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-dropbox.drag-active {
+  background: rgba(59, 130, 246, 0.05);
+  border-color: #3b82f6;
+  border-style: dashed;
+}
+
+.upload-dropbox.file-selected {
+  border-color: #3b82f6;
+}
+
+.upload-icon-wrapper {
+  animation: float 3s infinite ease-in-out;
+  margin-bottom: 20px;
+}
+
+.upload-icon-wrapper div {
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+}
+
+.btn-select-file,
+.btn-confirm-upload {
+  padding: 16px 50px;
+  background: #3b82f6;
+  border: none;
+  color: #fff;
+  font-weight: 900;
+  border-radius: 2px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.btn-select-file:hover,
+.btn-confirm-upload:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.6);
+  background: #2563eb;
+}
+
+.btn-confirm-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-abort-upload {
+  background: transparent;
+  border: 1px solid #64748b;
+  color: #94a3b8;
+  padding: 12px 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.btn-abort-upload:hover {
+  background: rgba(100, 116, 139, 0.1);
+  border-color: #94a3b8;
+  color: #cbd5e1;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
-    .ppt-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
+  .ppt-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
 
-    .ppt-action {
-        width: 100%;
-        justify-content: flex-end;
-    }
+  .ppt-action {
+    width: 100%;
+    justify-content: flex-end;
+  }
 
-    .btn-submit-ppt {
-        width: 100%;
-        text-align: center;
-    }
+  .btn-upload-ppt,
+  .btn-small {
+    width: 100%;
+    text-align: center;
+  }
+
+  .upload-modal-content {
+    padding: 30px 20px;
+    width: 95%;
+  }
+
+  .upload-dropbox {
+    padding: 30px 15px;
+    min-height: 250px;
+  }
 }

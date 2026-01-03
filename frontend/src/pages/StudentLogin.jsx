@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function StudentLogin() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ teamId: '', password: '' });
+  const [formData, setFormData] = useState({ teamId: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState({ type: '', text: '' });
+  const [message, setMessage] = useState({ type: "", text: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -30,8 +30,8 @@ export default function StudentLogin() {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setMessage({
-        type: 'error',
-        text: 'Please enter a valid Team ID and Password.'
+        type: "error",
+        text: "Please enter a valid Team ID and Password.",
       });
       return;
     }
@@ -39,29 +39,35 @@ export default function StudentLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/student-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("http://localhost:5001/api/student-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           team_id: formData.teamId,
-          password: formData.password
+          password: formData.password,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Login successful. Entering the arena...' });
+        setMessage({
+          type: "success",
+          text: "Login successful. Entering the arena...",
+        });
         setTimeout(() => {
-          navigate('/Arena');
+          navigate("/Arena");
         }, 800);
       } else {
-        setMessage({ type: 'error', text: data.error || 'Invalid credentials' });
+        setMessage({
+          type: "error",
+          text: data.error || "Invalid credentials",
+        });
         setIsSubmitting(false);
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Unable to connect to server.' });
+      setMessage({ type: "error", text: "Unable to connect to server." });
       setIsSubmitting(false);
     }
   };
@@ -76,7 +82,8 @@ export default function StudentLogin() {
           </div>
           <h1 className="heading-main">Enter the Arena</h1>
           <p className="heading-subtitle">
-            Use your <strong>Team ID</strong> and the password sent to your leader email to enter the arena.
+            Use your <strong>Team ID</strong> and the password sent to your
+            leader email to enter the arena.
           </p>
 
           <form onSubmit={handleSubmit} className="form">
@@ -87,7 +94,7 @@ export default function StudentLogin() {
               <input
                 id="teamId"
                 name="teamId"
-                className={`form-input ${errors.teamId ? 'error' : ''}`}
+                className={`form-input ${errors.teamId ? "error" : ""}`}
                 type="text"
                 value={formData.teamId}
                 onChange={handleChange}
@@ -102,7 +109,7 @@ export default function StudentLogin() {
               <input
                 id="password"
                 name="password"
-                className={`form-input ${errors.password ? 'error' : ''}`}
+                className={`form-input ${errors.password ? "error" : ""}`}
                 type="password"
                 value={formData.password}
                 onChange={handleChange}

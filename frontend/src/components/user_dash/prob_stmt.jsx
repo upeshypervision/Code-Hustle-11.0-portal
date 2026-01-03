@@ -14,7 +14,7 @@ export default function PSGallery() {
 
     // --- FETCH LOGIC FROM CODE 1 ---
     useEffect(() => {
-        fetch('http://localhost:5000/api/student/getallproblem-statements', {
+        fetch('http://localhost:5001/api/student/getallproblem-statements', {
             credentials: 'include'
         })
             .then(res => res.json())
@@ -41,7 +41,7 @@ export default function PSGallery() {
 
     const confirmLock = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/select-problem-statement', {
+            const res = await fetch('http://localhost:5001/api/select-problem-statement', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
