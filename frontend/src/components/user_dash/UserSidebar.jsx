@@ -2,12 +2,10 @@ import React from 'react';
 
 export default function UserSidebar({ activeTab, setActiveTab }) {
     const menuItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'ps-selection', label: 'Problem Statement Selection' },
-    { id: 'ppt-submission', label: 'PPT Submission' },
-    { id: 'github-submission', label: 'GitHub Link Submission' },
-];
-
+        { id: 'dashboard', label: 'DASHBOARD' },
+        { id: 'ps-selection', label: 'PROBLEM STATEMENT SUBMISSION' },
+        { id: 'ppt-submission', label: 'PPT SUBMISSION' },
+        { id: 'github-submission', label: 'GITHUB LINK SUBMISSION' },    ];
 
     return (
         <aside style={{ 
@@ -51,7 +49,7 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
                     font-size: 10px;
                     font-weight: 900;
                     letter-spacing: 2px;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    border: 5px solid rgba(255, 255, 255, 0.05);
                     transition: all 0.3s ease;
                     background: rgba(15, 15, 15, 0.6);
                     color: rgba(255, 255, 255, 0.3);
@@ -73,24 +71,24 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
                 .side-nav-btn.active::after {
                     content: "";
                     position: absolute;
-                    left: 0; width: 100%; height: 1px;
-                    background: #ff4444;
+                    left: 0; width: 100%; height: 4px;
+                    background: #ba3030ff;
                     box-shadow: 0 0 10px #ff4444;
                     animation: scanner-line 2.5s infinite linear;
                 }
             `}</style>
 
             <div style={{ 
-                color: '#dc2626', 
+                color: '#ac7e7eff', 
                 fontSize: '11px', 
                 fontWeight: '900', 
                 marginBottom: '30px', 
                 letterSpacing: '6px',
                 textAlign: 'center',
-                border: '1px solid rgba(220, 38, 38, 0.4)',
+                border: '5px solid rgba(0, 0, 0, 0.4)',
                 padding: '12px',
                 background: 'rgba(220, 38, 38, 0.05)',
-                textShadow: '0 0 8px rgba(220, 38, 38, 0.8)'
+                textShadow: '0 0 8px rgba(196, 193, 193, 0.8)'
             }}>
                 LA_CASA_ACCESS
             </div>
