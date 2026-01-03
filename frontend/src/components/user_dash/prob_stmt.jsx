@@ -67,14 +67,21 @@ export default function PSGallery({ onSelect, teamName }) {
             background: 'transparent'
         }}>
             
+            {/* --- STRICTLY UPDATED BACKGROUND LAYER --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                backgroundImage: `url('https://wallpapers.com/images/featured/money-heist-99r9899128919191.jpg')`,
-                backgroundSize: 'cover', backgroundPosition: 'center', zIndex: -2,
+                backgroundImage: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTTXyjjTv3OLCLxQKpvGjTLR7eavmcPelAA&s')`,
+                backgroundSize: 'cover', backgroundPosition: 'center', 
+                opacity: '0.2', 
+                filter: 'grayscale(100%) brightness(30%) contrast(150%) sepia(100%) hue-rotate(-50deg) saturate(1000%)',
+                zIndex: -2,
             }} />
+            
+            {/* --- STRICTLY UPDATED VIGNETTE OVERLAY --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                background: 'rgba(0, 0, 0, 0.88)', backdropFilter: 'blur(5px)', zIndex: -1,
+                background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.9) 100%), radial-gradient(circle at 50% 50%, transparent 10%, rgba(220, 38, 38, 0.1) 100%)',
+                zIndex: -1,
             }} />
             
             {showModal && (
@@ -103,7 +110,7 @@ export default function PSGallery({ onSelect, teamName }) {
             <div style={{ width: '100%', padding: '0 40px', zIndex: 1 }}>
                 <div style={{ borderLeft: '4px solid #dc2626', background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.2) 0%, transparent 100%)', padding: '15px 25px', marginBottom: '35px', borderRadius: '0 4px 4px 0', animation: 'pulseBorder 2s infinite' }}>
                     <p style={{ fontSize: '11px', fontWeight: '900', color: '#dc2626', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                        <span style={{ marginRight: '10px' }}>⚠️</span> CAUTION: Track allocation is final. Review technical dossiers before initializing lock.
+                        <span style={{ marginRight: '10px' }}>⚠️</span> Caution: Participants are advised to carefully review and finalize their chosen problem statement, as modifications will be restricted once the problem statement is locked.
                     </p>
                 </div>
 
