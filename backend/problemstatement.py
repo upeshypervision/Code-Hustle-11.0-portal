@@ -123,7 +123,7 @@ def get_all_visible_problem_statements_route():
 def select_problem_statement_route():
     # =========================
     # 1. AUTH CHECK (Student)
-    # =========================
+    # ========================
     token = request.cookies.get("student_auth")
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
