@@ -1,3 +1,4 @@
+// frontend/src/components/admin/ViewSubmissions.jsx
 import React, { useState, useEffect } from 'react';
 import './ViewSubmissions.css';
 
@@ -10,17 +11,15 @@ export default function ViewSubmissions() {
         fetchSubmissions();
     }, []);
 
-    // --- Fetch ONLY submitted teams ---
     const fetchSubmissions = async () => {
         setLoading(true);
         setError('');
         try {
             const res = await fetch('http://localhost:5000/api/admin/submissions', {
                 method: 'GET',
-                credentials: 'include',
+                credentials: 'include'
             });
             const data = await res.json();
-
             if (res.ok) {
                 setSubmissions(data.submissions || []);
             } else {
@@ -34,73 +33,45 @@ export default function ViewSubmissions() {
         }
     };
 
-    // --- View PPT using presigned URL ---
-    const handleView = async (teamId) => {
+    const handleAction = async (teamId, action) => {
+        const disposition = action === 'view' ? 'inline' : 'attachment';
         try {
-            const res = await fetch(`http://localhost:5000/api/admin/submission/${teamId}`, {
+            const res = await fetch(`http://localhost:5000/api/admin/submission/${teamId}?disposition=${disposition}`, {
                 method: 'GET',
                 credentials: 'include',
             });
             const data = await res.json();
 
             if (res.ok && data.success) {
-                window.open(data.url, '_blank');
+                if (action === 'view') {
+                    window.open(data.url, '_blank');
+                } else if (action === 'download') {
+                    const link = document.createElement('a');
+                    link.href = data.url;
+                    link.click();
+                }
             } else {
-                alert(`Failed to load file: ${data.error || 'Unknown error'}`);
+                if (res.status === 401 || res.status === 403) {
+                    alert("Your session has expired or you are not authorized. Please log in again.");
+                    window.location.href = '/admin-login';
+                } else {
+                    alert(`${action === 'view' ? 'View' : 'Download'} failed: ${data.error || 'Unknown error'}`);
+                }
             }
         } catch (err) {
-            console.error('View submission error:', err);
+            console.error(`${action} submission error:`, err);
             alert('Server connection failed.');
         }
     };
 
-    // --- Download PPT using presigned URL ---
-    const handleDownload = async (teamId, fileName) => {
-        try {
-            const res = await fetch(`http://localhost:5000/api/admin/submission/${teamId}`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                const link = document.createElement('a');
-                link.href = data.url;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                alert(`Failed to download file: ${data.error || 'Unknown error'}`);
-            }
-        } catch (err) {
-            console.error('Download submission error:', err);
-            alert('Server connection failed.');
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="admin-section">
-                <p>Loading Submissions...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="admin-section" style={{ color: '#ef4444' }}>
-                Error: {error}
-            </div>
-        );
-    }
+    if (loading) return <div className="admin-section"><p>Loading Submissions...</p></div>;
+    if (error) return <div className="admin-section" style={{ color: '#ef4444' }}>Error: {error}</div>;
 
     return (
         <div className="admin-section">
             <div className="admin-section-header">
                 <h2 className="admin-section-title">PPT Submissions</h2>
             </div>
-
             <div className="panel">
                 <div className="panel-inner">
                     <p className="panel-subtitle" style={{ marginBottom: '16px' }}>
@@ -112,37 +83,26 @@ export default function ViewSubmissions() {
                             No submissions received yet.
                         </p>
                     ) : (
-                        submissions.map((submission, index) => (
-                            <div
-                                key={`${submission.team_id}-${index}`}
-                                className="submission-card"
-                            >
+                        submissions.map((submission) => (
+                            <div key={submission.team_id} className="submission-card">
                                 <div className="submission-info">
                                     <p className="submission-team">
-                                        {submission.team_name}{' '}
-                                        <span style={{ opacity: 0.5, fontWeight: 400 }}>
-                                            ({submission.team_id})
-                                        </span>
+                                        {submission.team_name} <span style={{ opacity: 0.5, fontWeight: 400 }}>({submission.team_id})</span>
                                     </p>
                                     <p className="submission-meta">
-                                        File: <strong>{submission.file_name}</strong> · Submitted:{' '}
-                                        {new Date(submission.submitted_at).toLocaleString()}
+                                        File: <strong>{submission.file_name}</strong> · Submitted: {new Date(submission.submitted_at).toLocaleString()}
                                     </p>
                                 </div>
-
                                 <div className="submission-actions">
                                     <button
                                         className="btn-small"
-                                        onClick={() => handleView(submission.team_id)}
+                                        onClick={() => handleAction(submission.team_id, 'view')}
                                     >
-                                        View PPT
+                                        View
                                     </button>
-
                                     <button
                                         className="btn-small"
-                                        onClick={() =>
-                                            handleDownload(submission.team_id, submission.file_name)
-                                        }
+                                        onClick={() => handleAction(submission.team_id, 'download')}
                                     >
                                         Download
                                     </button>
