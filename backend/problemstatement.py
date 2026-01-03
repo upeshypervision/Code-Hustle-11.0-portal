@@ -3,6 +3,8 @@ from datetime import datetime
 from database import db
 import jwt
 from config import JWT_SECRET, JWT_ALGORITHM
+from socketio_instance import socketio
+
 
 # =========================
 # AUTO-INCREMENT HELPER
@@ -16,7 +18,7 @@ def get_next_problem_statement_id():
     )
     number = counter["sequence_value"]
 
-    # Format with prefix and zero padding
+    # Format with prefix and zero padding 
     return f"PS{number:02d}"
     
 
@@ -61,6 +63,9 @@ def create_problem_statement_route():
     }
 
     db.problem_statements.insert_one(problem_statement)
+    socketio.emit("ps_updated", {
+    "action": "created"
+    })
 
     return jsonify({
         "success": True,
@@ -133,7 +138,7 @@ def get_all_visible_problem_statements_route():
 def select_problem_statement_route():
     # =========================
     # 1. AUTH CHECK (Student)
-    # ========================
+    # =========================
     token = request.cookies.get("student_auth")
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
@@ -151,71 +156,89 @@ def select_problem_statement_route():
     # =========================
     # 2. INPUT VALIDATION
     # =========================
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     problem_statement_id = data.get("problem_statement_id")
 
     if not problem_statement_id:
         return jsonify({"error": "Problem statement ID is required"}), 400
 
     # =========================
-    # 3. FETCH PROBLEM STATEMENT
+    # 3. CHECK IF TEAM ALREADY SELECTED (ps_selections)
     # =========================
-    ps = db.problem_statements.find_one({
-        "problem_statement_id": problem_statement_id
-    })
-
-    if not ps:
-        return jsonify({"error": "Problem statement not found"}), 404
-
-    # =========================
-    # 4. VISIBILITY CHECK
-    # =========================
-    if not ps.get("visible", False):
-        return jsonify({"error": "Problem statement is not visible"}), 403
-
-    # =========================
-    # 5. MAX TEAM LIMIT CHECK
-    # =========================
-    max_count = ps.get("max_count")
-    selections = ps.get("selections", 0)
-
-    if max_count is not None and selections >= max_count:
-        return jsonify({"error": "Problem statement selection limit reached"}), 409
-
-    # =========================
-    # 6. CHECK IF TEAM ALREADY SELECTED
-    # =========================
-    # Check ps_selections collection instead of teams table
     existing_selection = db.ps_selections.find_one({"team_id": team_id})
-    
     if existing_selection:
-        return jsonify({"error": "Team has already selected a problem statement"}), 409
-    
-    # =========================
-    # 7. SAVE TO SEPARATE COLLECTION (SECURITY)
-    # =========================
-    # Fetch team name only for the selection record
-    team = db.teams.find_one({"team_id": team_id}, {"team_name": 1, "_id": 0})
-    
-    if not team:
-        return jsonify({"error": "Team not found"}), 404
-    
-    team_name = team.get("team_name", "Unknown")
-    
-    # Save to dedicated ps_selections collection (isolated data)
-    selection_record = {
-        "problem_statement_id": problem_statement_id,
-        "team_id": team_id,
-        "team_name": team_name,
-        "selected_at": datetime.utcnow().isoformat() + "Z"
-    }
-    
-    db.ps_selections.insert_one(selection_record)
+        return jsonify({
+            "error": "Team has already selected a problem statement"
+        }), 409
 
-    # Increment selection count
-    db.problem_statements.update_one(
-        {"problem_statement_id": problem_statement_id},
+    # =========================
+    # 4. ATOMIC PS AVAILABILITY CHECK + INCREMENT
+    # =========================
+    ps_update = db.problem_statements.update_one(
+        {
+            "problem_statement_id": problem_statement_id,
+            "visible": True,
+            "$or": [
+                {"max_count": None},
+                {"$expr": {"$lt": ["$selections", "$max_count"]}}
+            ]
+        },
         {"$inc": {"selections": 1}}
+    )
+
+    if ps_update.modified_count == 0:
+        return jsonify({
+            "error": "Problem statement not available or limit reached"
+        }), 409
+
+    # =========================
+    # 5. FETCH TEAM NAME
+    # =========================
+    team = db.teams.find_one(
+        {"team_id": team_id},
+        {"team_name": 1, "_id": 0}
+    )
+
+    if not team:
+        # rollback PS increment
+        db.problem_statements.update_one(
+            {"problem_statement_id": problem_statement_id},
+            {"$inc": {"selections": -1}}
+        )
+        return jsonify({"error": "Team not found"}), 404
+
+    team_name = team.get("team_name", "Unknown")
+
+    # =========================
+    # 6. SAVE SELECTION (ps_selections)
+    # =========================
+    try:
+        db.ps_selections.insert_one({
+            "problem_statement_id": problem_statement_id,
+            "team_id": team_id,
+            "team_name": team_name,
+            "selected_at": datetime.utcnow().isoformat() + "Z"
+        })
+    except Exception:
+        # rollback PS increment if insert fails
+        db.problem_statements.update_one(
+            {"problem_statement_id": problem_statement_id},
+            {"$inc": {"selections": -1}}
+        )
+        return jsonify({
+            "error": "Failed to save selection"
+        }), 500
+
+    # =========================
+    # 7. WEBSOCKET EMIT (UNCHANGED)
+    # =========================
+    print("EMITTING ps_selected", problem_statement_id)
+    socketio.emit(
+        "ps_selected",
+        {
+            "problem_statement_id": problem_statement_id,
+            "team_id": team_id
+        }
     )
 
     return jsonify({
@@ -223,6 +246,7 @@ def select_problem_statement_route():
         "message": "Problem statement selected successfully",
         "problem_statement_id": problem_statement_id
     }), 200
+
 
 # =========================
 # ADMIN: GET TEAMS BY PS
