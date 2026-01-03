@@ -101,7 +101,7 @@ const DashboardView = ({
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        opacity: '0.4', 
+                        opacity: '0.1', 
                         zIndex: 0,
                         pointerEvents: 'none'
                     }}
@@ -110,7 +110,7 @@ const DashboardView = ({
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'radial-gradient(circle at 50% 50%, transparent 10%, rgba(200, 80, 71, 0.42) 100%)',
+                    background: 'radial-gradient(circle at 50% 50%, transparent 10%, rgba(60, 53, 52, 0.42) 100%)',
                     zIndex: 1,
                     pointerEvents: 'none'
                 }} />

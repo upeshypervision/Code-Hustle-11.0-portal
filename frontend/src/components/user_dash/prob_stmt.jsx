@@ -117,7 +117,7 @@ export default function PSGallery() {
           position: "fixed",
           inset: 0,
           background:
-            "radial-gradient(circle at 50% 50%, transparent 10%, rgba(200, 80, 71, 0.42) 100%)",
+            "radial-gradient(circle at 50% 50%, transparent 10%, rgba(0, 0, 0, 0.42) 100%)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -133,7 +133,7 @@ export default function PSGallery() {
           top: "70px",
           left: "20px",
           zIndex: 1000,
-          background: "rgba(220, 38, 38, 0.2)",
+          background: "rgba(224, 206, 50, 0.2)",
           border: "1px solid #dc2626",
           width: "45px",
           height: "45px",
@@ -192,7 +192,7 @@ export default function PSGallery() {
             backdropFilter: "blur(10px)",
             padding: "15px 25px",
             marginBottom: "40px",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+            boxShadow: "0 10px 40px rgba(183, 99, 80, 0.5)",
           }}
         >
           <p
@@ -510,6 +510,15 @@ export default function PSGallery() {
         <style
           dangerouslySetInnerHTML={{
             __html: `
+                    /* Scrollbar removal logic added here */
+                    .ps-container::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .ps-container {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+                    
                     @media (max-width: 992px) {
                         .heist-hamburger { display: flex !important; }
                         aside, .sidebar-container { 
