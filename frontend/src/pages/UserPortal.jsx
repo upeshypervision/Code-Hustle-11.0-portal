@@ -5,8 +5,7 @@ import UserSidebar from '../components/user_dash/UserSidebar';
 import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
 import PPTSubmission from '../components/user_dash/PPTSubmission';
-import GitHubSubmission from '../components/user_dash/GitHubSubmission';
-import HostedLinkSub from '../components/user_dash/HostedLinkSub';
+import GitHubSubmission from '../components/user_dash/GitHubSubmission'; 
 import './UserPortal.css';
 
 export default function UserPortal() {
@@ -14,7 +13,7 @@ export default function UserPortal() {
     const [selectedPS, setSelectedPS] = useState(null);
     const [isPPTSubmitted, setIsPPTSubmitted] = useState(false);
     const [isGithubSubmitted, setIsGithubSubmitted] = useState(false);
-    const [isHostedSubmitted, setIsHostedSubmitted] = useState(false);
+    // isHostedSubmitted state removed as per your request
     const [teamInfo, setTeamInfo] = useState({ login_id: 'Loading...' });
 
     useEffect(() => {
@@ -47,27 +46,27 @@ export default function UserPortal() {
                 }
             />
 
+            {/* DASHBOARD VIEW */}
             {activeTab === 'dashboard' && (
-                <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    minHeight: 'calc(100vh - 70px)'
-                }}>
-                    <DashboardView
-                        selectedPS={selectedPS}
-                        isPPTSubmitted={isPPTSubmitted}
-                        isGithubSubmitted={isGithubSubmitted}
-                        isHostedSubmitted={isHostedSubmitted}
-                        setActiveTab={setActiveTab}
-                        teamName={teamInfo.login_id}
-                        activeTab={activeTab}
-                    />
-                </div>
+                <DashboardView
+                    selectedPS={selectedPS}
+                    isPPTSubmitted={isPPTSubmitted}
+                    isGithubSubmitted={isGithubSubmitted}
+                    // isHostedSubmitted removed from here
+                    setActiveTab={setActiveTab}
+                    teamName={teamInfo.login_id}
+                    activeTab={activeTab}
+                />
             )}
 
+            {/* OTHER TABS */}
             {activeTab !== 'dashboard' && (
-                <div className="dashboard-main" style={{ background: 'transparent', display: 'flex' }}>
+                <div className="dashboard-main" style={{ 
+                    background: 'transparent', 
+                    display: 'flex',
+                    flexDirection: 'row',
+                    minHeight: 'calc(100vh - 70px)'
+                }}>
                     <UserSidebar
                         activeTab={activeTab}
                         setActiveTab={setActiveTab}
@@ -78,19 +77,18 @@ export default function UserPortal() {
                         display: 'flex',
                         flexDirection: 'column',
                         padding: '0',
-                        background: 'transparent'
+                        background: 'transparent',
+                        position: 'relative'
                     }}>
                         {activeTab === 'ps-selection' && (
-                            <div style={{ width: '100%' }}>
-                                <PSGallery
-                                    onSelect={handlePSSelect}
-                                    teamName={teamInfo.login_id}
-                                />
-                            </div>
+                            <PSGallery
+                                onSelect={handlePSSelect}
+                                teamName={teamInfo.login_id}
+                            />
                         )}
 
                         {activeTab === 'ppt-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}>
+                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto', padding: '40px' }}>
                                 <PPTSubmission
                                     selectedPS={selectedPS}
                                     isSubmitted={isPPTSubmitted}
@@ -100,23 +98,11 @@ export default function UserPortal() {
                         )}
 
                         {activeTab === 'github-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}>
+                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto', padding: '40px' }}>
                                 <GitHubSubmission
                                     isSubmitted={isGithubSubmitted}
                                     onUpload={() => {
                                         setIsGithubSubmitted(true);
-                                        setActiveTab('dashboard');
-                                    }}
-                                />
-                            </div>
-                        )}
-
-                        {activeTab === 'hosted-link' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}>
-                                <HostedLinkSub
-                                    isSubmitted={isHostedSubmitted}
-                                    onUpload={() => {
-                                        setIsHostedSubmitted(true);
                                         setActiveTab('dashboard');
                                     }}
                                 />

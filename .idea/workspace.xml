@@ -4,7 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION" />
+    <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/get_teams.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/get_teams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/git_submission.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/git_submission.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/problemstatement.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/problemstatement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/register_team.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/register_team.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/submit_ppt.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/submit_ppt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ManualPPT.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ManualPPT.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Manualgithub.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Manualgithub.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Manualgithub.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Manualgithub.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ViewSubmissions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ViewSubmissions.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

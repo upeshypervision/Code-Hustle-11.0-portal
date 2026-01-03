@@ -27,6 +27,16 @@ def get_next_problem_statement_id():
 # CREATE PROBLEM STATEMENT
 # =========================
 def create_problem_statement_route():
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
     data = request.get_json()
 
     title = data.get("title")
@@ -58,6 +68,7 @@ def create_problem_statement_route():
     })
 
     return jsonify({
+        "success": True,
         "message": "Problem statement created successfully",
         "problem_statement_id": problem_statement_id
     }), 201
@@ -108,7 +119,6 @@ def get_all_visible_problem_statements_route():
             "created_at": 0,         # hide admin metadata
         }
     )
-    print(cursor)
     for ps in cursor:
         ps_list.append({
             "problem_statement_id": ps["problem_statement_id"],
@@ -153,13 +163,25 @@ def select_problem_statement_route():
         return jsonify({"error": "Problem statement ID is required"}), 400
 
     # =========================
-    # 3. ATOMIC PS SELECTION
+    # 3. CHECK IF TEAM ALREADY SELECTED (ps_selections)
+    # =========================
+    existing_selection = db.ps_selections.find_one({"team_id": team_id})
+    if existing_selection:
+        return jsonify({
+            "error": "Team has already selected a problem statement"
+        }), 409
+
+    # =========================
+    # 4. ATOMIC PS AVAILABILITY CHECK + INCREMENT
     # =========================
     ps_update = db.problem_statements.update_one(
         {
             "problem_statement_id": problem_statement_id,
             "visible": True,
-            "$expr": {"$lt": ["$selections", "$max_count"]}
+            "$or": [
+                {"max_count": None},
+                {"$expr": {"$lt": ["$selections", "$max_count"]}}
+            ]
         },
         {"$inc": {"selections": 1}}
     )
@@ -170,36 +192,89 @@ def select_problem_statement_route():
         }), 409
 
     # =========================
-    # 4. ATOMIC TEAM UPDATE
+    # 5. FETCH TEAM NAME
     # =========================
-    team_update = db.teams.update_one(
-        {
-            "team_id": team_id,
-            "selected_problem_statement": {"$exists": False}
-        },
-        {"$set": {"selected_problem_statement": problem_statement_id}}
+    team = db.teams.find_one(
+        {"team_id": team_id},
+        {"team_name": 1, "_id": 0}
     )
 
-    if team_update.modified_count == 0:
+    if not team:
         # rollback PS increment
         db.problem_statements.update_one(
             {"problem_statement_id": problem_statement_id},
             {"$inc": {"selections": -1}}
         )
+        return jsonify({"error": "Team not found"}), 404
+
+    team_name = team.get("team_name", "Unknown")
+
+    # =========================
+    # 6. SAVE SELECTION (ps_selections)
+    # =========================
+    try:
+        db.ps_selections.insert_one({
+            "problem_statement_id": problem_statement_id,
+            "team_id": team_id,
+            "team_name": team_name,
+            "selected_at": datetime.utcnow().isoformat() + "Z"
+        })
+    except Exception:
+        # rollback PS increment if insert fails
+        db.problem_statements.update_one(
+            {"problem_statement_id": problem_statement_id},
+            {"$inc": {"selections": -1}}
+        )
         return jsonify({
-            "error": "Team has already selected a problem statement"
-        }), 409
+            "error": "Failed to save selection"
+        }), 500
+
+    # =========================
+    # 7. WEBSOCKET EMIT (UNCHANGED)
+    # =========================
     print("EMITTING ps_selected", problem_statement_id)
     socketio.emit(
-    "ps_selected",
-    {
-        "problem_statement_id": problem_statement_id,
-        "team_id": team_id
-    }
+        "ps_selected",
+        {
+            "problem_statement_id": problem_statement_id,
+            "team_id": team_id
+        }
     )
-    
+
     return jsonify({
         "success": True,
         "message": "Problem statement selected successfully",
         "problem_statement_id": problem_statement_id
+    }), 200
+
+
+# =========================
+# ADMIN: GET TEAMS BY PS
+# =========================
+def get_teams_by_ps_route(problem_statement_id):
+    """
+    Admin route to get all teams that selected a specific problem statement
+    Returns team_id, team_name, and selection timestamp
+    """
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
+    # Fetch from ps_selections collection (isolated data)
+    selections = list(db.ps_selections.find(
+        {"problem_statement_id": problem_statement_id},
+        {"_id": 0, "team_id": 1, "team_name": 1, "selected_at": 1}
+    ).sort("selected_at", -1))  # Most recent first
+    
+    return jsonify({
+        "success": True,
+        "problem_statement_id": problem_statement_id,
+        "teams": selections,
+        "count": len(selections)
     }), 200

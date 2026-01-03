@@ -11,13 +11,13 @@ export default function ViewSubmissions() {
 
     const fetchTeams = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/admin/teams', {
+            const res = await fetch('http://localhost:5000/api/admin/teams-with-ppt', {
                 method: 'GET',
                 credentials: 'include'
             });
             const data = await res.json();
             if (res.ok) {
-                setTeams(data.teams);
+                setTeams(data.teams || []);
             } else {
                 setError(data.error || 'Failed to fetch teams');
             }
@@ -28,6 +28,18 @@ export default function ViewSubmissions() {
         }
     };
 
+    const formatDate = (isoString) => {
+        if (!isoString) return 'N/A';
+        const date = new Date(isoString);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     if (loading) return <div className="admin-section"><p>Loading Submissions...</p></div>;
     if (error) return <div className="admin-section" style={{ color: '#ef4444' }}>Error: {error}</div>;
 
@@ -35,6 +47,9 @@ export default function ViewSubmissions() {
         <div className="admin-section">
             <div className="admin-section-header">
                 <h2 className="admin-section-title">PPT Submissions</h2>
+                <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '5px' }}>
+                    {teams.length} submission{teams.length !== 1 ? 's' : ''} received
+                </p>
             </div>
 
             <div className="panel">
@@ -45,10 +60,10 @@ export default function ViewSubmissions() {
 
                     {teams.length === 0 ? (
                         <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
-                            No teams registered yet.
+                            No submissions yet.
                         </p>
                     ) : (
-                        teams.map((team, index) => (
+                        teams.map((team) => (
                             <div key={team.team_id} className="submission-card">
                                 <div className="submission-info">
                                     {/* Clean UI Style: TeamName (TeamID) */}
@@ -56,13 +71,29 @@ export default function ViewSubmissions() {
                                         {team.team_name} <span style={{ opacity: 0.5, fontWeight: 400 }}>({team.team_id})</span>
                                     </p>
                                     <p className="submission-meta">
-                                        {/* Mock Data for now as requested */}
-                                        PS: <strong>{index % 2 === 0 ? 'PS001' : 'PS005'}</strong> · File: {index % 3 === 0 ? 'solution.pptx' : 'pitch_deck_v2.pdf'} · Submitted: Dec 28, 2025
+                                        File: <strong>{team.file_name || 'N/A'}</strong> · Submitted: {formatDate(team.submitted_at)}
                                     </p>
                                 </div>
                                 <div className="submission-actions">
-                                    <button className="btn-small">View PPT</button>
-                                    <button className="btn-small">Download</button>
+                                    {team.file_path && (
+                                        <>
+                                            <a
+                                                href={team.file_path}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="btn-small"
+                                            >
+                                                View PPT
+                                            </a>
+                                            <a
+                                                href={team.file_path}
+                                                download
+                                                className="btn-small"
+                                            >
+                                                Download
+                                            </a>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))

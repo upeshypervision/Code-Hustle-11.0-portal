@@ -8,12 +8,14 @@ from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
-from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route
+from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route, get_teams_by_ps_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
+from git_submission import submit_link_route
+from get_teams import fetch_teamsnosubmission,view_githubsubmission_route
+from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from flask_socketio import SocketIO, emit
 from socketio_instance import socketio
-
 app = Flask(__name__)
 CORS(
     app,
@@ -64,6 +66,14 @@ def student_login():
 def register_manual_team():
     return register_manual_team_route()
 
+@app.route("/api/admin/pending-github", methods=["GET"])
+def getnotsubteams_teams():
+    return fetch_teamsnosubmission()
+
+@app.route("/api/admin/view-github-submissions", methods=["GET"])
+def show_submissions():
+    return view_githubsubmission_route()
+
 @app.route("/api/admin/teams", methods=["GET"])
 def fetch_teams():
     return fetch_teams_route()
@@ -109,7 +119,6 @@ def select_problem_statement():
 
     return select_problem_statement_route()
 
-
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
 def submit_ppt():
@@ -119,19 +128,24 @@ def submit_ppt():
 def submit_ppt_student():
     return submit_ppt_student_route()
 
-@app.route("/api/admin/update-settings", methods=["POST"])
-def update_settings():
-    data = request.get_json()
-    # This updates the global config in your MongoDB
-    db.settings.update_one(
-        {"_id": "global_config"},
-        {"$set": {
-            "ps_selection_locked": data.get("ps_selection_locked"),
-            "ppt_upload_locked": data.get("ppt_upload_locked")
-        }},
-        upsert=True
-    )
-    return jsonify({"success": True}), 200
+# --- GitHub Submission Routes ---
+@app.route('/api/submit-link', methods=['POST'])
+def submit_link():
+    return submit_link_route()
+
+# --- PPT Filter Routes ---
+@app.route('/api/admin/teams-without-ppt', methods=['GET'])
+def get_teams_without_ppt():
+    return get_teams_without_ppt_route()
+
+@app.route('/api/admin/teams-with-ppt', methods=['GET'])
+def get_teams_with_ppt():
+    return get_teams_with_ppt_route()
+
+# --- PS Selections Routes ---
+@app.route('/api/admin/problem-statement/<ps_id>/teams', methods=['GET'])
+def get_teams_by_ps(ps_id):
+    return get_teams_by_ps_route(ps_id)
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)

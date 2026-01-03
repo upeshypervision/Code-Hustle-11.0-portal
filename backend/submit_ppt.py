@@ -81,24 +81,33 @@ def submit_ppt_route(): # Admin manual submission route (existing)
     s3_url = upload_file_to_s3(file.read(), s3_key, content_type)
 
     if s3_url:
-        # 7. Update Team Record in Database
+        # 7. Save to submissions collection
         submission_data = {
+            "team_id": team_id,
             "file_name": file.filename,
-            "s3_url": s3_url,
-            "submitted_at": datetime.utcnow().isoformat(),
-            "submitted_by": team_id, # Who submitted the file (team ID)
-            "submitted_via": submitted_by # How it was submitted (student or admin)
+            "file_path": s3_url,
+            "submitted_at": datetime.utcnow().isoformat() + "Z",
+            "submitted_via": submitted_by  # Track if admin or student submitted
         }
-        result = db.teams.update_one(
-            {"team_id": team_id},
-            {"$push": {"submissions": submission_data}}
-        )
-
-        if result.modified_count > 0:
-            return jsonify({"success": True, "message": f"File submitted successfully by {submitted_by}.", "s3_url": s3_url})
+        
+        # Check if submission already exists (prevent duplicates)
+        existing = db.submissions.find_one({"team_id": team_id})
+        if not existing:
+            result = db.submissions.insert_one(submission_data)
+            if result.inserted_id:
+                return jsonify({"success": True, "message": f"File submitted successfully by {submitted_by}.", "s3_url": s3_url})
+            else:
+                return jsonify({"success": False, "error": "Failed to save submission record."}), 500
         else:
-            # This might happen if the team_id doesn't exist in the DB
-            return jsonify({"success": False, "error": "Failed to update team record."}), 500
+            # Update existing submission instead of creating duplicate
+            result = db.submissions.update_one(
+                {"team_id": team_id},
+                {"$set": submission_data}
+            )
+            if result.modified_count > 0 or result.matched_count > 0:
+                return jsonify({"success": True, "message": f"File updated successfully by {submitted_by}.", "s3_url": s3_url})
+            else:
+                return jsonify({"success": False, "error": "Failed to update submission record."}), 500
     else:
         # Upload failed in s3_service.py
         return jsonify({"success": False, "error": "Failed to upload file to S3."}), 500

@@ -7,13 +7,16 @@ import AddParticipant from '../components/admin/AddParticipant';
 import ViewTeams from '../components/admin/ViewTeams';
 import ViewSubmissions from '../components/admin/ViewSubmissions';
 import ManualPPT from '../components/admin/ManualPPT';
+import Manualgithub from '../components/admin/Manualgithub';
+
+/* ✅ ADD THIS IMPORT */
+import Viewgithubsubmission from '../components/admin/Viewgithubsubmission';
 
 export default function AdminPanel() {
   const [activeSection, setActiveSection] = useState('rounds');
   const [adminInfo, setAdminInfo] = useState({ login_id: 'Loading...' });
 
   useEffect(() => {
-    // Fetch admin info on component mount
     fetch('http://localhost:5000/api/user-info', {
       method: 'GET',
       credentials: 'include'
@@ -31,16 +34,28 @@ export default function AdminPanel() {
     switch (activeSection) {
       case 'rounds':
         return <RoundManagement />;
+
       case 'problem-statements':
         return <ProblemStatements />;
+
       case 'add-participant':
         return <AddParticipant />;
+
       case 'view-teams':
         return <ViewTeams />;
+
       case 'submissions':
         return <ViewSubmissions />;
+
       case 'manual-ppt':
         return <ManualPPT />;
+
+      case 'manual-github':
+        return <Manualgithub />;
+
+      case 'view-github-submissions':
+        return <Viewgithubsubmission />;
+
       default:
         return null;
     }
