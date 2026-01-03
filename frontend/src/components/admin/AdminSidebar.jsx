@@ -56,6 +56,24 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
                 <li className="admin-nav-item">
                     <a
+                        className={`admin-nav-link ${activeSection === 'manual-github' ? 'active' : ''}`}
+                        onClick={() => setActiveSection('manual-github')}
+                    >
+                        <span>Manual GitHub Submission</span>
+                    </a>
+                </li>
+
+                <li className="admin-nav-item">
+                    <a
+                        className={`admin-nav-link ${activeSection === 'view-github-submissions' ? 'active' : ''}`}
+                        onClick={() => setActiveSection('view-github-submissions')}
+                    >
+                        <span>View GitHub Submissions</span>
+                    </a>
+                </li>
+
+                <li className="admin-nav-item">
+                    <a
                         className={`admin-nav-link ${activeSection === 'add-participant' ? 'active' : ''}`}
                         onClick={() => setActiveSection('add-participant')}
                     >

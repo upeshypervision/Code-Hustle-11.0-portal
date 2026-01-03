@@ -1,7 +1,8 @@
 from flask import request, jsonify
 from datetime import datetime
 from database import db
-
+import jwt
+from config import JWT_SECRET, JWT_ALGORITHM
 
 # =========================
 # AUTO-INCREMENT HELPER
@@ -88,3 +89,139 @@ def get_all_problem_statements_route():
         ps_list.append(ps)
 
     return jsonify(ps_list), 200
+
+# =========================
+# STUDENT: GET VISIBLE PROBLEM STATEMENTS
+# =========================
+def get_all_visible_problem_statements_route():
+    ps_list = []
+
+    cursor = db.problem_statements.find(
+        {"visible": True},
+        {
+            "_id": 0,                # hide Mongo ID
+            "created_at": 0,         # hide admin metadata
+        }
+    )
+    print(cursor)
+    for ps in cursor:
+        ps_list.append({
+            "problem_statement_id": ps["problem_statement_id"],
+            "title": ps["title"],
+            "track": ps.get("track", ""),
+            "description": ps["description"],
+            "difficulty": ps["difficulty"],
+            "max_count": ps["max_count"],
+            "selections": ps.get("selections", 0),
+        })
+
+    return jsonify({
+        "success": True,
+        "problem_statements": ps_list
+    }), 200
+
+def select_problem_statement_route():
+    # =========================
+    # 1. AUTH CHECK (Student)
+    # ========================
+    token = request.cookies.get("student_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        team_id = payload.get("team_id")
+        if not team_id:
+            return jsonify({"error": "Invalid token"}), 401
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
+    # =========================
+    # 2. INPUT VALIDATION
+    # =========================
+    data = request.get_json()
+    problem_statement_id = data.get("problem_statement_id")
+
+    if not problem_statement_id:
+        return jsonify({"error": "Problem statement ID is required"}), 400
+
+    # =========================
+    # 3. FETCH PROBLEM STATEMENT
+    # =========================
+    ps = db.problem_statements.find_one({
+        "problem_statement_id": problem_statement_id
+    })
+
+    if not ps:
+        return jsonify({"error": "Problem statement not found"}), 404
+
+    # =========================
+    # 4. VISIBILITY CHECK
+    # =========================
+    if not ps.get("visible", False):
+        return jsonify({"error": "Problem statement is not visible"}), 403
+
+    # =========================
+    # 5. MAX TEAM LIMIT CHECK
+    # =========================
+    max_count = ps.get("max_count")
+    selections = ps.get("selections", 0)
+
+    if max_count is not None and selections >= max_count:
+        return jsonify({"error": "Problem statement selection limit reached"}), 409
+
+    # =========================
+    # 6. CHECK IF TEAM ALREADY SELECTED
+    # =========================
+    team = db.teams.find_one({"team_id": team_id})
+
+    if not team:
+        return jsonify({"error": "Team not found"}), 404
+
+    if team.get("selected_problem_statement"):
+        return jsonify({"error": "Team has already selected a problem statement"}), 409
+
+    # =========================
+    # 7. ATOMIC UPDATE (SAFE)
+    # =========================
+    # Update team
+    db.teams.update_one(
+        {"team_id": team_id},
+        {"$set": {"selected_problem_statement": problem_statement_id}}
+    )
+
+    # Increment selection count
+    db.problem_statements.update_one(
+        {"problem_statement_id": problem_statement_id},
+        {"$inc": {"selections": 1}}
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Problem statement selected successfully",
+        "problem_statement_id": problem_statement_id
+    }), 200
+
+#to disable single ps
+def toggle_problem_statement_visibility_route(problem_statement_id):
+    ps = db.problem_statements.find_one({
+        "problem_statement_id": problem_statement_id
+    })
+
+    if not ps:
+        return jsonify({"error": "Problem statement not found"}), 404
+
+    new_visibility = not ps.get("visible", True)
+
+    db.problem_statements.update_one(
+        {"problem_statement_id": problem_statement_id},
+        {"$set": {"visible": new_visibility}}
+    )
+
+    return jsonify({
+        "success": True,
+        "problem_statement_id": problem_statement_id,
+        "visible": new_visibility
+    }), 200

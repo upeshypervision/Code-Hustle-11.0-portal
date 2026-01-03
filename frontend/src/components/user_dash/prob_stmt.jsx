@@ -1,65 +1,48 @@
-// prob_stmt.jsx
 import React, { useState, useEffect } from 'react';
 
-export default function PSGallery({ onSelect, teamName }) {
+export default function PSGallery() {
+    // --- STATE FROM CODE 1 (Functionality) ---
     const [expandedId, setExpandedId] = useState(null);
-    const [psStatus, setPsStatus] = useState({ isLocked: false, counts: {} });
+    const [problemStatements, setProblemStatements] = useState([]);
+    
+    // UI-ONLY modal state
     const [showModal, setShowModal] = useState(false);
     const [pendingPs, setPendingPs] = useState(null);
 
+    // --- FETCH LOGIC FROM CODE 1 ---
     useEffect(() => {
-        fetch('http://localhost:5000/api/ps-status')
+        fetch('http://localhost:5000/api/student/getallproblem-statements', {
+            credentials: 'include'
+        })
             .then(res => res.json())
-            .then(data => setPsStatus(data))
-            .catch(err => console.error("Sync Error:", err));
+            .then(data => {
+                if (data.success) {
+                    setProblemStatements(data.problem_statements);
+                }
+            })
+            .catch(err => console.error(err));
     }, []);
 
-    const problemStatements = [
-        {
-            id: "PS-01",
-            title: "Smart Campus Mobility",
-            track: "IOT & URBAN TECH",
-            difficulty: "Advanced",
-            elaboration: "Design an end-to-end framework to optimize intra-campus logistics using real-time sensor data and autonomous fleet management logic. The system should focus on reducing latency and improving security."
-        },
-        {
-            id: "PS-02",
-            title: "Cyber-Sentinel AI",
-            track: "CYBERSECURITY",
-            difficulty: "Expert",
-            elaboration: "Develop a neural-network-based IDS that predicts zero-day exploits by analyzing packet entropy and temporal anomaly detection. This requires deep learning models capable of processing high-velocity network streams."
-        },
-        {
-            id: "PS-03",
-            title: "Bio-Sync Health Mesh",
-            track: "HEALTH-TECH",
-            difficulty: "Intermediate",
-            elaboration: "A decentralized mesh network for emergency patient data transmission in low-connectivity zones using P2P syncing. The architecture must prioritize data integrity and offline functionality."
-        }
-    ];
-
+    // --- HANDLERS ---
     const triggerLockSequence = (ps) => {
         setPendingPs(ps);
         setShowModal(true);
     };
 
-    const confirmLock = async () => {
-        const ps = pendingPs;
-        if (onSelect) onSelect(ps);
+    const confirmLock = () => {
+        // Logic from Code 1: Just log it, no API call
+        console.log("LOCK CONFIRMED FOR:", pendingPs?.problem_statement_id);
         setShowModal(false);
-        fetch('http://localhost:5000/api/lock-team-ps', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ team_name: teamName, ps_id: ps.id })
-        }).catch(err => console.error("Update failed:", err));
+        setPendingPs(null);
     };
 
+    // --- UI FROM CODE 2 (Display) ---
     return (
         <div className="ps-container" style={{ 
             color: '#fff', 
             position: 'relative', 
             minHeight: '100vh', 
-            width: '150%',
+            width: '150%', // Kept specific width from Code 2
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'center', 
@@ -67,23 +50,24 @@ export default function PSGallery({ onSelect, teamName }) {
             background: 'transparent'
         }}>
             
-            {/* --- STRICTLY UPDATED BACKGROUND LAYER --- */}
+            {/* --- STRICTLY UPDATED BACKGROUND LAYER (Code 2) --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                backgroundImage: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTTXyjjTv3OLCLxQKpvGjTLR7eavmcPelAA&s')`,
+                backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTTXyjjTv3OLCLxQKpvGjTLR7eavmcPelAA&s')`,
                 backgroundSize: 'cover', backgroundPosition: 'center', 
                 opacity: '0.2', 
                 filter: 'grayscale(100%) brightness(30%) contrast(150%) sepia(100%) hue-rotate(-50deg) saturate(1000%)',
                 zIndex: -2,
             }} />
             
-            {/* --- STRICTLY UPDATED VIGNETTE OVERLAY --- */}
+            {/* --- STRICTLY UPDATED VIGNETTE OVERLAY (Code 2) --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                 background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.9) 100%), radial-gradient(circle at 50% 50%, transparent 10%, rgba(220, 38, 38, 0.1) 100%)',
                 zIndex: -1,
             }} />
             
+            {/* --- MODAL UI (Code 2 Visuals, Code 1 Logic) --- */}
             {showModal && (
                 <div style={{
                     position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(15px)'
@@ -97,7 +81,7 @@ export default function PSGallery({ onSelect, teamName }) {
                         <div style={{ fontSize: '12px', color: '#dc2626', fontWeight: '900', letterSpacing: '5px', marginBottom: '10px' }}>CONFIRMATION REQUIRED</div>
                         <h2 style={{ color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', fontStyle: 'italic' }}>LOCK TARGET?</h2>
                         <p style={{ color: 'rgba(255,255,255,0.7)', margin: '25px 0', lineHeight: '1.6', fontSize: '14px' }}>
-                            You are about to commit to <strong style={{color: '#dc2626'}}>{pendingPs?.id}</strong>. Once breached, the vault stays locked.
+                            You are about to commit to <strong style={{color: '#dc2626'}}>{pendingPs?.problem_statement_id}</strong>. Once breached, the vault stays locked.
                         </p>
                         <div style={{ display: 'flex', gap: '15px' }}>
                             <button onClick={() => setShowModal(false)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '14px', borderRadius: '2px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}>ABORT</button>
@@ -108,20 +92,23 @@ export default function PSGallery({ onSelect, teamName }) {
             )}
 
             <div style={{ width: '100%', padding: '0 40px', zIndex: 1 }}>
+                {/* --- HEADER WARNING --- */}
                 <div style={{ borderLeft: '4px solid #dc2626', background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.2) 0%, transparent 100%)', padding: '15px 25px', marginBottom: '35px', borderRadius: '0 4px 4px 0', animation: 'pulseBorder 2s infinite' }}>
                     <p style={{ fontSize: '11px', fontWeight: '900', color: '#dc2626', letterSpacing: '2px', textTransform: 'uppercase' }}>
                         <span style={{ marginRight: '10px' }}>⚠️</span> Caution: Participants are advised to carefully review and finalize their chosen problem statement, as modifications will be restricted once the problem statement is locked.
                     </p>
                 </div>
 
+                {/* --- CARD LIST --- */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                     {problemStatements.map((ps) => {
-                        const count = psStatus.counts[ps.id] || 0;
-                        const target = 30; 
+                        // Data Mapping: Using API keys from Code 1, but UI logic from Code 2
+                        const count = ps.selections || 0; 
+                        const target = ps.max_count || 30; 
                         const barWidth = Math.min((count / target) * 100, 100);
 
                         return (
-                            <div key={ps.id} className="ps-card" style={{
+                            <div key={ps.problem_statement_id} className="ps-card" style={{
                                 background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
                                 backdropFilter: 'blur(10px)',
                                 border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -135,9 +122,15 @@ export default function PSGallery({ onSelect, teamName }) {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '12px' }}>
-                                            <span style={{ color: '#fff', background: '#dc2626', padding: '2px 8px', fontSize: '10px', fontWeight: '900', borderRadius: '2px' }}>{ps.id}</span>
-                                            <span style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', letterSpacing: '2px' }}>{ps.track}</span>
-                                            <span className="diff-tag">// {ps.difficulty.toUpperCase()}</span>
+                                            <span style={{ color: '#fff', background: '#dc2626', padding: '2px 8px', fontSize: '10px', fontWeight: '900', borderRadius: '2px' }}>
+                                                {ps.problem_statement_id}
+                                            </span>
+                                            <span style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', letterSpacing: '2px' }}>
+                                                {ps.track}
+                                            </span>
+                                            <span className="diff-tag">
+                                                // {ps.difficulty.toUpperCase()}
+                                            </span>
                                         </div>
                                         <h3 style={{ fontSize: '1.8rem', margin: '0 0 20px 0', color: '#fff', fontWeight: '900', fontStyle: 'italic', textTransform: 'uppercase' }}>
                                             {ps.title}
@@ -145,8 +138,11 @@ export default function PSGallery({ onSelect, teamName }) {
                                     </div>
                                     
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '15px' }}>
-                                        <button onClick={() => setExpandedId(expandedId === ps.id ? null : ps.id)} className="view-btn">
-                                            {expandedId === ps.id ? 'CLOSE DOSSIER' : 'VIEW DOSSIER'}
+                                        <button 
+                                            onClick={() => setExpandedId(expandedId === ps.problem_statement_id ? null : ps.problem_statement_id)} 
+                                            className="view-btn"
+                                        >
+                                            {expandedId === ps.problem_statement_id ? 'CLOSE DOSSIER' : 'VIEW DOSSIER'}
                                         </button>
 
                                         <div className="heat-gauge-container">
@@ -163,12 +159,14 @@ export default function PSGallery({ onSelect, teamName }) {
                                     </div>
                                 </div>
 
-                                {expandedId === ps.id && (
+                                {expandedId === ps.problem_statement_id && (
                                     <div style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid rgba(220, 38, 38, 0.2)', animation: 'fadeIn 0.5s ease' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                             <div className="dossier-text">
                                                 <div style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', marginBottom: '5px' }}>ELABORATION</div>
-                                                <p style={{ color: '#eee', lineHeight: '1.8', fontSize: '15px', margin: 0 }}>{ps.elaboration}</p>
+                                                <p style={{ color: '#eee', lineHeight: '1.8', fontSize: '15px', margin: 0 }}>
+                                                    {ps.description} 
+                                                </p>
                                             </div>
                                         </div>
                                         

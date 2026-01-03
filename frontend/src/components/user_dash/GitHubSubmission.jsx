@@ -4,7 +4,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const [githubLink, setGithubLink] = useState('');
     const [hostedLink, setHostedLink] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // GitHub link is mandatory, Hosted link is optional
         if (githubLink.trim()) {
