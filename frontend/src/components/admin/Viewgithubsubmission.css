@@ -61,11 +61,42 @@
     font-size: 15px;
     font-weight: 600;
     color: #e2e8f0;
+    margin: 0;
 }
 
 .team-id {
     font-size: 12px;
     color: #94a3b8;
+    margin: 0;
+}
+
+/* --- Badges --- */
+
+.badge-via {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-via.student {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.badge-via.admin {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.live-indicator {
+    font-size: 11px;
+    color: #10b981;
+    font-weight: 500;
 }
 
 /* --- Buttons --- */
@@ -102,9 +133,11 @@
     border: 1px solid #1e293b;
     border-radius: 14px;
     width: 100%;
-    max-width: 420px;
+    max-width: 500px;
     padding: 22px;
     animation: fadeIn 0.25s ease;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-title {
@@ -118,7 +151,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    padding: 6px 0;
+    padding: 8px 0;
     border-bottom: 1px solid #1e293b;
 }
 
@@ -126,24 +159,78 @@
     color: #94a3b8;
 }
 
+/* --- Link Sections --- */
+
+.link-section {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+}
+
+.link-label {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.link-url {
+    display: block;
+    color: #3b82f6;
+    font-size: 12px;
+    word-break: break-all;
+    text-decoration: none;
+    padding: 6px 8px;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 4px;
+    transition: 0.2s ease;
+}
+
+.link-url:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+}
+
+/* --- Modal Actions --- */
+
 .modal-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 .btn-open {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
+    transition: 0.2s ease;
+    display: inline-block;
 }
 
-.btn-open:hover {
+.btn-open.github {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.btn-open.github:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+}
+
+.btn-open.live {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.btn-open.live:hover {
     background: linear-gradient(135deg, #16a34a, #15803d);
 }
 
@@ -151,10 +238,16 @@
     background: transparent;
     border: 1px solid #334155;
     color: #94a3b8;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-size: 12px;
     cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #475569;
+    color: #cbd5e1;
 }
 
 /* --- Misc --- */
@@ -175,6 +268,7 @@
         opacity: 0;
         transform: scale(0.96);
     }
+
     to {
         opacity: 1;
         transform: scale(1);

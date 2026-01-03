@@ -25,6 +25,16 @@ def get_next_problem_statement_id():
 # CREATE PROBLEM STATEMENT
 # =========================
 def create_problem_statement_route():
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
     data = request.get_json()
 
     title = data.get("title")
@@ -53,6 +63,7 @@ def create_problem_statement_route():
     db.problem_statements.insert_one(problem_statement)
 
     return jsonify({
+        "success": True,
         "message": "Problem statement created successfully",
         "problem_statement_id": problem_statement_id
     }), 201
@@ -103,7 +114,6 @@ def get_all_visible_problem_statements_route():
             "created_at": 0,         # hide admin metadata
         }
     )
-    print(cursor)
     for ps in cursor:
         ps_list.append({
             "problem_statement_id": ps["problem_statement_id"],
@@ -175,22 +185,32 @@ def select_problem_statement_route():
     # =========================
     # 6. CHECK IF TEAM ALREADY SELECTED
     # =========================
-    team = db.teams.find_one({"team_id": team_id})
-
+    # Check ps_selections collection instead of teams table
+    existing_selection = db.ps_selections.find_one({"team_id": team_id})
+    
+    if existing_selection:
+        return jsonify({"error": "Team has already selected a problem statement"}), 409
+    
+    # =========================
+    # 7. SAVE TO SEPARATE COLLECTION (SECURITY)
+    # =========================
+    # Fetch team name only for the selection record
+    team = db.teams.find_one({"team_id": team_id}, {"team_name": 1, "_id": 0})
+    
     if not team:
         return jsonify({"error": "Team not found"}), 404
-
-    if team.get("selected_problem_statement"):
-        return jsonify({"error": "Team has already selected a problem statement"}), 409
-
-    # =========================
-    # 7. ATOMIC UPDATE (SAFE)
-    # =========================
-    # Update team
-    db.teams.update_one(
-        {"team_id": team_id},
-        {"$set": {"selected_problem_statement": problem_statement_id}}
-    )
+    
+    team_name = team.get("team_name", "Unknown")
+    
+    # Save to dedicated ps_selections collection (isolated data)
+    selection_record = {
+        "problem_statement_id": problem_statement_id,
+        "team_id": team_id,
+        "team_name": team_name,
+        "selected_at": datetime.utcnow().isoformat() + "Z"
+    }
+    
+    db.ps_selections.insert_one(selection_record)
 
     # Increment selection count
     db.problem_statements.update_one(
@@ -204,24 +224,33 @@ def select_problem_statement_route():
         "problem_statement_id": problem_statement_id
     }), 200
 
-#to disable single ps
-def toggle_problem_statement_visibility_route(problem_statement_id):
-    ps = db.problem_statements.find_one({
-        "problem_statement_id": problem_statement_id
-    })
-
-    if not ps:
-        return jsonify({"error": "Problem statement not found"}), 404
-
-    new_visibility = not ps.get("visible", True)
-
-    db.problem_statements.update_one(
+# =========================
+# ADMIN: GET TEAMS BY PS
+# =========================
+def get_teams_by_ps_route(problem_statement_id):
+    """
+    Admin route to get all teams that selected a specific problem statement
+    Returns team_id, team_name, and selection timestamp
+    """
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
+    # Fetch from ps_selections collection (isolated data)
+    selections = list(db.ps_selections.find(
         {"problem_statement_id": problem_statement_id},
-        {"$set": {"visible": new_visibility}}
-    )
-
+        {"_id": 0, "team_id": 1, "team_name": 1, "selected_at": 1}
+    ).sort("selected_at", -1))  # Most recent first
+    
     return jsonify({
         "success": True,
         "problem_statement_id": problem_statement_id,
-        "visible": new_visibility
+        "teams": selections,
+        "count": len(selections)
     }), 200

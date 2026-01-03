@@ -19,9 +19,9 @@ export default function ManualPPT() {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/admin/teams', { // Use the existing endpoint to get teams
+            const res = await fetch('http://localhost:5000/api/admin/teams-without-ppt', {
                 method: 'GET',
-                credentials: 'include', // Important for admin cookie
+                credentials: 'include',
             });
             const data = await res.json();
             if (res.ok) {
@@ -85,8 +85,8 @@ export default function ManualPPT() {
                 // Clear selections after successful submission
                 setSelectedTeamId('');
                 setFile(null);
-                // Optionally refetch teams list if needed
-                // fetchTeams();
+                // Refresh teams list to remove the submitted team
+                fetchTeams();
             } else {
                 setMessage({ type: 'error', text: data.error });
             }
@@ -106,9 +106,13 @@ export default function ManualPPT() {
             <header className="ppt-header">
                 <div>
                     <h2 className="ppt-title">Manual PPT Submission</h2>
-                    <p className="ppt-subtitle">Submit presentations for teams encountering technical issues.</p>
+                    <p className="ppt-subtitle">
+                        Submit presentations for teams encountering technical issues.
+                        <strong style={{ color: '#3b82f6', marginLeft: '8px' }}>
+                            {teams.length} team{teams.length !== 1 ? 's' : ''} pending
+                        </strong>
+                    </p>
                 </div>
-                {/* Removed the mock pending count as it's not applicable for manual submission */}
             </header>
 
             {message.text && (

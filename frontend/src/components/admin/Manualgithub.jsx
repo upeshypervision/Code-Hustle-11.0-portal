@@ -11,7 +11,10 @@ export default function Manualgithub() {
     const [showModal, setShowModal] = useState(false);
     const [activeTeam, setActiveTeam] = useState(null);
     const [githubLink, setGithubLink] = useState("");
+    const [liveLink, setLiveLink] = useState("");
+    const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState(""); // 'success' or 'error'
 
     useEffect(() => {
         fetch(`${API}/api/admin/pending-github`, {
@@ -33,7 +36,9 @@ export default function Manualgithub() {
     const openModal = (teamId) => {
         setActiveTeam(teamId);
         setGithubLink("");
+        setLiveLink("");
         setMessage("");
+        setMessageType("");
         setShowModal(true);
     };
 
@@ -45,35 +50,47 @@ export default function Manualgithub() {
     const submitLink = async () => {
         if (!githubLink.trim()) {
             setMessage("Please enter a GitHub repository link.");
+            setMessageType("error");
             return;
         }
 
+        setSubmitting(true);
+        setMessage("");
+        setMessageType("");
+
         try {
-            const res = await fetch(`${API}/api/submit-link-admin`, {
+            const res = await fetch(`${API}/api/submit-link`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({
                     team_id: activeTeam,
-                    link: githubLink
+                    github_link: githubLink,
+                    live_link: liveLink || null
                 })
             });
 
             const data = await res.json();
 
-            if (!res.ok) {
+            if (res.ok && data.success) {
+                setMessage("Link submitted successfully! ✓");
+                setMessageType("success");
+
+                // Remove team from list
+                setTeams(prev => prev.filter(t => t !== activeTeam));
+
+                // Close modal after delay
+                setTimeout(closeModal, 1500);
+            } else {
                 setMessage(data.error || "Submission failed");
-                return;
+                setMessageType("error");
             }
-
-            setMessage("Link submitted successfully.");
-
-            setTeams(prev => prev.filter(t => t !== activeTeam));
-
-            setTimeout(closeModal, 1000);
-
-        } catch {
+        } catch (err) {
+            console.error("Error submitting link:", err);
             setMessage("Server connection failed.");
+            setMessageType("error");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -99,11 +116,14 @@ export default function Manualgithub() {
             ) : (
                 <div className="team-list">
                     {teams.map(team => (
-                        <div key={team} className="team-row">
-                            <span className="team-id">{team}</span>
+                        <div key={team.team_id} className="team-row">
+                            <div className="team-info">
+                                <span className="team-name">{team.team_name}</span>
+                                <span className="team-id-small">({team.team_id})</span>
+                            </div>
                             <button
                                 className="btn-add"
-                                onClick={() => openModal(team)}
+                                onClick={() => openModal(team.team_id)}
                             >
                                 Add Link
                             </button>
@@ -113,30 +133,70 @@ export default function Manualgithub() {
             )}
 
             {showModal && (
-                <div className="modal-backdrop">
-                    <div className="modal-card">
+                <div className="modal-backdrop" onClick={closeModal}>
+                    <div className="modal-card" onClick={(e) => e.stopPropagation()}>
                         <h3 className="modal-title">Submit GitHub Link</h3>
 
                         <p className="modal-team">
                             Team ID: <span>{activeTeam}</span>
                         </p>
 
-                        <input
-                            className="modal-input"
-                            type="text"
-                            placeholder="https://github.com/username/repository"
-                            value={githubLink}
-                            onChange={(e) => setGithubLink(e.target.value)}
-                        />
+                        {/* GitHub Link (Required) */}
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '11px',
+                                color: '#94a3b8',
+                                marginBottom: '6px',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                            }}>
+                                GitHub Repository (Required)
+                            </label>
+                            <input
+                                className="modal-input"
+                                type="url"
+                                placeholder="https://github.com/username/repository"
+                                value={githubLink}
+                                onChange={(e) => setGithubLink(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Live Link (Optional) */}
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{
+                                display: 'block',
+                                fontSize: '11px',
+                                color: '#64748b',
+                                marginBottom: '6px',
+                                fontWeight: '600',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                            }}>
+                                Live Deployment (Optional)
+                            </label>
+                            <input
+                                className="modal-input"
+                                type="url"
+                                placeholder="https://your-app.vercel.app"
+                                value={liveLink}
+                                onChange={(e) => setLiveLink(e.target.value)}
+                                style={{ borderColor: '#1e293b' }}
+                            />
+                        </div>
 
                         {message && (
-                            <p className="modal-message">{message}</p>
+                            <p className={`modal-message ${messageType}`}>
+                                {message}
+                            </p>
                         )}
 
                         <div className="modal-actions">
                             <button
                                 className="btn-cancel"
                                 onClick={closeModal}
+                                disabled={submitting}
                             >
                                 Cancel
                             </button>
@@ -144,8 +204,9 @@ export default function Manualgithub() {
                             <button
                                 className="btn-submit"
                                 onClick={submitLink}
+                                disabled={submitting || !githubLink.trim()}
                             >
-                                Submit Link
+                                {submitting ? 'Submitting...' : 'Submit Link'}
                             </button>
                         </div>
                     </div>

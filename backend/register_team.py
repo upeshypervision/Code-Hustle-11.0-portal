@@ -169,10 +169,10 @@ def register_manual_team_route():
     })
 
     # 5. SEND EMAIL
-    # try:
-    #     send_registration_email(leader["email"], team_id, password_plain)
-    # except Exception as e:
-    #     print(f"Failed to send email: {e}")
+    try:
+        send_registration_email(leader["email"], team_id, password_plain)
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
     return jsonify({
         "success": True,

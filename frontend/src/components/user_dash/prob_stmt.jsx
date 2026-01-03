@@ -4,10 +4,13 @@ export default function PSGallery() {
     // --- STATE FROM CODE 1 (Functionality) ---
     const [expandedId, setExpandedId] = useState(null);
     const [problemStatements, setProblemStatements] = useState([]);
-    
+
     // UI-ONLY modal state
     const [showModal, setShowModal] = useState(false);
     const [pendingPs, setPendingPs] = useState(null);
+
+    // Notification state
+    const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
     // --- FETCH LOGIC FROM CODE 1 ---
     useEffect(() => {
@@ -29,44 +32,74 @@ export default function PSGallery() {
         setShowModal(true);
     };
 
-    const confirmLock = () => {
-        // Logic from Code 1: Just log it, no API call
-        console.log("LOCK CONFIRMED FOR:", pendingPs?.problem_statement_id);
-        setShowModal(false);
-        setPendingPs(null);
+    const showNotification = (type, message) => {
+        setNotification({ show: true, type, message });
+        setTimeout(() => {
+            setNotification({ show: false, type: '', message: '' });
+        }, 5000);
+    };
+
+    const confirmLock = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/api/select-problem-statement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    problem_statement_id: pendingPs?.problem_statement_id
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setShowModal(false);
+                setPendingPs(null);
+                showNotification('success', 'Problem statement selected successfully!');
+                // Refresh the list to update selection counts
+                setTimeout(() => window.location.reload(), 2000);
+            } else {
+                setShowModal(false);
+                showNotification('error', data.error || 'Failed to select problem statement');
+            }
+        } catch (err) {
+            console.error('Selection error:', err);
+            setShowModal(false);
+            showNotification('error', 'Server connection failed');
+        }
     };
 
     // --- UI FROM CODE 2 (Display) ---
     return (
-        <div className="ps-container" style={{ 
-            color: '#fff', 
-            position: 'relative', 
-            minHeight: '100vh', 
+        <div className="ps-container" style={{
+            color: '#fff',
+            position: 'relative',
+            minHeight: '100vh',
             width: '150%', // Kept specific width from Code 2
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             padding: '40px 0',
             background: 'transparent'
         }}>
-            
+
             {/* --- STRICTLY UPDATED BACKGROUND LAYER (Code 2) --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                 backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXTTXyjjTv3OLCLxQKpvGjTLR7eavmcPelAA&s')`,
-                backgroundSize: 'cover', backgroundPosition: 'center', 
-                opacity: '0.2', 
+                backgroundSize: 'cover', backgroundPosition: 'center',
+                opacity: '0.2',
                 filter: 'grayscale(100%) brightness(30%) contrast(150%) sepia(100%) hue-rotate(-50deg) saturate(1000%)',
                 zIndex: -2,
             }} />
-            
+
             {/* --- STRICTLY UPDATED VIGNETTE OVERLAY (Code 2) --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                 background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.9) 100%), radial-gradient(circle at 50% 50%, transparent 10%, rgba(220, 38, 38, 0.1) 100%)',
                 zIndex: -1,
             }} />
-            
+
             {/* --- MODAL UI (Code 2 Visuals, Code 1 Logic) --- */}
             {showModal && (
                 <div style={{
@@ -81,11 +114,92 @@ export default function PSGallery() {
                         <div style={{ fontSize: '12px', color: '#dc2626', fontWeight: '900', letterSpacing: '5px', marginBottom: '10px' }}>CONFIRMATION REQUIRED</div>
                         <h2 style={{ color: '#fff', letterSpacing: '1px', textTransform: 'uppercase', fontStyle: 'italic' }}>LOCK TARGET?</h2>
                         <p style={{ color: 'rgba(255,255,255,0.7)', margin: '25px 0', lineHeight: '1.6', fontSize: '14px' }}>
-                            You are about to commit to <strong style={{color: '#dc2626'}}>{pendingPs?.problem_statement_id}</strong>. Once breached, the vault stays locked.
+                            You are about to commit to <strong style={{ color: '#dc2626' }}>{pendingPs?.problem_statement_id}</strong>. Once breached, the vault stays locked.
                         </p>
                         <div style={{ display: 'flex', gap: '15px' }}>
                             <button onClick={() => setShowModal(false)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '14px', borderRadius: '2px', cursor: 'pointer', fontSize: '12px', fontWeight: '800' }}>ABORT</button>
                             <button onClick={confirmLock} style={{ flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '14px', borderRadius: '2px', cursor: 'pointer', fontWeight: '900', fontSize: '12px', boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)' }}>INITIALIZE LOCK</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- NOTIFICATION UI --- */}
+            {notification.show && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 200,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(0, 0, 0, 0.85)',
+                    backdropFilter: 'blur(8px)'
+                }}>
+                    <div style={{
+                        width: '450px',
+                        padding: '40px',
+                        background: notification.type === 'success'
+                            ? 'linear-gradient(145deg, rgba(34, 197, 94, 0.15), rgba(22, 163, 74, 0.15))'
+                            : 'linear-gradient(145deg, rgba(220, 38, 38, 0.15), rgba(185, 28, 28, 0.15))',
+                        border: `3px solid ${notification.type === 'success' ? '#22c55e' : '#dc2626'}`,
+                        borderRadius: '12px',
+                        boxShadow: `0 20px 60px ${notification.type === 'success' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(220, 38, 38, 0.5)'}`,
+                        backdropFilter: 'blur(20px)',
+                        textAlign: 'center',
+                        animation: 'scaleIn 0.3s ease-out',
+                        position: 'relative'
+                    }}>
+                        {/* Corner decorations */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '-3px',
+                            left: '-3px',
+                            width: '25px',
+                            height: '25px',
+                            borderTop: `5px solid ${notification.type === 'success' ? '#22c55e' : '#fff'}`,
+                            borderLeft: `5px solid ${notification.type === 'success' ? '#22c55e' : '#fff'}`
+                        }}></div>
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-3px',
+                            right: '-3px',
+                            width: '25px',
+                            height: '25px',
+                            borderBottom: `5px solid ${notification.type === 'success' ? '#22c55e' : '#fff'}`,
+                            borderRight: `5px solid ${notification.type === 'success' ? '#22c55e' : '#fff'}`
+                        }}></div>
+
+                        {/* Icon */}
+                        <div style={{
+                            fontSize: '64px',
+                            marginBottom: '20px',
+                            filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))'
+                        }}>
+                            {notification.type === 'success' ? '✅' : '❌'}
+                        </div>
+
+                        {/* Status label */}
+                        <div style={{
+                            fontSize: '13px',
+                            fontWeight: '900',
+                            letterSpacing: '4px',
+                            color: notification.type === 'success' ? '#22c55e' : '#dc2626',
+                            marginBottom: '15px',
+                            textTransform: 'uppercase'
+                        }}>
+                            {notification.type === 'success' ? 'Success' : 'Error'}
+                        </div>
+
+                        {/* Message */}
+                        <div style={{
+                            fontSize: '18px',
+                            fontWeight: '600',
+                            color: '#fff',
+                            lineHeight: '1.6',
+                            marginBottom: '10px'
+                        }}>
+                            {notification.message}
                         </div>
                     </div>
                 </div>
@@ -103,8 +217,8 @@ export default function PSGallery() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
                     {problemStatements.map((ps) => {
                         // Data Mapping: Using API keys from Code 1, but UI logic from Code 2
-                        const count = ps.selections || 0; 
-                        const target = ps.max_count || 30; 
+                        const count = ps.selections || 0;
+                        const target = ps.max_count || 30;
                         const barWidth = Math.min((count / target) * 100, 100);
 
                         return (
@@ -136,10 +250,10 @@ export default function PSGallery() {
                                             {ps.title}
                                         </h3>
                                     </div>
-                                    
+
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '15px' }}>
-                                        <button 
-                                            onClick={() => setExpandedId(expandedId === ps.problem_statement_id ? null : ps.problem_statement_id)} 
+                                        <button
+                                            onClick={() => setExpandedId(expandedId === ps.problem_statement_id ? null : ps.problem_statement_id)}
                                             className="view-btn"
                                         >
                                             {expandedId === ps.problem_statement_id ? 'CLOSE DOSSIER' : 'VIEW DOSSIER'}
@@ -165,11 +279,11 @@ export default function PSGallery() {
                                             <div className="dossier-text">
                                                 <div style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', marginBottom: '5px' }}>ELABORATION</div>
                                                 <p style={{ color: '#eee', lineHeight: '1.8', fontSize: '15px', margin: 0 }}>
-                                                    {ps.description} 
+                                                    {ps.description}
                                                 </p>
                                             </div>
                                         </div>
-                                        
+
                                         <button onClick={() => triggerLockSequence(ps)} className="lock-shine-btn">
                                             INITIALIZE TARGET LOCK
                                         </button>
@@ -185,6 +299,16 @@ export default function PSGallery() {
                 @keyframes pulseBorder { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes glitchSweep { 0% { left: -100%; } 100% { left: 100%; } }
+                @keyframes scaleIn { 
+                    from { 
+                        opacity: 0; 
+                        transform: scale(0.8); 
+                    } 
+                    to { 
+                        opacity: 1; 
+                        transform: scale(1); 
+                    } 
+                }
                 .ps-card:hover { border-color: rgba(220, 38, 38, 0.6); transform: translateY(-5px); box-shadow: 0 15px 50px rgba(220, 38, 38, 0.2); }
                 .diff-tag { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); font-size: 10px; font-weight: 700; }
                 .heat-gauge-container { width: 180px; display: flex; flex-direction: column; gap: 6px; }

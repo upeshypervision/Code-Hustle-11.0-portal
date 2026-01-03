@@ -14,13 +14,20 @@ def fetch_teamsnosubmission():
         return jsonify({"error": "Invalid session"}), 401
 
     db = get_db()
-    all_teams=db.teams.distinct("team_id")
-    submitted_teams=db.github_submissions.distinct("team_id")
-    print(submitted_teams)
-    print(all_teams)
-    notsubmitted_teams=[teams for teams in all_teams if teams not in submitted_teams]
+    
+    # Get all teams with team_id and team_name
+    all_teams = list(db.teams.find({}, {"_id": 0, "team_id": 1, "team_name": 1}))
+    
+    # Get team_ids that have submitted
+    submitted_team_ids = set(db.github_submissions.distinct("team_id"))
+    
+    # Filter out teams that have already submitted
+    notsubmitted_teams = [
+        team for team in all_teams 
+        if team["team_id"] not in submitted_team_ids
+    ]
 
-    return jsonify({"success":True,"teams":notsubmitted_teams})
+    return jsonify({"success": True, "teams": notsubmitted_teams})
 
 def view_githubsubmission_route():
     token = request.cookies.get('admin_auth')

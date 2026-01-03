@@ -3,32 +3,67 @@ import React, { useState } from 'react';
 export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const [githubLink, setGithubLink] = useState('');
     const [hostedLink, setHostedLink] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // GitHub link is mandatory, Hosted link is optional
-        if (githubLink.trim()) {
-            onUpload({
-                github: githubLink,
-                hosted: hostedLink
+
+        if (!githubLink.trim()) {
+            setError('GitHub link is required');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const res = await fetch('http://localhost:5000/api/submit-link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    github_link: githubLink,
+                    live_link: hostedLink || null
+                })
             });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setSuccess(true);
+                if (onUpload) {
+                    onUpload({
+                        github: githubLink,
+                        hosted: hostedLink
+                    });
+                }
+            } else {
+                setError(data.error || 'Failed to submit link');
+            }
+        } catch (err) {
+            console.error('Error submitting link:', err);
+            setError('Server connection failed');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            minHeight: '80vh', 
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '80vh',
             width: '150%',
             padding: '40px',
             boxSizing: 'border-box'
         }}>
-            <div style={{ 
-                animation: 'fadeIn 0.6s ease-out', 
-                width: '100%', 
-                maxWidth: '700px', 
+            <div style={{
+                animation: 'fadeIn 0.6s ease-out',
+                width: '100%',
+                maxWidth: '700px',
                 position: 'centre',
                 background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)',
                 backdropFilter: 'blur(20px)',
@@ -37,14 +72,14 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 padding: '50px 40px',
                 boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
             }}>
-                
+
                 {/* Header Section */}
                 <div style={{ textAlign: 'center', marginBottom: '45px' }}>
-                    <h2 style={{ 
-                        color: '#fff', 
-                        fontSize: '2.2rem', 
-                        fontWeight: '900', 
-                        letterSpacing: '4px', 
+                    <h2 style={{
+                        color: '#fff',
+                        fontSize: '2.2rem',
+                        fontWeight: '900',
+                        letterSpacing: '4px',
                         textTransform: 'uppercase',
                         margin: '0 0 10px 0',
                         textShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
@@ -57,7 +92,23 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                     </p>
                 </div>
 
-                {isSubmitted ? (
+                {/* Error Message */}
+                {error && (
+                    <div style={{
+                        padding: '15px',
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid #ef4444',
+                        borderRadius: '4px',
+                        color: '#ef4444',
+                        fontSize: '0.85rem',
+                        marginBottom: '20px',
+                        textAlign: 'center'
+                    }}>
+                        {error}
+                    </div>
+                )}
+
+                {(isSubmitted || success) ? (
                     <div style={{
                         padding: '40px',
                         background: 'rgba(16,185,129,0.05)',
@@ -73,18 +124,18 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-                        
+
                         {/* Mandatory GitHub Field */}
                         <div style={{ position: 'relative' }}>
                             <label style={{ color: '#dc2626', fontSize: '0.65rem', fontWeight: '900', letterSpacing: '2px', display: 'block', marginBottom: '10px' }}>
                                 01. GITHUB REPOSITORY (MANDATORY)
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <div style={{ 
-                                    position: 'absolute', 
-                                    left: '15px', 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
+                                <div style={{
+                                    position: 'absolute',
+                                    left: '15px',
+                                    display: 'flex',
+                                    alignItems: 'center',
                                     borderRight: '1px solid rgba(220, 38, 38, 0.3)',
                                     paddingRight: '12px'
                                 }}>
@@ -145,7 +196,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                         <button
                             type="submit"
                             className="heist-submit-btn"
-                            disabled={!githubLink.trim()}
+                            disabled={!githubLink.trim() || loading}
                             style={{
                                 marginTop: '10px',
                                 padding: '20px',
@@ -155,14 +206,14 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                                 fontWeight: '900',
                                 fontSize: '1rem',
                                 letterSpacing: '4px',
-                                cursor: 'pointer',
+                                cursor: loading ? 'wait' : 'pointer',
                                 textTransform: 'uppercase',
                                 position: 'relative',
                                 overflow: 'hidden',
                                 transition: 'all 0.3s ease'
                             }}
                         >
-                            INITIATE TRANSMISSION
+                            {loading ? 'TRANSMITTING...' : 'INITIATE TRANSMISSION'}
                         </button>
 
                         <div style={{ textAlign: 'center', fontSize: '0.6rem', color: '#444', letterSpacing: '2px', textTransform: 'uppercase' }}>
@@ -171,7 +222,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                     </form>
                 )}
 
-                <style dangerouslySetInnerHTML={{ __html: `
+                <style dangerouslySetInnerHTML={{
+                    __html: `
                     .heist-input:focus {
                         border-color: #dc2626 !important;
                         background: rgba(220, 38, 38, 0.05) !important;

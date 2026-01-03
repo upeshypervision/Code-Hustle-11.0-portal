@@ -24,17 +24,17 @@ export default function ProblemStatements() {
                     credentials: 'include'
                 }
             );
-    
+
             const data = await res.json();
-    
+
             if (!res.ok) {
                 throw new Error('Failed to fetch problem statements');
             }
-    
+
             const psArray = Array.isArray(data)
                 ? data
                 : data.problem_statements;
-    
+
             const formatted = psArray.map(ps => ({
                 id: ps.problem_statement_id,
                 title: ps.title,
@@ -45,26 +45,26 @@ export default function ProblemStatements() {
                 selections: ps.selections || 0,
                 visible: ps.visible
             }));
-    
+
             setProblemStatements(formatted);
-    
+
         } catch (err) {
             console.error(err);
         }
     };
-    
+
     useEffect(() => {
         fetchProblemStatements();
     }, []);
-    
+
     const handleAddPs = async (e) => {
         e.preventDefault();
-    
+
         if (!newPs.title.trim() || !newPs.description.trim()) {
             setPsMessage({ type: 'error', text: 'Title and description are required.' });
             return;
         }
-    
+
         try {
             const res = await fetch('http://localhost:5000/api/createproblem-statements', {
                 method: 'POST',
@@ -79,18 +79,18 @@ export default function ProblemStatements() {
                     Max_Count: Number(newPs.maxTeams)
                 })
             });
-    
+
             const data = await res.json();
-    
+
             if (!res.ok) {
                 throw new Error(data.error || 'Failed to create problem statement');
             }
-    
+
             setPsMessage({
                 type: 'success',
                 text: `Problem Statement created successfully (ID: ${data.problem_statement_id})`
             });
-    
+
             // OPTIONAL: Clear form
             setNewPs({
                 title: '',
@@ -99,7 +99,7 @@ export default function ProblemStatements() {
                 difficulty: 'Easy',
                 maxTeams: ''
             });
-    
+
         } catch (err) {
             setPsMessage({
                 type: 'error',
@@ -107,28 +107,46 @@ export default function ProblemStatements() {
             });
         }
     };
-    
+
 
     const togglePsVisibility = async (psId) => {
         try {
-          await fetch(
-            `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
-            {
-              method: "POST",
-              credentials: "include"
-            }
-          );
-      
-          // Refresh PS list from backend
-          fetchProblemStatements();
-      
-        } catch (err) {
-          console.error("Failed to toggle visibility", err);
-        }
-      };
-      
+            await fetch(
+                `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
 
-    const handleViewTeams = (ps) => setSelectedPs(ps);
+            // Refresh PS list from backend
+            fetchProblemStatements();
+
+        } catch (err) {
+            console.error("Failed to toggle visibility", err);
+        }
+    };
+
+
+    const handleViewTeams = async (ps) => {
+        setSelectedPs(ps);
+
+        // Fetch teams for this PS
+        try {
+            const res = await fetch(
+                `http://localhost:5000/api/admin/problem-statement/${ps.id}/teams`,
+                { credentials: 'include' }
+            );
+            const data = await res.json();
+
+            if (data.success) {
+                setSelectedPs({ ...ps, teamsList: data.teams });
+            }
+        } catch (err) {
+            console.error('Failed to fetch teams', err);
+        }
+    };
+
     const handleCloseModal = () => setSelectedPs(null);
 
     return (
@@ -148,7 +166,7 @@ export default function ProblemStatements() {
                         />
                         <span className="toggle-slider"></span>
                     </div>
-                    
+
                 </label>
             </div>
 
@@ -295,9 +313,37 @@ export default function ProblemStatements() {
                 onClose={handleCloseModal}
                 title={selectedPs ? `Teams for ${selectedPs.id}` : ''}
             >
-                {selectedPs && (
+                {selectedPs && selectedPs.teamsList ? (
+                    <div>
+                        <p style={{ fontSize: '0.9rem', color: '#9ca3af', marginBottom: '16px' }}>
+                            {selectedPs.teamsList.length} team(s) selected this problem statement
+                        </p>
+                        {selectedPs.teamsList.length === 0 ? (
+                            <p style={{ textAlign: 'center', color: '#6b7280' }}>No teams yet</p>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Team ID</th>
+                                        <th>Team Name</th>
+                                        <th>Selected At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedPs.teamsList.map((team, idx) => (
+                                        <tr key={idx}>
+                                            <td><strong>{team.team_id}</strong></td>
+                                            <td>{team.team_name}</td>
+                                            <td>{new Date(team.selected_at).toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                ) : (
                     <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
-                        Team data will be loaded from backend.
+                        Loading teams...
                     </p>
                 )}
             </Modal>
