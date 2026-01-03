@@ -13,6 +13,11 @@ from user_access import fetch_teams_route, get_user_info_route
 from git_submission import submit_link_route
 from get_teams import fetch_teamsnosubmission,view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from user_access import (
+    fetch_teams_route,
+    get_user_info_route,
+    generate_presigned_url_route 
+)
 
 
 app = Flask(__name__)
@@ -104,6 +109,11 @@ def student_get_all_problem_statements():
 @app.route("/api/select-problem-statement", methods=["POST"])
 def select_problem_statement():
     return select_problem_statement_route()
+
+# --- NEW Route for generating presigned URL ---
+@app.route("/api/admin/submission/<team_id>", methods=["GET"])
+def get_submission_presigned_url(team_id):
+    return generate_presigned_url_route(team_id)
 
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
