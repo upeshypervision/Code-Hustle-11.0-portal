@@ -155,6 +155,9 @@ const DashboardView = ({
                         z-index: 10;
                         position: relative;
                         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+                        box-sizing: border-box;
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
                     }
                     .live-badge {
                         background: #dc2626;
@@ -195,14 +198,23 @@ const DashboardView = ({
                         lineHeight: '1.1',
                         margin: '0 0 15px 0',
                         textTransform: 'uppercase',
-                        fontStyle: 'italic'
+                        fontStyle: 'italic',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box'
                     }}>
                         WELCOME,<br />
                         <span style={{ 
                             color: '#dc2626',
                             background: 'linear-gradient(to bottom, #ff4444, #991b1b)',
                             WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
+                            WebkitTextFillColor: 'transparent',
+                            display: 'inline-block',
+                            maxWidth: '100%',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            hyphens: 'auto'
                         }}>{teamName}</span>
                     </h1>
 

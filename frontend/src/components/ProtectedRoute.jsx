@@ -7,8 +7,8 @@ export default function ProtectedRoute({ children, role = 'admin' }) {
     useEffect(() => {
         const verifyAuth = async () => {
             const endpoint = role === 'student'
-                ? 'http://localhost:5000/api/check-student-auth'
-                : 'http://localhost:5000/api/check-auth';
+                ? 'http://localhost:5001/api/check-student-auth'
+                : 'http://localhost:5001/api/check-auth';
 
             try {
                 const res = await fetch(endpoint, {

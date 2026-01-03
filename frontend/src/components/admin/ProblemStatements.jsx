@@ -19,7 +19,7 @@ export default function ProblemStatements() {
     const fetchProblemStatements = async () => {
         try {
             const res = await fetch(
-                'http://localhost:5000/api/admin/getallproblem-statements',
+                'http://localhost:5001/api/admin/getallproblem-statements',
                 {
                     credentials: 'include'
                 }
@@ -66,7 +66,7 @@ export default function ProblemStatements() {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/createproblem-statements', {
+            const res = await fetch('http://localhost:5001/api/createproblem-statements', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -112,7 +112,7 @@ export default function ProblemStatements() {
     const togglePsVisibility = async (psId) => {
         try {
             await fetch(
-                `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
+                `http://localhost:5001/api/admin/problem-statement/${psId}/toggle-visibility`,
                 {
                     method: "POST",
                     credentials: "include"
@@ -134,7 +134,7 @@ export default function ProblemStatements() {
         // Fetch teams for this PS
         try {
             const res = await fetch(
-                `http://localhost:5000/api/admin/problem-statement/${ps.id}/teams`,
+                `http://localhost:5001/api/admin/problem-statement/${ps.id}/teams`,
                 { credentials: 'include' }
             );
             const data = await res.json();

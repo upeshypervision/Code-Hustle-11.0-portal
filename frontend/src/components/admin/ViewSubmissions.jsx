@@ -11,7 +11,7 @@ export default function ViewSubmissions() {
 
     const fetchTeams = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/admin/teams-with-ppt', {
+            const res = await fetch('http://localhost:5001/api/admin/teams-with-ppt', {
                 method: 'GET',
                 credentials: 'include'
             });

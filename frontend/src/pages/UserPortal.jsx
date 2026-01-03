@@ -17,7 +17,7 @@ export default function UserPortal() {
     const [teamInfo, setTeamInfo] = useState({ login_id: 'Loading...' });
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/user-info', {
+        fetch('http://localhost:5001/api/user-info', {
             method: 'GET',
             credentials: 'include'
         })
@@ -52,7 +52,6 @@ export default function UserPortal() {
                     selectedPS={selectedPS}
                     isPPTSubmitted={isPPTSubmitted}
                     isGithubSubmitted={isGithubSubmitted}
-                    // isHostedSubmitted removed from here
                     setActiveTab={setActiveTab}
                     teamName={teamInfo.login_id}
                     activeTab={activeTab}

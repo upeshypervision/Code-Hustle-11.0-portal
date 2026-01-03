@@ -134,4 +134,4 @@ def get_teams_by_ps(ps_id):
     return get_teams_by_ps_route(ps_id)
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)

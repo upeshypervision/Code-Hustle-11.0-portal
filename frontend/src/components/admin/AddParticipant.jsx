@@ -51,7 +51,7 @@ export default function AddParticipant() {
         };
 
         try {
-            const response = await fetch('http://localhost:5000/api/admin/add-team', {
+            const response = await fetch('http://localhost:5001/api/admin/add-team', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // Important for sending admin cookie

@@ -7,31 +7,89 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+dist-ssr/
+build/
 *.local
 
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 *.pyc
 *.pyo
 *.pyd
 
-# Virtual env
+# Virtual environments
 .venv/
+venv/
+ENV/
+env/
+.ENV
 
-# PyCharm
-.idea/
+# Environment variables and sensitive config
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+config.py
+database.py
 
-
-# Editor directories and files
+# IDE and Editor directories
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-./idea
+
+# Testing
+coverage/
+.pytest_cache/
+.tox/
+.hypothesis/
+*.cover
+htmlcov/
+
+# Flask
+instance/
+.webassets-cache
+
+# MongoDB
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Backup files
+*.bak
+*.backup
+*~
