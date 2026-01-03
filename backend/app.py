@@ -10,6 +10,8 @@ from logout import logout_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route 
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
+from git_submission import submit_link_route,admin_manual_submission_route
+from get_teams import fetch_teamsnosubmission,view_githubsubmission_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
@@ -51,6 +53,14 @@ def student_login():
 def register_manual_team():
     return register_manual_team_route()
 
+@app.route("/api/admin/pending-github", methods=["GET"])
+def getnotsubteams_teams():
+    return fetch_teamsnosubmission()
+
+@app.route("/api/admin/view-github-submissions", methods=["GET"])
+def show_submissions():
+    return view_githubsubmission_route()
+
 @app.route("/api/admin/teams", methods=["GET"])
 def fetch_teams():
     return fetch_teams_route()
@@ -84,6 +94,14 @@ def submit_ppt():
 @app.route('/api/submit-ppt-student', methods=['POST']) # Student dashboard submission (NEW)
 def submit_ppt_student():
     return submit_ppt_student_route()
+
+@app.route('/api/submit-link', methods=['POST'])
+def submit_link():
+    return submit_link_route()
+
+@app.route('/api/submit-link-admin', methods=['POST'])
+def submit_adminlink():
+    return admin_manual_submission_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
