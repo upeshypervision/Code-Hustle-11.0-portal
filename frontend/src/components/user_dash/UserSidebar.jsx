@@ -2,12 +2,12 @@ import React from 'react';
 
 export default function UserSidebar({ activeTab, setActiveTab }) {
     const menuItems = [
-        { id: 'dashboard', label: 'DASHBOARD' },
-        { id: 'ps-selection', label: 'PROBLEM SELECTION' },
-        { id: 'ppt-submission', label: 'PPT SUBMISSION' },
-        { id: 'github-submission', label: 'GITHUB LINK' },
-        { id: 'hosted-link', label: 'HOSTED LINK (OPTIONAL)' },
-    ];
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'ps-selection', label: 'Problem Statement Selection' },
+    { id: 'ppt-submission', label: 'PPT Submission' },
+    { id: 'github-submission', label: 'GitHub Link Submission' },
+];
+
 
     return (
         <aside style={{ 

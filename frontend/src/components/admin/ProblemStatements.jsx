@@ -19,7 +19,7 @@ export default function ProblemStatements() {
     const fetchProblemStatements = async () => {
         try {
             const res = await fetch(
-                'http://localhost:5000/api/getallproblem-statements',
+                'http://localhost:5000/api/admin/getallproblem-statements',
                 {
                     credentials: 'include'
                 }

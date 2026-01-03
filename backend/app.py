@@ -10,6 +10,8 @@ from logout import logout_route
 from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,toggle_problem_statement_visibility_route,get_all_visible_problem_statements_route
 from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
 from user_access import fetch_teams_route, get_user_info_route
+from git_submission import submit_link_route,admin_manual_submission_route
+from get_teams import fetch_teamsnosubmission,view_githubsubmission_route
 
 
 app = Flask(__name__)
@@ -51,6 +53,14 @@ def student_login():
 @app.route("/api/admin/add-team", methods=["POST"])
 def register_manual_team():
     return register_manual_team_route()
+
+@app.route("/api/admin/pending-github", methods=["GET"])
+def getnotsubteams_teams():
+    return fetch_teamsnosubmission()
+
+@app.route("/api/admin/view-github-submissions", methods=["GET"])
+def show_submissions():
+    return view_githubsubmission_route()
 
 @app.route("/api/admin/teams", methods=["GET"])
 def fetch_teams():
@@ -120,6 +130,13 @@ def update_settings():
         upsert=True
     )
     return jsonify({"success": True}), 200
+@app.route('/api/submit-link', methods=['POST'])
+def submit_link():
+    return submit_link_route()
+
+@app.route('/api/submit-link-admin', methods=['POST'])
+def submit_adminlink():
+    return admin_manual_submission_route()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
