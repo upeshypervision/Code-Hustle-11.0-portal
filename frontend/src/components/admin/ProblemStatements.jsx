@@ -3,7 +3,6 @@ import Modal from '../../components/Modal';
 
 export default function ProblemStatements() {
     const [psVisible, setPsVisible] = useState(false);
-    const [psToggles, setPsToggles] = useState({});
     const [selectedPs, setSelectedPs] = useState(null);
     const [psMessage, setPsMessage] = useState({ type: '', text: '' });
 
@@ -17,35 +16,44 @@ export default function ProblemStatements() {
         difficulty: 'Easy',
         maxTeams: ''
     });
-    useEffect(() => {
-        const fetchProblemStatements = async () => {
-            try {
-                const res = await fetch('http://localhost:5000/api/getallproblem-statements');
-                const data = await res.json();
-    
-                if (!res.ok) {
-                    throw new Error('Failed to fetch problem statements');
+    const fetchProblemStatements = async () => {
+        try {
+            const res = await fetch(
+                'http://localhost:5000/api/admin/getallproblem-statements',
+                {
+                    credentials: 'include'
                 }
+            );
     
-                // 🔁 Normalize backend fields for frontend
-                const formatted = data.map(ps => ({
-                    id: ps.problem_statement_id,      // "PS001"
-                    title: ps.title,
-                    track: ps.track || '',
-                    description: ps.description,
-                    difficulty: ps.difficulty,
-                    maxTeams: ps.max_count,
-                    selections: ps.selections || 0,
-                    visible: ps.visible
-                }));
+            const data = await res.json();
     
-                setProblemStatements(formatted);
-    
-            } catch (err) {
-                console.error(err);
+            if (!res.ok) {
+                throw new Error('Failed to fetch problem statements');
             }
-        };
     
+            const psArray = Array.isArray(data)
+                ? data
+                : data.problem_statements;
+    
+            const formatted = psArray.map(ps => ({
+                id: ps.problem_statement_id,
+                title: ps.title,
+                track: ps.track || '',
+                description: ps.description,
+                difficulty: ps.difficulty,
+                maxTeams: ps.max_count,
+                selections: ps.selections || 0,
+                visible: ps.visible
+            }));
+    
+            setProblemStatements(formatted);
+    
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    
+    useEffect(() => {
         fetchProblemStatements();
     }, []);
     
@@ -101,9 +109,24 @@ export default function ProblemStatements() {
     };
     
 
-    const togglePsVisibility = (psId) => {
-        setPsToggles({ ...psToggles, [psId]: !psToggles[psId] });
-    };
+    const togglePsVisibility = async (psId) => {
+        try {
+          await fetch(
+            `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
+            {
+              method: "POST",
+              credentials: "include"
+            }
+          );
+      
+          // Refresh PS list from backend
+          fetchProblemStatements();
+      
+        } catch (err) {
+          console.error("Failed to toggle visibility", err);
+        }
+      };
+      
 
     const handleViewTeams = (ps) => setSelectedPs(ps);
     const handleCloseModal = () => setSelectedPs(null);
@@ -156,7 +179,7 @@ export default function ProblemStatements() {
                                             <div className="toggle-switch">
                                                 <input
                                                     type="checkbox"
-                                                    checked={psToggles[ps.id] ?? true}
+                                                    checked={ps.visible}
                                                     onChange={() => togglePsVisibility(ps.id)}
                                                 />
                                                 <span className="toggle-slider"></span>
