@@ -76,7 +76,7 @@ def submit_link_route():
         return jsonify({"success": False, "error": "Invalid link format."}), 400
 
     # ---------- OPTIONAL: prevent re-submission ----------
-    existing = db.github_submission.find_one({
+    existing = db.github_submissions.find_one({
         "team_id": team_id,
     })
 
