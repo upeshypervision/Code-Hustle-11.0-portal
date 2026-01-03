@@ -76,6 +76,7 @@ def fetch_teams_route():
     token = request.cookies.get('admin_auth')
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
+
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
@@ -290,11 +291,14 @@ def generate_presigned_url_route(team_id):
             return jsonify({"error": "Submission not found"}), 404
 
         # 2. Extract the S3 key from the file_path
+        # Assuming file_path is stored as "https://bucket-name.s3.region.amazonaws.com/submissions/..."
         file_path = submission.get("file_path", "")
         if not file_path.startswith("https://"):
             return jsonify({"error": "Invalid file path format"}), 500
 
         # Parse the S3 key from the full URL
+        # Example: "https://codehustle.s3.ap-south-1.amazonaws.com/submissions/CH001/file.pdf"
+        # We want: "submissions/CH001/file.pdf"
         try:
             s3_key = file_path.split(f".amazonaws.com/", 1)[1]
         except IndexError:

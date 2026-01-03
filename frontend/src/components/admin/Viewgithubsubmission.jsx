@@ -1,187 +1,117 @@
-import { useEffect, useState } from "react";
-import "./Viewgithubsubmission.css";
+// frontend/src/components/admin/ViewSubmissions.jsx
+import React, { useState, useEffect } from 'react';
+import './ViewSubmissions.css'; // Optional for styling
 
-const API = "http://localhost:5000";
-
-export default function ViewGithubSubmissions() {
+export default function ViewSubmissions() {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-
-    const [showModal, setShowModal] = useState(false);
-    const [activeSubmission, setActiveSubmission] = useState(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        fetch(`${API}/api/admin/view-github-submissions`, {
-            method: "GET",
-            credentials: "include"
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setSubmissions(data.teams || []);
-                } else {
-                    setError(data.error || "Failed to load submissions");
-                }
-            })
-            .catch(() => setError("Server connection failed"))
-            .finally(() => setLoading(false));
+        fetchSubmissions();
     }, []);
 
-    const openModal = (submission) => {
-        setActiveSubmission(submission);
-        setShowModal(true);
+    // --- Fetch ONLY submitted teams from the correct endpoint ---
+    const fetchSubmissions = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('http://localhost:5000/api/admin/submissions', {
+                method: 'GET',
+                credentials: 'include' // Important for admin cookie
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setSubmissions(data.submissions || []);
+            } else {
+                setError(data.error || 'Failed to fetch submissions');
+            }
+        } catch (err) {
+            console.error('Fetch submissions error:', err);
+            setError('Server connection failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const closeModal = () => {
-        setShowModal(false);
-        setActiveSubmission(null);
+    // --- Handle View using Presigned URL ---
+    const handleView = async (teamId) => {
+        try {
+            const res = await fetch(`http://localhost:5000/api/admin/submission/${teamId}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                window.open(data.url, '_blank');
+            } else {
+                alert(`Failed to load file: ${data.error || 'Unknown error'}`);
+            }
+        } catch (err) {
+            console.error('View submission error:', err);
+            alert('Server connection failed.');
+        }
     };
 
-    if (loading) {
-        return <div className="github-view-container">Loading submissions…</div>;
-    }
+    // --- Handle Download using direct S3 URL ---
+    const handleDownload = (file_path, fileName) => {
+        const link = document.createElement('a');
+        link.href = file_path;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
-    if (error) {
-        return <div className="github-view-container error">{error}</div>;
-    }
+    if (loading) return <div className="admin-section"><p>Loading Submissions...</p></div>;
+    if (error) return <div className="admin-section" style={{ color: '#ef4444' }}>Error: {error}</div>;
 
     return (
-        <div className="github-view-container">
-            <div className="gv-header">
-                <h2 className="gv-title">GitHub Submissions</h2>
-                <p className="gv-subtitle">
-                    View all submitted GitHub repositories and live deployments
-                </p>
+        <div className="admin-section">
+            <div className="admin-section-header">
+                <h2 className="admin-section-title">PPT Submissions</h2>
             </div>
+            <div className="panel">
+                <div className="panel-inner">
+                    <p className="panel-subtitle" style={{ marginBottom: '16px' }}>
+                        All received Round 1 PPT submissions from teams.
+                    </p>
 
-            {submissions.length === 0 ? (
-                <p className="empty-text">No submissions yet</p>
-            ) : (
-                <div className="submission-list">
-                    {submissions.map((sub, idx) => (
-                        <div key={idx} className="submission-row">
-                            <div className="submission-info">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <p className="team-name">{sub.team_name}</p>
-                                    <span className={`badge-via ${sub.submitted_via}`}>
-                                        {sub.submitted_via}
-                                    </span>
+                    {submissions.length === 0 ? (
+                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>
+                            No submissions received yet.
+                        </p>
+                    ) : (
+                        submissions.map((submission) => (
+                            <div key={submission.team_id} className="submission-card">
+                                <div className="submission-info">
+                                    <p className="submission-team">
+                                        {submission.team_name} <span style={{ opacity: 0.5, fontWeight: 400 }}>({submission.team_id})</span>
+                                    </p>
+                                    <p className="submission-meta">
+                                        File: <strong>{submission.file_name}</strong> · Submitted: {new Date(submission.submitted_at).toLocaleString()}
+                                    </p>
                                 </div>
-                                <p className="team-id">{sub.team_id}</p>
-                                {sub.live_link && (
-                                    <span className="live-indicator">
-                                        🌐 Live deployment included
-                                    </span>
-                                )}
+                                <div className="submission-actions">
+                                    <button 
+                                        className="btn-small" 
+                                        onClick={() => handleView(submission.team_id)}
+                                    >
+                                        View PPT
+                                    </button>
+                                    <button 
+                                        className="btn-small" 
+                                        onClick={() => handleDownload(submission.file_path, submission.file_name)}
+                                    >
+                                        Download
+                                    </button>
+                                </div>
                             </div>
-
-                            <button
-                                className="btn-view"
-                                onClick={() => openModal(sub)}
-                            >
-                                View Details
-                            </button>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
-            )}
-
-            {showModal && activeSubmission && (
-                <div className="modal-backdrop" onClick={closeModal}>
-                    <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="modal-title">Submission Details</h3>
-
-                        <div className="detail-row">
-                            <span>Team Name</span>
-                            <strong>{activeSubmission.team_name}</strong>
-                        </div>
-
-                        <div className="detail-row">
-                            <span>Team ID</span>
-                            <strong>{activeSubmission.team_id}</strong>
-                        </div>
-
-                        <div className="detail-row">
-                            <span>Submitted Via</span>
-                            <strong style={{ textTransform: 'capitalize' }}>
-                                {activeSubmission.submitted_via}
-                            </strong>
-                        </div>
-
-                        <div className="detail-row">
-                            <span>Submitted At</span>
-                            <strong>
-                                {new Date(activeSubmission.submitted_at).toLocaleString()}
-                            </strong>
-                        </div>
-
-                        {/* GitHub Link */}
-                        <div className="link-section">
-                            <label className="link-label">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px' }}>
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                                </svg>
-                                GitHub Repository
-                            </label>
-                            <a
-                                href={activeSubmission.github_link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="link-url"
-                            >
-                                {activeSubmission.github_link}
-                            </a>
-                        </div>
-
-                        {/* Live Link (Optional) */}
-                        {activeSubmission.live_link && (
-                            <div className="link-section">
-                                <label className="link-label">
-                                    🌐 Live Deployment
-                                </label>
-                                <a
-                                    href={activeSubmission.live_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="link-url"
-                                >
-                                    {activeSubmission.live_link}
-                                </a>
-                            </div>
-                        )}
-
-                        <div className="modal-actions">
-                            <a
-                                href={activeSubmission.github_link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-open github"
-                            >
-                                Open GitHub
-                            </a>
-
-                            {activeSubmission.live_link && (
-                                <a
-                                    href={activeSubmission.live_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn-open live"
-                                >
-                                    Open Live Site
-                                </a>
-                            )}
-
-                            <button
-                                className="btn-cancel"
-                                onClick={closeModal}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            </div>
         </div>
     );
 }
