@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import socket from "../../socket"; // Added socket import
 
 export default function PSGallery() {
-  // --- STATE & LOGIC - STRICTLY INTACT ---
+  // --- STATE ---
   const [expandedId, setExpandedId] = useState(null);
   const [problemStatements, setProblemStatements] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -11,12 +12,10 @@ export default function PSGallery() {
     type: "",
     message: "",
   });
-
-  // Added for Hamburger Functionality (Matching PPT.jsx)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // --- FETCH LOGIC - STRICTLY INTACT ---
-  useEffect(() => {
+  // --- FETCH DATA FUNCTION ---
+  const fetchProblemStatements = () => {
     fetch("http://localhost:5001/api/student/getallproblem-statements", {
       credentials: "include",
     })
@@ -26,10 +25,23 @@ export default function PSGallery() {
           setProblemStatements(data.problem_statements);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Fetch error:", err));
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchProblemStatements();
   }, []);
 
-  // --- HANDLERS - STRICTLY INTACT ---
+  // Socket listener for real-time updates from other users
+  useEffect(() => {
+    socket.on("ps_selected", fetchProblemStatements);
+    return () => {
+      socket.off("ps_selected", fetchProblemStatements);
+    };
+  }, []);
+
+  // --- HANDLERS ---
   const triggerLockSequence = (ps) => {
     setPendingPs(ps);
     setShowModal(true);
@@ -43,24 +55,32 @@ export default function PSGallery() {
   };
 
   const confirmLock = async () => {
+    if (!pendingPs) return;
+
     try {
       const res = await fetch(
-        "http://localhost:5001/api/select-problem-statement",
+        "http://localhost:5001/api/student/select-problem-statement",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
-            problem_statement_id: pendingPs?.problem_statement_id,
+            problem_statement_id: pendingPs.problem_statement_id,
           }),
         }
       );
+
       const data = await res.json();
+
       if (res.ok && data.success) {
         setShowModal(false);
         setPendingPs(null);
-        showNotification("success", "Problem statement selected successfully!");
-        setTimeout(() => window.location.reload(), 2000);
+        showNotification(
+          "success",
+          "Target Locked! Problem statement selected successfully."
+        );
+        // Refresh local state immediately
+        fetchProblemStatements();
       } else {
         setShowModal(false);
         showNotification(
@@ -76,7 +96,6 @@ export default function PSGallery() {
   };
 
   return (
-    /* WRAPPER: Matches PPTSubmission scrolling and layout logic */
     <div
       className="ps-container"
       style={{
@@ -94,7 +113,7 @@ export default function PSGallery() {
         backgroundColor: "#0a0a0a",
       }}
     >
-      {/* --- FIXED BACKGROUND (Matching Dashboard Visuals) --- */}
+      {/* --- FIXED BACKGROUND --- */}
       <div
         style={{
           position: "fixed",
@@ -123,7 +142,7 @@ export default function PSGallery() {
         }}
       />
 
-      {/* --- HAMBURGER BUTTON (Strictly from PPT.jsx) --- */}
+      {/* --- HAMBURGER BUTTON --- */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="heist-hamburger"
@@ -147,30 +166,15 @@ export default function PSGallery() {
       >
         <div
           className={`line ${isMenuOpen ? "cross-top" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
+          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
         ></div>
         <div
           className={`line ${isMenuOpen ? "hide" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
+          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
         ></div>
         <div
           className={`line ${isMenuOpen ? "cross-bottom" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
+          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
         ></div>
       </button>
 
@@ -393,7 +397,7 @@ export default function PSGallery() {
           })}
         </div>
 
-        {/* --- MODAL UI (Strictly Intact Logic) --- */}
+        {/* --- MODAL UI --- */}
         {showModal && (
           <div
             style={{
@@ -449,7 +453,7 @@ export default function PSGallery() {
                 <strong style={{ color: "#dc2626" }}>
                   {pendingPs?.problem_statement_id}
                 </strong>
-                .
+                . Once breached, the vault stays locked.
               </p>
               <div style={{ display: "flex", gap: "15px" }}>
                 <button
@@ -510,37 +514,31 @@ export default function PSGallery() {
         <style
           dangerouslySetInnerHTML={{
             __html: `
-                    /* Scrollbar removal logic added here */
-                    .ps-container::-webkit-scrollbar {
-                        display: none;
-                    }
-                    .ps-container {
-                        -ms-overflow-style: none;
-                        scrollbar-width: none;
-                    }
-                    
-                    @media (max-width: 992px) {
-                        .heist-hamburger { display: flex !important; }
-                        aside, .sidebar-container { 
-                            position: fixed !important; 
-                            left: ${isMenuOpen ? "0" : "-300px"} !important; 
-                            top: 0; height: 100vh; z-index: 1500; 
-                            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                        }
-                        .card-layout-inner { flex-direction: column !important; }
-                        .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
-                        .view-btn-heist { width: 100% !important; }
-                        .heat-gauge-container { width: 100% !important; }
-                    }
-                    .cross-top { transform: translateY(7px) rotate(45deg); }
-                    .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
-                    .hide { opacity: 0; }
-                    .view-btn-heist { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
-                    .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
-                    .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
-                    .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                `,
+              .ps-container::-webkit-scrollbar { display: none; }
+              .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
+              
+              @media (max-width: 992px) {
+                  .heist-hamburger { display: flex !important; }
+                  aside, .sidebar-container { 
+                      position: fixed !important; 
+                      left: ${isMenuOpen ? "0" : "-300px"} !important; 
+                      top: 0; height: 100vh; z-index: 1500; 
+                      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                  }
+                  .card-layout-inner { flex-direction: column !important; }
+                  .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
+                  .view-btn-heist { width: 100% !important; }
+                  .heat-gauge-container { width: 100% !important; }
+              }
+              .cross-top { transform: translateY(7px) rotate(45deg); }
+              .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
+              .hide { opacity: 0; }
+              .view-btn-heist { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
+              .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
+              .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
+              .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
+              @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            `,
           }}
         />
       </div>

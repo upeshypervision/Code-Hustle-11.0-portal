@@ -1,0 +1,105 @@
+/* ViewSubmissions.css */
+.admin-section {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-section-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+}
+
+.admin-section-title {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.panel {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.panel-inner {
+    padding: 20px;
+}
+
+.panel-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+.panel-subtitle {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-top: 0;
+}
+
+.submission-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.submission-card:hover {
+    background: rgba(15, 23, 42, 0.9);
+    transform: translateX(5px);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.submission-info {
+    flex: 1;
+}
+
+.submission-team {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0 0 5px 0;
+}
+
+.submission-meta {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.submission-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-small:hover {
+    background: #2563eb;
+}
+
+.btn-small:disabled {
+    background: #475569;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
