@@ -7,7 +7,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
+  // const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state (Removed)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,57 +88,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         }}
       />
 
-      {/* --- HAMBURGER BUTTON --- */}
-      <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="heist-hamburger"
-        style={{
-          display: "none",
-          position: "fixed",
-          top: "70px",
-          left: "20px",
-          zIndex: 1000,
-          background: "rgba(220, 38, 38, 0.2)",
-          border: "1px solid #dc2626",
-          width: "45px",
-          height: "45px",
-          borderRadius: "4px",
-          cursor: "pointer",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "5px",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <div
-          className={`line ${isMenuOpen ? "cross-top" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "hide" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "cross-bottom" : ""}`}
-          style={{
-            width: "25px",
-            height: "2px",
-            background: "#fff",
-            transition: "0.3s",
-          }}
-        ></div>
-      </button>
+      {/* --- HAMBURGER BUTTON REMOVED --- */}
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
@@ -148,10 +98,11 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
           alignItems: "flex-start",
           minHeight: "100vh",
           width: "100%",
-          padding: "0px 40px 40px 40px",
+          width: "100%",
           boxSizing: "border-box",
           zIndex: 1,
         }}
+        className="github-submission-wrapper"
       >
         <div
           style={{
@@ -163,10 +114,10 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
             backdropFilter: "blur(20px)",
             borderRadius: "4px",
             border: "1px solid rgba(220, 38, 38, 0.3)",
-            padding: "50px 40px",
             boxShadow:
               "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
           }}
+          className="github-submission-card"
         >
           {/* Header Section */}
           <div style={{ textAlign: "center", marginBottom: "45px" }}>
@@ -393,12 +344,28 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
           dangerouslySetInnerHTML={{
             __html: `
                     @media (max-width: 992px) {
-                        .heist-hamburger { display: flex !important; }
+                        /* .heist-hamburger { display: flex !important; } REMOVED */
                         aside, .sidebar-container { 
-                            position: fixed !important; 
-                            left: ${isMenuOpen ? "0" : "-300px"} !important; 
-                            top: 0; height: 100vh; z-index: 999; 
-                            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                            /* position: fixed; REMOVED */
+                        }
+                    }
+                    /* Default (Desktop) Styles */
+                    .github-submission-wrapper {
+                        padding: 80px 40px 40px 40px;
+                    }
+                    .github-submission-card {
+                        padding: 50px 40px;
+                    }
+
+                    /* Mobile Responsive Styles */
+                    @media (max-width: 768px) {
+                        .github-submission-wrapper {
+                            padding: 20px !important;
+                            align-items: center !important; /* Center vertically if needed, but flex-start is usually better for scrolling */
+                        }
+                        .github-submission-card {
+                            padding: 30px 20px !important;
+                            width: 100% !important; 
                         }
                     }
                     .cross-top { transform: translateY(7px) rotate(45deg); }

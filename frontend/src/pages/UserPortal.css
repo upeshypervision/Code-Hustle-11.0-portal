@@ -20,11 +20,18 @@ body {
 /* --- NAVBAR ALIGNMENT --- */
 .top-nav {
   width: 100%;
-  background: rgba(10, 10, 15, 0.9);
+  background: linear-gradient(180deg,
+      rgba(90, 32, 32, 0.85) 0%,
+      rgba(60, 24, 24, 0.88) 20%,
+      rgba(30, 14, 14, 0.95) 100%);
+
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 1000;
 }
+
 
 .top-nav-inner {
   width: 100%;
@@ -44,6 +51,7 @@ body {
 .logo-img {
   height: 32px;
 }
+
 .logo-text {
   font-weight: 800;
   color: #fff;
@@ -55,6 +63,7 @@ body {
   align-items: center;
   gap: 20px;
 }
+
 .nav-logout {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -66,6 +75,7 @@ body {
   font-weight: 700;
   transition: 0.3s;
 }
+
 .nav-logout:hover {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -94,7 +104,8 @@ body {
   flex: 1;
   width: 100%;
   min-height: 80vh;
-  padding: 40px; /* Internal breathing room only */
+  padding: 40px;
+  /* Internal breathing room only */
   box-sizing: border-box;
 }
 
@@ -114,6 +125,7 @@ body {
   color: #94a3b8;
   font-weight: 600;
 }
+
 .team-name-value {
   font-size: 0.875rem;
   color: #fff;
@@ -134,10 +146,12 @@ body {
 }
 
 @keyframes pulseGlow {
+
   0%,
   100% {
     box-shadow: 0 0 5px #10b981;
   }
+
   50% {
     box-shadow: 0 0 15px #10b981;
   }
@@ -178,12 +192,15 @@ body {
   .dashboard-main {
     flex-direction: column;
   }
+
   .top-nav-inner {
     padding: 0 15px;
   }
+
   .panel-inner {
     padding: 20px;
   }
+
   .hero-text {
     font-size: 2.2rem;
   }
@@ -202,4 +219,45 @@ aside {
 body {
   background-color: #000;
   margin: 0;
+}
+
+/* --- SHARED SIDEBAR WRAPPER --- */
+.sidebar-wrapper {
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100vh;
+  z-index: 1002;
+  position: relative;
+}
+
+@media (max-width: 992px) {
+  .sidebar-wrapper {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    height: 100vh;
+  }
+
+  .sidebar-wrapper.open {
+    left: 0;
+  }
+}
+
+.submission-container-responsive {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+  /* Crucial for preventing overflow */
+}
+
+@media (max-width: 768px) {
+  .submission-container-responsive {
+    padding: 15px !important;
+    /* Balanced padding */
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+  }
 }

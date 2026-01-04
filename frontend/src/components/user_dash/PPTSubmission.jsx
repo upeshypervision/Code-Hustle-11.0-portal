@@ -9,7 +9,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     const fileInputRef = useRef(null);
 
     // --- UI STATE (From UI Source) ---
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // const [isMenuOpen, setIsMenuOpen] = useState(false); // Removed
 
     // --- HANDLERS (From Logic Source) ---
     const handleDownloadTemplate = () => {
@@ -65,13 +65,10 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'flex-start',
-            height: '100vh',
             width: '100%',
-            padding: '100px 20px 60px 20px',
-            boxSizing: 'border-box',
+            padding: '0', // Removed padding as parent handles it
+            boxSizing: 'border-box', // Ensure no overflow
             position: 'relative',
-            overflowY: 'auto',
-            overflowX: 'hidden'
         }}>
 
             {/* --- BACKGROUNDS (From UI Source) --- */}
@@ -89,21 +86,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 zIndex: -1,
             }} />
 
-            {/* --- HAMBURGER MENU (From UI Source) --- */}
-            <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="heist-hamburger"
-                style={{
-                    display: 'none', position: 'fixed', top: '70px', left: '20px', zIndex: 1000,
-                    background: 'rgba(220, 38, 38, 0.2)', border: '1px solid #dc2626',
-                    width: '45px', height: '45px', borderRadius: '4px', cursor: 'pointer',
-                    flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '5px'
-                }}
-            >
-                <div className={`line ${isMenuOpen ? 'cross-top' : ''}`} style={{ width: '25px', height: '2px', background: '#fff', transition: '0.3s' }}></div>
-                <div className={`line ${isMenuOpen ? 'hide' : ''}`} style={{ width: '25px', height: '2px', background: '#fff', transition: '0.3s' }}></div>
-                <div className={`line ${isMenuOpen ? 'cross-bottom' : ''}`} style={{ width: '25px', height: '2px', background: '#fff', transition: '0.3s' }}></div>
-            </button>
+            {/* --- HAMBURGER MENU REMOVED --- */}
 
             {/* --- MAIN CONTENT CARD --- */}
             <div style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '900px', position: 'relative' }}>
@@ -120,7 +103,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 )}
 
                 {/* --- SECTION 1: TEMPLATE (UI Source Visuals) --- */}
-                <div style={{ marginBottom: '40px' }}>
+                <div className="ppt-section">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                         <div style={{ width: '8px', height: '24px', background: '#dc2626' }}></div>
                         <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>01. CHECK PPT TEMPLATE</h3>
@@ -143,8 +126,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
 
                         <div style={{ flex: 1 }}>
                             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '20px' }}>
-                                Prior to initialization, review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong>.
-                                This dossier contains essential formatting rules necessary for a successful uplink.
+                                Review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong> before starting.
                             </p>
                             <button className="download-btn-creative" onClick={handleDownloadTemplate}>
                                 DOWNLOAD DOSSIER ↓
@@ -154,7 +136,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 </div>
 
                 {/* --- SECTION 2: UPLOAD (UI Visuals + Logic) --- */}
-                <div style={{ marginBottom: '40px' }}>
+                <div className="ppt-section">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                         <div style={{ width: '8px', height: '24px', background: isSubmitted ? '#10b981' : '#dc2626' }}></div>
                         <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>02. UPLOAD YOUR PPT</h3>
@@ -253,16 +235,21 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 {/* --- STYLES (Merged CSS) --- */}
                 <style dangerouslySetInnerHTML={{
                     __html: `
+                    .ppt-section { margin-bottom: 40px; }
+
                     @media (max-width: 992px) {
-                        .heist-hamburger { display: flex !important; }
+                        /* .heist-hamburger { display: flex !important; } REMOVED */
                         aside, .sidebar-container { 
-                            position: fixed !important; 
-                            left: ${isMenuOpen ? '0' : '-300px'} !important; 
-                            top: 0; height: 100vh; z-index: 999; 
-                            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                            /* position: fixed; REMOVED */
                         }
-                        .responsive-flex-card { flex-direction: column !important; text-align: center !important; }
+                        .responsive-flex-card { 
+                            flex-direction: column !important; 
+                            text-align: center !important; 
+                            padding: 20px !important;
+                            gap: 20px !important;
+                        }
                         .uplink-btn-red { width: 100%; padding: 16px 20px !important; }
+                        .ppt-section { margin-bottom: 20px !important; }
                     }
                     .cross-top { transform: translateY(7px) rotate(45deg); }
                     .cross-bottom { transform: translateY(-7px) rotate(-45deg); }

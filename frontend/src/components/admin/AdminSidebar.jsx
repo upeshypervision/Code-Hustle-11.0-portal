@@ -11,9 +11,8 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
       <ul className="admin-nav-menu">
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "rounds" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "rounds" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("rounds")}
           >
             <span>Round Management</span>
@@ -22,9 +21,8 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "view-teams" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "view-teams" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("view-teams")}
           >
             <span>View Teams</span>
@@ -33,9 +31,8 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "problem-statements" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "problem-statements" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("problem-statements")}
           >
             <span>Problem Statements</span>
@@ -44,20 +41,18 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "submissions" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "submissions" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("submissions")}
           >
-            <span>View Submissions</span>
+            <span>View PPT Submissions</span>
           </a>
         </li>
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "manual-ppt" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "manual-ppt" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("manual-ppt")}
           >
             <span>Manual PPT</span>
@@ -66,20 +61,8 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "manual-github" ? "active" : ""
-            }`}
-            onClick={() => setActiveSection("manual-github")}
-          >
-            <span>Manual GitHub Submission</span>
-          </a>
-        </li>
-
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${
-              activeSection === "view-github-submissions" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "view-github-submissions" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("view-github-submissions")}
           >
             <span>View GitHub Submissions</span>
@@ -88,9 +71,20 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${
-              activeSection === "add-participant" ? "active" : ""
-            }`}
+            className={`admin-nav-link ${activeSection === "manual-github" ? "active" : ""
+              }`}
+            onClick={() => setActiveSection("manual-github")}
+          >
+            <span>Manual GitHub Submission</span>
+          </a>
+        </li>
+
+
+
+        <li className="admin-nav-item">
+          <a
+            className={`admin-nav-link ${activeSection === "add-participant" ? "active" : ""
+              }`}
             onClick={() => setActiveSection("add-participant")}
           >
             <span>Add Participant</span>
