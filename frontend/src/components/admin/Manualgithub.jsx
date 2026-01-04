@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Manualgithub.css";
 
-const API = "http://localhost:5001";
+const API = "http://localhost:5000";
 
 export default function Manualgithub() {
   const [teams, setTeams] = useState([]);

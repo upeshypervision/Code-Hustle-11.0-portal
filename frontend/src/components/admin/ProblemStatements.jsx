@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Modal from "../../components/Modal";
+import socket from "../../socket"; // Added socket import
 
 export default function ProblemStatements() {
   const [psVisible, setPsVisible] = useState(false);
@@ -16,10 +17,11 @@ export default function ProblemStatements() {
     difficulty: "Easy",
     maxTeams: "",
   });
+
   const fetchProblemStatements = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/getallproblem-statements",
+        "http://localhost:5000/api/admin/getallproblem-statements",
         {
           credentials: "include",
         }
@@ -50,8 +52,22 @@ export default function ProblemStatements() {
     }
   };
 
+  // Initial Fetch
   useEffect(() => {
     fetchProblemStatements();
+  }, []);
+
+  // Socket Listener for Real-time Updates
+  useEffect(() => {
+    const handlePsSelected = () => {
+      fetchProblemStatements();
+    };
+
+    socket.on("ps_selected", handlePsSelected);
+
+    return () => {
+      socket.off("ps_selected", handlePsSelected);
+    };
   }, []);
 
   const handleAddPs = async (e) => {
@@ -67,9 +83,10 @@ export default function ProblemStatements() {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/api/createproblem-statements",
+        "http://localhost:5000/api/createproblem-statements",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -102,6 +119,10 @@ export default function ProblemStatements() {
         difficulty: "Easy",
         maxTeams: "",
       });
+
+      // Refresh list to show new item
+      fetchProblemStatements();
+
     } catch (err) {
       setPsMessage({
         type: "error",
@@ -120,7 +141,7 @@ export default function ProblemStatements() {
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${psId}/toggle-visibility`,
+        `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
         {
           method: "POST",
           credentials: "include",
@@ -170,7 +191,7 @@ export default function ProblemStatements() {
     // Fetch teams for this PS
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${ps.id}/teams`,
+        `http://localhost:5000/api/admin/problem-statement/${ps.id}/teams`,
         { credentials: "include" }
       );
       const data = await res.json();

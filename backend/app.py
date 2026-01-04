@@ -1,23 +1,41 @@
 # backend/app.py
 from flask import Flask, request, jsonify
+from database import db
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route,admin_login_route, check_auth_route, check_student_auth_route
+from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route
 from logout import logout_route
-from problemstatement import create_problem_statement_route, get_all_problem_statements_route ,select_problem_statement_route ,get_all_visible_problem_statements_route, get_teams_by_ps_route, toggle_ps_visibility_route
-from submit_ppt import submit_ppt_route, submit_ppt_student_route # Import new route
-from user_access import fetch_teams_route, get_user_info_route
-from git_submission import submit_link_route
-from get_teams import fetch_teamsnosubmission,view_githubsubmission_route
-from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from problemstatement import (
+    create_problem_statement_route, get_all_problem_statements_route,
+    select_problem_statement_route, get_all_visible_problem_statements_route,
+    get_teams_by_ps_route,toggle_ps_visibility_route
+)
 
+from submit_ppt import submit_ppt_route, submit_ppt_student_route
+from user_access import (
+    fetch_teams_route, get_user_info_route,
+    fetch_teams_pending_submission_route,
+    fetch_submissions_route,
+    generate_presigned_url_route
+)
+from git_submission import submit_link_route
+from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
+from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from flask_socketio import SocketIO, emit
+from socketio_instance import socketio
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"],supports_credentials=True)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
 
+
+socketio.init_app(
+    app,
+    cors_allowed_origins=["http://localhost:5173"],
+    supports_credentials=True
+)
 
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
@@ -67,6 +85,15 @@ def show_submissions():
 def fetch_teams():
     return fetch_teams_route()
 
+# --- NEW Admin Routes for PPT Submission Status ---
+@app.route("/api/admin/teams/pending-submission", methods=["GET"]) # New route
+def get_pending_submission_teams():
+    return fetch_teams_pending_submission_route()
+
+@app.route("/api/admin/submissions", methods=["GET"]) # New route
+def get_submissions():
+    return fetch_submissions_route()
+
 #login route for admin
 @app.route("/api/admin-login", methods=["POST"])
 def admin_login():
@@ -80,7 +107,7 @@ def logout():
 def get_user_info():
     return get_user_info_route()
 
-@app.route('/api/createproblem-statements', methods=['POST'])
+@app.route('/api/createproblem-statements',methods=["POST", "OPTIONS"])
 def create_problem_statement():
     return create_problem_statement_route()
 
@@ -89,7 +116,6 @@ def admin_get_all_problem_statements():
     admin_token = request.cookies.get("admin_auth")
     if not admin_token:
         return jsonify({"error": "Unauthorized"}), 401
-
     return get_all_problem_statements_route()
 
 @app.route('/api/student/getallproblem-statements', methods=['GET'])
@@ -97,12 +123,14 @@ def student_get_all_problem_statements():
     student_token = request.cookies.get("student_auth")
     if not student_token:
         return jsonify({"error": "Unauthorized"}), 401
-
     return get_all_visible_problem_statements_route()
 
-
-@app.route("/api/select-problem-statement", methods=["POST"])
+@app.route("/api/student/select-problem-statement", methods=["POST", "OPTIONS"])
 def select_problem_statement():
+    # ✅ Handle CORS preflight
+    if request.method == "OPTIONS":
+        return "", 200
+
     return select_problem_statement_route()
 
 # --- New Submission Routes ---
@@ -133,9 +161,14 @@ def get_teams_with_ppt():
 def get_teams_by_ps(ps_id):
     return get_teams_by_ps_route(ps_id)
 
+# --- NEW Route for Presigned URLs ---
+@app.route("/api/admin/submission/<team_id>", methods=["GET"]) # New route
+def get_submission_presigned_url(team_id):
+    return generate_presigned_url_route(team_id)
+
 @app.route('/api/admin/problem-statement/<ps_id>/toggle-visibility', methods=['POST'])
 def toggle_ps_visibility(ps_id):
     return toggle_ps_visibility_route(ps_id)
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    socketio.run(app, host="127.0.0.1", port=5000, debug=True)

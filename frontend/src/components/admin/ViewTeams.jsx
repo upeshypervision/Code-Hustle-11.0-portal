@@ -13,7 +13,7 @@ export default function ViewTeams() {
 
   const fetchTeams = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/admin/teams", {
+      const res = await fetch("http://localhost:5000/api/admin/teams", {
         method: "GET",
         credentials: "include",
       });
