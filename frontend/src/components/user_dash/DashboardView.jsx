@@ -9,60 +9,41 @@ const DashboardView = ({
     setActiveTab,
     activeTab,
     teamName = "THE AVENGERS",
-    teamMembers = ["Member 01", "Member 02", "Member 03", "Member 04"]
+    teamMembers = ["Member 01", "Member 02", "Member 03", "Member 04"],
+    isSidebarOpen, // Accept prop
+    setIsSidebarOpen // Accept prop
 }) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // Removed internal isMenuOpen state
 
     return (
         <div
             style={{
                 width: '100%',
-                minHeight: '100vh', 
+                minHeight: '100vh',
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'stretch',
                 justifyContent: 'flex-start',
                 position: 'relative',
-                overflow: 'hidden', 
+                overflow: 'hidden',
                 background: '#0a0a0a',
                 fontFamily: '"Inter", sans-serif',
                 boxSizing: 'border-box'
             }}
         >
-            {/* MOBILE HAMBURGER - Now hides when menu is open */}
-            <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="hamburger-btn"
-                style={{
-                    display: isMenuOpen ? 'none' : 'none', // Controlled by Media Query + State
-                    position: 'fixed',
-                    top: '50px',       
-                    left: '20px',      
-                    zIndex: 1001,
-                    background: 'transparent',
-                    border: '1px solid rgba(220, 38, 38, 0.5)',
-                    padding: '8px 10px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    backdropFilter: 'blur(5px)'
-                }}
-            >
-                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
-                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
-                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
-            </button>
+            {/* MOBILE HAMBURGER REMOVED - Controlled by Navbar now */}
 
             {/* SIDEBAR WRAPPER */}
-            <div className={`sidebar-wrapper ${isMenuOpen ? 'open' : ''}`}>
+            <div className={`sidebar-wrapper ${isSidebarOpen ? 'open' : ''}`}>
                 <UserSidebar activeTab={activeTab} setActiveTab={(tab) => {
                     setActiveTab(tab);
-                    setIsMenuOpen(false);
+                    setIsSidebarOpen(false); // Close sidebar on selection
                 }} />
-                
+
                 {/* Close Button Inside Sidebar for better UX (Optional) */}
-                {isMenuOpen && (
-                    <div 
-                        onClick={() => setIsMenuOpen(false)}
+                {isSidebarOpen && (
+                    <div
+                        onClick={() => setIsSidebarOpen(false)}
                         style={{
                             position: 'absolute',
                             top: '20px',
@@ -101,7 +82,7 @@ const DashboardView = ({
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        opacity: '1', 
+                        opacity: '1',
                         zIndex: 0,
                         pointerEvents: 'none'
                     }}
@@ -173,8 +154,7 @@ const DashboardView = ({
                     }
 
                     @media (max-width: 992px) {
-                        /* Only show button if menu is NOT open */
-                        .hamburger-btn { display: ${isMenuOpen ? 'none' : 'block'} !important; }
+                        /* Hamburger controlled by Navbar */
                         
                         .sidebar-wrapper {
                             position: fixed;
@@ -205,7 +185,7 @@ const DashboardView = ({
                         boxSizing: 'border-box'
                     }}>
                         WELCOME,<br />
-                        <span style={{ 
+                        <span style={{
                             color: '#dc2626',
                             background: 'linear-gradient(to bottom, #ff4444, #991b1b)',
                             WebkitBackgroundClip: 'text',

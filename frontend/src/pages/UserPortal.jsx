@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import Navbar from '../components/Navbar';
+import UserNavbar from '../components/UserNavbar';
 import UserSidebar from '../components/user_dash/UserSidebar';
 import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
@@ -18,6 +18,9 @@ export default function UserPortal() {
     // Add a specific loading state for the authentication check
     const [isLoading, setIsLoading] = useState(true);
     const [teamInfo, setTeamInfo] = useState({ login_id: '' });
+
+    // Hoisted state for sidebar
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         // CHECK YOUR PORT: Is your backend on 5000 or 5001?
@@ -67,7 +70,8 @@ export default function UserPortal() {
     // 2. Main Render
     return (
         <div className="dashboard-page" style={{ background: 'transparent', minHeight: '100vh' }}>
-            <Navbar
+            <UserNavbar
+                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
                 userInfo={
                     <div className="team-name-badge">
                         <span className="team-name-label">TEAM:</span>
@@ -85,6 +89,8 @@ export default function UserPortal() {
                     setActiveTab={setActiveTab}
                     teamName={teamInfo.login_id}
                     activeTab={activeTab}
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
                 />
             )}
 
@@ -96,10 +102,32 @@ export default function UserPortal() {
                     flexDirection: 'row',
                     minHeight: 'calc(100vh - 70px)'
                 }}>
-                    <UserSidebar
-                        activeTab={activeTab}
-                        setActiveTab={setActiveTab}
-                    />
+                    <div className={`sidebar-wrapper ${isSidebarOpen ? 'open' : ''}`}>
+                        <UserSidebar
+                            activeTab={activeTab}
+                            setActiveTab={(tab) => {
+                                setActiveTab(tab);
+                                setIsSidebarOpen(false); // Close sidebar on selection
+                            }}
+                        />
+                        {/* Close button for non-dashboard tabs */}
+                        {isSidebarOpen && (
+                            <div
+                                onClick={() => setIsSidebarOpen(false)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '20px',
+                                    right: '20px',
+                                    color: '#fff',
+                                    fontSize: '20px',
+                                    cursor: 'pointer',
+                                    zIndex: 1002
+                                }}
+                            >
+                                ✕
+                            </div>
+                        )}
+                    </div>
 
                     <div style={{
                         flex: 1,
@@ -117,7 +145,7 @@ export default function UserPortal() {
                         )}
 
                         {activeTab === 'ppt-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto', padding: '40px' }}>
+                            <div className="card-inner submission-container-responsive">
                                 <PPTSubmission
                                     selectedPS={selectedPS}
                                     isSubmitted={isPPTSubmitted}
@@ -127,7 +155,7 @@ export default function UserPortal() {
                         )}
 
                         {activeTab === 'github-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto', padding: '40px' }}>
+                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}>
                                 <GitHubSubmission
                                     isSubmitted={isGithubSubmitted}
                                     onUpload={() => {

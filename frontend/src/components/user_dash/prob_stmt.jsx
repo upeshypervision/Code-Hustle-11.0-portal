@@ -12,7 +12,7 @@ export default function PSGallery() {
     type: "",
     message: "",
   });
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false); // Removed
 
   // --- FETCH DATA FUNCTION ---
   const fetchProblemStatements = () => {
@@ -102,13 +102,10 @@ export default function PSGallery() {
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        height: "100vh",
         width: "100%",
-        padding: "100px 20px 60px 20px",
+        padding: "20px", // Adjusted padding
         boxSizing: "border-box",
         position: "relative",
-        overflowY: "auto",
-        overflowX: "hidden",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
       }}
@@ -142,41 +139,7 @@ export default function PSGallery() {
         }}
       />
 
-      {/* --- HAMBURGER BUTTON --- */}
-      <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="heist-hamburger"
-        style={{
-          display: "none",
-          position: "fixed",
-          top: "70px",
-          left: "20px",
-          zIndex: 1000,
-          background: "rgba(224, 206, 50, 0.2)",
-          border: "1px solid #dc2626",
-          width: "45px",
-          height: "45px",
-          borderRadius: "4px",
-          cursor: "pointer",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "5px",
-        }}
-      >
-        <div
-          className={`line ${isMenuOpen ? "cross-top" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "hide" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "cross-bottom" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
-      </button>
+      {/* --- HAMBURGER BUTTON REMOVED --- */}
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
@@ -300,21 +263,6 @@ export default function PSGallery() {
                       gap: "15px",
                     }}
                   >
-                    <button
-                      onClick={() =>
-                        setExpandedId(
-                          expandedId === ps.problem_statement_id
-                            ? null
-                            : ps.problem_statement_id
-                        )
-                      }
-                      className="view-btn-heist"
-                    >
-                      {expandedId === ps.problem_statement_id
-                        ? "CLOSE DOSSIER"
-                        : "VIEW DOSSIER"}
-                    </button>
-
                     <div
                       className="heat-gauge-container"
                       style={{ width: "180px" }}
@@ -328,7 +276,7 @@ export default function PSGallery() {
                       >
                         <span
                           style={{
-                            fontSize: "8px",
+                            fontSize: "16px",
                             fontWeight: "900",
                             color: "rgba(255,255,255,0.4)",
                           }}
@@ -337,8 +285,8 @@ export default function PSGallery() {
                         </span>
                         <span
                           style={{
-                            fontSize: "9px",
-                            fontWeight: "900",
+                            fontSize: "16px",
+                            fontWeight: "1000",
                             color: "#dc2626",
                           }}
                         >
@@ -362,6 +310,21 @@ export default function PSGallery() {
                         ></div>
                       </div>
                     </div>
+
+                    <button
+                      onClick={() =>
+                        setExpandedId(
+                          expandedId === ps.problem_statement_id
+                            ? null
+                            : ps.problem_statement_id
+                        )
+                      }
+                      className="view-btn-heist"
+                    >
+                      {expandedId === ps.problem_statement_id
+                        ? "CLOSE DOSSIER"
+                        : "VIEW DOSSIER"}
+                    </button>
                   </div>
                 </div>
 
@@ -498,9 +461,8 @@ export default function PSGallery() {
               zIndex: 3000,
               padding: "20px 40px",
               background: "#0a0a0a",
-              borderLeft: `5px solid ${
-                notification.type === "success" ? "#22c55e" : "#dc2626"
-              }`,
+              borderLeft: `5px solid ${notification.type === "success" ? "#22c55e" : "#dc2626"
+                }`,
               boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
               animation: "fadeIn 0.3s ease",
             }}
@@ -518,12 +480,9 @@ export default function PSGallery() {
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
               @media (max-width: 992px) {
-                  .heist-hamburger { display: flex !important; }
+                  /* .heist-hamburger { display: flex !important; } REMOVED */
                   aside, .sidebar-container { 
-                      position: fixed !important; 
-                      left: ${isMenuOpen ? "0" : "-300px"} !important; 
-                      top: 0; height: 100vh; z-index: 1500; 
-                      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                      /* position: fixed !important; REMOVED - controlled by parent */
                   }
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
