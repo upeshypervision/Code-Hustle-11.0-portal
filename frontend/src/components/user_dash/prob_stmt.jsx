@@ -142,12 +142,12 @@ export default function PSGallery() {
         }}
       />
 
-      {/* --- HAMBURGER BUTTON (Removed when Menu is Open) --- */}
+      {/* --- HAMBURGER BUTTON (Visibility logic synced with dashboard) --- */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="heist-hamburger"
         style={{
-          display: isMenuOpen ? "none" : "flex", // Logic based on isMenuOpen
+          display: "none", // Default hidden, handled by media query for mobile
           position: "fixed",
           top: "80px", 
           left: "20px",
@@ -509,6 +509,8 @@ export default function PSGallery() {
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
               @media (max-width: 992px) {
+                  .heist-hamburger { display: ${isMenuOpen ? 'none' : 'flex'} !important; }
+                  
                   aside, .sidebar-container { 
                       position: fixed !important; 
                       left: ${isMenuOpen ? "0" : "-300px"} !important; 

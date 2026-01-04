@@ -20,7 +20,7 @@ const DashboardView = ({
                 minHeight: '100vh', 
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'stretch',
+                alignItems: 'stretch', // Changed to stretch to ensure sidebar/content alignment
                 justifyContent: 'flex-start',
                 position: 'relative',
                 overflow: 'hidden', 
@@ -29,12 +29,12 @@ const DashboardView = ({
                 boxSizing: 'border-box'
             }}
         >
-            {/* MOBILE HAMBURGER - Now hides when menu is open */}
+            {/* MOBILE HAMBURGER */}
             <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="hamburger-btn"
                 style={{
-                    display: isMenuOpen ? 'none' : 'none', // Controlled by Media Query + State
+                    display: 'none', 
                     position: 'fixed',
                     top: '80px',       
                     left: '20px',      
@@ -52,30 +52,12 @@ const DashboardView = ({
                 <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
             </button>
 
-            {/* SIDEBAR WRAPPER */}
-            <div className={`sidebar-wrapper ${isMenuOpen ? 'open' : ''}`}>
+            {/* SIDEBAR WRAPPER - Positioned exactly like prob_stmt */}
+            <div className={`sidebar-wrapper ${isMenuOpen ? 'open' : ''}`} style={{ alignSelf: 'flex-start' }}>
                 <UserSidebar activeTab={activeTab} setActiveTab={(tab) => {
                     setActiveTab(tab);
                     setIsMenuOpen(false);
                 }} />
-                
-                {/* Close Button Inside Sidebar for better UX (Optional) */}
-                {/* {isMenuOpen && (
-                    // <div 
-                    //     onClick={() => setIsMenuOpen(false)}
-                    //     style={{
-                    //         position: 'absolute',
-                    //         top: '20px',
-                    //         right: '20px',
-                    //         color: '#fff',
-                    //         fontSize: '20px',
-                    //         cursor: 'pointer',
-                    //         zIndex: 1002
-                    //     }}
-                    // >
-                    //     ✕
-                    // </div>
-                )} */}
             </div>
 
             {/* MAIN CONTENT AREA */}
@@ -84,8 +66,9 @@ const DashboardView = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start', // Changed to flex-start to prevent vertical shifting
                 padding: '20px',
+                paddingTop: '40px', // Added top padding to match prob_stmt spacing
                 position: 'relative',
                 overflowY: 'auto',
                 zIndex: 2
@@ -158,6 +141,7 @@ const DashboardView = ({
                         box-sizing: border-box;
                         overflow-wrap: break-word;
                         word-wrap: break-word;
+                        margin-top: 20px;
                     }
                     .live-badge {
                         background: #dc2626;
@@ -173,7 +157,6 @@ const DashboardView = ({
                     }
 
                     @media (max-width: 992px) {
-                        /* Only show button if menu is NOT open */
                         .hamburger-btn { display: ${isMenuOpen ? 'none' : 'block'} !important; }
                         
                         .sidebar-wrapper {
@@ -187,6 +170,36 @@ const DashboardView = ({
                         .sidebar-wrapper.open { left: 0; }
                     }
                 `}</style>
+
+                {/* --- HEADER WARNING (LA_CASA_ACCESS) --- */}
+                <div
+                    style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        borderLeft: "8px solid #dc2626",
+                        background: "rgba(20, 20, 20, 0.8)",
+                        backdropFilter: "blur(10px)",
+                        padding: "15px 25px",
+                        marginBottom: "40px",
+                        boxShadow: "0 10px 40px rgba(183, 99, 80, 0.5)",
+                        zIndex: 10
+                    }}
+                >
+                    <p
+                        style={{
+                            fontSize: "11px",
+                            fontWeight: "900",
+                            color: "#dc2626",
+                            letterSpacing: "2px",
+                            textTransform: "uppercase",
+                            margin: 0,
+                            fontFamily: '"Courier New", Courier, monospace'
+                        }}
+                    >
+                        <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET LOCK
+                        IS PERMANENT. MODIFICATIONS RESTRICTED ONCE INITIALIZED.
+                    </p>
+                </div>
 
                 <div className="main-glass-box">
                     <div className="live-badge">PHASE 01 LIVE</div>
