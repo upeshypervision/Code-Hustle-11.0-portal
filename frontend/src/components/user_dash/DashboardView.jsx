@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import UserStatus from './UserStatus';
 import UserSidebar from './UserSidebar';
 
@@ -11,6 +11,8 @@ const DashboardView = ({
     teamName = "THE AVENGERS",
     teamMembers = ["Member 01", "Member 02", "Member 03", "Member 04"]
 }) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <div
             style={{
@@ -27,8 +29,56 @@ const DashboardView = ({
                 boxSizing: 'border-box'
             }}
         >
-            <UserSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+            {/* MOBILE HAMBURGER - Now hides when menu is open */}
+            <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="hamburger-btn"
+                style={{
+                    display: isMenuOpen ? 'none' : 'none', // Controlled by Media Query + State
+                    position: 'fixed',
+                    top: '50px',       
+                    left: '20px',      
+                    zIndex: 1001,
+                    background: 'transparent',
+                    border: '1px solid rgba(220, 38, 38, 0.5)',
+                    padding: '8px 10px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    backdropFilter: 'blur(5px)'
+                }}
+            >
+                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
+                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
+                <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
+            </button>
 
+            {/* SIDEBAR WRAPPER */}
+            <div className={`sidebar-wrapper ${isMenuOpen ? 'open' : ''}`}>
+                <UserSidebar activeTab={activeTab} setActiveTab={(tab) => {
+                    setActiveTab(tab);
+                    setIsMenuOpen(false);
+                }} />
+                
+                {/* Close Button Inside Sidebar for better UX (Optional) */}
+                {isMenuOpen && (
+                    <div 
+                        onClick={() => setIsMenuOpen(false)}
+                        style={{
+                            position: 'absolute',
+                            top: '20px',
+                            right: '20px',
+                            color: '#fff',
+                            fontSize: '20px',
+                            cursor: 'pointer',
+                            zIndex: 1002
+                        }}
+                    >
+                        ✕
+                    </div>
+                )}
+            </div>
+
+            {/* MAIN CONTENT AREA */}
             <div style={{
                 flex: 1,
                 display: 'flex',
@@ -37,7 +87,8 @@ const DashboardView = ({
                 justifyContent: 'center',
                 padding: '20px',
                 position: 'relative',
-                overflowY: 'auto'
+                overflowY: 'auto',
+                zIndex: 2
             }}>
                 <div
                     style={{
@@ -46,21 +97,20 @@ const DashboardView = ({
                         left: '0',
                         width: '100%',
                         height: '100%',
-                        backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4otxGPqIii92wFJAksBcqA97drEL-EvYZjw&s')`,
+                        backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        opacity: '0.4', 
+                        opacity: '1', 
                         zIndex: 0,
-                        pointerEvents: 'none',
-                        filter: 'grayscale(100%) brightness(30%) contrast(120%)'
+                        pointerEvents: 'none'
                     }}
                 />
 
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'radial-gradient(circle at 50% 50%, transparent 10%, rgba(200, 80, 71, 0.2) 100%)',
+                    background: 'radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)',
                     zIndex: 1,
                     pointerEvents: 'none'
                 }} />
@@ -71,39 +121,14 @@ const DashboardView = ({
                         50% { box-shadow: 0 0 40px #ff0000, inset 0 0 20px #ff0000; border-color: #fff; transform: scale(1.02); }
                     }
                     @keyframes liveShimmer {
-                        0% { opacity: 0.5; text-shadow: 0 0 5px #ff0000; }
-                        50% { opacity: 1; text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000; }
-                        100% { opacity: 0.5; text-shadow: 0 0 5px #ff0000; }
-                    }
-                    @keyframes scanline {
-                        0% { transform: translateY(-100%); }
-                        100% { transform: translateY(100%); }
-                    }
-                    .live-badge {
-                        background: #dc2626;
-                        color: white;
-                        padding: 4px 12px;
-                        font-size: 10px;
-                        font-weight: 900;
-                        letter-spacing: 2px;
-                        border-radius: 4px;
-                        position: relative;
-                        overflow: hidden;
-                        animation: liveShimmer 1.5s infinite;
-                        box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
-                    }
-                    .live-badge::after {
-                        content: "";
-                        position: absolute;
-                        top: 0; left: 0; width: 100%; height: 2px;
-                        background: rgba(255,255,255,0.8);
-                        animation: scanline 2s linear infinite;
+                        0%, 100% { opacity: 0.5; text-shadow: 0 0 5px #ff0000; }
+                        50% { opacity: 1; text-shadow: 0 0 20px #ff0000; }
                     }
                     .initiate-btn {
                         background: linear-gradient(180deg, rgba(220, 38, 38, 1) 0%, rgba(153, 27, 27, 1) 100%);
                         border: 1px solid rgba(255,255,255,0.3);
                         color: #fff;
-                        padding: 16px 32px;
+                        padding: 16px 0;
                         width: 100%;
                         max-width: 340px;
                         font-size: 14px;
@@ -115,109 +140,105 @@ const DashboardView = ({
                         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                         animation: neonPulse 3s infinite;
                         z-index: 5;
-                        margin: 20px 0;
+                        margin: 30px 0;
                     }
                     .main-glass-box {
-                        background: linear-gradient(145deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.98) 100%);
+                        background: linear-gradient(145deg, rgba(0, 0, 0, 0.37) 0%, rgba(10, 10, 10, 0.95) 100%);
                         backdrop-filter: blur(25px);
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         border-top: 1px solid rgba(220, 38, 38, 0.5);
                         border-radius: 40px;
-                        padding: 40px;
+                        padding: 60px 40px;
                         width: 95%;
-                        max-width: ${selectedPS ? '800px' : '500px'};
+                        max-width: 500px;
                         text-align: center;
-                        z-index: 2;
+                        z-index: 10;
                         position: relative;
                         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
-                        transition: max-width 0.5s ease;
+                        box-sizing: border-box;
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
                     }
-                    .member-tag {
-                        background: rgba(220, 38, 38, 0.1);
-                        border: 1px solid rgba(220, 38, 38, 0.3);
-                        color: #fff;
-                        padding: 8px 15px;
+                    .live-badge {
+                        background: #dc2626;
+                        color: white;
+                        padding: 4px 12px;
+                        font-size: 10px;
+                        font-weight: 900;
+                        letter-spacing: 2px;
                         border-radius: 4px;
-                        font-size: 12px;
-                        font-weight: 600;
-                        letter-spacing: 1px;
-                        text-transform: uppercase;
+                        animation: liveShimmer 1.5s infinite;
+                        display: inline-block;
+                        margin-bottom: 20px;
                     }
-                    .action-card {
-                        background: rgba(255, 255, 255, 0.03);
-                        border: 1px solid rgba(255, 255, 255, 0.1);
-                        padding: 20px;
-                        border-radius: 15px;
-                        flex: 1;
-                        cursor: pointer;
-                        transition: 0.3s;
-                    }
-                    .action-card:hover {
-                        background: rgba(220, 38, 38, 0.1);
-                        border-color: #dc2626;
+
+                    @media (max-width: 992px) {
+                        /* Only show button if menu is NOT open */
+                        .hamburger-btn { display: ${isMenuOpen ? 'none' : 'block'} !important; }
+                        
+                        .sidebar-wrapper {
+                            position: fixed;
+                            left: -280px;
+                            top: 0;
+                            height: 100vh;
+                            z-index: 1000;
+                            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        }
+                        .sidebar-wrapper.open { left: 0; }
                     }
                 `}</style>
 
                 <div className="main-glass-box">
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-                        <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, transparent, #dc2626)' }}></div>
-                        <div className="live-badge">ROUND 01 LIVE</div>
-                        <div style={{ width: '40px', height: '1px', background: 'linear-gradient(90deg, #dc2626, transparent)' }}></div>
-                    </div>
+                    <div className="live-badge">PHASE 01 LIVE</div>
 
-                    <div style={{ marginBottom: '30px' }}>
-                        <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 3rem)', fontWeight: '900', color: '#fff', margin: 0, textTransform: 'uppercase', fontStyle: 'italic' }}>
-                            {teamName}
-                        </h1>
-                    </div>
+                    <h1 style={{
+                        fontSize: 'clamp(2rem, 10vw, 3.5rem)',
+                        fontWeight: '900',
+                        color: '#fff',
+                        lineHeight: '1.1',
+                        margin: '0 0 15px 0',
+                        textTransform: 'uppercase',
+                        fontStyle: 'italic',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box'
+                    }}>
+                        WELCOME,<br />
+                        <span style={{ 
+                            color: '#dc2626',
+                            background: 'linear-gradient(to bottom, #ff4444, #991b1b)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            display: 'inline-block',
+                            maxWidth: '100%',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            hyphens: 'auto'
+                        }}>{teamName}</span>
+                    </h1>
 
                     {!selectedPS ? (
                         <>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.6', maxWidth: '320px', margin: '0 auto 30px auto' }}>
-                                Awaiting mission parameters. Initialize the system to select your target problem statement.
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', maxWidth: '320px', margin: '0 auto 10px auto' }}>
+                                The vault is synchronized. Review team credentials and initiate the heist sequence.
                             </p>
                             <button className="initiate-btn" onClick={() => setActiveTab('ps-selection')}>
                                 INITIATE OPERATION
                             </button>
                         </>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', textAlign: 'left' }}>
-                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ fontSize: '10px', color: '#dc2626', fontWeight: '900', marginBottom: '15px', letterSpacing: '2px' }}>TEAM ROSTER</div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                                    {teamMembers.map((m, i) => (
-                                        <div key={i} className="member-tag">{m}</div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ borderLeft: '4px solid #dc2626', paddingLeft: '20px' }}>
-                                <div style={{ fontSize: '10px', color: '#dc2626', fontWeight: '900', letterSpacing: '2px' }}>LOCKED TARGET</div>
-                                <h2 style={{ color: '#fff', fontSize: '1.5rem', margin: '5px 0', textTransform: 'uppercase' }}>{selectedPS.title || selectedPS.id}</h2>
-                                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', margin: 0 }}>{selectedPS.track}</p>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                                <div className="action-card" onClick={() => setActiveTab('ppt-submission')}>
-                                    <div style={{ color: isPPTSubmitted ? '#22c55e' : '#dc2626', fontSize: '20px', marginBottom: '10px' }}>{isPPTSubmitted ? '✓' : '⇪'}</div>
-                                    <div style={{ color: '#fff', fontWeight: '800', fontSize: '12px' }}>PPT DOSSIER</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px' }}>{isPPTSubmitted ? 'UPLOADED' : 'PENDING'}</div>
-                                </div>
-                                <div className="action-card" onClick={() => setActiveTab('github-submission')}>
-                                    <div style={{ color: isGithubSubmitted ? '#22c55e' : '#dc2626', fontSize: '20px', marginBottom: '10px' }}>{isGithubSubmitted ? '✓' : '🔗'}</div>
-                                    <div style={{ color: '#fff', fontWeight: '800', fontSize: '12px' }}>SOURCE CODE</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '10px' }}>{isGithubSubmitted ? 'LINKED' : 'PENDING'}</div>
-                                </div>
+                        <div style={{ marginTop: '20px', textAlign: 'left' }}>
+                            <div style={{ color: '#dc2626', fontSize: '10px', fontWeight: '900', letterSpacing: '2px', marginBottom: '10px' }}>TEAM MEMBERS</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center', marginBottom: '20px' }}>
+                                {teamMembers.map((m, i) => (
+                                    <span key={i} style={{ background: 'rgba(220, 38, 38, 0.15)', border: '1px solid #dc2626', color: '#fff', padding: '5px 12px', borderRadius: '4px', fontSize: '11px' }}>{m}</span>
+                                ))}
                             </div>
                         </div>
                     )}
 
-                    <div style={{ 
-                        marginTop: '30px', 
-                        width: '100%',
-                        paddingTop: '20px',
-                        borderTop: '1px solid rgba(255,255,255,0.05)'
-                    }}>
+                    <div style={{ marginTop: '20px', width: '100%', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
                         <UserStatus
                             selectedPS={selectedPS}
                             isPPTSubmitted={isPPTSubmitted}

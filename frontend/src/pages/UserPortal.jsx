@@ -54,38 +54,17 @@ export default function UserPortal() {
     },
   ];
 
-  const handleMenuItemClick = (item) => {
-    setActiveTab(item.id);
-  };
-
-  return (
-    <div
-      className="dashboard-page"
-      style={{ background: "transparent", minHeight: "100vh" }}
-    >
-      <Navbar
-        userInfo={
-          <div className="team-name-badge">
-            <span className="team-name-label">TEAM:</span>
-            <span className="team-name-value">{teamInfo.login_id}</span>
-          </div>
-        }
-        menuItems={userMenuItems}
-        onMenuItemClick={handleMenuItemClick}
-      />
-
-      {/* DASHBOARD VIEW */}
-      {activeTab === "dashboard" && (
-        <DashboardView
-          selectedPS={selectedPS}
-          isPPTSubmitted={isPPTSubmitted}
-          isGithubSubmitted={isGithubSubmitted}
-          // isHostedSubmitted removed from here
-          setActiveTab={setActiveTab}
-          teamName={teamInfo.login_id}
-          activeTab={activeTab}
-        />
-      )}
+            {/* DASHBOARD VIEW */}
+            {activeTab === 'dashboard' && (
+                <DashboardView
+                    selectedPS={selectedPS}
+                    isPPTSubmitted={isPPTSubmitted}
+                    isGithubSubmitted={isGithubSubmitted}
+                    setActiveTab={setActiveTab}
+                    teamName={teamInfo.login_id}
+                    activeTab={activeTab}
+                />
+            )}
 
       {/* OTHER TABS */}
       {activeTab !== "dashboard" && (

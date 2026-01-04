@@ -4,7 +4,7 @@ import './Registration.css'; // Ensuring we keep the good UI styles
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-
+  
   // 1. STATE: Using the robust state management from your "Good Logic" file
   const [formData, setFormData] = useState({ adminId: '', password: '' });
   const [errors, setErrors] = useState({});
@@ -15,7 +15,7 @@ export default function AdminLogin() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
+    
     // Clear specific field error when user types
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -37,7 +37,7 @@ export default function AdminLogin() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // CRITICAL: Allows browser to store the cookie
-        credentials: 'include',
+        credentials: 'include', 
         body: JSON.stringify({
           login_id: formData.adminId, // Mapping adminId to login_id as per backend requirement
           password: formData.password
@@ -78,9 +78,9 @@ export default function AdminLogin() {
 
         {/* Global Message Banner (Success or Error) */}
         {message.text && (
-          <div
-            className="global-error-banner"
-            style={{
+          <div 
+            className="global-error-banner" 
+            style={{ 
               backgroundColor: message.type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
               borderColor: message.type === 'success' ? '#10b981' : '#ef4444',
               color: message.type === 'success' ? '#10b981' : '#ef4444'
@@ -127,9 +127,9 @@ export default function AdminLogin() {
             </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="neon-shade-btn next-glow"
+            <button 
+              type="submit" 
+              className="neon-shade-btn next-glow" 
               disabled={isSubmitting}
             >
               {isSubmitting ? "AUTHENTICATING..." : "ACCESS DASHBOARD"}
