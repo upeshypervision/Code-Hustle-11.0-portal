@@ -17,7 +17,7 @@ export default function UserPortal() {
     const [teamInfo, setTeamInfo] = useState({ login_id: 'Loading...' });
 
     useEffect(() => {
-        fetch('http://localhost:5001/api/user-info', {
+        fetch('http://localhost:5000/api/user-info', {
             method: 'GET',
             credentials: 'include'
         })

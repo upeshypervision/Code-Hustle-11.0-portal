@@ -16,7 +16,7 @@ export default function PSGallery() {
 
   // --- FETCH DATA FUNCTION ---
   const fetchProblemStatements = () => {
-    fetch("http://localhost:5001/api/student/getallproblem-statements", {
+    fetch("http://localhost:5000/api/student/getallproblem-statements", {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -59,7 +59,7 @@ export default function PSGallery() {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/api/student/select-problem-statement",
+        "http://localhost:5000/api/student/select-problem-statement",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

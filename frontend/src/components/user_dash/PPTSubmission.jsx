@@ -33,7 +33,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         const formData = new FormData();
         formData.append('file', pendingFile);
         try {
-            const res = await fetch('http://localhost:5001/api/submit-ppt-student', {
+            const res = await fetch('http://localhost:5000/api/submit-ppt-student', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',

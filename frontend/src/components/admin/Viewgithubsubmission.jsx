@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Viewgithubsubmission.css";
 
-const API = "http://localhost:5001";
+const API = "http://localhost:5000";
 
 export default function ViewGithubSubmissions() {
     const [submissions, setSubmissions] = useState([]);

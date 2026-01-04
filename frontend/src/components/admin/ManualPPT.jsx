@@ -19,7 +19,7 @@ export default function ManualPPT() {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5001/api/admin/teams-without-ppt', {
+            const res = await fetch('http://localhost:5000/api/admin/teams-without-ppt', {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -72,7 +72,7 @@ export default function ManualPPT() {
         formData.append('team_id', selectedTeamId); // Append the selected team ID
 
         try {
-            const res = await fetch('http://localhost:5001/api/submit-ppt', { // Use the same route
+            const res = await fetch('http://localhost:5000/api/submit-ppt', { // Use the same route
                 method: 'POST',
                 body: formData, // Send FormData
                 credentials: 'include', // Important for admin cookie
