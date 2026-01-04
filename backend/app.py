@@ -107,9 +107,13 @@ def logout():
 def get_user_info():
     return get_user_info_route()
 
-@app.route('/api/createproblem-statements',methods=["POST", "OPTIONS"])
+@app.route('/api/admin/createproblem-statements', methods=["POST", "OPTIONS"])
 def create_problem_statement():
+    if request.method == "OPTIONS":
+        return "", 200   # ✅ allow preflight
+
     return create_problem_statement_route()
+
 
 @app.route('/api/admin/getallproblem-statements', methods=['GET'])
 def admin_get_all_problem_statements():

@@ -83,7 +83,7 @@ export default function ProblemStatements() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/createproblem-statements",
+        "http://localhost:5000/api/admin/createproblem-statements",
         {
           method: "POST",
           credentials: "include",
