@@ -95,7 +95,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         style={{
           display: "none",
           position: "fixed",
-          top: "70px",
+          top: "80px",
           left: "20px",
           zIndex: 1000,
           background: "rgba(220, 38, 38, 0.2)",

@@ -11,7 +11,7 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
         <aside style={{ 
             width: '100%',
             maxWidth: '280px', 
-            minHeight: '100vh',
+            height: 'calc(100vh - 70px)', // Adjusted to account for navbar height to prevent clashing
             display: 'flex', 
             flexDirection: 'column', 
             gap: '12px', 
@@ -21,8 +21,10 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
             borderRight: '2px solid rgba(220, 38, 38, 0.4)',
             flexShrink: 0,
             zIndex: 10,
-            position: 'relative',
-            boxShadow: '20px 0 50px rgba(0, 0, 0, 0.7)'
+            position: 'sticky', // Changed to sticky to prevent it from overlapping or sliding under the header
+            top: '70px',        // Aligns precisely below the sticky navbar
+            boxShadow: '20px 0 50px rgba(0, 0, 0, 0.7)',
+            overflowY: 'auto'   // Ensures sidebar menu is scrollable if items exceed screen height
         }}>
             {/* SHINING FIELD PATTERN */}
             <div style={{
@@ -76,6 +78,9 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
                     box-shadow: 0 0 10px #ff4444;
                     animation: scanner-line 2.5s infinite linear;
                 }
+                /* Hide scrollbar for the sidebar specifically */
+                aside::-webkit-scrollbar { display: none; }
+                aside { -ms-overflow-style: none; scrollbar-width: none; }
             `}</style>
 
             <div style={{ 

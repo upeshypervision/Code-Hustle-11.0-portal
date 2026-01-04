@@ -94,7 +94,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="heist-hamburger"
                 style={{
-                    display: 'none', position: 'fixed', top: '70px', left: '20px', zIndex: 1000,
+                    display: 'none', position: 'fixed', top: '80px', left: '20px', zIndex: 1000,
                     background: 'rgba(220, 38, 38, 0.2)', border: '1px solid #dc2626',
                     width: '45px', height: '45px', borderRadius: '4px', cursor: 'pointer',
                     flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '5px'

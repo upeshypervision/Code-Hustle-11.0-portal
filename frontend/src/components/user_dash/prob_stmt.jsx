@@ -142,18 +142,18 @@ export default function PSGallery() {
         }}
       />
 
-      {/* --- HAMBURGER BUTTON --- */}
+      {/* --- HAMBURGER BUTTON (Removed when Menu is Open) --- */}
       <button
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="heist-hamburger"
         style={{
-          display: "none",
+          display: isMenuOpen ? "none" : "flex", // Logic based on isMenuOpen
           position: "fixed",
-          top: "70px",
+          top: "80px", 
           left: "20px",
-          zIndex: 1000,
-          background: "rgba(224, 206, 50, 0.2)",
-          border: "1px solid #dc2626",
+          zIndex: 1001, 
+          background: "rgba(131, 91, 91, 0.47)",
+          border: "1px solid #9a3535ff",
           width: "45px",
           height: "45px",
           borderRadius: "4px",
@@ -164,18 +164,9 @@ export default function PSGallery() {
           gap: "5px",
         }}
       >
-        <div
-          className={`line ${isMenuOpen ? "cross-top" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "hide" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
-        <div
-          className={`line ${isMenuOpen ? "cross-bottom" : ""}`}
-          style={{ width: "25px", height: "2px", background: "#fff", transition: "0.3s" }}
-        ></div>
+        <div className="line" style={{ width: "25px", height: "2px", background: "#fff" }}></div>
+        <div className="line" style={{ width: "25px", height: "2px", background: "#fff" }}></div>
+        <div className="line" style={{ width: "25px", height: "2px", background: "#fff" }}></div>
       </button>
 
       {/* --- MAIN CONTENT CONTAINER --- */}
@@ -403,7 +394,7 @@ export default function PSGallery() {
             style={{
               position: "fixed",
               inset: 0,
-              zIndex: 2000,
+              zIndex: 4000,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -495,7 +486,7 @@ export default function PSGallery() {
               position: "fixed",
               bottom: "30px",
               right: "30px",
-              zIndex: 3000,
+              zIndex: 5000,
               padding: "20px 40px",
               background: "#0a0a0a",
               borderLeft: `5px solid ${
@@ -518,11 +509,14 @@ export default function PSGallery() {
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
               @media (max-width: 992px) {
-                  .heist-hamburger { display: flex !important; }
                   aside, .sidebar-container { 
                       position: fixed !important; 
                       left: ${isMenuOpen ? "0" : "-300px"} !important; 
-                      top: 0; height: 100vh; z-index: 1500; 
+                      top: 0; 
+                      height: 100vh; 
+                      z-index: 3000 !important; 
+                      background: rgba(103, 73, 73, 0.56) !important;
+                      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
                       transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                   }
                   .card-layout-inner { flex-direction: column !important; }
@@ -530,9 +524,6 @@ export default function PSGallery() {
                   .view-btn-heist { width: 100% !important; }
                   .heat-gauge-container { width: 100% !important; }
               }
-              .cross-top { transform: translateY(7px) rotate(45deg); }
-              .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
-              .hide { opacity: 0; }
               .view-btn-heist { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
               .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
               .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }

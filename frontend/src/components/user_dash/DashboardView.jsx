@@ -36,7 +36,7 @@ const DashboardView = ({
                 style={{
                     display: isMenuOpen ? 'none' : 'none', // Controlled by Media Query + State
                     position: 'fixed',
-                    top: '50px',       
+                    top: '80px',       
                     left: '20px',      
                     zIndex: 1001,
                     background: 'transparent',
@@ -60,22 +60,22 @@ const DashboardView = ({
                 }} />
                 
                 {/* Close Button Inside Sidebar for better UX (Optional) */}
-                {isMenuOpen && (
-                    <div 
-                        onClick={() => setIsMenuOpen(false)}
-                        style={{
-                            position: 'absolute',
-                            top: '20px',
-                            right: '20px',
-                            color: '#fff',
-                            fontSize: '20px',
-                            cursor: 'pointer',
-                            zIndex: 1002
-                        }}
-                    >
-                        ✕
-                    </div>
-                )}
+                {/* {isMenuOpen && (
+                    // <div 
+                    //     onClick={() => setIsMenuOpen(false)}
+                    //     style={{
+                    //         position: 'absolute',
+                    //         top: '20px',
+                    //         right: '20px',
+                    //         color: '#fff',
+                    //         fontSize: '20px',
+                    //         cursor: 'pointer',
+                    //         zIndex: 1002
+                    //     }}
+                    // >
+                    //     ✕
+                    // </div>
+                )} */}
             </div>
 
             {/* MAIN CONTENT AREA */}
