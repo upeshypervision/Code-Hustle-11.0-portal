@@ -20,7 +20,7 @@ const DashboardView = ({
                 minHeight: '100vh', 
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'stretch', // Changed to stretch to ensure sidebar/content alignment
+                alignItems: 'stretch',
                 justifyContent: 'flex-start',
                 position: 'relative',
                 overflow: 'hidden', 
@@ -52,7 +52,7 @@ const DashboardView = ({
                 <div style={{ width: '18px', height: '2px', background: '#fff', margin: '3px 0' }}></div>
             </button>
 
-            {/* SIDEBAR WRAPPER - Positioned exactly like prob_stmt */}
+            {/* SIDEBAR WRAPPER */}
             <div className={`sidebar-wrapper ${isMenuOpen ? 'open' : ''}`} style={{ alignSelf: 'flex-start' }}>
                 <UserSidebar activeTab={activeTab} setActiveTab={(tab) => {
                     setActiveTab(tab);
@@ -66,9 +66,9 @@ const DashboardView = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'flex-start', // Changed to flex-start to prevent vertical shifting
+                justifyContent: 'flex-start',
                 padding: '20px',
-                paddingTop: '40px', // Added top padding to match prob_stmt spacing
+                paddingTop: '120px', // Increased from 40px to 120px to shift caution box down
                 position: 'relative',
                 overflowY: 'auto',
                 zIndex: 2
