@@ -54,7 +54,7 @@ export default function AdminLogin() {
         setMessage({ type: 'error', text: data.error || 'Login failed' });
         setIsSubmitting(false);
       }
-    } catch  {
+    } catch (err) {
       setMessage({ type: 'error', text: 'Server connection failed.' });
       setIsSubmitting(false);
     }

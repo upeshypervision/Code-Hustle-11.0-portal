@@ -11,8 +11,9 @@ from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
     select_problem_statement_route, get_all_visible_problem_statements_route,
-    get_teams_by_ps_route
+    get_teams_by_ps_route,toggle_ps_visibility_route
 )
+
 from submit_ppt import submit_ppt_route, submit_ppt_student_route
 from user_access import (
     fetch_teams_route, get_user_info_route,
@@ -106,7 +107,7 @@ def logout():
 def get_user_info():
     return get_user_info_route()
 
-@app.route('/api/createproblem-statements', methods=['POST'])
+@app.route('/api/createproblem-statements',methods=["POST", "OPTIONS"])
 def create_problem_statement():
     return create_problem_statement_route()
 
@@ -164,6 +165,10 @@ def get_teams_by_ps(ps_id):
 @app.route("/api/admin/submission/<team_id>", methods=["GET"]) # New route
 def get_submission_presigned_url(team_id):
     return generate_presigned_url_route(team_id)
+
+@app.route('/api/admin/problem-statement/<ps_id>/toggle-visibility', methods=['POST'])
+def toggle_ps_visibility(ps_id):
+    return toggle_ps_visibility_route(ps_id)
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
