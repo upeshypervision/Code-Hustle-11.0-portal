@@ -20,7 +20,6 @@ def get_next_problem_statement_id():
 
     # Format with prefix and zero padding 
     return f"PS{number:02d}"
-    
 
 
 # =========================
@@ -31,12 +30,12 @@ def create_problem_statement_route():
     token = request.cookies.get("admin_auth")
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except:
         return jsonify({"error": "Invalid session"}), 401
-    
+
     data = request.get_json()
 
     title = data.get("title")
@@ -53,7 +52,7 @@ def create_problem_statement_route():
     problem_statement = {
         "problem_statement_id": problem_statement_id,
         "title": title,
-        "track":track,
+        "track": track,
         "description": description,
         "difficulty": difficulty,
         "max_count": max_count,
@@ -64,7 +63,7 @@ def create_problem_statement_route():
 
     db.problem_statements.insert_one(problem_statement)
     socketio.emit("ps_updated", {
-    "action": "created"
+        "action": "created"
     })
 
     return jsonify({
@@ -106,6 +105,7 @@ def get_all_problem_statements_route():
 
     return jsonify(ps_list), 200
 
+
 # =========================
 # STUDENT: GET VISIBLE PROBLEM STATEMENTS
 # =========================
@@ -115,8 +115,8 @@ def get_all_visible_problem_statements_route():
     cursor = db.problem_statements.find(
         {"visible": True},
         {
-            "_id": 0,                # hide Mongo ID
-            "created_at": 0,         # hide admin metadata
+            "_id": 0,  # hide Mongo ID
+            "created_at": 0,  # hide admin metadata
         }
     )
     for ps in cursor:
@@ -134,6 +134,7 @@ def get_all_visible_problem_statements_route():
         "success": True,
         "problem_statements": ps_list
     }), 200
+
 
 def select_problem_statement_route():
     # =========================
@@ -260,21 +261,63 @@ def get_teams_by_ps_route(problem_statement_id):
     token = request.cookies.get("admin_auth")
     if not token:
         return jsonify({"error": "Unauthorized"}), 401
-    
+
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except:
         return jsonify({"error": "Invalid session"}), 401
-    
-    # Fetch from ps_selections collection (isolated data)
+
+
     selections = list(db.ps_selections.find(
         {"problem_statement_id": problem_statement_id},
         {"_id": 0, "team_id": 1, "team_name": 1, "selected_at": 1}
     ).sort("selected_at", -1))  # Most recent first
-    
+
     return jsonify({
         "success": True,
         "problem_statement_id": problem_statement_id,
         "teams": selections,
         "count": len(selections)
     }), 200
+
+# =========================
+# ADMIN: TOGGLE PROBLEM STATEMENT VISIBILITY
+# =========================
+def toggle_ps_visibility_route(problem_statement_id):
+    """
+    Admin route to toggle the visibility of a problem statement
+    """
+    # Admin authentication
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Invalid session"}), 401
+    
+    # Find the problem statement
+    ps = db.problem_statements.find_one({"problem_statement_id": problem_statement_id})
+    
+    if not ps:
+        return jsonify({"error": "Problem statement not found"}), 404
+    
+    # Toggle visibility
+    current_visibility = ps.get("visible", False)
+    new_visibility = not current_visibility
+    
+    # Update in database
+    result = db.problem_statements.update_one(
+        {"problem_statement_id": problem_statement_id},
+        {"$set": {"visible": new_visibility}}
+    )
+    
+    if result.modified_count > 0:
+        return jsonify({
+            "success": True,
+            "message": f"Problem statement visibility set to {new_visibility}",
+            "visible": new_visibility
+        }), 200
+    else:
+        return jsonify({"error": "Failed to update visibility"}), 500

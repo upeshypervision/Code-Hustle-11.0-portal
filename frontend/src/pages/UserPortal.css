@@ -1,169 +1,205 @@
 /* --- FULL SCREEN LAYOUT RESET --- */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    overflow-x: hidden;
-    background-color: #0a0a0f;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #0a0a0f;
 }
 
 .dashboard-page-container {
-    min-height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
 }
 
 /* --- NAVBAR ALIGNMENT --- */
 .top-nav {
-    width: 100%;
-    background: rgba(10, 10, 15, 0.9);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    z-index: 1000;
+  width: 100%;
+  background: rgba(10, 10, 15, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 1000;
 }
 
 .top-nav-inner {
-    width: 100%;
-    padding: 12px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 12px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.logo-img { height: 32px; }
-.logo-text { font-weight: 800; color: #fff; font-size: 1.1rem; }
+.logo-img {
+  height: 32px;
+}
+.logo-text {
+  font-weight: 800;
+  color: #fff;
+  font-size: 1.1rem;
+}
 
-.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 .nav-logout {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
-    padding: 6px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: 700;
-    transition: 0.3s;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: 0.3s;
 }
-.nav-logout:hover { background: rgba(255,255,255,0.1); }
+.nav-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
 /* --- MIDDLE PART STRETCHING --- */
 .dashboard-main {
-    display: flex;
-    width: 100%;
-    flex: 1;
-    margin: 0;
-    padding: 0;
-    align-items: centre;
+  display: flex;
+  width: 100%;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  align-items: centre;
 }
 
 .panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: centre;
-    justify-content: centre;
-    margin-right: 50px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: centre;
+  justify-content: centre;
+  margin-right: 50px;
 }
 
 .panel-inner {
-    flex: 1;
-    width: 100%;
-    min-height: 80vh;
-    padding: 40px; /* Internal breathing room only */
-    box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  min-height: 80vh;
+  padding: 40px; /* Internal breathing room only */
+  box-sizing: border-box;
 }
 
 /* --- TEAM & UI STYLES (STRICTLY INTACT) --- */
 .team-name-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 8px;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.team-name-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
-.team-name-value { font-size: 0.875rem; color: #fff; font-weight: 700; }
+.team-name-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.team-name-value {
+  font-size: 0.875rem;
+  color: #fff;
+  font-weight: 700;
+}
 
 .round-live-tag {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid #10b981;
-    color: #10b981;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 900;
-    margin-bottom: 20px;
-    display: inline-block;
-    animation: pulseGlow 2s infinite;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10b981;
+  color: #10b981;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: pulseGlow 2s infinite;
 }
 
 @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 5px #10b981; }
-    50% { box-shadow: 0 0 15px #10b981; }
+  0%,
+  100% {
+    box-shadow: 0 0 5px #10b981;
+  }
+  50% {
+    box-shadow: 0 0 15px #10b981;
+  }
 }
 
 .hero-text {
-    font-size: 3.5rem;
-    color: #fff;
-    font-weight: 900;
-    line-height: 1.1;
+  font-size: 3.5rem;
+  color: #fff;
+  font-weight: 900;
+  line-height: 1.1;
 }
 
 .hero-text span {
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .cyber-action-btn-main {
-    padding: 18px 50px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #f59e0b, #3b82f6);
-    color: white;
-    font-weight: 900;
-    cursor: pointer;
-    transition: 0.4s;
+  padding: 18px 50px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b, #3b82f6);
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.4s;
 }
 
 /* --- RESPONSIVE FOR ALL DEVICES --- */
 @media (max-width: 1024px) {
-    .hero-text { font-size: 2.8rem; }
+  .hero-text {
+    font-size: 2.8rem;
+  }
 }
 
 @media (max-width: 768px) {
-    .dashboard-main { flex-direction: column; }
-    .top-nav-inner { padding: 0 15px; }
-    .panel-inner { padding: 20px; }
-    .hero-text { font-size: 2.2rem; }
+  .dashboard-main {
+    flex-direction: column;
+  }
+  .top-nav-inner {
+    padding: 0 15px;
+  }
+  .panel-inner {
+    padding: 20px;
+  }
+  .hero-text {
+    font-size: 2.2rem;
+  }
 }
 
 /* Force all major containers to be transparent so the App.jsx background shows through */
-.dashboard-page, 
-.dashboard-main, 
-.ps-container, 
-nav, 
+.dashboard-page,
+.dashboard-main,
+.ps-container,
+nav,
 aside {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Ensure the body itself doesn't have a solid color blocking the fixed div */
 body {
-    background-color: #000; 
-    margin: 0;
+  background-color: #000;
+  margin: 0;
 }
