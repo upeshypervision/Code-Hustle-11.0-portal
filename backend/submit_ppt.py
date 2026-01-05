@@ -5,6 +5,7 @@ from config import JWT_SECRET, JWT_ALGORITHM
 from database import get_db
 from s3_service import upload_file_to_s3, allowed_file, is_valid_file_size, get_content_type
 from datetime import datetime
+from socketio_instance import socketio
 import os
 
 def submit_ppt_route(): # Admin manual submission route (existing)
@@ -136,6 +137,14 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
         return jsonify({"success": False, "error": "Session expired."}), 401
     except jwt.InvalidTokenError:
         return jsonify({"success": False, "error": "Invalid session."}), 401
+    
+    # Check if PPT upload round is active
+    round_status = db.counters.find_one({"_id": "round_status"})
+    if round_status and not round_status.get("ppt_upload", True):
+        return jsonify({
+            "success": False,
+            "error": "Sorry, the submission cannot be made as the PPT round is currently closed. Please wait for the organizing committee to activate this round."
+        }), 403
 
     # --- NEW CHECK: Verify if a submission already exists for this team ---
     existing_submission = db.submissions.find_one({"team_id": team_id})
@@ -179,6 +188,12 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
         result = db.submissions.insert_one(submission_data)
 
         if result.inserted_id: # Check if insert was successful
+            # Emit WebSocket event to notify all admins of new submission
+            socketio.emit("ppt_submitted", {
+                "team_id": team_id,
+                "submitted_at": submission_data["submitted_at"]
+            })
+            
             return jsonify({"success": True, "message": "File submitted successfully.", "s3_url": s3_url})
         else:
             # This case might be rare, but indicates insertion failed
@@ -186,3 +201,45 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
     else:
         # Upload failed in s3_service.py
         return jsonify({"success": False, "error": "Failed to upload file to S3."}), 500
+
+
+def check_ppt_submission_route():
+    """
+    Route for students to check if they have already submitted a PPT
+    Returns submission status and details if exists
+    """
+    db = get_db()
+    
+    # Student authentication
+    student_cookie = request.cookies.get("student_auth")
+    if not student_cookie:
+        return jsonify({"success": False, "error": "Authentication required."}), 401
+    
+    try:
+        payload = jwt.decode(student_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        team_id = payload.get("team_id")
+        
+        if not team_id:
+            return jsonify({"success": False, "error": "Invalid session."}), 401
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Session expired."}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid session."}), 401
+    
+    # Check if submission exists
+    submission = db.submissions.find_one(
+        {"team_id": team_id},
+        {"_id": 0, "file_name": 1, "submitted_at": 1, "file_path": 1}
+    )
+    
+    if submission:
+        return jsonify({
+            "success": True,
+            "is_submitted": True,
+            "submission": submission
+        }), 200
+    else:
+        return jsonify({
+            "success": True,
+            "is_submitted": False
+        }), 200

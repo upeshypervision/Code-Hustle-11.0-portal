@@ -28,16 +28,17 @@ def get_user_info_route():
             if not team_id:
                 return jsonify({"error": "Invalid session"}), 401
 
-            team = db["teams"].find_one({"team_id": team_id})
+            team = db["teams"].find_one(
+                {"team_id": team_id},
+                {"_id": 0, "password_hashed": 0}  # Exclude only sensitive fields
+            )
             if not team:
                 return jsonify({"error": "Team not found"}), 404
 
             return jsonify({
                 "success": True,
                 "role": "student",
-                "team_id": team_id,
-                "team_name": team.get("team_name", "Unknown Team"),
-                "selected_ps_id": team.get("selected_ps_id")
+                **team  # Spread all team fields (team_id, team_name, leader, members, etc.)
             }), 200
 
         except jwt.ExpiredSignatureError:

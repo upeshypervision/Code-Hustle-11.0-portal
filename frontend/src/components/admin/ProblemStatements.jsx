@@ -70,6 +70,19 @@ export default function ProblemStatements() {
     };
   }, []);
 
+  // Socket Listener for Visibility Changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      fetchProblemStatements();
+    };
+
+    socket.on("ps_visibility_changed", handleVisibilityChange);
+
+    return () => {
+      socket.off("ps_visibility_changed", handleVisibilityChange);
+    };
+  }, []);
+
   const handleAddPs = async (e) => {
     e.preventDefault();
 

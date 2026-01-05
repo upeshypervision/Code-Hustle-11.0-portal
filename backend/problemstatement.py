@@ -56,7 +56,7 @@ def create_problem_statement_route():
         "description": description,
         "difficulty": difficulty,
         "max_count": max_count,
-        "visible": True,
+        "visible": False,
         "selections": 0,
         "created_at": datetime.utcnow()
     }
@@ -153,6 +153,13 @@ def select_problem_statement_route():
         return jsonify({"error": "Session expired"}), 401
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
+
+    # Check if PS selection round is active
+    round_status = db.counters.find_one({"_id": "round_status"})
+    if round_status and not round_status.get("ps_selection", True):
+        return jsonify({
+            "error": "Sorry, the selection cannot be made as the Problem Statement selection round is currently closed. Please wait for the organizing committee to activate this round."
+        }), 403
 
     # =========================
     # 2. INPUT VALIDATION
@@ -314,6 +321,12 @@ def toggle_ps_visibility_route(problem_statement_id):
     )
     
     if result.modified_count > 0:
+        # Emit WebSocket event to notify all clients of visibility change
+        socketio.emit("ps_visibility_changed", {
+            "problem_statement_id": problem_statement_id,
+            "visible": new_visibility
+        })
+        
         return jsonify({
             "success": True,
             "message": f"Problem statement visibility set to {new_visibility}",
@@ -321,3 +334,60 @@ def toggle_ps_visibility_route(problem_statement_id):
         }), 200
     else:
         return jsonify({"error": "Failed to update visibility"}), 500
+
+
+def check_selected_ps_route():
+    """
+    Route for students to check if they have already selected a problem statement
+    Returns selection status and full PS details if exists
+    """
+    # Student authentication
+    student_cookie = request.cookies.get("student_auth")
+    if not student_cookie:
+        return jsonify({"success": False, "error": "Authentication required."}), 401
+    
+    try:
+        payload = jwt.decode(student_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        team_id = payload.get("team_id")
+        
+        if not team_id:
+            return jsonify({"success": False, "error": "Invalid session."}), 401
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Session expired."}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid session."}), 401
+    
+    # Check if team has selected a PS
+    selection = db.ps_selections.find_one(
+        {"team_id": team_id},
+        {"_id": 0, "problem_statement_id": 1, "selected_at": 1}
+    )
+    
+    if selection:
+        # Get full PS details
+        ps_id = selection.get("problem_statement_id")
+        ps_details = db.problem_statements.find_one(
+            {"problem_statement_id": ps_id},
+            {"_id": 0, "problem_statement_id": 1, "title": 1, "description": 1, "track": 1, "difficulty": 1}
+        )
+        
+        if ps_details:
+            return jsonify({
+                "success": True,
+                "is_selected": True,
+                "selection": {
+                    "problem_statement_id": ps_id,
+                    "title": ps_details.get("title"),
+                    "description": ps_details.get("description"),
+                    "track": ps_details.get("track"),
+                    "difficulty": ps_details.get("difficulty"),
+                    "selected_at": selection.get("selected_at")
+                }
+            }), 200
+        else:
+            return jsonify({"success": False, "error": "Problem statement not found"}), 404
+    else:
+        return jsonify({
+            "success": True,
+            "is_selected": False
+        }), 200

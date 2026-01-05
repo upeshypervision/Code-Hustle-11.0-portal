@@ -11,19 +11,19 @@ from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
     select_problem_statement_route, get_all_visible_problem_statements_route,
-    get_teams_by_ps_route,toggle_ps_visibility_route
+    get_teams_by_ps_route,toggle_ps_visibility_route, check_selected_ps_route
 )
-
-from submit_ppt import submit_ppt_route, submit_ppt_student_route
+from submit_ppt import submit_ppt_route, submit_ppt_student_route, check_ppt_submission_route
 from user_access import (
     fetch_teams_route, get_user_info_route,
     fetch_teams_pending_submission_route,
     fetch_submissions_route,
     generate_presigned_url_route
 )
-from git_submission import submit_link_route
+from git_submission import submit_link_route,check_github_submission_route
 from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from round_management import get_round_status_route, update_round_status_route
 from flask_socketio import SocketIO, emit
 from socketio_instance import socketio
 
@@ -137,6 +137,10 @@ def select_problem_statement():
 
     return select_problem_statement_route()
 
+@app.route('/api/check-selected-ps', methods=['GET'])
+def check_selected_ps():
+    return check_selected_ps_route()
+
 # --- New Submission Routes ---
 @app.route('/api/submit-ppt', methods=['POST']) # Admin manual submission (existing)
 def submit_ppt():
@@ -146,10 +150,18 @@ def submit_ppt():
 def submit_ppt_student():
     return submit_ppt_student_route()
 
+@app.route('/api/check-ppt-submission', methods=['GET'])
+def check_ppt_submission():
+    return check_ppt_submission_route()
+
 # --- GitHub Submission Routes ---
 @app.route('/api/submit-link', methods=['POST'])
 def submit_link():
     return submit_link_route()
+
+@app.route('/api/check-github-submission', methods=['GET'])
+def check_github_submission():
+    return check_github_submission_route()
 
 # --- PPT Filter Routes ---
 @app.route('/api/admin/teams-without-ppt', methods=['GET'])
@@ -173,6 +185,15 @@ def get_submission_presigned_url(team_id):
 @app.route('/api/admin/problem-statement/<ps_id>/toggle-visibility', methods=['POST'])
 def toggle_ps_visibility(ps_id):
     return toggle_ps_visibility_route(ps_id)
+
+# --- Round Management Routes ---
+@app.route('/api/round-status', methods=['GET'])
+def get_round_status():
+    return get_round_status_route()
+
+@app.route('/api/admin/round-status', methods=['POST'])
+def update_round_status():
+    return update_round_status_route()
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
