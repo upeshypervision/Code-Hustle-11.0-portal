@@ -6,20 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/git_submission.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/git_submission.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/problemstatement.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/problemstatement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/submit_ppt.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/submit_ppt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/user_access.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/user_access.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ViewSubmissions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ViewSubmissions.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Viewgithubsubmission.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/DashboardView.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/DashboardView.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/PPTSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/PPTSubmission.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPortal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPortal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

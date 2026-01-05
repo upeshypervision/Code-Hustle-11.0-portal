@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import socket from "../../socket"; // Added socket import
+import socket from "../../socket";
 
 export default function PSGallery() {
   // --- STATE ---
@@ -16,9 +16,9 @@ export default function PSGallery() {
   const [checkingSelection, setCheckingSelection] = useState(true);
   const [roundActive, setRoundActive] = useState(true);
   const [checkingRound, setCheckingRound] = useState(true);
-  // const [isMenuOpen, setIsMenuOpen] = useState(false); // Removed
 
-  // Check if user has already selected a PS on component mount
+  // --- USE EFFECTS (Keep your existing useEffects here) ---
+  // Check selection
   useEffect(() => {
     const checkSelection = async () => {
       try {
@@ -26,7 +26,6 @@ export default function PSGallery() {
           credentials: "include",
         });
         const data = await res.json();
-
         if (data.success && data.is_selected) {
           setSelectedPS(data.selection);
         }
@@ -36,11 +35,10 @@ export default function PSGallery() {
         setCheckingSelection(false);
       }
     };
-
     checkSelection();
   }, []);
 
-  // Check round status on mount
+  // Check round status
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
@@ -48,7 +46,6 @@ export default function PSGallery() {
           credentials: "include",
         });
         const data = await res.json();
-
         if (data.success) {
           setRoundActive(data.rounds.ps_selection);
         }
@@ -58,23 +55,21 @@ export default function PSGallery() {
         setCheckingRound(false);
       }
     };
-
     checkRoundStatus();
   }, []);
 
-  // Listen for round status changes via WebSocket
+  // Listen for round status
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === 'ps_selection') {
         setRoundActive(data.is_active);
       }
     };
-
     socket.on("round_status_changed", handleRoundChange);
     return () => socket.off("round_status_changed", handleRoundChange);
   }, []);
 
-  // --- FETCH DATA FUNCTION ---
+  // Fetch Data
   const fetchProblemStatements = () => {
     fetch("http://localhost:5000/api/student/getallproblem-statements", {
       credentials: "include",
@@ -88,23 +83,14 @@ export default function PSGallery() {
       .catch((err) => console.error("Fetch error:", err));
   };
 
-  // Initial load
-  useEffect(() => {
-    fetchProblemStatements();
-  }, []);
+  useEffect(() => { fetchProblemStatements(); }, []);
 
-  // Socket listener for real-time updates from other users
+  // Sockets
   useEffect(() => {
     socket.on("ps_selected", fetchProblemStatements);
-    return () => {
-      socket.off("ps_selected", fetchProblemStatements);
-    };
-  }, []);
-
-  // Socket listener for visibility changes
-  useEffect(() => {
     socket.on("ps_visibility_changed", fetchProblemStatements);
     return () => {
+      socket.off("ps_selected", fetchProblemStatements);
       socket.off("ps_visibility_changed", fetchProblemStatements);
     };
   }, []);
@@ -124,7 +110,6 @@ export default function PSGallery() {
 
   const confirmLock = async () => {
     if (!pendingPs) return;
-
     try {
       const res = await fetch(
         "http://localhost:5000/api/student/select-problem-statement",
@@ -137,7 +122,6 @@ export default function PSGallery() {
           }),
         }
       );
-
       const data = await res.json();
 
       if (res.ok && data.success) {
@@ -151,25 +135,14 @@ export default function PSGallery() {
           selected_at: new Date().toISOString()
         });
         setPendingPs(null);
-        showNotification(
-          "success",
-          "Target Locked! Problem statement selected successfully."
-        );
-        // Refresh local state immediately
+        showNotification("success", "Target Locked! Problem statement selected successfully.");
         fetchProblemStatements();
       } else {
         setShowModal(false);
-        // Check if it's a round closed error (403)
         if (res.status === 403) {
-          showNotification(
-            "error",
-            data.error || "Sorry, the selection cannot be made as the Problem Statement selection round is currently closed."
-          );
+          showNotification("error", data.error || "Round closed.");
         } else {
-          showNotification(
-            "error",
-            data.error || "Failed to select problem statement"
-          );
+          showNotification("error", data.error || "Failed to select problem statement");
         }
       }
     } catch (err) {
@@ -187,7 +160,7 @@ export default function PSGallery() {
         justifyContent: "center",
         alignItems: "flex-start",
         width: "100%",
-        padding: "20px", // Adjusted padding
+        padding: "20px",
         boxSizing: "border-box",
         position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
@@ -211,19 +184,15 @@ export default function PSGallery() {
           pointerEvents: "none",
         }}
       />
-
       <div
         style={{
           position: "fixed",
           inset: 0,
-          background:
-            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
+          background: "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
           zIndex: 1,
           pointerEvents: "none",
         }}
       />
-
-      {/* --- HAMBURGER BUTTON REMOVED --- */}
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
@@ -235,8 +204,15 @@ export default function PSGallery() {
           zIndex: 2,
         }}
       >
-        {/* Loading State */}
+        {/* LOGIC CHANGE HERE:
+            1. Check Loading
+            2. Check SelectedPS (Highest Priority UI)
+            3. Check !roundActive (Round Closed UI)
+            4. Default (Selection List)
+        */}
+
         {checkingRound || checkingSelection ? (
+          /* --- LOADING STATE --- */
           <div style={{
             textAlign: 'center',
             padding: '60px 20px',
@@ -244,8 +220,93 @@ export default function PSGallery() {
           }}>
             <p>Loading...</p>
           </div>
+        ) : selectedPS ? (
+          /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
+          /* Shows even if round is closed */
+          <div style={{
+            background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid #10b981',
+            borderRadius: '8px',
+            padding: '40px',
+            textAlign: 'center',
+            animation: 'fadeIn 0.5s ease-out'
+          }}>
+            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
+            <h2 style={{
+              color: '#10b981',
+              fontWeight: '900',
+              fontSize: '2rem',
+              letterSpacing: '3px',
+              marginBottom: '15px'
+            }}>
+              TARGET LOCKED
+            </h2>
+            <p style={{
+              color: '#fff',
+              fontSize: '1.2rem',
+              marginBottom: '30px',
+              letterSpacing: '1px'
+            }}>
+              Problem Statement Selected: <strong>{selectedPS.problem_statement_id}</strong>
+            </p>
+
+            <div style={{
+              background: 'rgba(0,0,0,0.4)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '6px',
+              padding: '25px',
+              textAlign: 'left',
+              marginTop: '20px'
+            }}>
+              <h3 style={{
+                color: '#10b981',
+                fontSize: '1.5rem',
+                marginBottom: '15px',
+                fontWeight: '800'
+              }}>
+                {selectedPS.title}
+              </h3>
+              <div style={{ marginBottom: '15px' }}>
+                <span style={{
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: '0.9rem',
+                  marginRight: '15px'
+                }}>
+                  <strong>Track:</strong> {selectedPS.track || 'N/A'}
+                </span>
+                <span style={{
+                  color: 'rgba(255,255,255,0.6)',
+                  fontSize: '0.9rem'
+                }}>
+                  <strong>Difficulty:</strong> {selectedPS.difficulty || 'N/A'}
+                </span>
+              </div>
+              <div style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '1rem',
+                lineHeight: '1.6',
+                marginTop: '15px',
+                paddingTop: '15px',
+                borderTop: '1px solid rgba(16, 185, 129, 0.2)'
+              }}>
+                <strong style={{ color: '#10b981' }}>Description:</strong>
+                <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
+              </div>
+            </div>
+
+            <p style={{
+              color: 'rgba(255,255,255,0.5)',
+              fontSize: '0.85rem',
+              marginTop: '25px',
+              letterSpacing: '1px'
+            }}>
+              ⚠️ SELECTION IS PERMANENT. PROCEED TO NEXT PHASE.
+            </p>
+          </div>
         ) : !roundActive ? (
-          /* --- ROUND CLOSED UI --- */
+          /* --- PRIORITY 2: ROUND CLOSED UI --- */
+          /* Only shows if not selected AND round is closed */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -286,8 +347,8 @@ export default function PSGallery() {
             </p>
           </div>
         ) : (
+          /* --- PRIORITY 3: ACTIVE SELECTION LIST --- */
           <>
-            {/* --- HEADER WARNING --- */}
             <div
               style={{
                 borderLeft: "8px solid #dc2626",
@@ -313,414 +374,311 @@ export default function PSGallery() {
               </p>
             </div>
 
-            {/* --- LOADING STATE --- */}
-            {checkingSelection ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '60px 20px',
-                color: 'rgba(255,255,255,0.6)'
-              }}>
-                <p>Checking your selection...</p>
-              </div>
-            ) : selectedPS ? (
-              /* --- SUCCESS UI: PS SELECTED --- */
-              <div style={{
-                background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-                backdropFilter: 'blur(10px)',
-                border: '2px solid #10b981',
-                borderRadius: '8px',
-                padding: '40px',
-                textAlign: 'center',
-                animation: 'fadeIn 0.5s ease-out'
-              }}>
-                <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
-                <h2 style={{
-                  color: '#10b981',
-                  fontWeight: '900',
-                  fontSize: '2rem',
-                  letterSpacing: '3px',
-                  marginBottom: '15px'
-                }}>
-                  TARGET LOCKED
-                </h2>
-                <p style={{
-                  color: '#fff',
-                  fontSize: '1.2rem',
-                  marginBottom: '30px',
-                  letterSpacing: '1px'
-                }}>
-                  Problem Statement Selected: <strong>{selectedPS.problem_statement_id}</strong>
-                </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+              {problemStatements.map((ps) => {
+                const count = ps.selections || 0;
+                const target = ps.max_count || 30;
+                const barWidth = Math.min((count / target) * 100, 100);
 
-                <div style={{
-                  background: 'rgba(0,0,0,0.4)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: '6px',
-                  padding: '25px',
-                  textAlign: 'left',
-                  marginTop: '20px'
-                }}>
-                  <h3 style={{
-                    color: '#10b981',
-                    fontSize: '1.5rem',
-                    marginBottom: '15px',
-                    fontWeight: '800'
-                  }}>
-                    {selectedPS.title}
-                  </h3>
-
-                  <div style={{ marginBottom: '15px' }}>
-                    <span style={{
-                      color: 'rgba(255,255,255,0.6)',
-                      fontSize: '0.9rem',
-                      marginRight: '15px'
-                    }}>
-                      <strong>Track:</strong> {selectedPS.track || 'N/A'}
-                    </span>
-                    <span style={{
-                      color: 'rgba(255,255,255,0.6)',
-                      fontSize: '0.9rem'
-                    }}>
-                      <strong>Difficulty:</strong> {selectedPS.difficulty || 'N/A'}
-                    </span>
-                  </div>
-
-                  <div style={{
-                    color: 'rgba(255,255,255,0.8)',
-                    fontSize: '1rem',
-                    lineHeight: '1.6',
-                    marginTop: '15px',
-                    paddingTop: '15px',
-                    borderTop: '1px solid rgba(16, 185, 129, 0.2)'
-                  }}>
-                    <strong style={{ color: '#10b981' }}>Description:</strong>
-                    <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
-                  </div>
-                </div>
-
-                <p style={{
-                  color: 'rgba(255,255,255,0.5)',
-                  fontSize: '0.85rem',
-                  marginTop: '25px',
-                  letterSpacing: '1px'
-                }}>
-                  ⚠️ SELECTION IS PERMANENT. PROCEED TO NEXT PHASE.
-                </p>
-              </div>
-            ) : (
-              /* --- CARD LIST --- */
-              <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
-                {problemStatements.map((ps) => {
-                  const count = ps.selections || 0;
-                  const target = ps.max_count || 30;
-                  const barWidth = Math.min((count / target) * 100, 100);
-
-                  return (
-                    <div
-                      key={ps.problem_statement_id}
-                      className="ps-card"
-                      style={{
-                        background:
-                          "linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)",
-                        backdropFilter: "blur(10px)",
-                        border: "1px solid rgba(220, 38, 38, 0.2)",
-                        borderRadius: "4px",
-                        padding: "30px",
-                        position: "relative",
-                        overflow: "hidden",
-                        boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
-                      }}
-                    >
-                      <div
-                        className="card-layout-inner"
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: "20px",
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "15px",
-                              alignItems: "center",
-                              marginBottom: "15px",
-                            }}
-                          >
-                            <span
-                              style={{
-                                color: "#fff",
-                                background: "#dc2626",
-                                padding: "3px 10px",
-                                fontSize: "10px",
-                                fontWeight: "900",
-                              }}
-                            >
-                              ID: {ps.problem_statement_id}
-                            </span>
-                            <span
-                              style={{
-                                color: "#dc2626",
-                                fontSize: "10px",
-                                fontWeight: "900",
-                                letterSpacing: "1.5px",
-                              }}
-                            >
-                        // {ps.track?.toUpperCase()}
-                            </span>
-                          </div>
-                          <h3
-                            className="ps-title-text"
-                            style={{
-                              fontSize: "1.6rem",
-                              margin: 0,
-                              color: "#fff",
-                              fontWeight: "900",
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {ps.title}
-                          </h3>
-                        </div>
-
-                        <div
-                          className="action-column"
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-end",
-                            gap: "15px",
-                          }}
-                        >
-                          <div
-                            className="heat-gauge-container"
-                            style={{ width: "180px" }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginBottom: "5px",
-                              }}
-                            >
-                              <span
-                                style={{
-                                  fontSize: "16px",
-                                  fontWeight: "900",
-                                  color: "rgba(255,255,255,0.4)",
-                                }}
-                              >
-                                CONFLICT LEVEL
-                              </span>
-                              <span
-                                style={{
-                                  fontSize: "16px",
-                                  fontWeight: "1000",
-                                  color: "#dc2626",
-                                }}
-                              >
-                                {count}/{target}
-                              </span>
-                            </div>
-                            <div
-                              style={{
-                                height: "3px",
-                                width: "100%",
-                                background: "rgba(255,255,255,0.1)",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  height: "100%",
-                                  width: `${barWidth}%`,
-                                  background: "#dc2626",
-                                  boxShadow: "0 0 10px #dc2626",
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() =>
-                              setExpandedId(
-                                expandedId === ps.problem_statement_id
-                                  ? null
-                                  : ps.problem_statement_id
-                              )
-                            }
-                            className="view-btn-heist"
-                          >
-                            {expandedId === ps.problem_statement_id
-                              ? "CLOSE DOSSIER"
-                              : "VIEW DOSSIER"}
-                          </button>
-                        </div>
-                      </div>
-
-                      {expandedId === ps.problem_statement_id && (
-                        <div
-                          style={{
-                            marginTop: "30px",
-                            paddingTop: "25px",
-                            borderTop: "1px solid rgba(220, 38, 38, 0.2)",
-                            animation: "fadeIn 0.4s ease",
-                          }}
-                        >
-                          <p
-                            style={{
-                              color: "rgba(255,255,255,0.8)",
-                              lineHeight: "1.7",
-                              fontSize: "0.95rem",
-                            }}
-                          >
-                            <strong style={{ color: "#dc2626" }}>[BRIEFING]:</strong>{" "}
-                            {ps.description}
-                          </p>
-                          <button
-                            onClick={() => triggerLockSequence(ps)}
-                            className="lock-shine-btn"
-                          >
-                            INITIALIZE TARGET LOCK
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )
-            }
-
-            {/* --- MODAL UI --- */}
-            {
-              showModal && (
-                <div
-                  style={{
-                    position: "fixed",
-                    inset: 0,
-                    zIndex: 2000,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(0,0,0,0.95)",
-                    padding: "20px",
-                  }}
-                >
+                return (
                   <div
+                    key={ps.problem_statement_id}
+                    className="ps-card"
                     style={{
-                      width: "100%",
-                      maxWidth: "420px",
-                      padding: "40px",
-                      background: "#0a0a0a",
-                      border: "2px solid #dc2626",
-                      textAlign: "center",
-                      boxShadow: "0 0 50px rgba(220,38,38,0.3)",
+                      background:
+                        "linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)",
+                      backdropFilter: "blur(10px)",
+                      border: "1px solid rgba(220, 38, 38, 0.2)",
+                      borderRadius: "4px",
+                      padding: "30px",
+                      position: "relative",
+                      overflow: "hidden",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
                     }}
                   >
                     <div
+                      className="card-layout-inner"
                       style={{
-                        fontSize: "10px",
-                        color: "#dc2626",
-                        fontWeight: "900",
-                        letterSpacing: "5px",
-                        marginBottom: "15px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: "20px",
                       }}
                     >
-                      BELLA CIAO
-                    </div>
-                    <h2
-                      style={{
-                        color: "#fff",
-                        textTransform: "uppercase",
-                        margin: "0 0 20px 0",
-                      }}
-                    >
-                      LOCK TARGET?
-                    </h2>
-                    <p
-                      style={{
-                        color: "rgba(255,255,255,0.6)",
-                        marginBottom: "30px",
-                        fontSize: "14px",
-                      }}
-                    >
-                      Confirming lock for{" "}
-                      <strong style={{ color: "#dc2626" }}>
-                        {pendingPs?.problem_statement_id}
-                      </strong>
-                      . Once breached, the vault stays locked.
-                    </p>
-                    <div style={{ display: "flex", gap: "15px" }}>
-                      <button
-                        onClick={() => setShowModal(false)}
-                        style={{
-                          flex: 1,
-                          background: "transparent",
-                          color: "#fff",
-                          border: "1px solid #333",
-                          padding: "15px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ABORT
-                      </button>
-                      <button
-                        onClick={confirmLock}
-                        style={{
-                          flex: 1,
-                          background: "#dc2626",
-                          color: "#fff",
-                          border: "none",
-                          padding: "15px",
-                          fontWeight: "900",
-                          cursor: "pointer",
-                        }}
-                      >
-                        INITIALIZE
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            }
+                      <div style={{ flex: 1 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "15px",
+                            alignItems: "center",
+                            marginBottom: "15px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              color: "#fff",
+                              background: "#dc2626",
+                              padding: "3px 10px",
+                              fontSize: "10px",
+                              fontWeight: "900",
+                            }}
+                          >
+                            ID: {ps.problem_statement_id}
+                          </span>
+                          <span
+                            style={{
+                              color: "#dc2626",
+                              fontSize: "10px",
+                              fontWeight: "900",
+                              letterSpacing: "1.5px",
+                            }}
+                          >
+                            // {ps.track?.toUpperCase()}
+                          </span>
+                        </div>
+                        <h3
+                          className="ps-title-text"
+                          style={{
+                            fontSize: "1.6rem",
+                            margin: 0,
+                            color: "#fff",
+                            fontWeight: "900",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {ps.title}
+                        </h3>
+                      </div>
 
-            {/* --- NOTIFICATION UI --- */}
-            {
-              notification.show && (
-                <div
+                      <div
+                        className="action-column"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-end",
+                          gap: "15px",
+                        }}
+                      >
+                        <div
+                          className="heat-gauge-container"
+                          style={{ width: "180px" }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "5px",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "900",
+                                color: "rgba(255,255,255,0.4)",
+                              }}
+                            >
+                              CONFLICT LEVEL
+                            </span>
+                            <span
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "1000",
+                                color: "#dc2626",
+                              }}
+                            >
+                              {count}/{target}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              height: "3px",
+                              width: "100%",
+                              background: "rgba(255,255,255,0.1)",
+                            }}
+                          >
+                            <div
+                              style={{
+                                height: "100%",
+                                width: `${barWidth}%`,
+                                background: "#dc2626",
+                                boxShadow: "0 0 10px #dc2626",
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() =>
+                            setExpandedId(
+                              expandedId === ps.problem_statement_id
+                                ? null
+                                : ps.problem_statement_id
+                            )
+                          }
+                          className="view-btn-heist"
+                        >
+                          {expandedId === ps.problem_statement_id
+                            ? "CLOSE DOSSIER"
+                            : "VIEW DOSSIER"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {expandedId === ps.problem_statement_id && (
+                      <div
+                        style={{
+                          marginTop: "30px",
+                          paddingTop: "25px",
+                          borderTop: "1px solid rgba(220, 38, 38, 0.2)",
+                          animation: "fadeIn 0.4s ease",
+                        }}
+                      >
+                        <p
+                          style={{
+                            color: "rgba(255,255,255,0.8)",
+                            lineHeight: "1.7",
+                            fontSize: "0.95rem",
+                          }}
+                        >
+                          <strong style={{ color: "#dc2626" }}>[BRIEFING]:</strong>{" "}
+                          {ps.description}
+                        </p>
+                        <button
+                          onClick={() => triggerLockSequence(ps)}
+                          className="lock-shine-btn"
+                        >
+                          INITIALIZE TARGET LOCK
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* --- MODAL UI (Always render, visibility controlled by showModal) --- */}
+        {showModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 2000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(0,0,0,0.95)",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: "420px",
+                padding: "40px",
+                background: "#0a0a0a",
+                border: "2px solid #dc2626",
+                textAlign: "center",
+                boxShadow: "0 0 50px rgba(220,38,38,0.3)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "10px",
+                  color: "#dc2626",
+                  fontWeight: "900",
+                  letterSpacing: "5px",
+                  marginBottom: "15px",
+                }}
+              >
+                BELLA CIAO
+              </div>
+              <h2
+                style={{
+                  color: "#fff",
+                  textTransform: "uppercase",
+                  margin: "0 0 20px 0",
+                }}
+              >
+                LOCK TARGET?
+              </h2>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  marginBottom: "30px",
+                  fontSize: "14px",
+                }}
+              >
+                Confirming lock for{" "}
+                <strong style={{ color: "#dc2626" }}>
+                  {pendingPs?.problem_statement_id}
+                </strong>
+                . Once breached, the vault stays locked.
+              </p>
+              <div style={{ display: "flex", gap: "15px" }}>
+                <button
+                  onClick={() => setShowModal(false)}
                   style={{
-                    position: "fixed",
-                    bottom: "30px",
-                    right: "30px",
-                    zIndex: 3000,
-                    padding: "20px 40px",
-                    background: "#0a0a0a",
-                    borderLeft: `5px solid ${notification.type === "success" ? "#22c55e" : "#dc2626"
-                      }`,
-                    boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
-                    animation: "fadeIn 0.3s ease",
+                    flex: 1,
+                    background: "transparent",
+                    color: "#fff",
+                    border: "1px solid #333",
+                    padding: "15px",
+                    cursor: "pointer",
                   }}
                 >
-                  <p style={{ color: "#fff", margin: 0, fontWeight: "700" }}>
-                    {notification.message}
-                  </p>
-                </div>
-              )
-            }
+                  ABORT
+                </button>
+                <button
+                  onClick={confirmLock}
+                  style={{
+                    flex: 1,
+                    background: "#dc2626",
+                    color: "#fff",
+                    border: "none",
+                    padding: "15px",
+                    fontWeight: "900",
+                    cursor: "pointer",
+                  }}
+                >
+                  INITIALIZE
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-            <style
-              dangerouslySetInnerHTML={{
-                __html: `
+        {/* --- NOTIFICATION UI --- */}
+        {notification.show && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "30px",
+              right: "30px",
+              zIndex: 3000,
+              padding: "20px 40px",
+              background: "#0a0a0a",
+              borderLeft: `5px solid ${notification.type === "success" ? "#22c55e" : "#dc2626"
+                }`,
+              boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
+              animation: "fadeIn 0.3s ease",
+            }}
+          >
+            <p style={{ color: "#fff", margin: 0, fontWeight: "700" }}>
+              {notification.message}
+            </p>
+          </div>
+        )}
+
+        {/* --- STYLES (Moved outside conditional logic to apply everywhere) --- */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
               .ps-container::-webkit-scrollbar { display: none; }
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
               @media (max-width: 992px) {
-                  /* .heist-hamburger { display: flex !important; } REMOVED */
-                  aside, .sidebar-container { 
-                      /* position: fixed !important; REMOVED - controlled by parent */
-                  }
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
                   .view-btn-heist { width: 100% !important; }
@@ -735,10 +693,8 @@ export default function PSGallery() {
               .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
               @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `,
-              }}
-            />
-          </>
-        )}
+          }}
+        />
       </div>
     </div>
   );
