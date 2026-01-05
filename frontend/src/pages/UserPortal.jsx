@@ -137,14 +137,16 @@ export default function UserPortal() {
                         )}
                     </div>
 
-                    <div style={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        padding: '0',
-                        background: 'transparent',
-                        position: 'relative'
-                    }}>
+                    <div className="main-content-wrapper"
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            padding: '0',
+                            background: 'transparent',
+                            position: 'relative',
+                            boxSizing: 'border-box',
+                        }}>
                         {activeTab === 'ps-selection' && (
                             <PSGallery
                                 onSelect={handlePSSelect}
@@ -163,7 +165,7 @@ export default function UserPortal() {
                         )}
 
                         {activeTab === 'github-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}>
+                            <div className="card-inner" style={{ width: '100%', maxWidth: '100%', margin: 'auto' }}>
                                 <GitHubSubmission
                                     isSubmitted={isGithubSubmitted}
                                     onUpload={() => {
@@ -175,7 +177,8 @@ export default function UserPortal() {
                         )}
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }

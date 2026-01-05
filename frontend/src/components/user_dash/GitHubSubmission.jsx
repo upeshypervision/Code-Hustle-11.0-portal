@@ -172,7 +172,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
             style={{
               animation: "fadeIn 0.6s ease-out",
               width: "100%",
-              maxWidth: "700px",
+              maxWidth: "900px",
               background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
               backdropFilter: "blur(20px)",
               borderRadius: "4px",
@@ -180,55 +180,55 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
               boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
             }}
           >
-             {/* Header Section (Replicated for UI Consistency) */}
-             <div style={{ textAlign: "center", marginBottom: "45px" }}>
+            {/* Header Section (Replicated for UI Consistency) */}
+            <div style={{ textAlign: "center", marginBottom: "45px" }}>
               <h2 style={{
-                  color: "#fff",
-                  fontSize: "2.2rem",
-                  fontWeight: "900",
-                  letterSpacing: "4px",
-                  textTransform: "uppercase",
-                  margin: "0 0 10px 0",
-                  textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
-                }}>
+                color: "#fff",
+                fontSize: "2.2rem",
+                fontWeight: "900",
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                margin: "0 0 10px 0",
+                textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
+              }}>
                 Final Uplink
               </h2>
               <div style={{
-                  height: "2px",
-                  width: "60px",
-                  background: "#dc2626",
-                  margin: "0 auto 20px",
-                }}></div>
+                height: "2px",
+                width: "60px",
+                background: "#dc2626",
+                margin: "0 auto 20px",
+              }}></div>
               <p style={{
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: "0.85rem",
-                  letterSpacing: "1px",
-                }}>
+                color: "rgba(255,255,255,0.5)",
+                fontSize: "0.85rem",
+                letterSpacing: "1px",
+              }}>
                 TRANSMIT YOUR ARCHITECTURE TO THE VAULT
               </p>
             </div>
 
             {/* Success Message */}
             <div style={{
-                padding: "40px",
-                background: "rgba(16,185,129,0.05)",
-                border: "1px solid #10b981",
-                textAlign: "center",
-                borderRadius: "2px",
-              }}>
+              padding: "40px",
+              background: "rgba(16,185,129,0.05)",
+              border: "1px solid #10b981",
+              textAlign: "center",
+              borderRadius: "2px",
+            }}>
               <div style={{ fontSize: "3rem", marginBottom: "15px" }}>✓</div>
               <h3 style={{
-                  color: "#10b981",
-                  fontWeight: "900",
-                  letterSpacing: "2px",
-                }}>
+                color: "#10b981",
+                fontWeight: "900",
+                letterSpacing: "2px",
+              }}>
                 MISSION ACCOMPLISHED
               </h3>
               <p style={{
-                  color: "rgba(255,255,255,0.6)",
-                  fontSize: "0.8rem",
-                  marginTop: "10px",
-                }}>
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "0.8rem",
+                marginTop: "10px",
+              }}>
                 REPOSITORIES SECURED AT {new Date().toLocaleTimeString()}
               </p>
             </div>
@@ -331,15 +331,15 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
 
             {error && (
               <div style={{
-                  padding: "15px",
-                  background: "rgba(239, 68, 68, 0.1)",
-                  border: "1px solid #ef4444",
-                  borderRadius: "4px",
-                  color: "#ef4444",
-                  fontSize: "0.85rem",
-                  marginBottom: "20px",
-                  textAlign: "center",
-                }}>
+                padding: "15px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid #ef4444",
+                borderRadius: "4px",
+                color: "#ef4444",
+                fontSize: "0.85rem",
+                marginBottom: "20px",
+                textAlign: "center",
+              }}>
                 {error}
               </div>
             )}
@@ -350,28 +350,28 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
             >
               <div style={{ position: "relative" }}>
                 <label style={{
-                    color: "#dc2626",
-                    fontSize: "0.65rem",
-                    fontWeight: "900",
-                    letterSpacing: "2px",
-                    display: "block",
-                    marginBottom: "10px",
-                  }}>
+                  color: "#dc2626",
+                  fontSize: "0.65rem",
+                  fontWeight: "900",
+                  letterSpacing: "2px",
+                  display: "block",
+                  marginBottom: "10px",
+                }}>
                   01. GITHUB REPOSITORY (MANDATORY)
                 </label>
                 <div style={{
-                    position: "relative",
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                }}>
+                  <div style={{
+                    position: "absolute",
+                    left: "15px",
                     display: "flex",
                     alignItems: "center",
+                    borderRight: "1px solid rgba(220, 38, 38, 0.3)",
+                    paddingRight: "12px",
                   }}>
-                  <div style={{
-                      position: "absolute",
-                      left: "15px",
-                      display: "flex",
-                      alignItems: "center",
-                      borderRight: "1px solid rgba(220, 38, 38, 0.3)",
-                      paddingRight: "12px",
-                    }}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="#dc2626">
                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
@@ -401,13 +401,13 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
 
               <div>
                 <label style={{
-                    color: "rgba(255,255,255,0.4)",
-                    fontSize: "0.65rem",
-                    fontWeight: "900",
-                    letterSpacing: "2px",
-                    display: "block",
-                    marginBottom: "10px",
-                  }}>
+                  color: "rgba(255,255,255,0.4)",
+                  fontSize: "0.65rem",
+                  fontWeight: "900",
+                  letterSpacing: "2px",
+                  display: "block",
+                  marginBottom: "10px",
+                }}>
                   02. LIVE DEPLOYMENT (OPTIONAL)
                 </label>
                 <input
@@ -455,12 +455,12 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
               </button>
 
               <div style={{
-                  textAlign: "center",
-                  fontSize: "0.6rem",
-                  color: "#444",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                }}>
+                textAlign: "center",
+                fontSize: "0.6rem",
+                color: "#444",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+              }}>
                 Security Protocol: AES-256 Enabled // System: Operational
               </div>
             </form>
@@ -478,6 +478,16 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 }
                 .github-submission-card {
                     padding: 50px 40px;
+                    
+                }
+                @media (max-width: 992px) {
+                    .github-submission-card {
+                        transform: none !important;
+                        width: 100% !important;
+                    }
+                    .github-submission-wrapper {
+                        padding: 80px 40px !important;
+                    }
                 }
                 @media (max-width: 768px) {
                     .github-submission-wrapper {
