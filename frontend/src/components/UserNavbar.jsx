@@ -63,6 +63,12 @@ export default function UserNavbar({
                     </div>
                     <div className="nav-right">
                         <div className="nav-user">{userInfo}</div>
+                        <button
+                            className="nav-logout"
+                            onClick={() => window.location.href = "https://codehustle11.upeshypervision.in/#contact"}
+                        >
+                            Contact us
+                        </button>
                         <button className="nav-logout" onClick={handleLogout}>
                             Logout
                         </button>
