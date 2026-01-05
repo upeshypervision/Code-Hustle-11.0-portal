@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import socket from '../../socket';
 
 export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess }) {
-    // --- STATE & REFS (From Logic Source) ---
+    // --- STATE & REFS ---
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
@@ -14,10 +14,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     const [checkingRound, setCheckingRound] = useState(true);
     const fileInputRef = useRef(null);
 
-    // --- UI STATE (From UI Source) ---
-    // const [isMenuOpen, setIsMenuOpen] = useState(false); // Removed
-
-    // Check if user has already submitted on component mount
+    // --- CHECK SUBMISSION STATUS ---
     useEffect(() => {
         const checkSubmissionStatus = async () => {
             try {
@@ -40,7 +37,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         checkSubmissionStatus();
     }, []);
 
-    // Check round status on mount
+    // --- CHECK ROUND STATUS ---
     useEffect(() => {
         const checkRoundStatus = async () => {
             try {
@@ -62,7 +59,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         checkRoundStatus();
     }, []);
 
-    // Listen for round status changes via WebSocket
+    // --- SOCKET LISTENER ---
     useEffect(() => {
         const handleRoundChange = (data) => {
             if (data.round_type === 'ppt_upload') {
@@ -74,7 +71,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         return () => socket.off("round_status_changed", handleRoundChange);
     }, []);
 
-    // --- HANDLERS (From Logic Source) ---
+    // --- HANDLERS ---
     const handleDownloadTemplate = () => {
         const link = document.createElement('a');
         link.href = '/assets/docs/linux_classactivity.pdf';
@@ -116,13 +113,12 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 });
                 onUploadSuccess();
                 setPendingFile(null);
-                setMessage({ type: '', text: '' }); // Clear any previous errors
+                setMessage({ type: '', text: '' });
             } else {
-                // Check if it's a round closed error (403)
                 if (res.status === 403) {
                     setMessage({
                         type: 'error',
-                        text: data.error || 'Sorry, the submission cannot be made as the PPT round is currently closed.'
+                        text: data.error || 'Submission round closed.'
                     });
                 } else {
                     setMessage({ type: 'error', text: data.error || 'Submission failed' });
@@ -136,19 +132,21 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         }
     };
 
+    // Helper to consolidate submission status
+    const hasUserSubmitted = localIsSubmitted || isSubmitted;
+
     return (
-        /* --- WRAPPER (From UI Source) --- */
         <div style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'flex-start',
             width: '100%',
-            padding: '0', // Removed padding as parent handles it
-            boxSizing: 'border-box', // Ensure no overflow
+            padding: '0',
+            boxSizing: 'border-box',
             position: 'relative',
         }}>
 
-            {/* --- BACKGROUNDS (From UI Source) --- */}
+            {/* --- BACKGROUNDS --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                 backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
@@ -163,10 +161,10 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 zIndex: -1,
             }} />
 
-            {/* --- HAMBURGER MENU REMOVED --- */}
+            {/* --- RENDERING LOGIC --- */}
 
-            {/* Loading or Round Closed Check */}
             {checkingRound || checkingStatus ? (
+                /* 1. Loading State */
                 <div style={{
                     textAlign: 'center',
                     padding: '60px 20px',
@@ -176,8 +174,11 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 }}>
                     <p>Loading...</p>
                 </div>
-            ) : !roundActive ? (
-                /* --- ROUND CLOSED UI --- */
+            ) : (!roundActive && !hasUserSubmitted) ? (
+                /* 2. Round Closed UI
+                   --- LOGIC UPDATE HERE ---
+                   Only shows if round is inactive AND user has NOT submitted.
+                */
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -220,7 +221,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     </p>
                 </div>
             ) : (
-                /* --- MAIN CONTENT CARD --- */
+                /* 3. Main Content Card
+                   Shows if Round is Active OR if User has Submitted (bypassing the lock).
+                */
                 <div style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '900px', position: 'relative' }}>
 
                     {selectedPS && (
@@ -234,7 +237,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         </div>
                     )}
 
-                    {/* --- SECTION 1: TEMPLATE (UI Source Visuals) --- */}
+                    {/* --- SECTION 1: TEMPLATE --- */}
                     <div className="ppt-section">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
                             <div style={{ width: '8px', height: '24px', background: '#dc2626' }}></div>
@@ -267,10 +270,10 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         </div>
                     </div>
 
-                    {/* --- SECTION 2: UPLOAD (UI Visuals + Logic) --- */}
+                    {/* --- SECTION 2: UPLOAD --- */}
                     <div className="ppt-section">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-                            <div style={{ width: '8px', height: '24px', background: isSubmitted ? '#10b981' : '#dc2626' }}></div>
+                            <div style={{ width: '8px', height: '24px', background: hasUserSubmitted ? '#10b981' : '#dc2626' }}></div>
                             <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>02. UPLOAD YOUR PPT</h3>
                         </div>
 
@@ -279,26 +282,26 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                             onDragLeave={() => setDragActive(false)}
                             onDrop={handleFileAction}
                             style={{
-                                border: isSubmitted ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
+                                border: hasUserSubmitted ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
                                 borderRadius: '4px', padding: '15px', textAlign: 'center',
-                                background: dragActive ? 'rgba(220, 38, 38, 0.05)' : isSubmitted ? 'rgba(16, 185, 129, 0.05)' : 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                                background: dragActive ? 'rgba(220, 38, 38, 0.05)' : hasUserSubmitted ? 'rgba(16, 185, 129, 0.05)' : 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
                                 backdropFilter: 'blur(10px)', transition: 'all 0.4s ease',
-                                cursor: isSubmitted ? 'default' : 'pointer',
+                                cursor: hasUserSubmitted ? 'default' : 'pointer',
                                 boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
                             }}
-                            // Only click to browse if not submitted and no pending file
-                            onClick={() => !isSubmitted && !pendingFile && fileInputRef.current.click()}
+                            // Only allow click if NOT submitted
+                            onClick={() => !hasUserSubmitted && !pendingFile && fileInputRef.current.click()}
                         >
                             {/* Inner Dotted Box */}
                             <div style={{
-                                border: isSubmitted ? 'none' : dragActive ? '2px dotted #dc2626' : '1px dotted rgba(220, 38, 38, 0.6)',
+                                border: hasUserSubmitted ? 'none' : dragActive ? '2px dotted #dc2626' : '1px dotted rgba(220, 38, 38, 0.6)',
                                 padding: '40px 20px',
                                 borderRadius: '2px'
                             }}>
                                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAction} />
 
-                                {!checkingStatus && (localIsSubmitted || isSubmitted) ? (
-                                    /* --- LOGIC STATE: SUBMITTED (Success UI) --- */
+                                {hasUserSubmitted ? (
+                                    /* --- SUCCESS UI (Shown even if round closed) --- */
                                     <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
                                         <div className="success-check-ring">✓</div>
                                         <h4 style={{ color: '#10b981', fontWeight: '800', fontSize: '1.5rem', marginBottom: '10px' }}>PPT SUBMITTED</h4>
@@ -315,7 +318,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                     </div>
                                 ) : (
                                     <>
-                                        {/* --- LOGIC STATE: PENDING FILE (Styled to match Theme) --- */}
+                                        {/* --- PENDING FILE UI --- */}
                                         {pendingFile ? (
                                             <div style={{ animation: 'fadeIn 0.3s ease' }}>
                                                 <div className="upload-icon-wrapper">
@@ -356,7 +359,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                                 )}
                                             </div>
                                         ) : (
-                                            /* --- LOGIC STATE: EMPTY (Default UI) --- */
+                                            /* --- DEFAULT UPLOAD UI --- */
                                             <>
                                                 <div style={{ fontSize: '3.5rem', opacity: 0.4 }}>📤</div>
                                                 <h4 className="upload-text-responsive" style={{ color: '#fff', textTransform: 'uppercase', marginTop: '15px' }}>
@@ -373,16 +376,13 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         </div>
                     </div>
 
-                    {/* --- STYLES (Merged CSS) --- */}
+                    {/* --- STYLES --- */}
                     <style dangerouslySetInnerHTML={{
                         __html: `
                     .ppt-section { margin-bottom: 40px; }
 
                     @media (max-width: 992px) {
-                        /* .heist-hamburger { display: flex !important; } REMOVED */
-                        aside, .sidebar-container { 
-                            /* position: fixed; REMOVED */
-                        }
+                        aside, .sidebar-container {}
                         .responsive-flex-card { 
                             flex-direction: column !important; 
                             text-align: center !important; 
@@ -392,10 +392,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         .uplink-btn-red { width: 100%; padding: 16px 20px !important; }
                         .ppt-section { margin-bottom: 20px !important; }
                     }
-                    .cross-top { transform: translateY(7px) rotate(45deg); }
-                    .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
-                    .hide { opacity: 0; }
-                    
                     .template-card-visual { 
                         width: 160px; height: 130px; 
                         background: rgba(10, 10, 10, 0.8); 
@@ -408,7 +404,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
                         background: linear-gradient(45deg, transparent 45%, rgba(220,38,38,0.05) 50%, transparent 55%); 
                     }
-                    
                     .download-btn-creative { 
                         background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; 
                         padding: 12px 25px; cursor: pointer; font-weight: 900; font-size: 10px; 
