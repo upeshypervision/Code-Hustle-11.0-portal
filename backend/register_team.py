@@ -105,6 +105,7 @@ def register_team_route():
         "amount": amount,
         "status": "Pending Payment",
         "role": "student",
+        "round": 1,
         "timestamp": datetime.utcnow().isoformat()
     })
 
@@ -165,6 +166,7 @@ def register_manual_team_route():
         "password_hashed": password_hashed,
         "status": f"Manual by Admin {admin_id}",
         "role": "student",
+        "round": 1,
         "timestamp": datetime.utcnow().isoformat()
     })
 

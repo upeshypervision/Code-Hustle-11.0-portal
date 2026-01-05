@@ -1,0 +1,394 @@
+import React, { useState, useEffect } from "react";
+import socket from "../../socket";
+
+export default function HackerrankSubmission({ teamName }) {
+    const [hackerrankLink, setHackerrankLink] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
+    const [checkingStatus, setCheckingStatus] = useState(true);
+    const [roundActive, setRoundActive] = useState(true);
+    const [checkingRound, setCheckingRound] = useState(true);
+    const [submissionData, setSubmissionData] = useState(null);
+
+    // Check round status on mount
+    useEffect(() => {
+        const checkRoundStatus = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/round-status", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Default to true if not present in old config, but backend should send it now
+                    setRoundActive(data.rounds.hackerrank_submission !== false);
+                }
+            } catch (err) {
+                console.error("Error checking round status:", err);
+            } finally {
+                setCheckingRound(false);
+            }
+        };
+        checkRoundStatus();
+    }, []);
+
+    // Listen for round status changes
+    useEffect(() => {
+        const handleRoundChange = (data) => {
+            if (data.round_type === 'hackerrank_submission') {
+                setRoundActive(data.is_active);
+            }
+        };
+        socket.on("round_status_changed", handleRoundChange);
+        return () => socket.off("round_status_changed", handleRoundChange);
+    }, []);
+
+    // Check if user has already submitted
+    useEffect(() => {
+        const checkSubmissionStatus = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setSuccess(true);
+                    setSubmissionData(data.submission);
+                }
+            } catch (err) {
+                console.error("Error checking submission status:", err);
+            } finally {
+                setCheckingStatus(false);
+            }
+        };
+        checkSubmissionStatus();
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!hackerrankLink.trim()) {
+            setError("Hackerrank profile link is required");
+            return;
+        }
+        setLoading(true);
+        setError("");
+        try {
+            const res = await fetch("http://localhost:5000/api/submit-hackerrank", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    hackerrank_link: hackerrankLink,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setSuccess(true);
+                setSubmissionData({
+                    hackerrank_link: hackerrankLink,
+                    submitted_at: new Date().toISOString()
+                });
+            } else {
+                if (res.status === 403) {
+                    setError(data.error || "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed.");
+                } else {
+                    setError(data.error || "Failed to submit link");
+                }
+            }
+        } catch (err) {
+            console.error("Error submitting link:", err);
+            setError("Server connection failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (checkingRound || checkingStatus) {
+        return (
+            <div style={{
+                textAlign: 'center',
+                padding: '40px 20px',
+                color: 'rgba(255,255,255,0.6)',
+                width: '100%',
+                maxWidth: '900px',
+                margin: '0 auto'
+            }}>
+                <p>Loading Protocol...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div
+            style={{
+                width: "100%",
+                maxWidth: "900px",
+                margin: "0 auto 40px auto", // Added margin bottom to separate from PS Component
+                position: "relative",
+                zIndex: 10
+            }}
+        >
+            <div
+                style={{
+                    background: "linear-gradient(145deg, rgba(20, 20, 20, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%)",
+                    backdropFilter: "blur(20px)",
+                    borderRadius: "4px",
+                    border: success ? "1px solid #10b981" : "1px solid rgba(34, 197, 94, 0.3)", // Green theme
+                    boxShadow: success ? "0 10px 40px rgba(16, 185, 129, 0.1)" : "0 10px 40px rgba(0,0,0,0.8)",
+                    padding: "30px",
+                    animation: "fadeIn 0.6s ease-out",
+                }}
+            >
+                {/* Header Section */}
+                <div style={{ textAlign: "left", marginBottom: "25px", borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+                    <div>
+                        <h2 style={{
+                            color: "#22c55e", // Green for Hackerrank
+                            fontSize: "1.5rem",
+                            fontWeight: "900",
+                            letterSpacing: "2px",
+                            textTransform: "uppercase",
+                            margin: "0 0 5px 0",
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                        }}>
+                            <span style={{ fontSize: '1.8rem' }}>🧩</span> HACKERRANK PROTOCOL
+                        </h2>
+                        <p style={{
+                            color: "rgba(255,255,255,0.5)",
+                            fontSize: "0.8rem",
+                            letterSpacing: "1px",
+                            margin: 0
+                        }}>
+                            SOLVE CHALLENGES & SUBMIT YOUR PROFILE
+                        </p>
+                    </div>
+
+                    {roundActive && (
+                        <a
+                            href="https://www.hackerrank.com/contests/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="challenge-link-btn"
+                            style={{
+                                textDecoration: 'none'
+                            }}
+                        >
+                            ACCESS CHALLENGES ↗
+                        </a>
+                    )}
+                </div>
+
+                {/* Content */}
+                {success ? (
+                    <div style={{
+                        padding: "20px",
+                        background: "rgba(16,185,129,0.05)",
+                        border: "1px solid #10b981",
+                        borderRadius: "2px",
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '20px'
+                    }}>
+                        <div style={{ fontSize: "2rem", color: '#10b981' }}>✓</div>
+                        <div>
+                            <h3 style={{
+                                color: "#10b981",
+                                fontWeight: "800",
+                                letterSpacing: "1px",
+                                fontSize: '1rem',
+                                margin: '0 0 5px 0'
+                            }}>
+                                PROFILE SECURED
+                            </h3>
+                            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem", margin: 0 }}>
+                                <strong style={{ color: '#fff' }}>Link:</strong> {submissionData?.hackerrank_link}
+                            </p>
+                        </div>
+                    </div>
+                ) : !roundActive ? (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '60vh',
+                        padding: '40px',
+                        textAlign: 'center',
+                        background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                        backdropFilter: 'blur(10px)',
+                        border: '2px solid #ef4444',
+                        borderRadius: '8px',
+                        animation: 'fadeIn 0.5s ease-out',
+                        width: '100%',
+                        maxWidth: '800px',
+                        margin: '0 auto'
+                    }}>
+                        <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
+                        <h2 style={{
+                            color: '#ef4444',
+                            fontWeight: '900',
+                            fontSize: '2.5rem',
+                            letterSpacing: '3px',
+                            marginBottom: '15px'
+                        }}>
+                            ROUND CLOSED
+                        </h2>
+                        <p style={{
+                            color: '#fff',
+                            fontSize: '1.2rem',
+                            marginBottom: '15px',
+                            maxWidth: '600px'
+                        }}>
+                            Hackerrank Submission is currently not available.
+                        </p>
+                        <p style={{
+                            color: 'rgba(255,255,255,0.6)',
+                            fontSize: '1rem'
+                        }}>
+                            ⏳ Please wait for the organizing committee to activate this round.
+                        </p>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', flexDirection: 'column' }}>
+                        {error && (
+                            <div style={{ color: '#ef4444', fontSize: '0.85rem', background: 'rgba(239,68,68,0.1)', padding: '10px', borderRadius: '2px', border: '1px solid #ef4444' }}>
+                                {error}
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                            <div style={{ flex: 1, minWidth: '250px' }}>
+                                <input
+                                    type="url"
+                                    placeholder="https://www.hackerrank.com/profile/username"
+                                    required
+                                    value={hackerrankLink}
+                                    onChange={(e) => setHackerrankLink(e.target.value)}
+                                    style={{
+                                        width: "100%",
+                                        padding: "15px",
+                                        background: "rgba(0,0,0,0.3)",
+                                        border: "1px solid rgba(34, 197, 94, 0.3)",
+                                        borderRadius: "2px",
+                                        color: "#fff",
+                                        fontSize: "0.9rem",
+                                        fontFamily: "monospace",
+                                        outline: "none",
+                                        transition: "all 0.3s ease",
+                                        boxSizing: 'border-box'
+                                    }}
+                                    onFocus={(e) => e.target.style.borderColor = "#22c55e"}
+                                    onBlur={(e) => e.target.style.borderColor = "rgba(34, 197, 94, 0.3)"}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{
+                                    padding: "15px 30px",
+                                    background: "#22c55e",
+                                    border: "none",
+                                    color: "#000",
+                                    fontWeight: "900",
+                                    fontSize: "0.9rem",
+                                    letterSpacing: "1px",
+                                    cursor: loading ? "wait" : "pointer",
+                                    textTransform: "uppercase",
+                                    minWidth: "150px"
+                                }}
+                            >
+                                {loading ? "SUBMITTING..." : "SUBMIT PROFILE"}
+                            </button>
+                        </div>
+                    </form>
+                )}
+            </div>
+
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
+                .challenge-link-btn {
+                    padding: 10px 20px;
+                    background: transparent;
+                    border: 1px solid #22c55e;
+                    color: #22c55e;
+                    font-weight: 800;
+                    font-size: 0.8rem;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    transition: all 0.3s ease;
+                    border-radius: 2px;
+                    white-space: nowrap;
+                }
+                .challenge-link-btn:hover {
+                    background: #22c55e;
+                    color: #000;
+                    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+                }
+
+                .form-row {
+                    display: flex;
+                    gap: 15px;
+                    align-items: stretch;
+                }
+                
+                .hackerrank-input {
+                    flex: 1;
+                    width: 100%;
+                    padding: 15px;
+                    background: rgba(0,0,0,0.3);
+                    border: 1px solid rgba(34, 197, 94, 0.3);
+                    border-radius: 2px;
+                    color: #fff;
+                    fontSize: 0.9rem;
+                    font-family: monospace;
+                    outline: none;
+                    transition: all 0.3s ease;
+                    box-sizing: border-box;
+                    height: 50px;
+                }
+                
+                .hackerrank-submit-btn {
+                    padding: 0 30px;
+                    background: #22c55e;
+                    border: none;
+                    color: #000;
+                    font-weight: 900;
+                    font-size: 0.9rem;
+                    letter-spacing: 1px;
+                    cursor: pointer;
+                    text-transform: uppercase;
+                    min-width: 150px;
+                    height: 50px; /* Matched height */
+                    border-radius: 2px;
+                    transition: all 0.3s ease;
+                }
+                .hackerrank-submit-btn:disabled {
+                    opacity: 0.7;
+                    cursor: wait;
+                }
+                .hackerrank-submit-btn:hover:not(:disabled) {
+                    background: #4ade80;
+                    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+                }
+
+                @media (max-width: 768px) {
+                    .form-row {
+                        flex-direction: column;
+                    }
+                    .hackerrank-input, .hackerrank-submit-btn {
+                        width: 100%;
+                    }
+                    .challenge-link-btn {
+                        width: 100%;
+                        text-align: center;
+                    }
+                }
+            `
+                }}
+            />
+        </div>
+    );
+}

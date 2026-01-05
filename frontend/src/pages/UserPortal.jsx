@@ -6,6 +6,7 @@ import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
 import PPTSubmission from '../components/user_dash/PPTSubmission';
 import GitHubSubmission from '../components/user_dash/GitHubSubmission';
+import HackerrankSubmission from '../components/user_dash/HackerrankSubmission';
 import './UserPortal.css';
 
 export default function UserPortal() {
@@ -152,6 +153,12 @@ export default function UserPortal() {
                                 onSelect={handlePSSelect}
                                 teamName={teamInfo.login_id}
                             />
+                        )}
+
+                        {activeTab === 'hackerrank-submission' && (
+                            <div className="card-inner" style={{ width: '100%', maxWidth: '100%', margin: 'auto' }}>
+                                <HackerrankSubmission teamName={teamInfo.login_id} />
+                            </div>
                         )}
 
                         {activeTab === 'ppt-submission' && (

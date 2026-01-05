@@ -5,6 +5,7 @@ export default function RoundManagement() {
   const [psSelectionActive, setPsSelectionActive] = useState(true);
   const [pptUploadActive, setPptUploadActive] = useState(true);
   const [githubSubmissionActive, setGithubSubmissionActive] = useState(false);
+  const [hackerrankSubmissionActive, setHackerrankSubmissionActive] = useState(true);
   const [loading, setLoading] = useState(true);
 
   // Fetch current round status on mount
@@ -23,6 +24,7 @@ export default function RoundManagement() {
         setPsSelectionActive(data.rounds.ps_selection);
         setPptUploadActive(data.rounds.ppt_upload);
         setGithubSubmissionActive(data.rounds.github_submission);
+        setHackerrankSubmissionActive(data.rounds.hackerrank_submission ?? true);
       }
     } catch (err) {
       console.error('Error fetching round status:', err);
@@ -70,6 +72,11 @@ export default function RoundManagement() {
     updateRoundStatus('github_submission', checked);
   };
 
+  const handleHackerrankSubmissionToggle = (checked) => {
+    setHackerrankSubmissionActive(checked);
+    updateRoundStatus('hackerrank_submission', checked);
+  };
+
   if (loading) {
     return (
       <div className="admin-section">
@@ -94,7 +101,35 @@ export default function RoundManagement() {
         className="control-group"
         style={{ display: "flex", flexDirection: "column", gap: "20px" }}
       >
-        {/* Round 1: PS Selection Toggle */}
+        {/* Round 1: Hackerrank Submission Toggle */}
+        <label className="toggle-label">
+          <div className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={hackerrankSubmissionActive}
+              onChange={(e) => handleHackerrankSubmissionToggle(e.target.checked)}
+            />
+            <span className="toggle-slider"></span>
+          </div>
+          <span>
+            <strong style={{ color: "#22c55e" }}>
+              Round 1: Hackerrank Protocol
+            </strong>
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: "var(--text-muted)",
+                marginTop: "2px",
+              }}
+            >
+              {hackerrankSubmissionActive
+                ? "OPEN - Teams can submit Hackerrank profile links."
+                : "CLOSED - Hackerrank submission is disabled."}
+            </div>
+          </span>
+        </label>
+
+        {/* Round 2: PS Selection Toggle */}
         <label className="toggle-label">
           <div className="toggle-switch">
             <input
@@ -106,7 +141,7 @@ export default function RoundManagement() {
           </div>
           <span>
             <strong style={{ color: "#60a5fa" }}>
-              Round 1: Problem Statement Selection
+              Round 2: Problem Statement Selection
             </strong>
             <div
               style={{
@@ -122,7 +157,7 @@ export default function RoundManagement() {
           </span>
         </label>
 
-        {/* Round 1: PPT Upload Toggle */}
+        {/* Round 2: PPT Upload Toggle */}
         <label className="toggle-label">
           <div className="toggle-switch">
             <input
@@ -133,8 +168,8 @@ export default function RoundManagement() {
             <span className="toggle-slider"></span>
           </div>
           <span>
-            <strong style={{ color: "#60a5fa" }}>
-              Round 1: PPT Submission
+            <strong style={{ color: "#60a5fa" }}> {/* Blue for Round 2 */}
+              Round 2: PPT Submission
             </strong>
             <div
               style={{
@@ -150,7 +185,7 @@ export default function RoundManagement() {
           </span>
         </label>
 
-        {/* Round 2: GitHub Submission Toggle */}
+        {/* Round 3: GitHub Submission Toggle */}
         <label className="toggle-label">
           <div className="toggle-switch">
             <input
@@ -162,7 +197,7 @@ export default function RoundManagement() {
           </div>
           <span>
             <strong style={{ color: "#a78bfa" }}>
-              Round 2: GitHub Repository Submission
+              Round 3: GitHub Repository Submission
             </strong>
             <div
               style={{
@@ -199,10 +234,27 @@ export default function RoundManagement() {
               <tbody>
                 <tr>
                   <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
-                    PS Selection
+                    Hackerrank Submission
                   </td>
                   <td>
                     <span className="badge-round r1">Round 1</span>
+                  </td>
+                  <td>
+                    <span
+                      className={`status-pill ${hackerrankSubmissionActive ? "pass" : "pending"
+                        }`}
+                    >
+                      {hackerrankSubmissionActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td>All Registered Teams</td>
+                </tr>
+                <tr>
+                  <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
+                    PS Selection
+                  </td>
+                  <td>
+                    <span className="badge-round r2">Round 2</span>
                   </td>
                   <td>
                     <span
@@ -212,14 +264,14 @@ export default function RoundManagement() {
                       {psSelectionActive ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>All Registered Teams</td>
+                  <td>Qualified Teams</td>
                 </tr>
                 <tr>
                   <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
                     PPT Upload
                   </td>
                   <td>
-                    <span className="badge-round r1">Round 1</span>
+                    <span className="badge-round r2">Round 2</span>
                   </td>
                   <td>
                     <span
@@ -229,14 +281,14 @@ export default function RoundManagement() {
                       {pptUploadActive ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>All Registered Teams</td>
+                  <td>Qualified Teams</td>
                 </tr>
                 <tr>
                   <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
                     GitHub Submission
                   </td>
                   <td>
-                    <span className="badge-round r2">Round 2</span>
+                    <span className="badge-round r3">Round 3</span>
                   </td>
                   <td>
                     <span
@@ -261,8 +313,21 @@ export default function RoundManagement() {
                     border-radius: 4px;
                     font-weight: 700;
                 }
-                .r1 { background: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
-                .r2 { background: rgba(167, 139, 250, 0.1); color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.2); }
+                .r1 { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+                .r2 { background: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+                .r3 { background: rgba(167, 139, 250, 0.1); color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.2); }
+                
+                /* Extra subtle transitions */
+                .status-pill {
+                   font-size: 11px;
+                   padding: 4px 10px;
+                   border-radius: 20px;
+                   font-weight: 600;
+                   text-transform: uppercase;
+                   letter-spacing: 0.5px;
+                }
+                .status-pill.pass { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+                .status-pill.pending { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
             `}</style>
     </div>
   );

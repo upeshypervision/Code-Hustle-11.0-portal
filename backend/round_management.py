@@ -31,7 +31,8 @@ def get_round_status_route():
         "rounds": {
             "ps_selection": round_status.get("ps_selection", True),
             "ppt_upload": round_status.get("ppt_upload", True),
-            "github_submission": round_status.get("github_submission", False)
+            "github_submission": round_status.get("github_submission", False),
+            "hackerrank_submission": round_status.get("hackerrank_submission", True)
         }
     }), 200
 
@@ -54,10 +55,10 @@ def update_round_status_route():
         return jsonify({"success": False, "error": "Invalid session"}), 401
     
     data = request.get_json()
-    round_type = data.get("round_type")  # ps_selection, ppt_upload, github_submission
+    round_type = data.get("round_type")  # ps_selection, ppt_upload, github_submission, hackerrank_submission
     is_active = data.get("is_active")
     
-    if round_type not in ["ps_selection", "ppt_upload", "github_submission"]:
+    if round_type not in ["ps_selection", "ppt_upload", "github_submission", "hackerrank_submission"]:
         return jsonify({"success": False, "error": "Invalid round type"}), 400
     
     if not isinstance(is_active, bool):

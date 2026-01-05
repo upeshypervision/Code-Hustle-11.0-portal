@@ -85,13 +85,21 @@ const DashboardView = ({
     const determineCurrentRound = (rounds) => {
         if (!rounds) return;
 
-        // Priority: GitHub > PPT > PS (show the highest active round)
+        // Priority: GitHub (R3) > PPT/PS (R2) > Hackerrank (R1)
         if (rounds.github_submission) {
             setCurrentRound({ number: 3, name: 'GitHub Submission', color: '#a78bfa' });
-        } else if (rounds.ppt_upload) {
-            setCurrentRound({ number: 2, name: 'PPT Submission', color: '#60a5fa' });
-        } else if (rounds.ps_selection) {
-            setCurrentRound({ number: 1, name: 'Problem Statement Selection', color: '#10b981' });
+        } else if (rounds.ppt_upload || rounds.ps_selection) {
+            // Both are Round 2. We can show a generic "Round 2" or specific based on what's active.
+            // Since they are the same round, let's call it "Round 2: Evaluation Phase" or similar, 
+            // OR just prioritize showing PPT if both are open as it's the submission step.
+
+            if (rounds.ppt_upload) {
+                setCurrentRound({ number: 2, name: 'PPT Submission', color: '#60a5fa' });
+            } else {
+                setCurrentRound({ number: 2, name: 'Problem Statement', color: '#60a5fa' });
+            }
+        } else if (rounds.hackerrank_submission) {
+            setCurrentRound({ number: 1, name: 'Hackerrank Protocol', color: '#22c55e' });
         } else {
             setCurrentRound(null); // No rounds active
         }
