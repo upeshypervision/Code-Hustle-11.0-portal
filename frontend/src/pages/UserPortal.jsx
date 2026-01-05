@@ -10,7 +10,10 @@ import './UserPortal.css';
 
 export default function UserPortal() {
     const navigate = useNavigate(); // Hook for redirection
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeTab, setActiveTab] = useState(() => {
+        // Initialize from localStorage, default to 'dashboard' if not found
+        return localStorage.getItem('userPortalActiveTab') || 'dashboard';
+    });
     const [selectedPS, setSelectedPS] = useState(null);
     const [isPPTSubmitted, setIsPPTSubmitted] = useState(false);
     const [isGithubSubmitted, setIsGithubSubmitted] = useState(false);
@@ -21,6 +24,11 @@ export default function UserPortal() {
 
     // Hoisted state for sidebar
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    // Persist activeTab to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('userPortalActiveTab', activeTab);
+    }, [activeTab]);
 
     useEffect(() => {
         // CHECK YOUR PORT: Is your backend on 5000 or 5001?

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import socket from "../../socket";
 import "./Viewgithubsubmission.css";
 
 const API = "http://localhost:5000";
@@ -11,7 +12,9 @@ export default function ViewGithubSubmissions() {
   const [showModal, setShowModal] = useState(false);
   const [activeSubmission, setActiveSubmission] = useState(null);
 
-  useEffect(() => {
+  const fetchSubmissions = () => {
+    setLoading(true);
+    setError("");
     fetch(`${API}/api/admin/view-github-submissions`, {
       method: "GET",
       credentials: "include",
@@ -26,6 +29,18 @@ export default function ViewGithubSubmissions() {
       })
       .catch(() => setError("Server connection failed"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
+
+  // Socket listener for new GitHub submissions
+  useEffect(() => {
+    socket.on("github_submitted", fetchSubmissions);
+    return () => {
+      socket.off("github_submitted", fetchSubmissions);
+    };
   }, []);
 
   const openModal = (submission) => {

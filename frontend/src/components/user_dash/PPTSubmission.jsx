@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import socket from '../../socket';
 
 export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess }) {
     // --- STATE & REFS (From Logic Source) ---
@@ -6,10 +7,72 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     const [dragActive, setDragActive] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [submittedFile, setSubmittedFile] = useState(null);
+    const [checkingStatus, setCheckingStatus] = useState(true);
+    const [localIsSubmitted, setLocalIsSubmitted] = useState(false);
+    const [roundActive, setRoundActive] = useState(true);
+    const [checkingRound, setCheckingRound] = useState(true);
     const fileInputRef = useRef(null);
 
     // --- UI STATE (From UI Source) ---
     // const [isMenuOpen, setIsMenuOpen] = useState(false); // Removed
+
+    // Check if user has already submitted on component mount
+    useEffect(() => {
+        const checkSubmissionStatus = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/check-ppt-submission", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+
+                if (data.success && data.is_submitted) {
+                    setLocalIsSubmitted(true);
+                    setSubmittedFile(data.submission);
+                }
+            } catch (err) {
+                console.error("Error checking submission status:", err);
+            } finally {
+                setCheckingStatus(false);
+            }
+        };
+
+        checkSubmissionStatus();
+    }, []);
+
+    // Check round status on mount
+    useEffect(() => {
+        const checkRoundStatus = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/round-status", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    setRoundActive(data.rounds.ppt_upload);
+                }
+            } catch (err) {
+                console.error("Error checking round status:", err);
+            } finally {
+                setCheckingRound(false);
+            }
+        };
+
+        checkRoundStatus();
+    }, []);
+
+    // Listen for round status changes via WebSocket
+    useEffect(() => {
+        const handleRoundChange = (data) => {
+            if (data.round_type === 'ppt_upload') {
+                setRoundActive(data.is_active);
+            }
+        };
+
+        socket.on("round_status_changed", handleRoundChange);
+        return () => socket.off("round_status_changed", handleRoundChange);
+    }, []);
 
     // --- HANDLERS (From Logic Source) ---
     const handleDownloadTemplate = () => {
@@ -46,10 +109,24 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
             const data = await res.json();
 
             if (res.ok) {
+                setLocalIsSubmitted(true);
+                setSubmittedFile({
+                    file_name: pendingFile.name,
+                    submitted_at: new Date().toISOString()
+                });
                 onUploadSuccess();
                 setPendingFile(null);
+                setMessage({ type: '', text: '' }); // Clear any previous errors
             } else {
-                setMessage({ type: 'error', text: data.error || 'Submission failed' });
+                // Check if it's a round closed error (403)
+                if (res.status === 403) {
+                    setMessage({
+                        type: 'error',
+                        text: data.error || 'Sorry, the submission cannot be made as the PPT round is currently closed.'
+                    });
+                } else {
+                    setMessage({ type: 'error', text: data.error || 'Submission failed' });
+                }
             }
         } catch (err) {
             console.error('Submission error:', err);
@@ -88,153 +165,217 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
 
             {/* --- HAMBURGER MENU REMOVED --- */}
 
-            {/* --- MAIN CONTENT CARD --- */}
-            <div style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '900px', position: 'relative' }}>
-
-                {selectedPS && (
-                    <div style={{
-                        position: 'absolute', top: '-35px', right: '0',
-                        background: 'rgba(220, 38, 38, 0.1)', border: '1px solid #dc2626',
-                        padding: '5px 15px', borderRadius: '2px', fontSize: '0.65rem',
-                        color: '#dc2626', fontWeight: '900', letterSpacing: '1.5px', zIndex: 10
+            {/* Loading or Round Closed Check */}
+            {checkingRound || checkingStatus ? (
+                <div style={{
+                    textAlign: 'center',
+                    padding: '60px 20px',
+                    color: 'rgba(255,255,255,0.6)',
+                    width: '100%',
+                    maxWidth: '900px'
+                }}>
+                    <p>Loading...</p>
+                </div>
+            ) : !roundActive ? (
+                /* --- ROUND CLOSED UI --- */
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '60vh',
+                    padding: '40px',
+                    textAlign: 'center',
+                    background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    border: '2px solid #ef4444',
+                    borderRadius: '8px',
+                    animation: 'fadeIn 0.5s ease-out',
+                    width: '100%',
+                    maxWidth: '800px'
+                }}>
+                    <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
+                    <h2 style={{
+                        color: '#ef4444',
+                        fontWeight: '900',
+                        fontSize: '2.5rem',
+                        letterSpacing: '3px',
+                        marginBottom: '15px'
                     }}>
-                        TARGET ID: {selectedPS.id}
-                    </div>
-                )}
-
-                {/* --- SECTION 1: TEMPLATE (UI Source Visuals) --- */}
-                <div className="ppt-section">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-                        <div style={{ width: '8px', height: '24px', background: '#dc2626' }}></div>
-                        <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>01. CHECK PPT TEMPLATE</h3>
-                    </div>
-
-                    <div className="responsive-flex-card" style={{
-                        background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
-                        backdropFilter: 'blur(10px)', border: '1px solid rgba(220, 38, 38, 0.2)',
-                        borderRadius: '4px', padding: '30px', display: 'flex', alignItems: 'center', gap: '40px',
-                        position: 'relative', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
+                        ROUND CLOSED
+                    </h2>
+                    <p style={{
+                        color: '#fff',
+                        fontSize: '1.2rem',
+                        marginBottom: '15px',
+                        maxWidth: '600px'
                     }}>
-                        <div className="template-card-visual">
-                            <div className="card-glare"></div>
-                            <div style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px #dc2626)' }}>📄</div>
-                            <div style={{ marginTop: '15px', textAlign: 'center' }}>
-                                <div style={{ height: '3px', width: '40px', background: '#dc2626', margin: '0 auto 5px' }}></div>
-                                <span style={{ fontSize: '0.6rem', color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>Protocol_v2.1</span>
+                        PPT Submission is currently not available.
+                    </p>
+                    <p style={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: '1rem'
+                    }}>
+                        ⏳ Please wait for the organizing committee to activate this round.
+                    </p>
+                </div>
+            ) : (
+                /* --- MAIN CONTENT CARD --- */
+                <div style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '900px', position: 'relative' }}>
+
+                    {selectedPS && (
+                        <div style={{
+                            position: 'absolute', top: '-35px', right: '0',
+                            background: 'rgba(220, 38, 38, 0.1)', border: '1px solid #dc2626',
+                            padding: '5px 15px', borderRadius: '2px', fontSize: '0.65rem',
+                            color: '#dc2626', fontWeight: '900', letterSpacing: '1.5px', zIndex: 10
+                        }}>
+                            TARGET ID: {selectedPS.id}
+                        </div>
+                    )}
+
+                    {/* --- SECTION 1: TEMPLATE (UI Source Visuals) --- */}
+                    <div className="ppt-section">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                            <div style={{ width: '8px', height: '24px', background: '#dc2626' }}></div>
+                            <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>01. CHECK PPT TEMPLATE</h3>
+                        </div>
+
+                        <div className="responsive-flex-card" style={{
+                            background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                            backdropFilter: 'blur(10px)', border: '1px solid rgba(220, 38, 38, 0.2)',
+                            borderRadius: '4px', padding: '30px', display: 'flex', alignItems: 'center', gap: '40px',
+                            position: 'relative', overflow: 'hidden', boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
+                        }}>
+                            <div className="template-card-visual">
+                                <div className="card-glare"></div>
+                                <div style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px #dc2626)' }}>📄</div>
+                                <div style={{ marginTop: '15px', textAlign: 'center' }}>
+                                    <div style={{ height: '3px', width: '40px', background: '#dc2626', margin: '0 auto 5px' }}></div>
+                                    <span style={{ fontSize: '0.6rem', color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>Protocol_v2.1</span>
+                                </div>
+                            </div>
+
+                            <div style={{ flex: 1 }}>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '20px' }}>
+                                    Review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong> before starting.
+                                </p>
+                                <button className="download-btn-creative" onClick={handleDownloadTemplate}>
+                                    DOWNLOAD DOSSIER ↓
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        <div style={{ flex: 1 }}>
-                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '20px' }}>
-                                Review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong> before starting.
-                            </p>
-                            <button className="download-btn-creative" onClick={handleDownloadTemplate}>
-                                DOWNLOAD DOSSIER ↓
-                            </button>
+                    {/* --- SECTION 2: UPLOAD (UI Visuals + Logic) --- */}
+                    <div className="ppt-section">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                            <div style={{ width: '8px', height: '24px', background: isSubmitted ? '#10b981' : '#dc2626' }}></div>
+                            <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>02. UPLOAD YOUR PPT</h3>
                         </div>
-                    </div>
-                </div>
 
-                {/* --- SECTION 2: UPLOAD (UI Visuals + Logic) --- */}
-                <div className="ppt-section">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
-                        <div style={{ width: '8px', height: '24px', background: isSubmitted ? '#10b981' : '#dc2626' }}></div>
-                        <h3 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>02. UPLOAD YOUR PPT</h3>
-                    </div>
+                        <div
+                            onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                            onDragLeave={() => setDragActive(false)}
+                            onDrop={handleFileAction}
+                            style={{
+                                border: isSubmitted ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '4px', padding: '15px', textAlign: 'center',
+                                background: dragActive ? 'rgba(220, 38, 38, 0.05)' : isSubmitted ? 'rgba(16, 185, 129, 0.05)' : 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                                backdropFilter: 'blur(10px)', transition: 'all 0.4s ease',
+                                cursor: isSubmitted ? 'default' : 'pointer',
+                                boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
+                            }}
+                            // Only click to browse if not submitted and no pending file
+                            onClick={() => !isSubmitted && !pendingFile && fileInputRef.current.click()}
+                        >
+                            {/* Inner Dotted Box */}
+                            <div style={{
+                                border: isSubmitted ? 'none' : dragActive ? '2px dotted #dc2626' : '1px dotted rgba(220, 38, 38, 0.6)',
+                                padding: '40px 20px',
+                                borderRadius: '2px'
+                            }}>
+                                <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAction} />
 
-                    <div
-                        onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-                        onDragLeave={() => setDragActive(false)}
-                        onDrop={handleFileAction}
-                        style={{
-                            border: isSubmitted ? '2px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '4px', padding: '15px', textAlign: 'center',
-                            background: dragActive ? 'rgba(220, 38, 38, 0.05)' : isSubmitted ? 'rgba(16, 185, 129, 0.05)' : 'linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)',
-                            backdropFilter: 'blur(10px)', transition: 'all 0.4s ease',
-                            cursor: isSubmitted ? 'default' : 'pointer',
-                            boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
-                        }}
-                        // Only click to browse if not submitted and no pending file
-                        onClick={() => !isSubmitted && !pendingFile && fileInputRef.current.click()}
-                    >
-                        {/* Inner Dotted Box */}
-                        <div style={{
-                            border: isSubmitted ? 'none' : dragActive ? '2px dotted #dc2626' : '1px dotted rgba(220, 38, 38, 0.6)',
-                            padding: '40px 20px',
-                            borderRadius: '2px'
-                        }}>
-                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAction} />
+                                {!checkingStatus && (localIsSubmitted || isSubmitted) ? (
+                                    /* --- LOGIC STATE: SUBMITTED (Success UI) --- */
+                                    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                                        <div className="success-check-ring">✓</div>
+                                        <h4 style={{ color: '#10b981', fontWeight: '800', fontSize: '1.5rem', marginBottom: '10px' }}>PPT SUBMITTED</h4>
+                                        {submittedFile && (
+                                            <p style={{ color: '#fff', fontSize: '1rem', marginBottom: '10px' }}>
+                                                <strong>File:</strong> {submittedFile.file_name}
+                                            </p>
+                                        )}
+                                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>The vault is closed. Documentation has been locked.</p>
+                                    </div>
+                                ) : checkingStatus ? (
+                                    <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>
+                                        <p>Checking submission status...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* --- LOGIC STATE: PENDING FILE (Styled to match Theme) --- */}
+                                        {pendingFile ? (
+                                            <div style={{ animation: 'fadeIn 0.3s ease' }}>
+                                                <div className="upload-icon-wrapper">
+                                                    <div style={{ fontSize: '3.5rem', marginBottom: '10px' }}>📄</div>
+                                                </div>
 
-                            {!isSubmitted ? (
-                                <>
-                                    {/* --- LOGIC STATE: PENDING FILE (Styled to match Theme) --- */}
-                                    {pendingFile ? (
-                                        <div style={{ animation: 'fadeIn 0.3s ease' }}>
-                                            <div className="upload-icon-wrapper">
-                                                <div style={{ fontSize: '3.5rem', marginBottom: '10px' }}>📄</div>
-                                            </div>
+                                                <h4 style={{ color: '#fff', fontSize: '1.4rem', marginBottom: '5px', fontWeight: '600' }}>{pendingFile.name}</h4>
+                                                <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '30px', fontWeight: 'bold', letterSpacing: '2px' }}>FILE READY FOR UPLINK</p>
 
-                                            <h4 style={{ color: '#fff', fontSize: '1.4rem', marginBottom: '5px', fontWeight: '600' }}>{pendingFile.name}</h4>
-                                            <p style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '30px', fontWeight: 'bold', letterSpacing: '2px' }}>FILE READY FOR UPLINK</p>
-
-                                            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); handleUpload(); }}
-                                                    className="uplink-btn-red"
-                                                    disabled={isUploading}
-                                                >
-                                                    {isUploading ? 'SYNCHRONIZING...' : 'CONFIRM & SUBMIT'}
-                                                </button>
-
-                                                {!isUploading && (
+                                                <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
                                                     <button
-                                                        onClick={(e) => { e.stopPropagation(); setPendingFile(null); }}
-                                                        style={{
-                                                            background: 'transparent', border: '1px solid #ef4444',
-                                                            color: '#ef4444', padding: '12px 25px', borderRadius: '2px',
-                                                            cursor: 'pointer', fontWeight: 'bold', fontSize: '12px',
-                                                            letterSpacing: '1px'
-                                                        }}
+                                                        onClick={(e) => { e.stopPropagation(); handleUpload(); }}
+                                                        className="uplink-btn-red"
+                                                        disabled={isUploading}
                                                     >
-                                                        ABORT
+                                                        {isUploading ? 'SYNCHRONIZING...' : 'CONFIRM & SUBMIT'}
                                                     </button>
+
+                                                    {!isUploading && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setPendingFile(null); }}
+                                                            style={{
+                                                                background: 'transparent', border: '1px solid #ef4444',
+                                                                color: '#ef4444', padding: '12px 25px', borderRadius: '2px',
+                                                                cursor: 'pointer', fontWeight: 'bold', fontSize: '12px',
+                                                                letterSpacing: '1px'
+                                                            }}
+                                                        >
+                                                            ABORT
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                {message.text && (
+                                                    <div style={{ marginTop: '20px', color: message.type === 'error' ? '#ef4444' : '#10b981', fontWeight: 'bold' }}>
+                                                        {message.text}
+                                                    </div>
                                                 )}
                                             </div>
+                                        ) : (
+                                            /* --- LOGIC STATE: EMPTY (Default UI) --- */
+                                            <>
+                                                <div style={{ fontSize: '3.5rem', opacity: 0.4 }}>📤</div>
+                                                <h4 className="upload-text-responsive" style={{ color: '#fff', textTransform: 'uppercase', marginTop: '15px' }}>
+                                                    Drop Your PPT here or <span style={{ color: '#dc2626', textDecoration: 'underline' }}>browse</span>
+                                                </h4>
+                                                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '20px', letterSpacing: '1px' }}>Accepted Formats: PDF, PPTX (Max 15MB)</p>
 
-                                            {message.text && (
-                                                <div style={{ marginTop: '20px', color: message.type === 'error' ? '#ef4444' : '#10b981', fontWeight: 'bold' }}>
-                                                    {message.text}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        /* --- LOGIC STATE: EMPTY (Default UI) --- */
-                                        <>
-                                            <div style={{ fontSize: '3.5rem', opacity: 0.4 }}>📤</div>
-                                            <h4 className="upload-text-responsive" style={{ color: '#fff', textTransform: 'uppercase', marginTop: '15px' }}>
-                                                Drop Your PPT here or <span style={{ color: '#dc2626', textDecoration: 'underline' }}>browse</span>
-                                            </h4>
-                                            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '20px', letterSpacing: '1px' }}>Accepted Formats: PDF, PPTX (Max 15MB)</p>
-
-                                            <button className="uplink-btn-red" style={{ marginTop: '10px' }}>SELECT FILE</button>
-                                        </>
-                                    )}
-                                </>
-                            ) : (
-                                /* --- LOGIC STATE: SUBMITTED (Success UI) --- */
-                                <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-                                    <div className="success-check-ring">✓</div>
-                                    <h4 style={{ color: '#10b981', fontWeight: '800', fontSize: '1.5rem', marginBottom: '10px' }}>PPT SUBMITTED</h4>
-                                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>The vault is closed. Documentation has been locked.</p>
-                                </div>
-                            )}
+                                                <button className="uplink-btn-red" style={{ marginTop: '10px' }}>SELECT FILE</button>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* --- STYLES (Merged CSS) --- */}
-                <style dangerouslySetInnerHTML={{
-                    __html: `
+                    {/* --- STYLES (Merged CSS) --- */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
                     .ppt-section { margin-bottom: 40px; }
 
                     @media (max-width: 992px) {
@@ -295,7 +436,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
                     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 `}} />
-            </div>
+                </div>
+            )}
         </div>
     );
 }

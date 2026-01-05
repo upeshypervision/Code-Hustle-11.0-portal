@@ -3,6 +3,7 @@ import jwt
 from config import JWT_SECRET, JWT_ALGORITHM
 from database import get_db
 from datetime import datetime
+from socketio_instance import socketio
 
 
 def submit_link_route():
@@ -54,6 +55,15 @@ def submit_link_route():
     else:
         return jsonify({"success": False, "error": "Authentication required."}), 401
     
+    # Check if GitHub submission round is active (only for students)
+    if submitted_via == "student":
+        round_status = db.counters.find_one({"_id": "round_status"})
+        if round_status and not round_status.get("github_submission", False):
+            return jsonify({
+                "success": False,
+                "error": "Sorry, the submission cannot be made as the GitHub submission round is currently closed. Please wait for the organizing committee to activate this round."
+            }), 403
+    
     # ---------- GET DATA ----------
     data = request.get_json()
     if not data or "github_link" not in data:
@@ -92,6 +102,12 @@ def submit_link_route():
     result = db.github_submissions.insert_one(submission_data)
     
     if result.inserted_id:
+        # Emit WebSocket event to notify all admins of new GitHub submission
+        socketio.emit("github_submitted", {
+            "team_id": team_id,
+            "submitted_at": submission_data["submitted_at"]
+        })
+        
         return jsonify({
             "success": True,
             "message": f"Link submitted successfully by {submitted_via}.",
@@ -100,3 +116,45 @@ def submit_link_route():
         }), 200
     
     return jsonify({"success": False, "error": "Failed to save submission."}), 500
+
+
+def check_github_submission_route():
+    """
+    Route for students to check if they have already submitted a GitHub link
+    Returns submission status and details if exists
+    """
+    db = get_db()
+    
+    # Student authentication
+    student_cookie = request.cookies.get("student_auth")
+    if not student_cookie:
+        return jsonify({"success": False, "error": "Authentication required."}), 401
+    
+    try:
+        payload = jwt.decode(student_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        team_id = payload.get("team_id")
+        
+        if not team_id:
+            return jsonify({"success": False, "error": "Invalid session."}), 401
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Session expired."}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid session."}), 401
+    
+    # Check if submission exists
+    submission = db.github_submissions.find_one(
+        {"team_id": team_id},
+        {"_id": 0, "github_link": 1, "live_link": 1, "submitted_at": 1}
+    )
+    
+    if submission:
+        return jsonify({
+            "success": True,
+            "is_submitted": True,
+            "submission": submission
+        }), 200
+    else:
+        return jsonify({
+            "success": True,
+            "is_submitted": False
+        }), 200

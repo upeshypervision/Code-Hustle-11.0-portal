@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import socket from '../../socket';
 // Make sure this CSS file exists and contains the styles from your UI project
 import './ViewSubmissions.css';
 
@@ -10,6 +11,14 @@ export default function ViewSubmissions() {
 
     useEffect(() => {
         fetchSubmissions();
+    }, []);
+
+    // Socket listener for new PPT submissions
+    useEffect(() => {
+        socket.on("ppt_submitted", fetchSubmissions);
+        return () => {
+            socket.off("ppt_submitted", fetchSubmissions);
+        };
     }, []);
 
     // 2. LOGIC: Fetch function from the Logic code (Port 5000)

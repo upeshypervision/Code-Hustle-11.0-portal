@@ -1,10 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function RoundManagement() {
   // Granular State for Toggles
   const [psSelectionActive, setPsSelectionActive] = useState(true);
   const [pptUploadActive, setPptUploadActive] = useState(true);
   const [githubSubmissionActive, setGithubSubmissionActive] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch current round status on mount
+  useEffect(() => {
+    fetchRoundStatus();
+  }, []);
+
+  const fetchRoundStatus = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/round-status', {
+        credentials: 'include'
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setPsSelectionActive(data.rounds.ps_selection);
+        setPptUploadActive(data.rounds.ppt_upload);
+        setGithubSubmissionActive(data.rounds.github_submission);
+      }
+    } catch (err) {
+      console.error('Error fetching round status:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateRoundStatus = async (roundType, isActive) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/admin/round-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          round_type: roundType,
+          is_active: isActive
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        console.error('Failed to update round status:', data.error);
+        // Revert the toggle if update failed
+        fetchRoundStatus();
+      }
+    } catch (err) {
+      console.error('Error updating round status:', err);
+      fetchRoundStatus();
+    }
+  };
+
+  const handlePsSelectionToggle = (checked) => {
+    setPsSelectionActive(checked);
+    updateRoundStatus('ps_selection', checked);
+  };
+
+  const handlePptUploadToggle = (checked) => {
+    setPptUploadActive(checked);
+    updateRoundStatus('ppt_upload', checked);
+  };
+
+  const handleGithubSubmissionToggle = (checked) => {
+    setGithubSubmissionActive(checked);
+    updateRoundStatus('github_submission', checked);
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-section">
+        <p>Loading round status...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-section">
@@ -28,7 +100,7 @@ export default function RoundManagement() {
             <input
               type="checkbox"
               checked={psSelectionActive}
-              onChange={(e) => setPsSelectionActive(e.target.checked)}
+              onChange={(e) => handlePsSelectionToggle(e.target.checked)}
             />
             <span className="toggle-slider"></span>
           </div>
@@ -56,7 +128,7 @@ export default function RoundManagement() {
             <input
               type="checkbox"
               checked={pptUploadActive}
-              onChange={(e) => setPptUploadActive(e.target.checked)}
+              onChange={(e) => handlePptUploadToggle(e.target.checked)}
             />
             <span className="toggle-slider"></span>
           </div>
@@ -84,7 +156,7 @@ export default function RoundManagement() {
             <input
               type="checkbox"
               checked={githubSubmissionActive}
-              onChange={(e) => setGithubSubmissionActive(e.target.checked)}
+              onChange={(e) => handleGithubSubmissionToggle(e.target.checked)}
             />
             <span className="toggle-slider"></span>
           </div>
@@ -134,9 +206,8 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${
-                        psSelectionActive ? "pass" : "pending"
-                      }`}
+                      className={`status-pill ${psSelectionActive ? "pass" : "pending"
+                        }`}
                     >
                       {psSelectionActive ? "Active" : "Inactive"}
                     </span>
@@ -152,9 +223,8 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${
-                        pptUploadActive ? "pass" : "pending"
-                      }`}
+                      className={`status-pill ${pptUploadActive ? "pass" : "pending"
+                        }`}
                     >
                       {pptUploadActive ? "Active" : "Inactive"}
                     </span>
@@ -170,9 +240,8 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${
-                        githubSubmissionActive ? "pass" : "pending"
-                      }`}
+                      className={`status-pill ${githubSubmissionActive ? "pass" : "pending"
+                        }`}
                     >
                       {githubSubmissionActive ? "Active" : "Inactive"}
                     </span>

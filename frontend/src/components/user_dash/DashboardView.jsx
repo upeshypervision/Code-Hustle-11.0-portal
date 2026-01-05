@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import socket from '../../socket';
 import UserStatus from './UserStatus';
 import UserSidebar from './UserSidebar';
 
@@ -13,6 +14,89 @@ const DashboardView = ({
     isSidebarOpen, // Accept prop
     setIsSidebarOpen // Accept prop
 }) => {
+    const [roundStatus, setRoundStatus] = useState(null);
+    const [currentRound, setCurrentRound] = useState(null);
+    const [teamInfo, setTeamInfo] = useState(null);
+
+    // Fetch team info on mount
+    useEffect(() => {
+        const fetchTeamInfo = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/user-info', {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    setTeamInfo(data);
+                }
+            } catch (err) {
+                console.error('Error fetching team info:', err);
+            }
+        };
+
+        fetchTeamInfo();
+    }, []);
+
+
+    // Fetch round status on mount
+    useEffect(() => {
+        const fetchRoundStatus = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/round-status', {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    setRoundStatus(data.rounds);
+                    determineCurrentRound(data.rounds);
+                }
+            } catch (err) {
+                console.error('Error fetching round status:', err);
+            }
+        };
+
+        fetchRoundStatus();
+    }, []);
+
+    // Listen for round status changes via WebSocket
+    useEffect(() => {
+        const handleRoundChange = (data) => {
+            // Fetch updated round status
+            fetch('http://localhost:5000/api/round-status', {
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        setRoundStatus(data.rounds);
+                        determineCurrentRound(data.rounds);
+                    }
+                })
+                .catch(err => console.error('Error fetching round status:', err));
+        };
+
+        socket.on("round_status_changed", handleRoundChange);
+        return () => socket.off("round_status_changed", handleRoundChange);
+    }, []);
+
+    // Determine which round is currently active
+    const determineCurrentRound = (rounds) => {
+        if (!rounds) return;
+
+        // Priority: GitHub > PPT > PS (show the highest active round)
+        if (rounds.github_submission) {
+            setCurrentRound({ number: 3, name: 'GitHub Submission', color: '#a78bfa' });
+        } else if (rounds.ppt_upload) {
+            setCurrentRound({ number: 2, name: 'PPT Submission', color: '#60a5fa' });
+        } else if (rounds.ps_selection) {
+            setCurrentRound({ number: 1, name: 'Problem Statement Selection', color: '#10b981' });
+        } else {
+            setCurrentRound(null); // No rounds active
+        }
+    };
+
     // Removed internal isMenuOpen state
 
     return (
@@ -169,7 +253,47 @@ const DashboardView = ({
                 `}</style>
 
                 <div className="main-glass-box">
-                    <div className="live-badge">PHASE 01 LIVE</div>
+                    {currentRound ? (
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '12px',
+                            marginBottom: '20px',
+                            padding: '12px 24px',
+                            background: `${currentRound.color}20`,
+                            borderRadius: '8px',
+                            border: `2px solid ${currentRound.color}`
+                        }}>
+                            <div style={{
+                                width: '35px',
+                                height: '35px',
+                                borderRadius: '50%',
+                                background: currentRound.color,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '1rem',
+                                fontWeight: '900',
+                                color: '#0a0a0a'
+                            }}>
+                                R{currentRound.number}
+                            </div>
+                            <div style={{
+                                fontSize: '12px',
+                                fontWeight: '900',
+                                color: currentRound.color,
+                                letterSpacing: '2px',
+                                textTransform: 'uppercase'
+                            }}>
+                                {currentRound.name} - LIVE
+                            </div>
+                        </div>
+                    ) : roundStatus ? (
+                        <div className="live-badge" style={{ background: '#ef4444' }}>NO ACTIVE ROUNDS</div>
+                    ) : (
+                        <div className="live-badge">LOADING...</div>
+                    )}
 
                     <h1 style={{
                         fontSize: 'clamp(2rem, 10vw, 3.5rem)',
@@ -195,8 +319,156 @@ const DashboardView = ({
                             wordWrap: 'break-word',
                             overflowWrap: 'break-word',
                             hyphens: 'auto'
-                        }}>{teamName}</span>
+                        }}>{teamInfo?.team_name || teamName}</span>
                     </h1>
+
+                    {/* Team ID Display */}
+                    {teamInfo?.team_id && (
+                        <div style={{
+                            fontSize: '0.9rem',
+                            color: 'rgba(255,255,255,0.5)',
+                            marginBottom: '20px',
+                            letterSpacing: '1px'
+                        }}>
+                            Team ID: <span style={{ color: '#60a5fa', fontWeight: '700' }}>{teamInfo.team_id}</span>
+                        </div>
+                    )}
+
+                    {/* Team Members Display */}
+                    {teamInfo && (teamInfo.leader || (teamInfo.members && teamInfo.members.length > 0)) && (
+                        <div style={{
+                            marginBottom: '25px',
+                            padding: '20px',
+                            background: 'rgba(255,255,255,0.05)',
+                            borderRadius: '8px',
+                            border: '1px solid rgba(255,255,255,0.1)'
+                        }}>
+                            <div style={{
+                                fontSize: '0.75rem',
+                                color: 'rgba(255,255,255,0.6)',
+                                letterSpacing: '2px',
+                                textTransform: 'uppercase',
+                                marginBottom: '15px',
+                                fontWeight: '700'
+                            }}>
+                                Team Roster
+                            </div>
+
+                            {/* Leader */}
+                            {teamInfo.leader && (
+                                <div style={{
+                                    marginBottom: '15px',
+                                    padding: '15px',
+                                    background: 'rgba(56, 189, 248, 0.1)',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(56, 189, 248, 0.3)'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'flex-start',
+                                        marginBottom: '10px'
+                                    }}>
+                                        <div>
+                                            <div style={{
+                                                fontSize: '1rem',
+                                                fontWeight: '700',
+                                                color: '#fff',
+                                                marginBottom: '4px'
+                                            }}>
+                                                {teamInfo.leader.fullName}
+                                            </div>
+                                            <div style={{
+                                                fontSize: '0.7rem',
+                                                color: '#38bdf8',
+                                                fontWeight: '700',
+                                                letterSpacing: '1px',
+                                                textTransform: 'uppercase'
+                                            }}>
+                                                LEADER
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                        gap: '8px',
+                                        fontSize: '0.75rem'
+                                    }}>
+                                        <div>
+                                            <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>Email</div>
+                                            <div style={{ color: '#fff' }}>{teamInfo.leader.email}</div>
+                                        </div>
+                                        {teamInfo.leader.sapid && (
+                                            <div>
+                                                <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>SAP ID</div>
+                                                <div style={{ color: '#fff' }}>{teamInfo.leader.sapid}</div>
+                                            </div>
+                                        )}
+                                        {teamInfo.leader.phone && (
+                                            <div>
+                                                <div style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2px' }}>Contact</div>
+                                                <div style={{ color: '#fff' }}>{teamInfo.leader.phone}</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Members */}
+                            {teamInfo.members && teamInfo.members.length > 0 && (
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                    gap: '12px'
+                                }}>
+                                    {teamInfo.members.map((member, index) => (
+                                        <div key={index} style={{
+                                            padding: '12px',
+                                            background: 'rgba(0,0,0,0.3)',
+                                            borderRadius: '6px',
+                                            border: '1px solid rgba(220, 38, 38, 0.2)'
+                                        }}>
+                                            <div style={{
+                                                fontSize: '0.85rem',
+                                                fontWeight: '700',
+                                                color: '#fff',
+                                                marginBottom: '4px'
+                                            }}>
+                                                {member.fullName}
+                                            </div>
+                                            <div style={{
+                                                fontSize: '0.65rem',
+                                                color: 'rgba(255,255,255,0.4)',
+                                                fontWeight: '600',
+                                                letterSpacing: '1px',
+                                                textTransform: 'uppercase',
+                                                marginBottom: '8px'
+                                            }}>
+                                                MEMBER
+                                            </div>
+                                            <div style={{ fontSize: '0.7rem', marginBottom: '4px' }}>
+                                                <span style={{ color: 'rgba(255,255,255,0.5)' }}>Email: </span>
+                                                <span style={{ color: 'rgba(255,255,255,0.8)' }}>{member.email}</span>
+                                            </div>
+                                            {member.sapid && (
+                                                <div style={{ fontSize: '0.7rem', marginBottom: '4px' }}>
+                                                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>SAP ID: </span>
+                                                    <span style={{ color: 'rgba(255,255,255,0.8)' }}>{member.sapid}</span>
+                                                </div>
+                                            )}
+                                            {member.phone && (
+                                                <div style={{ fontSize: '0.7rem' }}>
+                                                    <span style={{ color: 'rgba(255,255,255,0.5)' }}>Contact: </span>
+                                                    <span style={{ color: 'rgba(255,255,255,0.8)' }}>{member.phone}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {!selectedPS ? (
                         <>
@@ -217,14 +489,6 @@ const DashboardView = ({
                             </div>
                         </div>
                     )}
-
-                    <div style={{ marginTop: '20px', width: '100%', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
-                        <UserStatus
-                            selectedPS={selectedPS}
-                            isPPTSubmitted={isPPTSubmitted}
-                            isGithubSubmitted={isGithubSubmitted}
-                        />
-                    </div>
                 </div>
             </div>
         </div>
