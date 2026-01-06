@@ -5,7 +5,6 @@ import './CreateTeam.css';
 
 const CreateTeam = () => { 
 const navigate = useNavigate(); 
-const [isForgeComplete, setIsForgeComplete] = useState(false);
 const [step, setStep] = useState(1); 
 const [valErrors, setValErrors] = useState({}); 
 const [formData, setFormData] = useState({ 
@@ -23,7 +22,6 @@ if (name === 'phone' && value.length !== 10) return "10 digits required";
 if (name === 'sap' || name === 'sapid') { 
     if (uType === 'UPES' && value.length !== 9) return "Must be 9 digits"; 
     
-    // Duplicate Check Logic
     const allSaps = [ 
         { key: 'leader', val: formData.sap }, 
         { key: 'm1', val: formData.m1.sapid }, 
@@ -68,12 +66,6 @@ return (
 const updateMember = (mKey, field, value) => { 
 setFormData({ ...formData, [mKey]: { ...formData[mKey], [field]: value } }); 
 }; 
-
-const handleCreateTeamClick = () => {
-    if (isInitialFormValid()) {
-        setIsForgeComplete(true);
-    }
-};
 
 const renderMemberPage = (mKey, label, nextStep) => ( 
 <div className="neural-node node-materialize animate-in"> 
@@ -228,15 +220,11 @@ return (
             {(valErrors['leader_email'] || valErrors['leader_phone']) && <p className="error-message-inline">{valErrors['leader_email'] || valErrors['leader_phone']}</p>}
         </div>
 
-        {!isForgeComplete ? (
-            <button className={`neon-shade-btn next-glow animated-btn ${!isInitialFormValid() ? 'btn-locked' : ''}`} style={{ width: '100%', marginTop: '30px' }} onClick={handleCreateTeamClick}>
-                CREATE TEAM ❯
-            </button>
-        ) : (
+        {isInitialFormValid() && (
             <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}> 
                 <div className="shining-choice-row"> 
                     <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button> 
-                    <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={() => setStep(8)}>CONNECT PEOPLE</button> 
+                    <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={() => setStep(8)}>CREATE TEAM</button> 
                 </div> 
             </div>
         )}
@@ -249,16 +237,15 @@ return (
 {step === 7 && renderMemberPage('m4', 'NODE_05: MEMBER 05 DETAILS', 8)}
 
 {step === 8 && ( 
-<div className="neural-node node-materialize final-aura"> 
-<div className="completion-vfx"><h2 className="glow-status-text">CONNECT TO COMPLETE YOUR TEAM</h2><p className="sub-hint">TAP TO <b>FIND</b> YOUR TEAMMATE</p></div> 
-<div className="kinetic-connector-zone"> 
-<div className="neural-pulse-ring"></div> 
-<button className="kinetic-shimmer-btn animated-btn" onClick={() => navigate('/connect')}> 
-<span className="shimmer-text">CONNECT</span> 
-<div className="shimmer-sweep"></div> 
-</button> 
-</div> 
-<button className="back-link-forge" style={{ marginTop: '30px' }} onClick={() => setStep(7)}>[ EDIT_MEMBERS ]</button>
+<div className="neural-node node-materialize final-aura success-node"> 
+    <div className="completion-vfx">
+        <h2 className="glow-status-text">TEAM CREATED SUCCESSFULLY!</h2>
+        <br></br>
+        <br></br>
+    </div> 
+    <div className="forge-btn-group" style={{ marginTop: '30px' }}>
+        <button className="liquid-btn animated-btn" style={{ width: '100%' }} onClick={() => navigate('/connect')}>ACKNOWLEDGE</button>
+    </div>
 </div> 
 )} 
 </div> 
