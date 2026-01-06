@@ -1,6 +1,6 @@
 import React from "react";
-import "../pages/Registration.css";
-import "../pages/CreateTeam.css";
+import "../../pages/Registration.css";
+import "../../pages/CreateTeam.css";
 import "./TeamUp.css";
 
 const TeamDetailsModal = ({ team, onClose }) => {

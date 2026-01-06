@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import UserNavbar from "../components/UserNavbar";
+import UserNavbar from "../UserNavbar";
 import ChatBox from "./ChatBox";
-import "../styles/global.css";
-import "../components/admin/ViewTeams.css";
-import "../pages/Registration.css";
+import "../../styles/global.css";
+import "../admin/ViewTeams.css";
+import "../../pages/Registration.css";
 import "./TeamUp.css";
 
 const AcceptedTeamPage = () => {
