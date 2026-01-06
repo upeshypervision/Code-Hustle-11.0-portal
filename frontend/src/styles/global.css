@@ -13,8 +13,9 @@
   --radius-lg: 12px;
   --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
   --transition-fast: 150ms ease-out;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
+  --font-sans: "Rajdhani", system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "Segoe UI", sans-serif;
+  --font-display: "Orbitron", sans-serif;
 }
 
 *,
@@ -32,6 +33,7 @@ body {
   color: var(--text);
   min-height: 100%;
   -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.02em; /* Improve readability for condensed fonts */
 }
 
 .page-wrapper {
@@ -85,7 +87,8 @@ h1,
 h2,
 h3 {
   margin: 0;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
+  font-family: var(--font-display);
 }
 
 .heading-main {
@@ -97,7 +100,8 @@ h3 {
 }
 
 .heading-badge {
-  font-size: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
   font-weight: 650;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -482,7 +486,8 @@ h3 {
 }
 
 .panel-title {
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;

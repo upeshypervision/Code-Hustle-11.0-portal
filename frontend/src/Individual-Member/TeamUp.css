@@ -1,0 +1,887 @@
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* TeamUp Dashboard Page Background - Consistent Gradient */
+.dashboard-page {
+  background: radial-gradient(
+      ellipse at top center,
+      rgba(15, 23, 42, 0.4) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom center,
+      rgba(15, 23, 42, 0.4) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(10, 11, 30, 0.95) 0%,
+      rgba(10, 11, 30, 1) 50%,
+      rgba(10, 11, 30, 0.95) 100%
+    ),
+    #0a0b1e !important;
+  background-attachment: fixed;
+}
+
+/* Glass Navbar Styles */
+.glass-navbar {
+  background: rgba(10, 11, 30, 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s ease;
+}
+
+.glass-navbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+}
+
+.glass-navbar-inner {
+  padding: 20px 32px !important;
+}
+
+.glass-navbar .logo-container {
+  gap: 16px;
+}
+
+.glass-navbar .logo-text {
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+}
+
+.glass-navbar .nav-right {
+  gap: 16px;
+}
+
+.glass-navbar .nav-user {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.glass-navbar .nav-logout {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 10px 20px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.glass-navbar .nav-logout:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.glass-navbar .hamburger-menu span {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.glass-navbar .hamburger-menu:hover span {
+  background: #60a5fa;
+}
+
+/* Base Dashboard Styles */
+.dashboard-container {
+  padding: 140px 32px 32px 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* TeamUp Label Styles */
+.teamup-label {
+  font-size: 14px !important;
+  padding: 12px 20px 12px 14px !important;
+  margin-bottom: 24px !important;
+  letter-spacing: 2.5px !important;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(56, 189, 248, 0.08) 0%,
+    rgba(56, 189, 248, 0.15) 20%,
+    rgba(56, 189, 248, 0.15) 80%,
+    rgba(56, 189, 248, 0.08) 100%
+  );
+  border-radius: 4px;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding-left: 34px !important;
+  padding-right: 20px !important;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.1);
+}
+
+/* Staggered Animation Classes */
+.animate-enter {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.1s;
+}
+.delay-2 {
+  animation-delay: 0.2s;
+}
+.delay-3 {
+  animation-delay: 0.3s;
+}
+
+/* Table Row Hover Effects */
+.team-row {
+  transition: all 0.3s ease;
+}
+
+.team-row:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  position: relative;
+}
+
+/* TeamUp Table Styles */
+.dashboard-container .admin-table {
+  font-size: 1rem;
+}
+
+.dashboard-container .admin-table th {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.dashboard-container .admin-table td {
+  font-size: 1rem;
+}
+
+/* Modal Animation */
+.modal-content-enter {
+  animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* TeamUp Layout Styles */
+.teamup-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.member-details-sidebar {
+  flex: 0 0 380px;
+  min-width: 0;
+}
+
+.teamup-separator {
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  align-self: stretch;
+  margin: 0 10px;
+}
+
+.teams-content-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-profile-close {
+  display: none;
+}
+
+/* Team Details Section - Inline */
+.team-details-section {
+  width: 100%;
+  animation: fadeInUp 0.5s ease-out;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  flex: 1;
+}
+
+.team-details-section .neural-node {
+  padding: 40px 60px;
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Team Details Content Grid */
+.team-details-section .input-group {
+  width: 100%;
+}
+
+.team-details-section .glow-input-container {
+  width: 100%;
+}
+
+/* Ensure team details stretches horizontally */
+.teams-content-section {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.team-details-section > div {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* When team details is shown, ensure it uses full available width */
+.teamup-layout:has(.team-details-section) .teams-content-section {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.close-team-details-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.close-team-details-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* Footer Styles */
+.teamup-footer {
+  margin-top: 60px;
+  padding: 40px 32px;
+  width: 100%;
+}
+
+.teamup-footer-separator {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  margin-bottom: 30px;
+}
+
+.teamup-footer-content {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.teamup-footer-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
+/* Mobile Responsiveness - Card View for Tables */
+@media (max-width: 768px) {
+  /* Override admin-content padding for mobile */
+  .admin-content.dashboard-container {
+    padding-top: 160px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  /* Ensure first section has proper spacing from navbar */
+  .teams-content-section {
+    padding-top: 0;
+  }
+
+  .teams-content-section .neural-node:first-of-type {
+    margin-top: 0 !important;
+    padding-top: 0;
+  }
+
+  /* Add extra spacing for the first section label */
+  .teams-content-section .label-detail:first-of-type {
+    margin-top: 0;
+  }
+
+  .teamup-label {
+    font-size: 12px !important;
+    padding: 10px 16px 10px 12px !important;
+    margin-bottom: 20px !important;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    padding-left: 28px !important;
+    padding-right: 16px !important;
+  }
+
+  .glass-navbar-inner {
+    padding: 16px 20px !important;
+  }
+
+  .glass-navbar .nav-user {
+    font-size: 0.9rem;
+  }
+
+  .glass-navbar .nav-logout {
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Glass mobile menu overlay */
+  .glass-mobile-overlay {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .glass-mobile-content {
+    background: rgba(10, 11, 30, 0.95) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item.active {
+    background: rgba(96, 165, 250, 0.2) !important;
+    color: #60a5fa !important;
+    border-left: 3px solid #60a5fa !important;
+  }
+
+  .teamup-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .member-details-sidebar {
+    flex: none;
+    width: 100%;
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 11, 30, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    padding: 24px 20px 20px 20px;
+    padding-top: 32px;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .member-details-sidebar.mobile-visible {
+    display: block;
+  }
+
+  /* Ensure profile heading isn't cut off by navbar */
+  .member-details-sidebar.mobile-visible .neural-node {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .member-details-sidebar.mobile-visible .teamup-label:first-child {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .teamup-separator {
+    display: none;
+  }
+
+  .teams-content-section {
+    flex: none;
+    width: 100%;
+  }
+
+  .mobile-profile-close {
+    position: fixed;
+    top: 88px;
+    right: 24px;
+    background: rgba(220, 38, 38, 0.2);
+    border: none;
+    color: #fff;
+    font-size: 2.2rem;
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+
+  .mobile-profile-close:hover {
+    background: rgba(220, 38, 38, 0.4);
+    color: #dc2626;
+  }
+
+  /* Force table to not be like tables anymore */
+  .admin-table,
+  .admin-table thead,
+  .admin-table tbody,
+  .admin-table th,
+  .admin-table td,
+  .admin-table tr {
+    display: block;
+  }
+
+  /* Hide table headers (but not display: none;, for accessibility) */
+  .admin-table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .admin-table tr {
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .admin-table td {
+    /* Behave  like a "row" */
+    border: none !important;
+    position: relative;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    text-align: left !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    font-size: 0.95rem !important;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none !important;
+    margin-top: 10px;
+    justify-content: center;
+  }
+
+  .admin-table td:before {
+    /* Now like a table header */
+    content: attr(data-label);
+    font-weight: bold;
+    color: #38bdf8;
+    margin-right: 15px;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+  }
+
+  /* Adjustments for specific cells */
+  .admin-table td button {
+    width: 100%;
+  }
+
+  /* Team Details Mobile Styles */
+  .team-details-section {
+    margin-top: 30px;
+  }
+
+  .team-details-section .neural-node {
+    padding: 24px 20px;
+  }
+
+  .team-details-section h2 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Mobile grid adjustments */
+  .team-details-section .neural-node > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .team-details-section .glow-input-container > div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Chat button mobile styling */
+  .team-chat-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-top: 10px;
+  }
+
+  .team-details-section h2 {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* Footer Mobile Styles */
+  .teamup-footer {
+    margin-top: 40px;
+    padding: 30px 20px;
+  }
+
+  .teamup-footer-separator {
+    margin-bottom: 24px;
+  }
+
+  .teamup-footer-content p {
+    font-size: 0.85rem;
+  }
+}
+
+/* ChatBox Styles */
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;
+  height: 600px;
+  background: #1a1b2e;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatbox-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.chatbox-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.chatbox-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chatbox-name {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatbox-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #4ade80;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: inline-block;
+}
+
+.chatbox-header-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chatbox-control-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.chatbox-control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.chatbox-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #0f1117;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chatbox-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbox-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatbox-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.chatbox-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.chatbox-message {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.chatbox-message.message-left {
+  align-self: flex-start;
+}
+
+.chatbox-message.message-right {
+  align-self: flex-end;
+}
+
+.chatbox-message-bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  word-wrap: break-word;
+}
+
+.message-left .chatbox-message-bubble {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+  border-top-left-radius: 4px;
+}
+
+.message-right .chatbox-message-bubble {
+  background: #3b82f6;
+  color: #fff;
+  border-top-right-radius: 4px;
+}
+
+.chatbox-message-name {
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.message-left .chatbox-message-name {
+  color: #9ca3af;
+}
+
+.message-right .chatbox-message-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.chatbox-message-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.chatbox-input-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatbox-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 12px 18px;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.chatbox-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.chatbox-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chatbox-send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chatbox-send-btn:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.chatbox-send-btn:active {
+  transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive ChatBox */
+@media (max-width: 768px) {
+  .chatbox-container {
+    width: 100%;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    border-radius: 0;
+  }
+}

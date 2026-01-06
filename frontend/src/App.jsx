@@ -11,9 +11,11 @@ import Userlogin from "./pages/StudentLogin.jsx";
 import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
-import Teamup from "./pages/Teamup.jsx"; 
+import Teamup from "./pages/Teamup.jsx";
 import CreateTeam from "./pages/CreateTeam.jsx";
-
+import JoinTeam from "./Individual-Member/JoinTeam.jsx";
+import TeamUpDashboard from "./Individual-Member/TeamUpDashboard.jsx";
+import AcceptedTeamPage from "./Individual-Member/AcceptedTeamPage.jsx";
 
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
@@ -23,6 +25,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Teamup />} />
         <Route path="/create-team" element={<CreateTeam />} />
+        <Route path="/join" element={<JoinTeam />} />
+        <Route
+          path="/individual-member/dashboard"
+          element={<TeamUpDashboard />}
+        />
+        <Route
+          path="/individual-member/accepted"
+          element={<AcceptedTeamPage />}
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
