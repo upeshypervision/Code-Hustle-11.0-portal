@@ -20,18 +20,20 @@ if (!value) return "Required Field";
 if (name === 'email' && !value.includes("@")) return "Invalid format"; 
 if (name === 'phone' && value.length !== 10) return "10 digits required"; 
 if (name === 'sap' || name === 'sapid') { 
-    if (uType === 'UPES' && value.length !== 9) return "Must be 9 digits"; 
-    
-    const allSaps = [ 
-        { key: 'leader', val: formData.sap }, 
-        { key: 'm1', val: formData.m1.sapid }, 
-        { key: 'm2', val: formData.m2.sapid }, 
-        { key: 'm3', val: formData.m3.sapid },
-        { key: 'm4', val: formData.m4.sapid }
-    ]; 
-    const duplicate = allSaps.find(s => s.val === value && s.val !== '' && s.key !== currentMemberKey); 
-    if (duplicate) return "Already used"; 
-} 
+    if (uType === 'UPES') {
+        if (value.length !== 9) return "Must be 9 digits"; 
+        
+        const allSaps = [ 
+            { key: 'leader', val: formData.sap }, 
+            { key: 'm1', val: formData.m1.sapid }, 
+            { key: 'm2', val: formData.m2.sapid }, 
+            { key: 'm3', val: formData.m3.sapid },
+            { key: 'm4', val: formData.m4.sapid }
+        ]; 
+        const duplicate = allSaps.find(s => s.val === value && s.val !== '' && s.key !== currentMemberKey); 
+        if (duplicate) return "Already used"; 
+    }
+}
 return ""; 
 }; 
 
