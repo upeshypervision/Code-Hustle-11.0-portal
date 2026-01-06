@@ -102,7 +102,7 @@ def check_submission_status_route():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
-    submission_exists = db["submissions"].find_one({"team_id": team_id})
+    submission_exists = db["ppt_submissions"].find_one({"team_id": team_id})
     return jsonify({"submitted": submission_exists is not None}), 200
 
 
@@ -127,7 +127,7 @@ def select_problem_statement_route():
         return jsonify({"success": False, "error": "Problem Statement ID required."}), 400
 
     # Prevent selection after submission
-    if db.submissions.find_one({"team_id": team_id}):
+    if db.ppt_submissions.find_one({"team_id": team_id}):
         return jsonify({"success": False, "error": "Cannot select Problem Statement after submission."}), 400
 
     team_doc = db.teams.find_one({"team_id": team_id})
@@ -159,7 +159,7 @@ def fetch_teams_pending_submission_route():
         return jsonify({"error": "Invalid session"}), 401
 
     try:
-        submitted_team_ids = [doc["team_id"] for doc in db.submissions.find({}, {"team_id": 1, "_id": 0})]
+        submitted_team_ids = [doc["team_id"] for doc in db.ppt_submissions.find({}, {"team_id": 1, "_id": 0})]
         pending_teams = list(
             db["teams"].find(
                 {"team_id": {"$nin": submitted_team_ids}},
@@ -188,7 +188,7 @@ def fetch_submissions_route():
 
     try:
         submissions = list(
-            db["submissions"].find(
+            db["ppt_submissions"].find(
                 {},
                 {"_id": 0, "team_id": 1, "team_name": 1, "file_name": 1, "file_path": 1, "submitted_at": 1}
             ).sort("submitted_at", -1)
@@ -219,7 +219,7 @@ def generate_presigned_url_route(team_id):
         return jsonify({"error": "Invalid session"}), 401
 
     try:
-        submission = db.submissions.find_one({"team_id": team_id})
+        submission = db.ppt_submissions.find_one({"team_id": team_id})
         if not submission:
             return jsonify({"error": "Submission not found"}), 404
 

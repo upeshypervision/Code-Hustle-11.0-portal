@@ -27,7 +27,7 @@ def get_teams_without_ppt_route():
         
         # Get all team_ids that have submitted PPTs
         submitted_team_ids = set(
-            doc["team_id"] for doc in db.submissions.find({}, {"team_id": 1})
+            doc["team_id"] for doc in db.ppt_submissions.find({}, {"team_id": 1})
         )
         
         # Filter out teams that have already submitted
@@ -67,7 +67,7 @@ def get_teams_with_ppt_route():
         db = get_db()
         
         # Get all submissions with team info
-        submissions = list(db.submissions.find({}, {"_id": 0}))
+        submissions = list(db.ppt_submissions.find({}, {"_id": 0}))
         
         # Enrich with team names
         teams_with_submissions = []

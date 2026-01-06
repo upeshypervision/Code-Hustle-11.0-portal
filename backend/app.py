@@ -23,6 +23,13 @@ from user_access import (
 from git_submission import submit_link_route,check_github_submission_route
 from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from hackerrank_submission import (
+    submit_hackerrank_route, 
+    check_hackerrank_submission_route,
+    fetch_teams_no_hackerrank_submission,
+    fetch_all_hackerrank_submissions,
+    approve_hackerrank_submission
+)
 from round_management import get_round_status_route, update_round_status_route
 from flask_socketio import SocketIO, emit
 from socketio_instance import socketio
@@ -162,6 +169,32 @@ def submit_link():
 @app.route('/api/check-github-submission', methods=['GET'])
 def check_github_submission():
     return check_github_submission_route()
+
+# --- Hackerrank Submission Routes ---
+@app.route('/api/submit-hackerrank', methods=['POST'])
+def submit_hackerrank():
+    if request.method == "OPTIONS":
+        return "", 200   # ✅ allow preflight
+
+    return submit_hackerrank_route()
+
+@app.route('/api/check-hackerrank-submission', methods=['GET'])
+def check_hackerrank_submission():
+    return check_hackerrank_submission_route()
+
+@app.route('/api/admin/pending-hackerrank', methods=['GET'])
+def get_pending_hackerrank_teams():
+    return fetch_teams_no_hackerrank_submission()
+
+@app.route('/api/admin/view-hackerrank-submissions', methods=['GET'])
+def view_hackerrank_submissions():
+    return fetch_all_hackerrank_submissions()
+
+@app.route('/api/admin/approve-hackerrank', methods=['POST'])
+def approve_hackerrank():
+    if request.method == "OPTIONS":
+        return "", 200   # ✅ allow preflight
+    return approve_hackerrank_submission()
 
 # --- PPT Filter Routes ---
 @app.route('/api/admin/teams-without-ppt', methods=['GET'])

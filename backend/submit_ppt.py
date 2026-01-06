@@ -88,20 +88,21 @@ def submit_ppt_route(): # Admin manual submission route (existing)
             "file_name": file.filename,
             "file_path": s3_url,
             "submitted_at": datetime.utcnow().isoformat() + "Z",
-            "submitted_via": submitted_by  # Track if admin or student submitted
+            "submitted_via": submitted_by,  # Track if admin or student submitted
+            "approval_status": "pending"
         }
         
         # Check if submission already exists (prevent duplicates)
-        existing = db.submissions.find_one({"team_id": team_id})
+        existing = db.ppt_submissions.find_one({"team_id": team_id})
         if not existing:
-            result = db.submissions.insert_one(submission_data)
+            result = db.ppt_submissions.insert_one(submission_data)
             if result.inserted_id:
                 return jsonify({"success": True, "message": f"File submitted successfully by {submitted_by}.", "s3_url": s3_url})
             else:
                 return jsonify({"success": False, "error": "Failed to save submission record."}), 500
         else:
             # Update existing submission instead of creating duplicate
-            result = db.submissions.update_one(
+            result = db.ppt_submissions.update_one(
                 {"team_id": team_id},
                 {"$set": submission_data}
             )
@@ -138,16 +139,26 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
     except jwt.InvalidTokenError:
         return jsonify({"success": False, "error": "Invalid session."}), 401
     
-    # Check if PPT upload round is active
-    round_status = db.counters.find_one({"_id": "round_status"})
-    if round_status and not round_status.get("ppt_upload", True):
+    # =========================
+    # CHECK ROUND 1 APPROVAL (Hackerrank)
+    # =========================
+    hackerrank_sub = db.Hackerrank_submission.find_one({"team_id": team_id})
+    if not hackerrank_sub or hackerrank_sub.get("approval_status") != "approved":
         return jsonify({
             "success": False,
-            "error": "Sorry, the submission cannot be made as the PPT round is currently closed. Please wait for the organizing committee to activate this round."
+            "error": "Sorry, you are not allowed in this round. You must be approved in Round 1 (Hackerrank) to submit PPT."
+        }), 403
+
+    # Check if PPT upload round is active
+    round_status = db.counters.find_one({"_id": "round_status"})
+    if round_status and round_status.get("ppt_upload") != "live":
+        return jsonify({
+            "success": False,
+            "error": "Sorry, the submission cannot be made as the PPT round is not currently active. Please wait for the organizing committee to activate this round."
         }), 403
 
     # --- NEW CHECK: Verify if a submission already exists for this team ---
-    existing_submission = db.submissions.find_one({"team_id": team_id})
+    existing_submission = db.ppt_submissions.find_one({"team_id": team_id})
     if existing_submission:
         return jsonify({"success": False, "error": "A submission has already been made for this team. Re-submission is not allowed."}), 400
 
@@ -182,10 +193,11 @@ def submit_ppt_student_route(): # NEW: Student dashboard submission route
             # "team_name": team_name, # No longer included
             "file_name": file.filename,
             "file_path": s3_url, # <-- ADD S3 URL (file_path) to the stored document
-            "submitted_at": datetime.utcnow().isoformat() + "Z" # ISO format with Z for UTC
+            "submitted_at": datetime.utcnow().isoformat() + "Z", # ISO format with Z for UTC
+            "approval_status": "pending"
         }
         # Insert the new submission document into the 'submissions' collection
-        result = db.submissions.insert_one(submission_data)
+        result = db.ppt_submissions.insert_one(submission_data)
 
         if result.inserted_id: # Check if insert was successful
             # Emit WebSocket event to notify all admins of new submission
@@ -227,9 +239,9 @@ def check_ppt_submission_route():
         return jsonify({"success": False, "error": "Invalid session."}), 401
     
     # Check if submission exists
-    submission = db.submissions.find_one(
+    submission = db.ppt_submissions.find_one(
         {"team_id": team_id},
-        {"_id": 0, "file_name": 1, "submitted_at": 1, "file_path": 1}
+        {"_id": 0, "file_name": 1, "submitted_at": 1, "file_path": 1, "approval_status": 1}
     )
     
     if submission:

@@ -11,6 +11,8 @@ import Manualgithub from "../components/admin/Manualgithub";
 
 /* ✅ ADD THIS IMPORT */
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
+import ManualHackerrank from "../components/admin/ManualHackerrank";
+import ViewHackerrank from "../components/admin/ViewHackerrank";
 
 export default function AdminPanel() {
   const [activeSection, setActiveSection] = useState("rounds");
@@ -67,6 +69,16 @@ export default function AdminPanel() {
       active: activeSection === "view-github-submissions",
     },
     {
+      id: "manual-hackerrank",
+      label: "Manual Hackerrank",
+      active: activeSection === "manual-hackerrank",
+    },
+    {
+      id: "view-hackerrank",
+      label: "View Hackerrank",
+      active: activeSection === "view-hackerrank",
+    },
+    {
       id: "add-participant",
       label: "Add Participant",
       active: activeSection === "add-participant",
@@ -102,6 +114,12 @@ export default function AdminPanel() {
 
       case "view-github-submissions":
         return <Viewgithubsubmission />;
+
+      case "manual-hackerrank":
+        return <ManualHackerrank />;
+
+      case "view-hackerrank":
+        return <ViewHackerrank />;
 
       default:
         return null;

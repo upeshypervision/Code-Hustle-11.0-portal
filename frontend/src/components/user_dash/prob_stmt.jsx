@@ -16,6 +16,8 @@ export default function PSGallery() {
   const [checkingSelection, setCheckingSelection] = useState(true);
   const [roundActive, setRoundActive] = useState(true);
   const [checkingRound, setCheckingRound] = useState(true);
+  const [hackerrankStatus, setHackerrankStatus] = useState(null);
+  const [checkingHackerrank, setCheckingHackerrank] = useState(true);
 
   // --- USE EFFECTS (Keep your existing useEffects here) ---
   // Check selection
@@ -38,6 +40,47 @@ export default function PSGallery() {
     checkSelection();
   }, []);
 
+  // Check Hackerrank approval status
+  useEffect(() => {
+    const checkHackerrankStatus = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success && data.is_submitted) {
+          setHackerrankStatus(data.submission.approval_status);
+        } else {
+          setHackerrankStatus("not_submitted");
+        }
+      } catch (err) {
+        console.error("Error checking Hackerrank status:", err);
+      } finally {
+        setCheckingHackerrank(false);
+      }
+    };
+    checkHackerrankStatus();
+  }, []);
+
+  // Listen for Hackerrank approval updates
+  useEffect(() => {
+    const handleApprovalUpdate = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success && data.is_submitted) {
+          setHackerrankStatus(data.submission.approval_status);
+        }
+      } catch (err) {
+        console.error("Error refetching Hackerrank status:", err);
+      }
+    };
+    socket.on("hackerrank_approval_updated", handleApprovalUpdate);
+    return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
+  }, []);
+
   // Check round status
   useEffect(() => {
     const checkRoundStatus = async () => {
@@ -47,7 +90,8 @@ export default function PSGallery() {
         });
         const data = await res.json();
         if (data.success) {
-          setRoundActive(data.rounds.ps_selection);
+          // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
+          setRoundActive(data.rounds.ps_selection === 'live');
         }
       } catch (err) {
         console.error("Error checking round status:", err);
@@ -62,7 +106,8 @@ export default function PSGallery() {
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === 'ps_selection') {
-        setRoundActive(data.is_active);
+        // data.state is enum: 'live', 'closed', 'not_started'
+        setRoundActive(data.state === 'live');
       }
     };
     socket.on("round_status_changed", handleRoundChange);
@@ -304,8 +349,49 @@ export default function PSGallery() {
               ⚠️ SELECTION IS PERMANENT. PROCEED TO NEXT PHASE.
             </p>
           </div>
+        ) : hackerrankStatus && hackerrankStatus !== 'approved' ? (
+          /* --- PRIORITY 2: NOT ALLOWED (Round 1 Not Approved) --- */
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60vh',
+            padding: '40px',
+            textAlign: 'center',
+            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid #ef4444',
+            borderRadius: '8px',
+            animation: 'fadeIn 0.5s ease-out'
+          }}>
+            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
+            <h2 style={{
+              color: '#ef4444',
+              fontWeight: '900',
+              fontSize: '2.5rem',
+              letterSpacing: '3px',
+              marginBottom: '15px'
+            }}>
+              NOT ALLOWED
+            </h2>
+            <p style={{
+              color: '#fff',
+              fontSize: '1.2rem',
+              marginBottom: '15px',
+              maxWidth: '600px'
+            }}>
+              Sorry, you are not allowed in this round.
+            </p>
+            <p style={{
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: '1rem'
+            }}>
+              You must be approved in Round 1 (Hackerrank) to access Problem Statement selection.
+            </p>
+          </div>
         ) : !roundActive ? (
-          /* --- PRIORITY 2: ROUND CLOSED UI --- */
+          /* --- PRIORITY 3: ROUND CLOSED UI --- */
           /* Only shows if not selected AND round is closed */
           <div style={{
             display: 'flex',
