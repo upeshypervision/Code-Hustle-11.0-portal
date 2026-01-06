@@ -44,7 +44,7 @@ def check_team_name_route():
 
     # CASE-INSENSITIVE CHECK (Optional but recommended)
     # Using regex for case insensitivity: {'$regex': f'^{team_name}$', '$options': 'i'}
-    existing = db["teams"].find_one({"team_name": {"$regex": f"^{team_name.strip()}$", "$options": "i"}})
+    existing = db["registered_teams"].find_one({"team_name": {"$regex": f"^{team_name.strip()}$", "$options": "i"}})
     
     if existing:
         return jsonify({"exists": True})
@@ -68,7 +68,7 @@ def register_team_route():
     # -------------------------------------------------------
     # DUPLICATE TEAM NAME CHECK (Double Safety)
     # -------------------------------------------------------
-    if db["teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
+    if db["registered_teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
         return jsonify({"error": "Team name already taken"}), 400
 
     amount = 380 if hypervision_member else 450
@@ -95,7 +95,7 @@ def register_team_route():
 
     # 💾 SAVE TEAM AS 'PENDING PAYMENT' IMMEIDATELY
     # This ensures we don't lose data if frontend fails after payment
-    db["teams"].insert_one({
+    db["registered_teams"].insert_one({
         "team_id": team_id,
         "team_name": team_name,
         "leader": leader,
@@ -144,7 +144,7 @@ def register_manual_team_route():
         return jsonify({"error": "Team Name is required"}), 400
 
     # 2. DUPLICATE CHECK
-    if db["teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
+    if db["registered_teams"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}):
         return jsonify({"error": "Team name already taken"}), 400
 
     # 3. GENERATE CREDENTIALS
@@ -153,7 +153,7 @@ def register_manual_team_route():
     password_hashed = bcrypt.hashpw(password_plain.encode(), bcrypt.gensalt()).decode()
 
     # 4. INSERT INTO DB
-    db["teams"].insert_one({
+    db["registered_teams"].insert_one({
         "team_id": team_id,
         "team_name": team_name,
         "leader": leader,

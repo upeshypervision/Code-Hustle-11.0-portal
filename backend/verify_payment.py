@@ -29,7 +29,7 @@ def verify_payment_route():
     # ✅ PAYMENT VERIFIED - NOW SAFE TO PROCEED
     
     # Check if payment already processed (prevent duplicate)
-    existing = db["teams"].find_one({"payment_id": data["razorpay_payment_id"]})
+    existing = db["registered_teams"].find_one({"payment_id": data["razorpay_payment_id"]})
     if existing:
         return jsonify({"success": False, "error": "Payment already processed"}), 400
     
@@ -50,7 +50,7 @@ def verify_payment_route():
     # 💾 UPDATE PENDING TEAM TO PAID
     # We find the team by order_id (saved during registration)
     
-    result = db["teams"].update_one(
+    result = db["registered_teams"].update_one(
         {"order_id": data["razorpay_order_id"]},
         {"$set": {
             "payment_id": data["razorpay_payment_id"],
