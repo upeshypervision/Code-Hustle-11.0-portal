@@ -3,7 +3,12 @@ from flask import Flask, request, jsonify
 from database import db
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
-from register_team import register_team_route, check_team_name_route, register_manual_team_route
+from register_team import (
+    create_team_route, 
+    join_team_route, 
+    register_existing_team_route, 
+    check_team_name_route, 
+    register_manual_team_route )
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
 from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route
@@ -56,9 +61,18 @@ def check_student_auth():
 def validate_hypervision():
     return validate_hypervision_route()
 
-@app.route("/api/register-team", methods=["POST"])
-def register_team():
-    return register_team_route()
+# Registration routes
+@app.route("/api/register/existing-team", methods=["POST"])
+def existing_team():
+    return register_existing_team_route()
+
+@app.route("/api/register/create-team", methods=["POST"])
+def create_team():
+    return create_team_route()
+
+@app.route("/api/register/join-team", methods=["POST"])
+def join_team():
+    return join_team_route()
 
 @app.route("/api/check-team-name", methods=["POST"])
 def check_team_name():
@@ -121,7 +135,7 @@ def create_problem_statement():
 
     return create_problem_statement_route()
 
-
+#pr
 @app.route('/api/admin/getallproblem-statements', methods=['GET'])
 def admin_get_all_problem_statements():
     admin_token = request.cookies.get("admin_auth")
@@ -230,3 +244,4 @@ def update_round_status():
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
+ 
