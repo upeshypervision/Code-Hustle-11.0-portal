@@ -1,0 +1,169 @@
+
+.forge-progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1); /* The "groove" */
+    border-radius: 10px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.forge-progress-glow {
+    height: 100%;
+    background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.back-link-forge {
+    background: none;
+    border: none;
+    color: #ff4d4d !important; /* Explicit Red */
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.back-link-forge:hover {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+}
+
+.dual-glow-capsule {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 50px;
+    padding: 5px 20px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.dual-glow-capsule:focus-within {
+    border-color: #38bdf8;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    background: rgba(56, 189, 248, 0.05); /* Slight blue tint on focus */
+}
+
+.capsule-input-left, .capsule-input-right {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    padding: 10px 5px;
+    outline: none;
+    width: 100%;
+}
+
+.capsule-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(56, 189, 248, 0.4);
+    margin: 0 10px;
+}
+
+/* 3. KINETIC SHIMMER & PULSE RING - FINAL SCREEN */
+.kinetic-connector-zone {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.kinetic-shimmer-btn {
+    position: relative;
+    padding: 18px 50px;
+    background: linear-gradient(45deg, #0ea5e9, #8b5cf6);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.kinetic-shimmer-btn:hover {
+    transform: scale(1.05);
+}
+
+.shimmer-sweep {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: sweep 2s infinite linear;
+}
+
+@keyframes sweep { 100% { left: 100%; } }
+
+.neural-pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #8b5cf6;
+    border-radius: 50px;
+    animation: pulse-out 2s infinite;
+}
+
+@keyframes pulse-out {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+
+
+.shining-choice-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.liquid-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    color: #cbd5e1;
+    padding: 10px 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.liquid-btn:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: #38bdf8;
+    color: white;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Specific Shimmers for the buttons */
+.add-btn-shimmer:hover {
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.connect-btn-shimmer:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
