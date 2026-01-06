@@ -252,9 +252,6 @@ return (
 )} 
 </div> 
 
-<footer className="footer-links-clean" style={{ marginTop: '50px' }}> 
-<button className="back-link-forge" onClick={() => navigate('/')}>[ ABORT_TO_GATEWAY ]</button> 
-</footer> 
 </div> 
 </div> 
 ); 
