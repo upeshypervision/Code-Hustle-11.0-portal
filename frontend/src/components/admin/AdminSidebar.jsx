@@ -98,6 +98,14 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
             <span>View Hackerrank</span>
           </a>
         </li>
+        <li className="admin-nav-item">
+          <a
+            className={`admin-nav-link ${activeSection === "round-1" ? "active" : ""}`}
+            onClick={() => setActiveSection("round-1")}
+          >
+            <span>Round 1</span>
+          </a>
+        </li>
 
 
 

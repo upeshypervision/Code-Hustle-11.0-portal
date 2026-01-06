@@ -33,6 +33,14 @@ from hackerrank_submission import (
 from round_management import get_round_status_route, update_round_status_route
 from flask_socketio import SocketIO, emit
 from socketio_instance import socketio
+from hackerrank_submission import (
+    submit_hackerrank_route, 
+    check_hackerrank_submission_route,
+    fetch_teams_no_hackerrank_submission,
+    fetch_all_hackerrank_submissions,
+    approve_hackerrank_submission,
+    fetch_approved_hackerrank_teams  
+)
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -195,6 +203,10 @@ def approve_hackerrank():
     if request.method == "OPTIONS":
         return "", 200   # ✅ allow preflight
     return approve_hackerrank_submission()
+
+@app.route('/api/admin/approved-hackerrank-teams', methods=['GET'])
+def get_approved_hackerrank_teams():
+    return fetch_approved_hackerrank_teams()
 
 # --- PPT Filter Routes ---
 @app.route('/api/admin/teams-without-ppt', methods=['GET'])

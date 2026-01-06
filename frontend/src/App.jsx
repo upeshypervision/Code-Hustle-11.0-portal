@@ -11,6 +11,8 @@ import Userlogin from "./pages/StudentLogin.jsx";
 import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
+import AdminDashboard from "./components/admin/AdminDashboard";
+
 
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
