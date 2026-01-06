@@ -25,11 +25,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Teamup />} />
         <Route path="/create-team" element={<CreateTeam />} />
-<<<<<<< HEAD
         <Route path="/team-up" element={<TeamUpPage />} />
-=======
         <Route path="/join" element={<JoinTeam />} />
->>>>>>> main
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />

@@ -6,6 +6,7 @@ import './JoinTeam.css';
 
 const JoinTeam = () => { 
     const navigate = useNavigate(); 
+    const [isSubmitted, setIsSubmitted] = useState(false); // Added state for success view
     const [valErrors, setValErrors] = useState({}); 
     const [formData, setFormData] = useState({ 
         fullName: '', 
@@ -14,11 +15,11 @@ const JoinTeam = () => {
         sapid: '', 
         email: '', 
         phone: '',
-        hypervisionId: '' // Added optional field
+        hypervisionId: '' 
     }); 
 
     const validateField = (name, value, uType) => { 
-        if (!value && name !== 'hypervisionId') return "Required Field"; // Hypervision ID is optional
+        if (!value && name !== 'hypervisionId') return "Required Field"; 
         if (name === 'email' && !value.includes("@")) return "Invalid format"; 
         if (name === 'phone' && value.length !== 10) return "10 digits required"; 
         if (name === 'sapid') { 
@@ -65,87 +66,97 @@ const JoinTeam = () => {
                 </header> 
 
                 <div className="morph-interface"> 
-                    <div className="neural-node node-materialize animate-in"> 
-                        <span className="label-detail">NODE: PARTICIPANT PROFILE</span> 
-                        
-                        {/* NAME FIELD */}
-                        <div className="input-group"> 
-                            <div className="label-row"><span>FULL NAME <span className="v-tag">*</span></span></div> 
-                            <div className={`glow-input-container animated-field ${valErrors.fullName ? 'error-border' : ''}`}> 
-                                <input className="glow-input" placeholder="Enter your name..." value={formData.fullName} onChange={(e) => updateField('fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value)} /> 
-                            </div> 
-                            {valErrors.fullName && <p className="error-message-inline">{valErrors.fullName}</p>}
-                        </div> 
-
-                        {/* BIO FIELD */}
-                        <div className="input-group" style={{ marginTop: '12px' }}> 
-                            <div className="label-row"><span>ABOUT & SKILLS <span className="v-tag">*</span></span></div> 
-                            <div className={`glow-input-container animated-field ${valErrors.bio ? 'error-border' : ''}`}> 
-                                <textarea className="glow-input" rows="3" placeholder="Tell us about your technical stack and skills..." value={formData.bio} onChange={(e) => updateField('bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value)}></textarea> 
-                            </div> 
-                            {valErrors.bio && <p className="error-message-inline">{valErrors.bio}</p>}
-                        </div>
-
-                        {/* UNIVERSITY SELECT */}
-                        <div className="input-group" style={{ marginTop: '12px' }}> 
-                            <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div> 
-                            <div className="glow-input-container animated-field"> 
-                                <select className="glow-input" value={formData.universityType} onChange={(e) => updateField('universityType', e.target.value)}> 
-                                    <option value="">Select</option> 
-                                    <option value="UPES">UPES</option> 
-                                    <option value="Others">Others</option> 
-                                </select> 
-                            </div> 
-                        </div> 
-
-                        {/* SAP ID / UNI NAME */}
-                        {formData.universityType && ( 
-                            <div className="input-group" style={{ marginTop: '12px' }}> 
-                                <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNIVERSITY NAME'} <span className="v-tag">*</span></span></div> 
-                                <div className={`glow-input-container animated-field ${valErrors.sapid ? 'error-border' : ''}`}> 
-                                    <input className="glow-input" placeholder={formData.universityType === 'UPES' ? '9 Digits' : 'Enter University Name'} value={formData.sapid} 
-                                    onChange={(e) => updateField('sapid', e.target.value)} 
-                                    onBlur={(e) => handleBlur('sapid', e.target.value)} /> 
+                    {!isSubmitted ? (
+                        <div className="neural-node node-materialize animate-in"> 
+                            <span className="label-detail">NODE: PARTICIPANT PROFILE</span> 
+                            
+                            {/* NAME FIELD */}
+                            <div className="input-group"> 
+                                <div className="label-row"><span>FULL NAME <span className="v-tag">*</span></span></div> 
+                                <div className={`glow-input-container animated-field ${valErrors.fullName ? 'error-border' : ''}`}> 
+                                    <input className="glow-input" placeholder="Enter your name..." value={formData.fullName} onChange={(e) => updateField('fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value)} /> 
                                 </div> 
-                                {valErrors.sapid && <p className="error-message-inline">{valErrors.sapid}</p>}
+                                {valErrors.fullName && <p className="error-message-inline">{valErrors.fullName}</p>}
                             </div> 
-                        )} 
 
-                        {/* HYPERVISION ID (OPTIONAL) */}
-                        <div className="input-group" style={{ marginTop: '12px' }}> 
-                            <div className="label-row"><span>HYPERVISION ID</span></div> 
-                            <div className="glow-input-container animated-field"> 
-                                <input className="glow-input" placeholder="Enter ID if applicable..." value={formData.hypervisionId} onChange={(e) => updateField('hypervisionId', e.target.value)} /> 
+                            {/* BIO FIELD */}
+                            <div className="input-group" style={{ marginTop: '12px' }}> 
+                                <div className="label-row"><span>ABOUT & SKILLS <span className="v-tag">*</span></span></div> 
+                                <div className={`glow-input-container animated-field ${valErrors.bio ? 'error-border' : ''}`}> 
+                                    <textarea className="glow-input" rows="3" placeholder="Tell us about your technical stack and skills..." value={formData.bio} onChange={(e) => updateField('bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value)}></textarea> 
+                                </div> 
+                                {valErrors.bio && <p className="error-message-inline">{valErrors.bio}</p>}
+                            </div>
+
+                            {/* UNIVERSITY SELECT */}
+                            <div className="input-group" style={{ marginTop: '12px' }}> 
+                                <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div> 
+                                <div className="glow-input-container animated-field"> 
+                                    <select className="glow-input" value={formData.universityType} onChange={(e) => updateField('universityType', e.target.value)}> 
+                                        <option value="">Select</option> 
+                                        <option value="UPES">UPES</option> 
+                                        <option value="Others">Others</option> 
+                                    </select> 
+                                </div> 
                             </div> 
+
+                            {/* SAP ID / UNI NAME */}
+                            {formData.universityType && ( 
+                                <div className="input-group" style={{ marginTop: '12px' }}> 
+                                    <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNIVERSITY NAME'} <span className="v-tag">*</span></span></div> 
+                                    <div className={`glow-input-container animated-field ${valErrors.sapid ? 'error-border' : ''}`}> 
+                                        <input className="glow-input" placeholder={formData.universityType === 'UPES' ? '9 Digits' : 'Enter University Name'} value={formData.sapid} 
+                                        onChange={(e) => updateField('sapid', e.target.value)} 
+                                        onBlur={(e) => handleBlur('sapid', e.target.value)} /> 
+                                    </div> 
+                                    {valErrors.sapid && <p className="error-message-inline">{valErrors.sapid}</p>}
+                                </div> 
+                            )} 
+
+                            {/* HYPERVISION ID (OPTIONAL) */}
+                            <div className="input-group" style={{ marginTop: '12px' }}> 
+                                <div className="label-row"><span>HYPERVISION ID</span></div> 
+                                <div className="glow-input-container animated-field"> 
+                                    <input className="glow-input" placeholder="Enter ID if applicable..." value={formData.hypervisionId} onChange={(e) => updateField('hypervisionId', e.target.value)} /> 
+                                </div> 
+                            </div> 
+
+                            {/* CONTACT INFO CAPSULE */}
+                            <div className="input-group" style={{ marginTop: '12px' }}> 
+                                <div className="label-row"><span>CONTACT DETAILS <span className="v-tag">*</span></span></div> 
+                                <div className={`dual-glow-capsule animated-field ${(valErrors.email || valErrors.phone) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center' }}> 
+                                    <input className="capsule-input-left" placeholder="Email Address" value={formData.email} onChange={(e) => updateField('email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value)} /> 
+                                    <div className="capsule-divider"></div> 
+                                    <input className="capsule-input-right" placeholder="Phone" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value)} /> 
+                                </div> 
+                                {(valErrors.email || valErrors.phone) && <p className="error-message-inline">{valErrors.email || valErrors.phone}</p>}
+                            </div> 
+
+                            {/* JOIN BUTTON */}
+                            <div className="forge-btn-group" style={{ marginTop: '30px' }}>
+                                <button 
+                                    className={`liquid-btn animated-btn ${!isFormValid() ? 'btn-locked' : ''}`} 
+                                    style={{ width: '100%', padding: '18px' }} 
+                                    onClick={() => isFormValid() && setIsSubmitted(true)}
+                                >
+                                    JOIN & CONNECT ❯
+                                </button>
+                            </div>
                         </div> 
-
-                        {/* CONTACT INFO CAPSULE */}
-                        <div className="input-group" style={{ marginTop: '12px' }}> 
-                            <div className="label-row"><span>CONTACT DETAILS <span className="v-tag">*</span></span></div> 
-                            <div className={`dual-glow-capsule animated-field ${(valErrors.email || valErrors.phone) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center' }}> 
-                                <input className="capsule-input-left" placeholder="Email Address" value={formData.email} onChange={(e) => updateField('email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value)} /> 
-                                <div className="capsule-divider"></div> 
-                                <input className="capsule-input-right" placeholder="Phone" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value)} /> 
+                    ) : (
+                        /* SUCCESS PAGE VIEW */
+                        <div className="neural-node node-materialize animate-in success-node"> 
+                            <div className="completion-vfx" style={{ textAlign: 'center', padding: '20px 0' }}>
+                                <h2 className="glow-status-text">PROFILE CREATED SUCCESSFULLY!</h2>
                             </div> 
-                            {(valErrors.email || valErrors.phone) && <p className="error-message-inline">{valErrors.email || valErrors.phone}</p>}
-                        </div> 
-
-                        {/* JOIN BUTTON */}
-                        <div className="forge-btn-group" style={{ marginTop: '30px' }}>
-                            <button 
-                                className={`liquid-btn animated-btn ${!isFormValid() ? 'btn-locked' : ''}`} 
-                                style={{ width: '100%', padding: '18px' }} 
-                                onClick={() => isFormValid() && navigate('/connect')}
-                            >
-                                JOIN & CONNECT ❯
-                            </button>
+                            <div className="forge-btn-group" style={{ marginTop: '30px' }}>
+                                <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/connect')}>
+                                    ACKNOWLEDGE ❯
+                                </button>
+                            </div>
                         </div>
-                    </div> 
+                    )}
                 </div> 
-
-                <footer className="footer-links-clean" style={{ marginTop: '30px' }}> 
-                    <button className="back-link-forge" onClick={() => navigate('/teamup')}>[ ABORT_TO_SELECTION ]</button> 
-                </footer> 
             </div> 
         </div> 
     ); 
