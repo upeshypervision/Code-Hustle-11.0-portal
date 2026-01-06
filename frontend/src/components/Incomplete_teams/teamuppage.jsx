@@ -179,20 +179,23 @@ const TeamUpPage = () => {
             />
 
             <main className="team-up-main">
-                <div className="panel team-up-panel">
-                    <div className="panel-inner">
-                        <h1 className="team-name">
-                            {teamData.teamName}
-                        </h1>
+                <div className="team-page-layout">
+                    {/* Left Sidebar */}
+                    <aside className="team-sidebar">
+                        <div className="sidebar-content">
+                            <h2 className="section-title">Your Team</h2>
+                            <h1 className="team-name">
+                                {teamData.teamName}
+                            </h1>
+                            <p className="team-vision">
+                                {teamData.teamVision}
+                            </p>
+                        </div>
+                        <div className="vertical-divider"></div>
+                    </aside>
 
-                        <div className="team-divider"></div>
-
-                        <p className="team-vision">
-                            {teamData.teamVision}
-                        </p>
-
-                        <div className="team-divider"></div>
-
+                    {/* Right Content */}
+                    <div className="team-content">
                         {/* Leader Section */}
                         <div className="team-section">
                             <h2 className="section-title">Team Leader</h2>
@@ -229,39 +232,41 @@ const TeamUpPage = () => {
                             </div>
 
                             {/* Joined Members Section */}
-                            {teamData.joinedMembers && teamData.joinedMembers.length > 0 && (
-                                <div className="team-section">
-                                    <h2 className="section-title">Joined Members</h2>
-                                    <div className="members-list">
-                                        {teamData.joinedMembers.map((member) => (
-                                            <div key={member.id} className="member-item">
-                                                <span className="member-name">{member.name}</span>
-                                                <div className="member-actions">
-                                                    <button
-                                                        className="member-chat-btn"
-                                                        onClick={() => handleChatOpen(member)}
-                                                    >
-                                                        Chat
-                                                    </button>
-                                                    <button
-                                                        className="member-view-btn"
-                                                        onClick={() => handleViewMember(member)}
-                                                    >
-                                                        View Detail
-                                                    </button>
-                                                    <button
-                                                        className="delete-btn"
-                                                        onClick={() => handleDeleteMember(member.id)}
-                                                        aria-label={`Delete ${member.name}`}
-                                                    >
-                                                        Delete
-                                                    </button>
+                            {
+                                teamData.joinedMembers && teamData.joinedMembers.length > 0 && (
+                                    <div className="team-section">
+                                        <h2 className="section-title">Joined Members</h2>
+                                        <div className="members-list">
+                                            {teamData.joinedMembers.map((member) => (
+                                                <div key={member.id} className="member-item">
+                                                    <span className="member-name">{member.name}</span>
+                                                    <div className="member-actions">
+                                                        <button
+                                                            className="member-chat-btn"
+                                                            onClick={() => handleChatOpen(member)}
+                                                        >
+                                                            Chat
+                                                        </button>
+                                                        <button
+                                                            className="member-view-btn"
+                                                            onClick={() => handleViewMember(member)}
+                                                        >
+                                                            View Detail
+                                                        </button>
+                                                        <button
+                                                            className="delete-btn"
+                                                            onClick={() => handleDeleteMember(member.id)}
+                                                            aria-label={`Delete ${member.name}`}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )
+                            }
 
                             {/* Requests Section */}
                             <div className="team-section requests-section">
@@ -297,10 +302,10 @@ const TeamUpPage = () => {
                                     )}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+                        </div >
+                    </div >
+                </div >
+            </main >
 
             {/* Member Details Modal */}
             {
@@ -309,6 +314,11 @@ const TeamUpPage = () => {
                         <div className="modal-content member-card" onClick={(e) => e.stopPropagation()}>
                             <button className="modal-close" onClick={closeMemberModal}>&times;</button>
                             <h2 className="member-card-title">Member Details</h2>
+                            {selectedMember.isHypervision && (
+                                <div className="hypervision-badge" style={{ marginBottom: '15px' }}>
+                                    Hypervision Member
+                                </div>
+                            )}
                             <div className="member-card-body">
                                 <div className="member-detail-row">
                                     <span className="detail-label">Name:</span>

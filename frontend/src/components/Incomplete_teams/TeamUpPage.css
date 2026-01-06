@@ -28,25 +28,66 @@
     min-height: calc(100vh - 80px);
 }
 
-/* The central panel styling */
-.team-up-panel {
-    max-width: 800px;
-    padding: 40px;
+/* The central panel styling REMOVED/REPLACED */
+.team-page-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+    max-width: 1200px;
     width: 100%;
-    /* Ensure it doesn't overflow on small screens */
-    box-sizing: border-box;
     margin: 0 auto;
-    /* Explicit centering */
+    padding: 20px;
 }
 
-/* Team Name Heading */
+/* Sidebar Styling */
+.team-sidebar {
+    position: sticky;
+    top: 100px;
+    height: calc(100vh - 120px);
+    /* Fill height to show full line */
+    /* REMOVED CARD STYLES */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    padding: 0;
+    /* Top padding removal moves sidebar up */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.sidebar-content {
+    flex: 1;
+    padding-right: 30px;
+    text-align: left;
+    margin-top: -40px;
+    /* Pull content up to align with main content */
+}
+
+.vertical-divider {
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(148, 163, 184, 0.5), transparent);
+    flex-shrink: 0;
+}
+
+.team-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding-top: 10px;
+    /* Match sidebar padding-top for alignment */
+}
+
+/* Team Name Heading in Sidebar */
 .team-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: 3rem;
-    letter-spacing: 4px;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
     color: #60a5fa;
     text-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     word-wrap: break-word;
     /* Prevent overflow of long names */
     overflow-wrap: break-word;
@@ -73,6 +114,59 @@
 
 /* --- Responsive Adjustments --- */
 
+@media (max-width: 900px) {
+    .team-page-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        /* FIX: Reduce main layout gap */
+    }
+
+    .team-sidebar {
+        position: relative;
+        top: 0;
+        height: auto;
+        display: block;
+        border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+        /* Vertical line becomes horizontal border */
+        padding-bottom: 20px;
+        /* FIX: Reduce padding */
+        margin-bottom: 0px;
+        /* FIX: Reduce margin to 0 */
+    }
+
+    .vertical-divider {
+        display: none;
+    }
+
+    .sidebar-content {
+        padding-right: 0;
+        text-align: left;
+        /* FIX: Left align */
+        margin-top: 0;
+        /* Reset desktop alignment hack */
+    }
+
+    .team-content {
+        gap: 20px;
+        /* FIX: Reduce gap between sections */
+    }
+
+    .team-divider {
+        margin: 10px 0;
+        /* FIX: Compact divider spacing */
+    }
+
+    .team-section {
+        margin-top: 0 !important;
+        /* FIX: Remove double spacing from margin+gap */
+    }
+
+    .members-list {
+        margin-bottom: 20px;
+        /* FIX: Equalize gap to Request section */
+    }
+}
+
 @media (max-width: 768px) {
     .team-up-main {
         padding: 80px 16px 40px 16px;
@@ -83,19 +177,7 @@
         /* vertical scrolling enabled, start from top */
     }
 
-    .team-up-panel {
-        padding: 24px 16px;
-        margin: 0 auto;
-    }
-
-    .team-name {
-        font-size: 2rem;
-        letter-spacing: 2px;
-    }
-
-    .team-vision {
-        font-size: 0.95rem;
-    }
+    /* .team-up-panel rule removed as class is gone */
 }
 
 @media (max-width: 480px) {
@@ -122,6 +204,7 @@
     text-align: left;
     width: 100%;
 }
+
 
 .section-title {
     font-family: 'Orbitron', sans-serif;
