@@ -100,7 +100,7 @@ def submit_link_route():
         return jsonify({"success": False, "error": "Invalid live hosted link format."}), 400
     
     # ---------- CHECK TEAM EXISTS ----------
-    team = db.teams.find_one({"team_id": team_id})
+    team = db.registered_teams.find_one({"team_id": team_id})
     if not team:
         return jsonify({"success": False, "error": "Team not found."}), 404
     
