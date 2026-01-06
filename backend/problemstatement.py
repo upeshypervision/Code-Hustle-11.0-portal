@@ -154,10 +154,21 @@ def select_problem_statement_route():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
 
+    # =========================
+    # CHECK ROUND 1 APPROVAL (Hackerrank)
+    # =========================
+    hackerrank_sub = db.Hackerrank_submission.find_one({"team_id": team_id})
+    if not hackerrank_sub or hackerrank_sub.get("approval_status") != "approved":
+        return jsonify({
+            "success": False,
+            "error": "Sorry, you are not allowed in this round. You must be approved in Round 1 (Hackerrank) to access Problem Statement selection."
+        }), 403
+
     # Check if PS selection round is active
     round_status = db.counters.find_one({"_id": "round_status"})
-    if round_status and not round_status.get("ps_selection", True):
+    if round_status and round_status.get("ps_selection") != "live":
         return jsonify({
+            "success": False,
             "error": "Sorry, the selection cannot be made as the Problem Statement selection round is currently closed. Please wait for the organizing committee to activate this round."
         }), 403
 

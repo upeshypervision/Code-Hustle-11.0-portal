@@ -9,6 +9,7 @@ from socketio_instance import socketio
 def get_round_status_route():
     """
     Get current round status for all rounds
+    Returns enum states: "not_started", "live", "closed"
     """
     db = get_db()
     
@@ -16,22 +17,40 @@ def get_round_status_route():
     round_status = db.counters.find_one({"_id": "round_status"})
     
     if not round_status:
-        # Initialize default round status
+        # Initialize default round status with enum states
         default_status = {
             "_id": "round_status",
-            "ps_selection": True,
-            "ppt_upload": True,
-            "github_submission": False
+            "ps_selection": "not_started",
+            "ppt_upload": "not_started",
+            "github_submission": "not_started",
+            "hackerrank_submission": "not_started"
         }
         db.counters.insert_one(default_status)
         round_status = default_status
+    else:
+        # Backward compatibility: migrate boolean values to enum
+        needs_migration = False
+        for key in ["ps_selection", "ppt_upload", "github_submission", "hackerrank_submission"]:
+            value = round_status.get(key)
+            if isinstance(value, bool):
+                needs_migration = True
+                # true -> "live", false -> "not_started"
+                round_status[key] = "live" if value else "not_started"
+        
+        # Update database if migration occurred
+        if needs_migration:
+            db.counters.update_one(
+                {"_id": "round_status"},
+                {"$set": {k: v for k, v in round_status.items() if k != "_id"}}
+            )
     
     return jsonify({
         "success": True,
         "rounds": {
-            "ps_selection": round_status.get("ps_selection", True),
-            "ppt_upload": round_status.get("ppt_upload", True),
-            "github_submission": round_status.get("github_submission", False)
+            "ps_selection": round_status.get("ps_selection", "not_started"),
+            "ppt_upload": round_status.get("ppt_upload", "not_started"),
+            "github_submission": round_status.get("github_submission", "not_started"),
+            "hackerrank_submission": round_status.get("hackerrank_submission", "not_started")
         }
     }), 200
 
@@ -39,6 +58,7 @@ def get_round_status_route():
 def update_round_status_route():
     """
     Update round status (admin only)
+    Accepts enum state: "not_started", "live", "closed"
     Emits WebSocket event to notify all users
     """
     db = get_db()
@@ -54,19 +74,23 @@ def update_round_status_route():
         return jsonify({"success": False, "error": "Invalid session"}), 401
     
     data = request.get_json()
-    round_type = data.get("round_type")  # ps_selection, ppt_upload, github_submission
-    is_active = data.get("is_active")
+    round_type = data.get("round_type")  # ps_selection, ppt_upload, github_submission, hackerrank_submission
+    state = data.get("state")  # "not_started", "live", "closed"
     
-    if round_type not in ["ps_selection", "ppt_upload", "github_submission"]:
+    # Validate round type
+    valid_round_types = ["ps_selection", "ppt_upload", "github_submission", "hackerrank_submission"]
+    if round_type not in valid_round_types:
         return jsonify({"success": False, "error": "Invalid round type"}), 400
     
-    if not isinstance(is_active, bool):
-        return jsonify({"success": False, "error": "is_active must be boolean"}), 400
+    # Validate state
+    valid_states = ["not_started", "live", "closed"]
+    if state not in valid_states:
+        return jsonify({"success": False, "error": "Invalid state. Must be: not_started, live, or closed"}), 400
     
     # Update round status in counters collection
     result = db.counters.update_one(
         {"_id": "round_status"},
-        {"$set": {round_type: is_active}},
+        {"$set": {round_type: state}},
         upsert=True
     )
     
@@ -74,12 +98,12 @@ def update_round_status_route():
         # Emit WebSocket event to notify all users
         socketio.emit("round_status_changed", {
             "round_type": round_type,
-            "is_active": is_active
+            "state": state
         })
         
         return jsonify({
             "success": True,
-            "message": f"Round status updated: {round_type} = {is_active}"
+            "message": f"Round status updated: {round_type} = {state}"
         }), 200
     else:
         return jsonify({"success": False, "error": "Failed to update round status"}), 500
