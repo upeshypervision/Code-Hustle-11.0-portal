@@ -92,11 +92,11 @@
 }
 
 .glass-navbar-inner {
-  padding: 20px 32px !important;
+  padding: 12px 32px !important;
 }
 
 .glass-navbar .logo-container {
-  gap: 16px;
+  gap: 12px;
 }
 
 .glass-navbar .logo-text {
@@ -120,8 +120,8 @@
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: rgba(255, 255, 255, 0.9) !important;
-  padding: 10px 20px !important;
-  font-size: 0.95rem !important;
+  padding: 8px 16px !important;
+  font-size: 0.9rem !important;
   font-weight: 500;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -145,7 +145,7 @@
 
 /* Base Dashboard Styles */
 .dashboard-container {
-  padding: 140px 32px 32px 32px;
+  padding: 120px 32px 32px 32px;
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
@@ -365,7 +365,7 @@
 @media (max-width: 768px) {
   /* Override admin-content padding for mobile */
   .admin-content.dashboard-container {
-    padding-top: 160px !important;
+    padding-top: 140px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: 20px !important;
@@ -397,7 +397,7 @@
   }
 
   .glass-navbar-inner {
-    padding: 16px 20px !important;
+    padding: 10px 20px !important;
   }
 
   .glass-navbar .nav-user {
@@ -405,7 +405,7 @@
   }
 
   .glass-navbar .nav-logout {
-    padding: 8px 16px !important;
+    padding: 6px 12px !important;
     font-size: 0.85rem !important;
   }
 
@@ -641,6 +641,19 @@
   z-index: 2000;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.chatbox-container.chatbox-maximized {
+  width: calc(100vw - 40px);
+  height: calc(100vh - 40px);
+  max-width: 1200px;
+  max-height: 800px;
+  bottom: 20px;
+  right: 20px;
+  left: 20px;
+  top: auto;
+  border-radius: 16px;
 }
 
 .chatbox-header {
@@ -882,6 +895,31 @@
     height: 100vh;
     bottom: 0;
     right: 0;
+    left: 0;
     border-radius: 0;
+  }
+
+  .chatbox-container.chatbox-maximized {
+    width: 100%;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  /* Hide maximize/minimize button on mobile, keep only close button */
+  .chatbox-header-right .chatbox-control-btn:first-child {
+    display: none;
+  }
+
+  /* Ensure buttons are properly sized on mobile */
+  .chatbox-control-btn {
+    padding: 8px !important;
+    min-width: 36px;
+    min-height: 36px;
   }
 }

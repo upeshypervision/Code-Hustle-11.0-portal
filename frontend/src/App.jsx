@@ -13,7 +13,6 @@ import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
 import Teamup from "./pages/Teamup.jsx";
 import CreateTeam from "./pages/CreateTeam.jsx";
-import JoinTeam from "./components/Individual-Member/JoinTeam.jsx";
 import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
 import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.jsx";
 
@@ -25,13 +24,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Teamup />} />
         <Route path="/create-team" element={<CreateTeam />} />
-        <Route path="/join" element={<JoinTeam />} />
         <Route
-          path="/individual-member/dashboard"
+          path="/individual-member"
           element={<TeamUpDashboard />}
         />
         <Route
-          path="/individual-member/accepted"
+          path="/accepted-team"
           element={<AcceptedTeamPage />}
         />
         <Route path="/register" element={<Register />} />

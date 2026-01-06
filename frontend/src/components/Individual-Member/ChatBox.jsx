@@ -34,6 +34,7 @@ const ChatBox = ({ team, userDetails, onClose }) => {
   ]);
 
   const [inputMessage, setInputMessage] = useState("");
+  const [isMaximized, setIsMaximized] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -69,7 +70,7 @@ const ChatBox = ({ team, userDetails, onClose }) => {
   };
 
   return (
-    <div className="chatbox-container">
+    <div className={`chatbox-container ${isMaximized ? "chatbox-maximized" : ""}`}>
       {/* Chat Header */}
       <div className="chatbox-header">
         <div className="chatbox-header-left">
@@ -89,25 +90,65 @@ const ChatBox = ({ team, userDetails, onClose }) => {
         <div className="chatbox-header-right">
           <button
             className="chatbox-control-btn"
-            onClick={() => {
-              // Maximize/restore functionality can be added here
-            }}
-            aria-label="Maximize"
+            onClick={() => setIsMaximized(!isMaximized)}
+            aria-label={isMaximized ? "Minimize" : "Maximize"}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M3 3h10v10"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M13 3L3 13"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            {isMaximized ? (
+              // Restore Down icon (two overlapping squares)
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect
+                  x="2"
+                  y="6"
+                  width="8"
+                  height="8"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <rect
+                  x="6"
+                  y="2"
+                  width="8"
+                  height="8"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              // Maximize icon (square with corner arrows)
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect
+                  x="2"
+                  y="2"
+                  width="12"
+                  height="12"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M6 2V6H2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M10 14V10H14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
           </button>
           <button
             className="chatbox-control-btn"
