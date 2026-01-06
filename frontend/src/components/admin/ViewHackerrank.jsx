@@ -150,9 +150,18 @@ export default function ViewHackerrank() {
                                         <span
                                             className="badge-status"
                                             style={{
-                                                background: sub.approval_status === 'approved' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                                                color: sub.approval_status === 'approved' ? '#22c55e' : '#ef4444',
-                                                border: `1px solid ${sub.approval_status === 'approved' ? '#22c55e' : '#ef4444'}`,
+                                                background:
+                                                    sub.approval_status === 'approved' ? 'rgba(34, 197, 94, 0.1)' :
+                                                        sub.approval_status === 'pending' ? 'rgba(234, 179, 8, 0.1)' :
+                                                            'rgba(239, 68, 68, 0.1)',
+                                                color:
+                                                    sub.approval_status === 'approved' ? '#22c55e' :
+                                                        sub.approval_status === 'pending' ? '#eab308' :
+                                                            '#ef4444',
+                                                border: `1px solid ${sub.approval_status === 'approved' ? '#22c55e' :
+                                                        sub.approval_status === 'pending' ? '#eab308' :
+                                                            '#ef4444'
+                                                    }`,
                                                 padding: '2px 8px',
                                                 borderRadius: '4px',
                                                 fontSize: '0.7rem',

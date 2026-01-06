@@ -12,6 +12,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     const [localIsSubmitted, setLocalIsSubmitted] = useState(false);
     const [roundActive, setRoundActive] = useState(true);
     const [checkingRound, setCheckingRound] = useState(true);
+    const [hackerrankStatus, setHackerrankStatus] = useState(null);
+    const [checkingHackerrank, setCheckingHackerrank] = useState(true);
     const fileInputRef = useRef(null);
 
     // --- CHECK SUBMISSION STATUS ---
@@ -37,6 +39,47 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         checkSubmissionStatus();
     }, []);
 
+    // Check Hackerrank approval status
+    useEffect(() => {
+        const checkHackerrankStatus = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setHackerrankStatus(data.submission.approval_status);
+                } else {
+                    setHackerrankStatus("not_submitted");
+                }
+            } catch (err) {
+                console.error("Error checking Hackerrank status:", err);
+            } finally {
+                setCheckingHackerrank(false);
+            }
+        };
+        checkHackerrankStatus();
+    }, []);
+
+    // Listen for Hackerrank approval updates
+    useEffect(() => {
+        const handleApprovalUpdate = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setHackerrankStatus(data.submission.approval_status);
+                }
+            } catch (err) {
+                console.error("Error refetching Hackerrank status:", err);
+            }
+        };
+        socket.on("hackerrank_approval_updated", handleApprovalUpdate);
+        return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
+    }, []);
+
     // --- CHECK ROUND STATUS ---
     useEffect(() => {
         const checkRoundStatus = async () => {
@@ -47,7 +90,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 const data = await res.json();
 
                 if (data.success) {
-                    setRoundActive(data.rounds.ppt_upload);
+                    // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
+                    setRoundActive(data.rounds.ppt_upload === 'live');
                 }
             } catch (err) {
                 console.error("Error checking round status:", err);
@@ -63,7 +107,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const handleRoundChange = (data) => {
             if (data.round_type === 'ppt_upload') {
-                setRoundActive(data.is_active);
+                // data.state is enum: 'live', 'closed', 'not_started'
+                setRoundActive(data.state === 'live');
             }
         };
 
@@ -174,11 +219,51 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 }}>
                     <p>Loading...</p>
                 </div>
+            ) : (hackerrankStatus && hackerrankStatus !== 'approved' && !hasUserSubmitted) ? (
+                /* 2. Not Allowed (Round 1 Not Approved) */
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '60vh',
+                    padding: '40px',
+                    textAlign: 'center',
+                    background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    border: '2px solid #ef4444',
+                    borderRadius: '8px',
+                    animation: 'fadeIn 0.5s ease-out',
+                    width: '100%',
+                    maxWidth: '800px'
+                }}>
+                    <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
+                    <h2 style={{
+                        color: '#ef4444',
+                        fontWeight: '900',
+                        fontSize: '2.5rem',
+                        letterSpacing: '3px',
+                        marginBottom: '15px'
+                    }}>
+                        NOT ALLOWED
+                    </h2>
+                    <p style={{
+                        color: '#fff',
+                        fontSize: '1.2rem',
+                        marginBottom: '15px',
+                        maxWidth: '600px'
+                    }}>
+                        Sorry, you are not allowed in this round.
+                    </p>
+                    <p style={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: '1rem'
+                    }}>
+                        You must be approved in Round 1 (Hackerrank) to submit PPT.
+                    </p>
+                </div>
             ) : (!roundActive && !hasUserSubmitted) ? (
-                /* 2. Round Closed UI
-                   --- LOGIC UPDATE HERE ---
-                   Only shows if round is inactive AND user has NOT submitted.
-                */
+                /* 3. Round Closed UI */
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -301,16 +386,49 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                 <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileAction} />
 
                                 {hasUserSubmitted ? (
-                                    /* --- SUCCESS UI (Shown even if round closed) --- */
+                                    /* --- SUCCESS UI WITH APPROVAL STATUS --- */
                                     <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-                                        <div className="success-check-ring">✓</div>
-                                        <h4 style={{ color: '#10b981', fontWeight: '800', fontSize: '1.5rem', marginBottom: '10px' }}>PPT SUBMITTED</h4>
-                                        {submittedFile && (
-                                            <p style={{ color: '#fff', fontSize: '1rem', marginBottom: '10px' }}>
-                                                <strong>File:</strong> {submittedFile.file_name}
+                                        <div style={{
+                                            fontSize: "3rem",
+                                            color: submittedFile?.approval_status === 'approved' ? '#22c55e' :
+                                                submittedFile?.approval_status === 'rejected' ? '#ef4444' : '#eab308',
+                                            marginBottom: '15px'
+                                        }}>
+                                            {submittedFile?.approval_status === 'approved' ? '🎉' :
+                                                submittedFile?.approval_status === 'rejected' ? '❌' : '⏳'}
+                                        </div>
+                                        <h4 style={{
+                                            color: submittedFile?.approval_status === 'approved' ? "#22c55e" :
+                                                submittedFile?.approval_status === 'rejected' ? "#ef4444" : "#eab308",
+                                            fontWeight: '900',
+                                            fontSize: '1.5rem',
+                                            marginBottom: '10px',
+                                            letterSpacing: '1px'
+                                        }}>
+                                            {submittedFile?.approval_status === 'approved' ? 'CONGRATS! APPROVED' :
+                                                submittedFile?.approval_status === 'rejected' ? 'SORRY, NOT SELECTED' :
+                                                    'REVIEW PENDING'}
+                                        </h4>
+                                        {submittedFile?.approval_status === 'approved' && (
+                                            <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                                Your PPT has been verified and approved!
                                             </p>
                                         )}
-                                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>The vault is closed. Documentation has been locked.</p>
+                                        {submittedFile?.approval_status === 'pending' && (
+                                            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                                Your submission is currently under review by our team.
+                                            </p>
+                                        )}
+                                        {submittedFile?.approval_status === 'rejected' && (
+                                            <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                                Unfortunately, your submission did not meet the criteria.
+                                            </p>
+                                        )}
+                                        {submittedFile && (
+                                            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginTop: '10px' }}>
+                                                <strong style={{ color: '#fff' }}>File:</strong> {submittedFile.file_name}
+                                            </p>
+                                        )}
                                     </div>
                                 ) : checkingStatus ? (
                                     <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>

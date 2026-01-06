@@ -58,10 +58,10 @@ def submit_hackerrank_route():
     # Check if Hackerrank submission round is active (only for students)
     if submitted_via == "student":
         round_status = db.counters.find_one({"_id": "round_status"})
-        if round_status and not round_status.get("hackerrank_submission", True): # Defaulting to True as requested roughly
+        if round_status and round_status.get("hackerrank_submission") != "live":
             return jsonify({
                 "success": False,
-                "error": "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed."
+                "error": "Sorry, the submission cannot be made as the Hackerrank submission round is not currently active."
             }), 403
     
     # ---------- GET DATA ----------
@@ -92,7 +92,8 @@ def submit_hackerrank_route():
         "team_name": team.get("team_name"),
         "hackerrank_link": hackerrank_link,
         "submitted_via": submitted_via,
-        "submitted_at": datetime.utcnow().isoformat() + "Z"
+        "submitted_at": datetime.utcnow().isoformat() + "Z",
+        "approval_status": "pending"
     }
     
     result = db.Hackerrank_submission.insert_one(submission_data)
@@ -136,16 +137,17 @@ def check_hackerrank_submission_route():
         return jsonify({"success": False, "error": "Invalid session."}), 401
     
     # Check if submission exists
-    submission = db.Hackerrank_submission.find_one(
-        {"team_id": team_id},
-        {"_id": 0, "hackerrank_link": 1, "submitted_at": 1}
-    )
+    submission = db.Hackerrank_submission.find_one({"team_id": team_id})
     
     if submission:
         return jsonify({
             "success": True,
             "is_submitted": True,
-            "submission": submission
+            "submission": {
+                "hackerrank_link": submission.get("hackerrank_link"),
+                "submitted_at": submission.get("submitted_at"),
+                "approval_status": submission.get("approval_status", "pending")  # Include approval status
+            }
         }), 200
     else:
         return jsonify({
@@ -282,18 +284,6 @@ def approve_hackerrank_submission():
                 }
             }
         )
-        
-        # Update teams collection
-        if action == "approve":
-            db.teams.update_one(
-                {"team_id": team_id},
-                {
-                    "$set": {
-                        "round": 2,  # Qualify for Round 2 (PS Selection)
-                        "hackerrank_approved_by": admin_id
-                    }
-                }
-            )
         
         # Emit WebSocket event for real-time updates
         socketio.emit("hackerrank_approval_updated", {

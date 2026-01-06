@@ -20,8 +20,8 @@ export default function HackerrankSubmission({ teamName }) {
                 });
                 const data = await res.json();
                 if (data.success) {
-                    // Default to true if not present in old config, but backend should send it now
-                    setRoundActive(data.rounds.hackerrank_submission !== false);
+                    // Check if round is 'live' (enum state)
+                    setRoundActive(data.rounds.hackerrank_submission === 'live');
                 }
             } catch (err) {
                 console.error("Error checking round status:", err);
@@ -36,7 +36,8 @@ export default function HackerrankSubmission({ teamName }) {
     useEffect(() => {
         const handleRoundChange = (data) => {
             if (data.round_type === 'hackerrank_submission') {
-                setRoundActive(data.is_active);
+                // data.state is enum: 'live', 'closed', 'not_started'
+                setRoundActive(data.state === 'live');
             }
         };
         socket.on("round_status_changed", handleRoundChange);
@@ -62,6 +63,28 @@ export default function HackerrankSubmission({ teamName }) {
             }
         };
         checkSubmissionStatus();
+    }, []);
+
+    // Listen for approval status changes from admin (real-time updates)
+    useEffect(() => {
+        const handleApprovalUpdate = async (data) => {
+            // Refetch submission status when this team's submission is updated
+            try {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+                    credentials: "include",
+                });
+                const responseData = await res.json();
+                if (responseData.success && responseData.is_submitted) {
+                    setSuccess(true);
+                    setSubmissionData(responseData.submission);
+                }
+            } catch (err) {
+                console.error("Error refetching submission status:", err);
+            }
+        };
+
+        socket.on("hackerrank_approval_updated", handleApprovalUpdate);
+        return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
     }, []);
 
     const handleSubmit = async (e) => {
@@ -183,26 +206,55 @@ export default function HackerrankSubmission({ teamName }) {
                 {/* Content */}
                 {success ? (
                     <div style={{
-                        padding: "20px",
-                        background: "rgba(16,185,129,0.05)",
-                        border: "1px solid #10b981",
-                        borderRadius: "2px",
+                        padding: "30px",
+                        background: submissionData?.approval_status === 'approved'
+                            ? "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)"
+                            : "rgba(255,255,255,0.03)",
+                        border: submissionData?.approval_status === 'approved' ? "2px solid #22c55e" : "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "8px",
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '20px'
+                        gap: '25px',
+                        boxShadow: submissionData?.approval_status === 'approved' ? "0 0 30px rgba(34, 197, 94, 0.2)" : "none"
                     }}>
-                        <div style={{ fontSize: "2rem", color: '#10b981' }}>✓</div>
+                        <div style={{
+                            fontSize: "3rem",
+                            color: submissionData?.approval_status === 'approved' ? '#22c55e' :
+                                submissionData?.approval_status === 'rejected' ? '#ef4444' : '#eab308'
+                        }}>
+                            {submissionData?.approval_status === 'approved' ? '🎉' :
+                                submissionData?.approval_status === 'rejected' ? '❌' : '⏳'}
+                        </div>
                         <div>
                             <h3 style={{
-                                color: "#10b981",
-                                fontWeight: "800",
+                                color: submissionData?.approval_status === 'approved' ? "#22c55e" :
+                                    submissionData?.approval_status === 'rejected' ? "#ef4444" : "#eab308",
+                                fontWeight: "900",
                                 letterSpacing: "1px",
-                                fontSize: '1rem',
-                                margin: '0 0 5px 0'
+                                fontSize: '1.5rem', // Larger font
+                                margin: '0 0 10px 0',
+                                textTransform: 'uppercase'
                             }}>
-                                PROFILE SECURED
+                                {submissionData?.approval_status === 'approved' ? 'CONGRATS! YOU ARE SELECTED FOR ROUND 2' :
+                                    submissionData?.approval_status === 'rejected' ? 'SORRY, NOT SELECTED' :
+                                        'REVIEW PENDING'}
                             </h3>
-                            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem", margin: 0 }}>
+                            {submissionData?.approval_status === 'approved' && (
+                                <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                    You may now proceed to the Problem Statement selection.
+                                </p>
+                            )}
+                            {submissionData?.approval_status === 'pending' && (
+                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                    Your submission is currently under review by our team.
+                                </p>
+                            )}
+                            {submissionData?.approval_status === 'rejected' && (
+                                <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                                    We’re sorry to inform you that you were not selected for Round 2. Better luck next time!
+                                </p>
+                            )}
+                            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", margin: 0 }}>
                                 <strong style={{ color: '#fff' }}>Link:</strong> {submissionData?.hackerrank_link}
                             </p>
                         </div>

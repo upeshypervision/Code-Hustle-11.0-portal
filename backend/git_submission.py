@@ -58,10 +58,30 @@ def submit_link_route():
     # Check if GitHub submission round is active (only for students)
     if submitted_via == "student":
         round_status = db.counters.find_one({"_id": "round_status"})
-        if round_status and not round_status.get("github_submission", False):
+        if round_status and round_status.get("github_submission") != "live":
             return jsonify({
                 "success": False,
-                "error": "Sorry, the submission cannot be made as the GitHub submission round is currently closed. Please wait for the organizing committee to activate this round."
+                "error": "Sorry, the submission cannot be made as the GitHub submission round is not currently active. Please wait for the organizing committee to activate this round."
+            }), 403
+        
+        # =========================
+        # CHECK ROUND 1 APPROVAL (Hackerrank)
+        # =========================
+        hackerrank_sub = db.Hackerrank_submission.find_one({"team_id": team_id})
+        if not hackerrank_sub or hackerrank_sub.get("approval_status") != "approved":
+            return jsonify({
+                "success": False,
+                "error": "Sorry, you are not allowed in this round. You must be approved in Round 1 (Hackerrank) to submit GitHub link."
+            }), 403
+        
+        # =========================
+        # CHECK ROUND 2 APPROVAL (PPT)
+        # =========================
+        ppt_sub = db.ppt_submissions.find_one({"team_id": team_id})
+        if not ppt_sub or ppt_sub.get("approval_status") != "approved":
+            return jsonify({
+                "success": False,
+                "error": "Sorry, you are not allowed in this round. You must be approved in Round 2 (PPT Submission) to submit GitHub link."
             }), 403
     
     # ---------- GET DATA ----------
@@ -96,7 +116,8 @@ def submit_link_route():
         "github_link": github_link,
         "live_link": live_link or None,
         "submitted_via": submitted_via,
-        "submitted_at": datetime.utcnow().isoformat() + "Z"
+        "submitted_at": datetime.utcnow().isoformat() + "Z",
+        "approval_status": "pending"
     }
     
     result = db.github_submissions.insert_one(submission_data)
@@ -144,7 +165,7 @@ def check_github_submission_route():
     # Check if submission exists
     submission = db.github_submissions.find_one(
         {"team_id": team_id},
-        {"_id": 0, "github_link": 1, "live_link": 1, "submitted_at": 1}
+        {"_id": 0, "github_link": 1, "live_link": 1, "submitted_at": 1, "approval_status": 1}
     )
     
     if submission:

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import RoundStateSelector from "./RoundStateSelector";
 
 export default function RoundManagement() {
-  // Granular State for Toggles
-  const [psSelectionActive, setPsSelectionActive] = useState(true);
-  const [pptUploadActive, setPptUploadActive] = useState(true);
-  const [githubSubmissionActive, setGithubSubmissionActive] = useState(false);
-  const [hackerrankSubmissionActive, setHackerrankSubmissionActive] = useState(true);
+  // Enum State for Rounds: "not_started", "live", "closed"
+  const [psSelectionState, setPsSelectionState] = useState("not_started");
+  const [pptUploadState, setPptUploadState] = useState("not_started");
+  const [githubSubmissionState, setGithubSubmissionState] = useState("not_started");
+  const [hackerrankSubmissionState, setHackerrankSubmissionState] = useState("not_started");
   const [loading, setLoading] = useState(true);
 
   // Fetch current round status on mount
@@ -21,10 +22,10 @@ export default function RoundManagement() {
       const data = await res.json();
 
       if (data.success) {
-        setPsSelectionActive(data.rounds.ps_selection);
-        setPptUploadActive(data.rounds.ppt_upload);
-        setGithubSubmissionActive(data.rounds.github_submission);
-        setHackerrankSubmissionActive(data.rounds.hackerrank_submission ?? true);
+        setPsSelectionState(data.rounds.ps_selection || "not_started");
+        setPptUploadState(data.rounds.ppt_upload || "not_started");
+        setGithubSubmissionState(data.rounds.github_submission || "not_started");
+        setHackerrankSubmissionState(data.rounds.hackerrank_submission || "not_started");
       }
     } catch (err) {
       console.error('Error fetching round status:', err);
@@ -33,7 +34,7 @@ export default function RoundManagement() {
     }
   };
 
-  const updateRoundStatus = async (roundType, isActive) => {
+  const updateRoundStatus = async (roundType, state) => {
     try {
       const res = await fetch('http://localhost:5000/api/admin/round-status', {
         method: 'POST',
@@ -41,14 +42,14 @@ export default function RoundManagement() {
         credentials: 'include',
         body: JSON.stringify({
           round_type: roundType,
-          is_active: isActive
+          state: state  // "not_started", "live", "closed"
         })
       });
 
       const data = await res.json();
       if (!data.success) {
         console.error('Failed to update round status:', data.error);
-        // Revert the toggle if update failed
+        // Revert if update failed
         fetchRoundStatus();
       }
     } catch (err) {
@@ -57,24 +58,24 @@ export default function RoundManagement() {
     }
   };
 
-  const handlePsSelectionToggle = (checked) => {
-    setPsSelectionActive(checked);
-    updateRoundStatus('ps_selection', checked);
-  };
-
-  const handlePptUploadToggle = (checked) => {
-    setPptUploadActive(checked);
-    updateRoundStatus('ppt_upload', checked);
-  };
-
-  const handleGithubSubmissionToggle = (checked) => {
-    setGithubSubmissionActive(checked);
-    updateRoundStatus('github_submission', checked);
-  };
-
-  const handleHackerrankSubmissionToggle = (checked) => {
-    setHackerrankSubmissionActive(checked);
-    updateRoundStatus('hackerrank_submission', checked);
+  const handleStateChange = (roundType, newState) => {
+    // Update local state
+    switch (roundType) {
+      case 'ps_selection':
+        setPsSelectionState(newState);
+        break;
+      case 'ppt_upload':
+        setPptUploadState(newState);
+        break;
+      case 'github_submission':
+        setGithubSubmissionState(newState);
+        break;
+      case 'hackerrank_submission':
+        setHackerrankSubmissionState(newState);
+        break;
+    }
+    // Update backend
+    updateRoundStatus(roundType, newState);
   };
 
   if (loading) {
@@ -97,121 +98,42 @@ export default function RoundManagement() {
         </p>
       </div>
 
+
       <div
         className="control-group"
         style={{ display: "flex", flexDirection: "column", gap: "20px" }}
       >
-        {/* Round 1: Hackerrank Submission Toggle */}
-        <label className="toggle-label">
-          <div className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={hackerrankSubmissionActive}
-              onChange={(e) => handleHackerrankSubmissionToggle(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </div>
-          <span>
-            <strong style={{ color: "#22c55e" }}>
-              Round 1: Hackerrank Protocol
-            </strong>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {hackerrankSubmissionActive
-                ? "OPEN - Teams can submit Hackerrank profile links."
-                : "CLOSED - Hackerrank submission is disabled."}
-            </div>
-          </span>
-        </label>
+        {/* Round 1: Hackerrank Submission */}
+        <RoundStateSelector
+          roundName="Round 1: Hackerrank Protocol"
+          currentState={hackerrankSubmissionState}
+          onStateChange={(newState) => handleStateChange('hackerrank_submission', newState)}
+          color="#22c55e"
+        />
 
-        {/* Round 2: PS Selection Toggle */}
-        <label className="toggle-label">
-          <div className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={psSelectionActive}
-              onChange={(e) => handlePsSelectionToggle(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </div>
-          <span>
-            <strong style={{ color: "#60a5fa" }}>
-              Round 2: Problem Statement Selection
-            </strong>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {psSelectionActive
-                ? "OPEN - Teams can browse and select their Problem Statement."
-                : "CLOSED - Selection is disabled."}
-            </div>
-          </span>
-        </label>
+        {/* Round 2: PS Selection */}
+        <RoundStateSelector
+          roundName="Round 2: Problem Statement Selection"
+          currentState={psSelectionState}
+          onStateChange={(newState) => handleStateChange('ps_selection', newState)}
+          color="#60a5fa"
+        />
 
-        {/* Round 2: PPT Upload Toggle */}
-        <label className="toggle-label">
-          <div className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={pptUploadActive}
-              onChange={(e) => handlePptUploadToggle(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </div>
-          <span>
-            <strong style={{ color: "#60a5fa" }}> {/* Blue for Round 2 */}
-              Round 2: PPT Submission
-            </strong>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {pptUploadActive
-                ? "OPEN - Teams can upload their solution PPTs."
-                : "CLOSED - Upload portal is locked."}
-            </div>
-          </span>
-        </label>
+        {/* Round 2: PPT Upload */}
+        <RoundStateSelector
+          roundName="Round 2: PPT Submission"
+          currentState={pptUploadState}
+          onStateChange={(newState) => handleStateChange('ppt_upload', newState)}
+          color="#60a5fa"
+        />
 
-        {/* Round 3: GitHub Submission Toggle */}
-        <label className="toggle-label">
-          <div className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={githubSubmissionActive}
-              onChange={(e) => handleGithubSubmissionToggle(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </div>
-          <span>
-            <strong style={{ color: "#a78bfa" }}>
-              Round 3: GitHub Repository Submission
-            </strong>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {githubSubmissionActive
-                ? "OPEN - Qualified teams can submit GitHub repository links."
-                : "CLOSED - GitHub submission is hidden/disabled."}
-            </div>
-          </span>
-        </label>
+        {/* Round 3: GitHub Submission */}
+        <RoundStateSelector
+          roundName="Round 3: GitHub Repository Submission"
+          currentState={githubSubmissionState}
+          onStateChange={(newState) => handleStateChange('github_submission', newState)}
+          color="#a78bfa"
+        />
       </div>
 
       <div style={{ marginTop: "30px" }}>
@@ -241,10 +163,10 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${hackerrankSubmissionActive ? "pass" : "pending"
+                      className={`status-pill ${hackerrankSubmissionState === "live" ? "pass" : "pending"
                         }`}
                     >
-                      {hackerrankSubmissionActive ? "Active" : "Inactive"}
+                      {hackerrankSubmissionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>All Registered Teams</td>
@@ -258,10 +180,10 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${psSelectionActive ? "pass" : "pending"
+                      className={`status-pill ${psSelectionState === "live" ? "pass" : "pending"
                         }`}
                     >
-                      {psSelectionActive ? "Active" : "Inactive"}
+                      {psSelectionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>Qualified Teams</td>
@@ -275,10 +197,10 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${pptUploadActive ? "pass" : "pending"
+                      className={`status-pill ${pptUploadState === "live" ? "pass" : "pending"
                         }`}
                     >
-                      {pptUploadActive ? "Active" : "Inactive"}
+                      {pptUploadState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>Qualified Teams</td>
@@ -292,10 +214,10 @@ export default function RoundManagement() {
                   </td>
                   <td>
                     <span
-                      className={`status-pill ${githubSubmissionActive ? "pass" : "pending"
+                      className={`status-pill ${githubSubmissionState === "live" ? "pass" : "pending"
                         }`}
                     >
-                      {githubSubmissionActive ? "Active" : "Inactive"}
+                      {githubSubmissionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>Qualified Teams Only</td>
