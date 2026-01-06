@@ -17,6 +17,7 @@ const DashboardView = ({
     const [roundStatus, setRoundStatus] = useState(null);
     const [currentRound, setCurrentRound] = useState(null);
     const [teamInfo, setTeamInfo] = useState(null);
+    const [hackerrankStatus, setHackerrankStatus] = useState(null);
 
     // Fetch team info on mount
     useEffect(() => {
@@ -36,6 +37,24 @@ const DashboardView = ({
         };
 
         fetchTeamInfo();
+    }, []);
+
+    // Fetch Hackerrank submission status on mount
+    useEffect(() => {
+        const fetchHackerrankStatus = async () => {
+            try {
+                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setHackerrankStatus(data.submission.approval_status);
+                }
+            } catch (err) {
+                console.error('Error fetching Hackerrank status:', err);
+            }
+        };
+        fetchHackerrankStatus();
     }, []);
 
 
@@ -81,20 +100,86 @@ const DashboardView = ({
         return () => socket.off("round_status_changed", handleRoundChange);
     }, []);
 
+    // Re-determine current round when hackerrankStatus changes
+    useEffect(() => {
+        if (roundStatus && hackerrankStatus !== null) {
+            determineCurrentRound(roundStatus);
+        }
+    }, [hackerrankStatus]);
+
+    // Listen for Hackerrank approval status changes (real-time updates)
+    useEffect(() => {
+        const handleApprovalUpdate = async () => {
+            // Refetch Hackerrank status when admin approves/rejects
+            try {
+                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setHackerrankStatus(data.submission.approval_status);
+                }
+            } catch (err) {
+                console.error('Error refetching Hackerrank status:', err);
+            }
+        };
+
+        socket.on("hackerrank_approval_updated", handleApprovalUpdate);
+        return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
+    }, []);
+
     // Determine which round is currently active
     const determineCurrentRound = (rounds) => {
         if (!rounds) return;
 
-        // Priority: GitHub > PPT > PS (show the highest active round)
-        if (rounds.github_submission) {
-            setCurrentRound({ number: 3, name: 'GitHub Submission', color: '#a78bfa' });
-        } else if (rounds.ppt_upload) {
-            setCurrentRound({ number: 2, name: 'PPT Submission', color: '#60a5fa' });
-        } else if (rounds.ps_selection) {
-            setCurrentRound({ number: 1, name: 'Problem Statement Selection', color: '#10b981' });
-        } else {
-            setCurrentRound(null); // No rounds active
+        const roundList = [
+            { id: 'hackerrank_submission', number: 1, name: 'Hackerrank Protocol', color: '#22c55e', state: rounds.hackerrank_submission },
+            { id: 'ps_selection', number: 2, name: 'Problem Statement', color: '#60a5fa', state: rounds.ps_selection },
+            { id: 'ppt_upload', number: 2, name: 'PPT Submission', color: '#60a5fa', state: rounds.ppt_upload },
+            { id: 'github_submission', number: 3, name: 'GitHub Submission', color: '#a78bfa', state: rounds.github_submission }
+        ];
+
+        // Priority 1: Live Rounds (Pick Earliest Live)
+        const liveRound = roundList.find(r => r.state === 'live');
+        if (liveRound) {
+            // If it's Hackerrank and user has submitted, show approval status instead
+            if (liveRound.id === 'hackerrank_submission' && hackerrankStatus) {
+                const statusDisplay = hackerrankStatus === 'approved' ? 'APPROVED' :
+                    hackerrankStatus === 'rejected' ? 'NOT SELECTED' : 'REVIEW PENDING';
+                const statusColor = hackerrankStatus === 'approved' ? '#22c55e' :
+                    hackerrankStatus === 'rejected' ? '#ef4444' : '#eab308';
+                setCurrentRound({ ...liveRound, status: statusDisplay, color: statusColor });
+            } else {
+                setCurrentRound({ ...liveRound, status: 'LIVE' });
+            }
+            return;
         }
+
+        // Priority 2: Last Closed Round (Show the last round that was closed)
+        const closedRound = [...roundList].reverse().find(r => r.state === 'closed');
+        if (closedRound) {
+            // If it's Hackerrank and user has submitted, show approval status instead
+            if (closedRound.id === 'hackerrank_submission' && hackerrankStatus) {
+                const statusDisplay = hackerrankStatus === 'approved' ? 'APPROVED' :
+                    hackerrankStatus === 'rejected' ? 'NOT SELECTED' : 'REVIEW PENDING';
+                const statusColor = hackerrankStatus === 'approved' ? '#22c55e' :
+                    hackerrankStatus === 'rejected' ? '#ef4444' : '#eab308';
+                setCurrentRound({ ...closedRound, status: statusDisplay, color: statusColor });
+            } else {
+                setCurrentRound({ ...closedRound, status: 'CLOSED' });
+            }
+            return;
+        }
+
+        // Priority 3: Earliest Not Started (Fallback)
+        const notStartedRound = roundList.find(r => r.state === 'not_started');
+        if (notStartedRound) {
+            setCurrentRound({ ...notStartedRound, status: 'NOT STARTED' });
+            return;
+        }
+
+        // Final Fallback
+        setCurrentRound({ number: 1, name: 'Hackerrank Protocol', color: '#22c55e', status: 'UNKNOWN' });
     };
 
     // Removed internal isMenuOpen state
@@ -338,9 +423,22 @@ const DashboardView = ({
                                 fontWeight: '800',
                                 color: currentRound.color,
                                 letterSpacing: '1.5px',
-                                textTransform: 'uppercase'
+                                textTransform: 'uppercase',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
                             }}>
                                 {currentRound.name}
+                                <span style={{
+                                    background: currentRound.status === 'LIVE' ? '#22c55e' : '#ef4444',
+                                    color: '#fff',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontSize: '10px',
+                                    border: '1px solid rgba(255,255,255,0.2)'
+                                }}>
+                                    {currentRound.status}
+                                </span>
                             </div>
                         </div>
                     ) : roundStatus ? (

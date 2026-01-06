@@ -28,36 +28,25 @@ const Teamup = () => {
         <div className="interaction-container">
           {/* PHASE 01: SQUAD VERIFICATION */}
           <div className="step-block">
-            <span className="label-detail">PHASE 01: SQUAD VERIFICATION</span>
+            <span className="label-detail">PHASE 01: TEAM VERIFICATION</span>
             <div className="input-group">
-              <div className="label-row" style={{ marginBottom: "15px" }}>
-                <span>Do you have an established team for this operation?</span>
+              <div className="label-row" style={{ marginBottom: '15px' }}>
+                <span>Do you have an established team?</span>
               </div>
-              <div
-                className="dual-button-row"
-                style={{ display: "flex", gap: "10px" }}
-              >
+              <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
                 <button
-                  className={`neon-shade-btn next-glow ${
-                    hasTeam === false ? "btn-locked" : ""
-                  }`}
+                  className={`neon-shade-btn next-glow ${hasTeam === false ? 'btn-locked' : ''}`}
                   style={{ marginTop: 0 }}
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate('/register')}
                 >
-                  YES, SQUAD READY
+                  YES
                 </button>
                 <button
-                  className={`neon-shade-btn next-glow ${
-                    hasTeam === true ? "btn-locked" : ""
-                  }`}
-                  style={{
-                    marginTop: 0,
-                    background:
-                      "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-                  }}
+                  className={`neon-shade-btn next-glow ${hasTeam === true ? 'btn-locked' : ''}`}
+                  style={{ marginTop: 0, background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
                   onClick={() => setHasTeam(false)}
                 >
-                  NO, PROCEED SOLO
+                  NO
                 </button>
               </div>
             </div>

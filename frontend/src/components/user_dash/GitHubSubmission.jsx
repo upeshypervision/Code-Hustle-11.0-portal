@@ -11,6 +11,10 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [roundActive, setRoundActive] = useState(true);
   const [checkingRound, setCheckingRound] = useState(true);
+  const [hackerrankStatus, setHackerrankStatus] = useState(null);
+  const [pptStatus, setPptStatus] = useState(null);
+  const [checkingApprovals, setCheckingApprovals] = useState(true);
+  const [submissionData, setSubmissionData] = useState(null);
 
   // Check round status on mount
   useEffect(() => {
@@ -21,7 +25,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         });
         const data = await res.json();
         if (data.success) {
-          setRoundActive(data.rounds.github_submission);
+          // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
+          setRoundActive(data.rounds.github_submission === 'live');
         }
       } catch (err) {
         console.error("Error checking round status:", err);
@@ -36,7 +41,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === 'github_submission') {
-        setRoundActive(data.is_active);
+        // data.state is enum: 'live', 'closed', 'not_started'
+        setRoundActive(data.state === 'live');
       }
     };
     socket.on("round_status_changed", handleRoundChange);
@@ -53,6 +59,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setSuccess(true);
+          setSubmissionData(data.submission);
         }
       } catch (err) {
         console.error("Error checking submission status:", err);
@@ -61,6 +68,59 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
       }
     };
     checkSubmissionStatus();
+  }, []);
+
+  // Check Round 1 (Hackerrank) and Round 2 (PPT) approval status
+  useEffect(() => {
+    const checkApprovalStatus = async () => {
+      try {
+        // Check Hackerrank
+        const hrRes = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+          credentials: "include",
+        });
+        const hrData = await hrRes.json();
+        if (hrData.success && hrData.is_submitted) {
+          setHackerrankStatus(hrData.submission.approval_status);
+        } else {
+          setHackerrankStatus("not_submitted");
+        }
+
+        // Check PPT
+        const pptRes = await fetch("http://localhost:5000/api/check-ppt-submission", {
+          credentials: "include",
+        });
+        const pptData = await pptRes.json();
+        if (pptData.success && pptData.is_submitted) {
+          setPptStatus(pptData.submission.approval_status);
+        } else {
+          setPptStatus("not_submitted");
+        }
+      } catch (err) {
+        console.error("Error checking approval status:", err);
+      } finally {
+        setCheckingApprovals(false);
+      }
+    };
+    checkApprovalStatus();
+  }, []);
+
+  // Listen for approval updates
+  useEffect(() => {
+    const handleHackerrankUpdate = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success && data.is_submitted) {
+          setHackerrankStatus(data.submission.approval_status);
+        }
+      } catch (err) {
+        console.error("Error refetching Hackerrank status:", err);
+      }
+    };
+    socket.on("hackerrank_approval_updated", handleHackerrankUpdate);
+    return () => socket.off("hackerrank_approval_updated", handleHackerrankUpdate);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -208,30 +268,108 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
               </p>
             </div>
 
-            {/* Success Message */}
+
+            {/* Success Message with Approval Status */}
             <div style={{
               padding: "40px",
-              background: "rgba(16,185,129,0.05)",
-              border: "1px solid #10b981",
+              background: submissionData?.approval_status === 'approved'
+                ? "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)"
+                : "rgba(255,255,255,0.03)",
+              border: submissionData?.approval_status === 'approved' ? "2px solid #22c55e" : "1px solid rgba(255,255,255,0.1)",
               textAlign: "center",
-              borderRadius: "2px",
+              borderRadius: "8px",
+              boxShadow: submissionData?.approval_status === 'approved' ? "0 0 30px rgba(34, 197, 94, 0.2)" : "none"
             }}>
-              <div style={{ fontSize: "3rem", marginBottom: "15px" }}>✓</div>
+              <div style={{
+                fontSize: "3rem",
+                marginBottom: "15px",
+                color: submissionData?.approval_status === 'approved' ? '#22c55e' :
+                  submissionData?.approval_status === 'rejected' ? '#ef4444' : '#eab308'
+              }}>
+                {submissionData?.approval_status === 'approved' ? '🏆' :
+                  submissionData?.approval_status === 'rejected' ? '❌' : '⏳'}
+              </div>
               <h3 style={{
-                color: "#10b981",
+                color: submissionData?.approval_status === 'approved' ? "#22c55e" :
+                  submissionData?.approval_status === 'rejected' ? "#ef4444" : "#eab308",
                 fontWeight: "900",
                 letterSpacing: "2px",
+                fontSize: '1.5rem',
+                marginBottom: '15px'
               }}>
-                MISSION ACCOMPLISHED
+                {submissionData?.approval_status === 'approved' ? 'CONGRATS! YOU HAVE WON CODE HUSTLE 11.0' :
+                  submissionData?.approval_status === 'rejected' ? 'SORRY, YOU ARE NOT THE WINNER' :
+                    'REVIEW PENDING'}
               </h3>
+              {submissionData?.approval_status === 'approved' && (
+                <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                  Congratulations on your outstanding performance! You are the winner!
+                </p>
+              )}
+              {submissionData?.approval_status === 'pending' && (
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                  Your submission is currently under review by our team.
+                </p>
+              )}
+              {submissionData?.approval_status === 'rejected' && (
+                <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                  Thank you for participating in Code Hustle 11.0. Better luck next time!
+                </p>
+              )}
               <p style={{
                 color: "rgba(255,255,255,0.6)",
                 fontSize: "0.8rem",
                 marginTop: "10px",
               }}>
-                REPOSITORIES SECURED AT {new Date().toLocaleTimeString()}
+                REPOSITORIES SECURED AT {submissionData?.submitted_at ? new Date(submissionData.submitted_at).toLocaleTimeString() : new Date().toLocaleTimeString()}
               </p>
             </div>
+          </div>
+
+        ) : ((hackerrankStatus && hackerrankStatus !== 'approved') || (pptStatus && pptStatus !== 'approved')) ? (
+          /* LOGIC PRIORITY 2: NOT ALLOWED (Round 1 or Round 2 Not Approved) */
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60vh',
+            padding: '40px',
+            textAlign: 'center',
+            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid #ef4444',
+            borderRadius: '8px',
+            animation: 'fadeIn 0.5s ease-out',
+            width: '100%',
+            maxWidth: '800px'
+          }}>
+            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
+            <h2 style={{
+              color: '#ef4444',
+              fontWeight: '900',
+              fontSize: '2.5rem',
+              letterSpacing: '3px',
+              marginBottom: '15px'
+            }}>
+              NOT ALLOWED
+            </h2>
+            <p style={{
+              color: '#fff',
+              fontSize: '1.2rem',
+              marginBottom: '15px',
+              maxWidth: '600px'
+            }}>
+              Sorry, you are not allowed in this round.
+            </p>
+            <p style={{
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: '1rem'
+            }}>
+              {hackerrankStatus !== 'approved'
+                ? 'You must be approved in Round 1 (Hackerrank) to submit GitHub link.'
+                : 'You must be approved in Round 2 (PPT Submission) to submit GitHub link.'}
+            </p>
           </div>
 
         ) : !roundActive ? (

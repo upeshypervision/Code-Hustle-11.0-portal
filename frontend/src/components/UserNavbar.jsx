@@ -90,8 +90,8 @@ export default function UserNavbar({
             <button
               className="nav-logout"
               onClick={() =>
-                (window.location.href =
-                  "https://codehustle11.upeshypervision.in/#contact")
+              (window.location.href =
+                "https://codehustle11.upeshypervision.in/#contact")
               }
             >
               Contact us
@@ -127,9 +127,8 @@ export default function UserNavbar({
               {menuItems.map((item, index) => (
                 <li key={item.id || index}>
                   <button
-                    className={`mobile-menu-item ${
-                      item.active ? "active" : ""
-                    }`}
+                    className={`mobile-menu-item ${item.active ? "active" : ""
+                      }`}
                     onClick={() => handleMenuClick(item)}
                   >
                     {item.label || item.name}

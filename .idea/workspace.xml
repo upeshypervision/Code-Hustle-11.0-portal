@@ -6,10 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/git_submission.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/git_submission.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/hackerrank_submission.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/hackerrank_submission.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/ppt_filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ppt_filters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/problemstatement.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/problemstatement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/register_team.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/register_team.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/round_management.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/round_management.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/submit_ppt.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/submit_ppt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/user_access.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/user_access.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ViewHackerrank.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ViewHackerrank.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/DashboardView.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/DashboardView.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/GitHubSubmission.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/HackerrankSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/HackerrankSubmission.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/PPTSubmission.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/PPTSubmission.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/prob_stmt.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +69,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "websocket__om",
+    "git-widget-placeholder": "round__addition",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

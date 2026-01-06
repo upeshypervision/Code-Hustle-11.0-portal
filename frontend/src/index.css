@@ -1,47 +1,51 @@
-/* VIEWPORT LOCK - Prevents scrolling across all devices */
 html,
 body {
   margin: 0;
   padding: 0;
-  width: 100vw;
+  width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 #root {
   margin: 0;
   padding: 0;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
-  overflow-x: hidden; /* Prevent horizontal scroll only */
+  overflow-x: hidden;
+  /* Prevent horizontal scroll only */
 }
 
 .main {
   display: flex;
   justify-content: center;
-  align-items: center; /* Centers the box vertically */
-  padding: clamp(10px, 4vw, 40px); /* Responsive padding */
-  height: 100%; /* Fits the parent height */
+  align-items: center;
+  /* Centers the box vertically */
+  padding: clamp(10px, 4vw, 40px);
+  /* Responsive padding */
+  height: 100%;
+  /* Fits the parent height */
   width: 100%;
   box-sizing: border-box;
 }
 
 .title {
   text-align: center;
-  margin-bottom: clamp(
-    10px,
-    2vh,
-    20px
-  ); /* Scales margin based on screen height */
+  margin-bottom: clamp(10px,
+      2vh,
+      20px);
+  /* Scales margin based on screen height */
   font-weight: 700;
   color: #333;
-  font-size: clamp(1.5rem, 5vw, 2.5rem); /* Responsive text size */
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  /* Responsive text size */
 }
 
 .section-title {
   margin-top: clamp(10px, 3vh, 30px);
   margin-bottom: 10px;
-  color: #444;
+  color: #60a5fa;
   font-size: clamp(16px, 3vw, 20px);
   font-weight: 600;
 }
@@ -50,7 +54,8 @@ input {
   border-radius: 6px;
   border: 1px solid #ccc;
   margin-top: 6px;
-  width: 100%; /* Ensures input doesn't break layout on small screens */
+  width: 100%;
+  /* Ensures input doesn't break layout on small screens */
   box-sizing: border-box;
 }
 
@@ -92,6 +97,7 @@ input {
   .main {
     padding: 10px;
   }
+
   .btn {
     padding: 8px;
     margin-top: 8px;

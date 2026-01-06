@@ -12,10 +12,14 @@ import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
 import Teamup from "./pages/Teamup.jsx";
+
+import TeamUpPage from "./components/Incomplete_teams/teamuppage.jsx";
 import CreateTeam from "./pages/CreateTeam.jsx";
 import JoinTeam from "./components/Individual-Member/JoinTeam.jsx";
 import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
 import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.jsx";
+
+
 
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
@@ -34,6 +38,8 @@ function App() {
           path="/individual-member/accepted"
           element={<AcceptedTeamPage />}
         />
+        <Route path="/team-up" element={<TeamUpPage />} />
+        <Route path="/join" element={<JoinTeam />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
