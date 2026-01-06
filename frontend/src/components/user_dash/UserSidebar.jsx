@@ -3,18 +3,20 @@ import React from 'react';
 export default function UserSidebar({ activeTab, setActiveTab }) {
     const menuItems = [
         { id: 'dashboard', label: 'DASHBOARD' },
-        { id: 'ps-selection', label: 'PROBLEM STATEMENT SUBMISSION' },
-        { id: 'ppt-submission', label: 'PPT SUBMISSION' },
-        { id: 'github-submission', label: 'GITHUB LINK SUBMISSION' },    ];
+        { id: 'hackerrank-submission', label: 'ROUND 1: HACKERRANK PROTOCOL' },
+        { id: 'ps-selection', label: 'ROUND 2: PROBLEM STATEMENT' },
+        { id: 'ppt-submission', label: 'ROUND 2: PPT SUBMISSION' },
+        { id: 'github-submission', label: 'ROUND 3: GITHUB LINK SUBMISSION' },
+    ];
 
     return (
-        <aside style={{ 
+        <aside style={{
             width: '100%',
-            maxWidth: '280px', 
+            maxWidth: '280px',
             minHeight: '100vh',
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '12px', 
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
             padding: '30px 20px',
             background: 'rgba(5, 5, 5, 0.8)',
             backdropFilter: 'blur(20px)',
@@ -78,11 +80,11 @@ export default function UserSidebar({ activeTab, setActiveTab }) {
                 }
             `}</style>
 
-            <div style={{ 
-                color: '#ac7e7eff', 
-                fontSize: '11px', 
-                fontWeight: '900', 
-                marginBottom: '30px', 
+            <div style={{
+                color: '#ac7e7eff',
+                fontSize: '11px',
+                fontWeight: '900',
+                marginBottom: '30px',
                 letterSpacing: '6px',
                 textAlign: 'center',
                 border: '5px solid rgba(0, 0, 0, 0.4)',

@@ -25,43 +25,32 @@ const Teamup = () => {
           </h1>
         </header>
 
-        <div className="interaction-container">
-          {/* PHASE 01: SQUAD VERIFICATION */}
-          <div className="step-block">
-            <span className="label-detail">PHASE 01: SQUAD VERIFICATION</span>
-            <div className="input-group">
-              <div className="label-row" style={{ marginBottom: "15px" }}>
-                <span>Do you have an established team for this operation?</span>
-              </div>
-              <div
-                className="dual-button-row"
-                style={{ display: "flex", gap: "10px" }}
-              >
-                <button
-                  className={`neon-shade-btn next-glow ${
-                    hasTeam === false ? "btn-locked" : ""
-                  }`}
-                  style={{ marginTop: 0 }}
-                  onClick={() => navigate("/register")}
-                >
-                  YES, SQUAD READY
-                </button>
-                <button
-                  className={`neon-shade-btn next-glow ${
-                    hasTeam === true ? "btn-locked" : ""
-                  }`}
-                  style={{
-                    marginTop: 0,
-                    background:
-                      "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)",
-                  }}
-                  onClick={() => setHasTeam(false)}
-                >
-                  NO, PROCEED SOLO
-                </button>
-              </div>
-            </div>
-          </div>
+                <div className="interaction-container">
+                    {/* PHASE 01: SQUAD VERIFICATION */}
+                    <div className="step-block">
+                        <span className="label-detail">PHASE 01: TEAM VERIFICATION</span>
+                        <div className="input-group">
+                            <div className="label-row" style={{ marginBottom: '15px' }}>
+                                <span>Do you have an established team?</span>
+                            </div>
+                            <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
+                                <button 
+                                    className={`neon-shade-btn next-glow ${hasTeam === false ? 'btn-locked' : ''}`} 
+                                    style={{ marginTop: 0 }}
+                                    onClick={() => navigate('/register')}
+                                >
+                                    YES
+                                </button>
+                                <button 
+                                    className={`neon-shade-btn next-glow ${hasTeam === true ? 'btn-locked' : ''}`} 
+                                    style={{ marginTop: 0, background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
+                                    onClick={() => setHasTeam(false)}
+                                >
+                                    NO
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
           {/* PHASE 02: ROLE DESIGNATION - Only appears if "NO" is chosen */}
           {hasTeam === false && (
