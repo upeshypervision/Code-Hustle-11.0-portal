@@ -32,7 +32,12 @@ export default function UserNavbar({
 
     return (
         <>
-            <header className="top-nav">
+            <header className="top-nav" style={{
+                background: "transparent",
+                backdropFilter: "none",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+                fontFamily: "'Orbitron', sans-serif"
+            }}>
                 <div className="top-nav-inner">
                     <div className="logo-container">
                         <button
