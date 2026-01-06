@@ -16,7 +16,7 @@ const TeamUpDashboard = () => {
     sapId: "N/A",
     phone: "N/A",
     email: "N/A",
-    vision: "No vision provided",
+    skills: "No skills provided",
     isUPESHypervision: false,
   };
 
@@ -27,6 +27,11 @@ const TeamUpDashboard = () => {
   const [acceptedTeam, setAcceptedTeam] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [chatTeam, setChatTeam] = useState(null);
+
+  // Function to scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const popupDismissed = localStorage.getItem("acceptance-popup-dismissed");
@@ -45,9 +50,7 @@ const TeamUpDashboard = () => {
         ],
       };
       setAcceptedTeam(teamWithUser);
-      setTimeout(() => {
-        setShowAcceptancePopup(true);
-      }, 1000);
+      setShowAcceptancePopup(true);
     } else if (accepted) {
       const teamWithUser = {
         ...accepted,
@@ -73,7 +76,7 @@ const TeamUpDashboard = () => {
       requestStatus: "Declined",
       leaderName: "Arjun Mehta",
       leaderUniversity: "UPES",
-      leaderSkills: "Full-stack development, AI/ML, Project management",
+      leaderSkills: "Full-stack development, AI/ML, Project managementFull-stack development, AI/ML, Project managementFull-stack development, AI/ML, Project management",
       members: [
         {
           name: "Rohan Verma",
@@ -83,7 +86,7 @@ const TeamUpDashboard = () => {
         {
           name: "Sanya Kapoor",
           university: "IIT Delhi",
-          skills: "Frontend development, UI/UX design, React",
+          skills: "Frontend development, UI/UX design, ReactFrontend development, UI/UX design, ReactFrontend development, UI/UX design, React",
         },
       ],
     },
@@ -141,7 +144,7 @@ const TeamUpDashboard = () => {
       requestStatus: null,
       leaderName: "Aryan Khan",
       leaderUniversity: "Thapar University",
-      leaderSkills: "VR development, 3D modeling, Unity",
+      leaderSkills: "VR development, 3D modeling, UnityVR development, 3D modeling, UnityVR development, 3D modeling, Unity",
       members: [],
     },
     {
@@ -252,16 +255,20 @@ const TeamUpDashboard = () => {
                       marginBottom: "10px",
                     }}
                   >
-                    YOUR VISION
+                    YOUR SKILLS
                   </strong>
                   <p
                     style={{
                       fontStyle: "italic",
                       margin: 0,
                       fontSize: "1.05rem",
+                      wordWrap: "break-word",
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      whiteSpace: "normal",
                     }}
                   >
-                    {userDetails.vision}
+                    {userDetails.skills || "No skills provided"}
                   </p>
                 </div>
               </div>
@@ -403,7 +410,10 @@ const TeamUpDashboard = () => {
                               >
                                 <button
                                   className="edit-btn"
-                                  onClick={() => setSelectedTeam(team)}
+                                  onClick={() => {
+                                    scrollToTop();
+                                    setSelectedTeam(team);
+                                  }}
                                   style={{
                                     background: "#007bff",
                                     color: "#fff",
@@ -562,7 +572,10 @@ const TeamUpDashboard = () => {
                               >
                                 <button
                                   className="edit-btn"
-                                  onClick={() => setSelectedTeam(team)}
+                                  onClick={() => {
+                                    scrollToTop();
+                                    setSelectedTeam(team);
+                                  }}
                                   style={{
                                     background: "#007bff",
                                     color: "#fff",
@@ -699,7 +712,6 @@ const TeamUpDashboard = () => {
                         style={{
                           padding: "24px",
                           background: "rgba(255,255,255,0.03)",
-                          minHeight: "120px",
                           width: "100%",
                         }}
                       >
@@ -709,6 +721,9 @@ const TeamUpDashboard = () => {
                             fontSize: "1.1rem",
                             lineHeight: "1.7",
                             margin: 0,
+                            wordWrap: "break-word",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
                           }}
                         >
                           {selectedTeam.vision}
@@ -723,14 +738,13 @@ const TeamUpDashboard = () => {
                       <div className="label-row">
                         <span>LEADER</span>
                       </div>
-                      <div
-                        className="glow-input-container"
-                        style={{
-                          padding: "24px",
-                          minHeight: "120px",
-                          width: "100%",
-                        }}
-                      >
+                        <div
+                          className="glow-input-container"
+                          style={{
+                            padding: "24px",
+                            width: "100%",
+                          }}
+                        >
                         <div
                           style={{
                             display: "flex",
@@ -764,6 +778,10 @@ const TeamUpDashboard = () => {
                                 color: "#ddd",
                                 paddingTop: "8px",
                                 borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+                                wordWrap: "break-word",
+                                wordBreak: "break-word",
+                                overflowWrap: "break-word",
+                                whiteSpace: "normal",
                               }}
                             >
                               <strong
@@ -848,6 +866,10 @@ const TeamUpDashboard = () => {
                                     borderTop:
                                       "1px solid rgba(255, 255, 255, 0.1)",
                                     marginTop: "8px",
+                                    wordWrap: "break-word",
+                                    wordBreak: "break-word",
+                                    overflowWrap: "break-word",
+                                    whiteSpace: "normal",
                                   }}
                                 >
                                   <strong

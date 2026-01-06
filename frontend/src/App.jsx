@@ -15,10 +15,9 @@ import Teamup from "./pages/Teamup.jsx";
 
 import TeamUpPage from "./components/Incomplete_teams/teamuppage.jsx";
 import CreateTeam from "./pages/CreateTeam.jsx";
-import JoinTeam from "./components/Individual-Member/JoinTeam.jsx";
 import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
 import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.jsx";
-
+import JoinTeam from "./pages/JoinTeam.jsx";
 
 
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
@@ -31,11 +30,11 @@ function App() {
         <Route path="/create-team" element={<CreateTeam />} />
         <Route path="/join" element={<JoinTeam />} />
         <Route
-          path="/individual-member/dashboard"
+          path="/individual-member"
           element={<TeamUpDashboard />}
         />
         <Route
-          path="/individual-member/accepted"
+          path="/accepted-team"
           element={<AcceptedTeamPage />}
         />
         <Route path="/team-up" element={<TeamUpPage />} />

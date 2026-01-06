@@ -12,6 +12,8 @@ const AcceptedTeamPage = () => {
   const navigate = useNavigate();
   const { team, userDetails } = location.state || {};
   const [showChat, setShowChat] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   if (!team) {
     return (
@@ -50,14 +52,37 @@ const AcceptedTeamPage = () => {
       <UserNavbar
         variant="glass"
         userInfo={null}
-        onToggleSidebar={() => {}}
-        menuItems={[]}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        menuItems={[
+          {
+            id: "profile",
+            label: "Profile",
+            name: "Profile",
+          },
+        ]}
+        onMenuItemClick={(item) => {
+          if (item.id === "profile") {
+            setShowProfile(!showProfile);
+          }
+        }}
       />
 
       <div className="admin-content dashboard-container">
         <div className="teamup-layout">
-          {/* User Details Section - Left Sidebar */}
-          <div className="member-details-sidebar">
+          {/* User Details Section - Left Sidebar (Desktop) / Mobile Modal */}
+          <div
+            className={`member-details-sidebar ${
+              showProfile ? "mobile-visible" : ""
+            }`}
+          >
+            {/* Mobile Close Button */}
+            <button
+              className="mobile-profile-close"
+              onClick={() => setShowProfile(false)}
+              aria-label="Close profile"
+            >
+              ×
+            </button>
             <div
               className="neural-node node-materialize animate-enter delay-1"
               style={{ marginBottom: "40px" }}
@@ -117,16 +142,20 @@ const AcceptedTeamPage = () => {
                       marginBottom: "10px",
                     }}
                   >
-                    YOUR VISION
+                    YOUR SKILLS
                   </strong>
                   <p
                     style={{
                       fontStyle: "italic",
                       margin: 0,
                       fontSize: "1.05rem",
+                      wordWrap: "break-word",
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      whiteSpace: "normal",
                     }}
                   >
-                    {userDetails?.vision || "No vision provided"}
+                    {userDetails?.skills || "No skills provided"}
                   </p>
                 </div>
               </div>
@@ -149,33 +178,6 @@ const AcceptedTeamPage = () => {
                   }}
                 >
                   <span className="label-detail teamup-label">YOUR TEAM</span>
-                  <button
-                    onClick={() => navigate("/individual-member/dashboard")}
-                    className="back-to-dashboard-btn"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.1)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      color: "#fff",
-                      padding: "8px 16px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                      fontWeight: "500",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = "rgba(255, 255, 255, 0.2)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = "rgba(255, 255, 255, 0.1)";
-                    }}
-                  >
-                    <span>←</span>
-                    <span>Back to Dashboard</span>
-                  </button>
                 </div>
 
                 <div
@@ -260,26 +262,28 @@ const AcceptedTeamPage = () => {
                     <div className="label-row">
                       <span>TEAM VISION</span>
                     </div>
-                    <div
-                      className="glow-input-container"
-                      style={{
-                        padding: "24px",
-                        background: "rgba(255,255,255,0.03)",
-                        minHeight: "120px",
-                        width: "100%",
-                      }}
-                    >
-                      <p
+                      <div
+                        className="glow-input-container"
                         style={{
-                          color: "#ddd",
-                          fontSize: "1.1rem",
-                          lineHeight: "1.7",
-                          margin: 0,
+                          padding: "24px",
+                          background: "rgba(255,255,255,0.03)",
+                          width: "100%",
                         }}
                       >
-                        {team.vision}
-                      </p>
-                    </div>
+                        <p
+                          style={{
+                            color: "#ddd",
+                            fontSize: "1.1rem",
+                            lineHeight: "1.7",
+                            margin: 0,
+                            wordWrap: "break-word",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          {team.vision}
+                        </p>
+                      </div>
                   </div>
 
                   <div
@@ -293,7 +297,6 @@ const AcceptedTeamPage = () => {
                       className="glow-input-container"
                       style={{
                         padding: "24px",
-                        minHeight: "120px",
                         width: "100%",
                       }}
                     >
@@ -330,6 +333,10 @@ const AcceptedTeamPage = () => {
                               color: "#ddd",
                               paddingTop: "8px",
                               borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+                              wordWrap: "break-word",
+                              wordBreak: "break-word",
+                              overflowWrap: "break-word",
+                              whiteSpace: "normal",
                             }}
                           >
                             <strong
@@ -414,6 +421,10 @@ const AcceptedTeamPage = () => {
                                   borderTop:
                                     "1px solid rgba(255, 255, 255, 0.1)",
                                   marginTop: "8px",
+                                  wordWrap: "break-word",
+                                  wordBreak: "break-word",
+                                  overflowWrap: "break-word",
+                                  whiteSpace: "normal",
                                 }}
                               >
                                 <strong

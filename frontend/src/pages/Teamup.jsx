@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Teamup.css";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Teamup.css';
 
 const Teamup = () => {
   const navigate = useNavigate();
@@ -20,9 +20,7 @@ const Teamup = () => {
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
-          <h1 className="main-logo syncopate-font">
-            CODE HUSTLE <span className="v-tag">11.0</span>
-          </h1>
+          <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
         </header>
 
         <div className="interaction-container">
@@ -54,30 +52,24 @@ const Teamup = () => {
 
           {/* PHASE 02: ROLE DESIGNATION - Only appears if "NO" is chosen */}
           {hasTeam === false && (
-            <div
-              className="step-block animate-in"
-              style={{ marginTop: "25px" }}
-            >
+            <div className="step-block animate-in" style={{ marginTop: '25px' }}>
               <span className="label-detail">PHASE 02: ROLE DESIGNATION</span>
               <div className="input-group">
-                <div className="label-row" style={{ marginBottom: "15px" }}>
+                <div className="label-row" style={{ marginBottom: '15px' }}>
                   <span>How do you intend to navigate the Arena?</span>
                 </div>
-                <div
-                  className="dual-button-row"
-                  style={{ display: "flex", gap: "10px" }}
-                >
+                <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
                   <button
                     className="neon-shade-btn next-glow"
                     style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate("/join")}
+                    onClick={() => navigate('/join')}
                   >
                     JOIN TEAM
                   </button>
                   <button
                     className="neon-shade-btn next-glow"
                     style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate("/create-team")}
+                    onClick={() => navigate('/create-team')}
                   >
                     CREATE TEAM
                   </button>
@@ -89,9 +81,7 @@ const Teamup = () => {
 
         {/* Footer - No box around Terms, Sign In removed */}
         <footer className="footer-links-clean">
-          <a href="/terms" className="terms-link">
-            Terms & Conditions
-          </a>
+          <a href="/terms" className="terms-link">Terms & Conditions</a>
           <p className="protocol-text">SECURE ENTRY PROTOCOL ACTIVE</p>
         </footer>
       </div>
