@@ -1,0 +1,87 @@
+/* JOIN TEAM SPECIFIC STYLES */
+.forge-card {
+    max-width: 480px !important; /* Slightly wider for the bio textarea */
+    margin: 20px auto;
+}
+
+/* ERROR STYLING */
+.error-border {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.2) !important;
+}
+
+.error-message-inline {
+    color: #ff4d4d;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    margin-top: 5px;
+    margin-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* FIELD FOCUS ANIMATION */
+.animated-field:focus-within {
+    border-color: #00d2ff !important;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.4), inset 0 0 5px rgba(0, 210, 255, 0.1);
+}
+
+/* TEXTAREA ADJUSTMENT */
+textarea.glow-input {
+    resize: none;
+    line-height: 1.4;
+}
+
+/* CAPSULE REFINEMENT */
+.dual-glow-capsule {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 50px;
+    padding: 5px 20px;
+    transition: all 0.3s ease;
+}
+
+/* ANIMATED BUTTON GRADIENT (Matching CreateTeam) */
+.animated-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, #ff00cc, #3333ff, #00d2ff, #33ff00, #ff00cc);
+    background-size: 400% 400%;
+    animation: gradient-flow 8s ease infinite;
+    border: none !important;
+    color: white !important;
+    font-weight: 700;
+    transition: transform 0.2s ease;
+}
+
+.animated-btn:hover:not(.btn-locked) {
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+}
+
+.btn-locked {
+    opacity: 0.4;
+    cursor: not-allowed !important;
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
+@keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* MOBILE ADAPTATION */
+@media (max-width: 768px) {
+    .dual-glow-capsule {
+        flex-direction: column;
+        border-radius: 15px !important;
+        padding: 10px;
+    }
+    .capsule-divider {
+        width: 80% !important;
+        height: 1px !important;
+        margin: 10px 0 !important;
+    }
+}
