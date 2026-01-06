@@ -9,28 +9,30 @@ const [isForgeComplete, setIsForgeComplete] = useState(false);
 const [step, setStep] = useState(1); 
 const [valErrors, setValErrors] = useState({}); 
 const [formData, setFormData] = useState({ 
-tName: '', tBio: '', lName: '', sap: '', phone: '', email: '', universityType: '', 
-m1: { fullName: '', sapid: '', email: '', phone: '', universityType: '' }, 
-m2: { fullName: '', sapid: '', email: '', phone: '', universityType: '' }, 
-m3: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
-m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '' } 
+tName: '', tBio: '', lName: '', lAbout: '', sap: '', phone: '', email: '', universityType: '', 
+m1: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }, 
+m2: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }, 
+m3: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' },
+m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' } 
 }); 
 
 const validateField = (name, value, uType, currentMemberKey) => { 
 if (!value) return "Required Field"; 
 if (name === 'email' && !value.includes("@")) return "Invalid format"; 
 if (name === 'phone' && value.length !== 10) return "10 digits required"; 
-if (name.includes('sap')) { 
-if (uType === 'UPES' && value.length !== 9) return "Must be 9 digits"; 
-const allSaps = [ 
-{ key: 'leader', val: formData.sap }, 
-{ key: 'm1', val: formData.m1.sapid }, 
-{ key: 'm2', val: formData.m2.sapid }, 
-{ key: 'm3', val: formData.m3.sapid },
-{ key: 'm4', val: formData.m4.sapid }
-]; 
-const duplicate = allSaps.find(s => s.val === value && s.key !== currentMemberKey); 
-if (duplicate) return "Already used"; 
+if (name === 'sap' || name === 'sapid') { 
+    if (uType === 'UPES' && value.length !== 9) return "Must be 9 digits"; 
+    
+    // Duplicate Check Logic
+    const allSaps = [ 
+        { key: 'leader', val: formData.sap }, 
+        { key: 'm1', val: formData.m1.sapid }, 
+        { key: 'm2', val: formData.m2.sapid }, 
+        { key: 'm3', val: formData.m3.sapid },
+        { key: 'm4', val: formData.m4.sapid }
+    ]; 
+    const duplicate = allSaps.find(s => s.val === value && s.val !== '' && s.key !== currentMemberKey); 
+    if (duplicate) return "Already used"; 
 } 
 return ""; 
 }; 
@@ -40,23 +42,26 @@ const error = validateField(field, value, uType, mKey);
 setValErrors(prev => ({ ...prev, [`${mKey}_${field}`]: error })); 
 }; 
 
-const isMemberValid = (m, currentKey) => { 
+const isMemberValid = (mKey) => { 
+const m = formData[mKey];
 const emailErr = validateField('email', m.email); 
 const phoneErr = validateField('phone', m.phone); 
-const sapErr = validateField('sap', m.sapid, m.universityType, currentKey); 
-return m.fullName && !emailErr && !phoneErr && !sapErr; 
+const sapErr = validateField('sapid', m.sapid, m.universityType, mKey); 
+return m.fullName && m.bio && m.universityType && m.sapid && !emailErr && !phoneErr && !sapErr; 
 }; 
 
 const isInitialFormValid = () => { 
 const sapErr = validateField('sap', formData.sap, formData.universityType, 'leader');
+const emailErr = validateField('email', formData.email);
+const phoneErr = validateField('phone', formData.phone);
+
 return (
     formData.tName.trim() !== '' && 
     formData.tBio.trim() !== '' && 
     formData.lName.trim() !== '' && 
+    formData.lAbout.trim() !== '' &&
     formData.universityType !== '' && 
-    !sapErr && 
-    formData.phone.length === 10 && 
-    formData.email.includes("@")
+    !sapErr && !emailErr && !phoneErr
 );
 }; 
 
@@ -70,15 +75,25 @@ const handleCreateTeamClick = () => {
     }
 };
 
-const renderMemberCard = (mKey, label) => ( 
-<div className="member-card node-materialize"> 
+const renderMemberPage = (mKey, label, nextStep) => ( 
+<div className="neural-node node-materialize animate-in"> 
 <span className="label-detail">{label}</span> 
 <div className="input-group"> 
 <div className="label-row"><span>FULL NAME <span className="v-tag">*</span></span></div> 
-<div className="glow-input-container animated-field"> 
-<input className="glow-input" placeholder="Name..." value={formData[mKey].fullName} onChange={(e) => updateMember(mKey, 'fullName', e.target.value)} /> 
+<div className={`glow-input-container animated-field ${valErrors[`${mKey}_fullName`] ? 'error-border' : ''}`}> 
+<input className="glow-input" placeholder="Member Name..." value={formData[mKey].fullName} onChange={(e) => updateMember(mKey, 'fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value, null, mKey)} /> 
 </div> 
+{valErrors[`${mKey}_fullName`] && <p className="error-message-inline">{valErrors[`${mKey}_fullName`]}</p>}
 </div> 
+
+<div className="input-group" style={{ marginTop: '12px' }}> 
+<div className="label-row"><span>ABOUT & SKILLS <span className="v-tag">*</span></span></div> 
+<div className={`glow-input-container animated-field ${valErrors[`${mKey}_bio`] ? 'error-border' : ''}`}> 
+<textarea className="glow-input" rows="2" placeholder="Technical stack, skills..." value={formData[mKey].bio} onChange={(e) => updateMember(mKey, 'bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value, null, mKey)}></textarea> 
+</div> 
+{valErrors[`${mKey}_bio`] && <p className="error-message-inline">{valErrors[`${mKey}_bio`]}</p>}
+</div>
+
 <div className="input-group" style={{ marginTop: '12px' }}> 
 <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div> 
 <div className="glow-input-container animated-field"> 
@@ -89,29 +104,44 @@ const renderMemberCard = (mKey, label) => (
 </select> 
 </div> 
 </div> 
+
 {formData[mKey].universityType && ( 
 <div className="input-group" style={{ marginTop: '12px' }}> 
 <div className="label-row"><span>{formData[mKey].universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div> 
-<div className={`glow-input-container animated-field ${valErrors[`${mKey}_sap`] ? 'error-border' : ''}`}> 
+<div className={`glow-input-container animated-field ${valErrors[`${mKey}_sapid`] ? 'error-border' : ''}`}> 
 <input className="glow-input" placeholder={formData[mKey].universityType === 'UPES' ? '9 Digits' : 'Name'} value={formData[mKey].sapid} 
 onChange={(e) => updateMember(mKey, 'sapid', e.target.value)} 
-onBlur={(e) => handleBlur('sap', e.target.value, formData[mKey].universityType, mKey)} /> 
+onBlur={(e) => handleBlur('sapid', e.target.value, formData[mKey].universityType, mKey)} /> 
 </div> 
-{valErrors[`${mKey}_sap`] && <p className="error-message-inline">{valErrors[`${mKey}_sap`]}</p>} 
+{valErrors[`${mKey}_sapid`] && <p className="error-message-inline">{valErrors[`${mKey}_sapid`]}</p>}
 </div> 
 )} 
+
 <div className="input-group" style={{ marginTop: '12px' }}> 
 <div className="label-row"><span>CONTACT <span className="v-tag">*</span></span></div> 
 <div className={`dual-glow-capsule animated-field ${(valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center' }}> 
-<input className="capsule-input-left" style={{ flex: 1, minWidth: 0 }} placeholder="Email" value={formData[mKey].email} 
-onChange={(e) => updateMember(mKey, 'email', e.target.value)} 
-onBlur={(e) => handleBlur('email', e.target.value, null, mKey)} /> 
+<input className="capsule-input-left" placeholder="Email" value={formData[mKey].email} onChange={(e) => updateMember(mKey, 'email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value, null, mKey)} /> 
 <div className="capsule-divider"></div> 
-<input className="capsule-input-right" style={{ flex: 1, minWidth: 0 }} placeholder="Phone" value={formData[mKey].phone} 
-onChange={(e) => updateMember(mKey, 'phone', e.target.value)} 
-onBlur={(e) => handleBlur('phone', e.target.value, null, mKey)} /> 
+<input className="capsule-input-right" placeholder="Phone" value={formData[mKey].phone} onChange={(e) => updateMember(mKey, 'phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value, null, mKey)} /> 
 </div> 
+{(valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]) && <p className="error-message-inline">{valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]}</p>}
 </div> 
+
+<div className="forge-btn-group" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div style={{ display: 'flex', gap: '10px' }}>
+        <button className="liquid-btn" style={{ flex: 0.3 }} onClick={() => setStep(prev => prev === 4 ? 1 : prev - 1)}>BACK</button>
+        <button 
+            className={`liquid-btn animated-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`} 
+            style={{ flex: 1 }} 
+            onClick={() => isMemberValid(mKey) && setStep(nextStep)}
+        >
+            {nextStep === 8 ? "FINALIZE ❯" : "NEXT MEMBER ❯"}
+        </button>
+    </div>
+    <button className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`} style={{ width: '100%', padding: '15px' }} onClick={() => isMemberValid(mKey) && setStep(8)}>
+        SUBMIT & CONNECT TEAM ❯
+    </button>
+</div>
 </div> 
 ); 
 
@@ -119,38 +149,52 @@ return (
 <div className="app-viewport forge-container"> 
 <div className="cosmic-bg"><div className="nebula-cloud-blue"></div><div className="nebula-cloud-purple"></div><div className="starfield"></div></div> 
 
-<div className={`portal-card animate-in forge-card ${step === 5 ? 'wide-card' : ''}`}> 
+<div className="portal-card animate-in forge-card"> 
 <header className="brand-header"> 
 <div className="hypervision-badge">HYPERVISION</div> 
 <p className="presents-text">CODE-HUSTLE-11.0</p>  
 </header> 
 
 <div className="forge-progress-track"> 
-<div className="forge-progress-glow" style={{ width: step === 8 ? '100%' : isForgeComplete ? '75%' : '50%' }}></div> 
+<div className="forge-progress-glow" style={{ width: `${(step / 8) * 100}%` }}></div> 
 </div> 
 
 <div className="morph-interface"> 
-{step < 5 && (
+{step === 1 && (
     <div className="neural-node node-materialize">
-        <span className="label-detail">NODE: Team Leader Details</span>
+        <span className="label-detail">NODE: LEADER CORE</span>
         <div className="input-group"> 
             <div className="label-row"><span>TEAM NAME <span className="v-tag">*</span></span></div> 
-            <div className="glow-input-container animated-field"> 
-                <input className="glow-input" autoFocus placeholder="The Avengers..." value={formData.tName} onChange={(e) => setFormData({ ...formData, tName: e.target.value })} /> 
+            <div className={`glow-input-container animated-field ${valErrors['leader_tName'] ? 'error-border' : ''}`}> 
+                <input className="glow-input" autoFocus placeholder="The Avengers..." value={formData.tName} onChange={(e) => setFormData({ ...formData, tName: e.target.value })} onBlur={(e) => handleBlur('tName', e.target.value, null, 'leader')} /> 
             </div> 
+            {valErrors['leader_tName'] && <p className="error-message-inline">{valErrors['leader_tName']}</p>}
         </div> 
+
         <div className="input-group" style={{ marginTop: '12px' }}> 
             <div className="label-row"><span>TEAM VISION <span className="v-tag">*</span></span></div> 
-            <div className="glow-input-container animated-field"> 
-                <textarea className="glow-input" rows="2" placeholder="Enter team Vision..." value={formData.tBio} onChange={(e) => setFormData({ ...formData, tBio: e.target.value })}></textarea> 
+            <div className={`glow-input-container animated-field ${valErrors['leader_tBio'] ? 'error-border' : ''}`}> 
+                <textarea className="glow-input" rows="2" placeholder="What is your team goal?" value={formData.tBio} onChange={(e) => setFormData({ ...formData, tBio: e.target.value })} onBlur={(e) => handleBlur('tBio', e.target.value, null, 'leader')}></textarea> 
             </div> 
+            {valErrors['leader_tBio'] && <p className="error-message-inline">{valErrors['leader_tBio']}</p>}
         </div>
-        <div className="input-group" style={{ marginTop: '20px' }}> 
+
+        <div className="input-group" style={{ marginTop: '12px' }}> 
             <div className="label-row"><span>LEADER NAME <span className="v-tag">*</span></span></div> 
-            <div className="glow-input-container animated-field"> 
-                <input className="glow-input" placeholder="Leader Full Name..." value={formData.lName} onChange={(e) => setFormData({ ...formData, lName: e.target.value })} /> 
+            <div className={`glow-input-container animated-field ${valErrors['leader_lName'] ? 'error-border' : ''}`}> 
+                <input className="glow-input" placeholder="Full Name..." value={formData.lName} onChange={(e) => setFormData({ ...formData, lName: e.target.value })} onBlur={(e) => handleBlur('lName', e.target.value, null, 'leader')} /> 
             </div> 
-        </div> 
+            {valErrors['leader_lName'] && <p className="error-message-inline">{valErrors['leader_lName']}</p>}
+        </div>
+
+        <div className="input-group" style={{ marginTop: '12px' }}> 
+            <div className="label-row"><span>ABOUT LEADER <span className="v-tag">*</span></span></div> 
+            <div className={`glow-input-container animated-field ${valErrors['leader_lAbout'] ? 'error-border' : ''}`}> 
+                <textarea className="glow-input" rows="2" placeholder="Bio & Technical skills..." value={formData.lAbout} onChange={(e) => setFormData({ ...formData, lAbout: e.target.value })} onBlur={(e) => handleBlur('lAbout', e.target.value, null, 'leader')}></textarea> 
+            </div> 
+            {valErrors['leader_lAbout'] && <p className="error-message-inline">{valErrors['leader_lAbout']}</p>}
+        </div>
+
         <div className="input-group" style={{ marginTop: '12px' }}> 
             <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div> 
             <div className="glow-input-container animated-field"> 
@@ -161,6 +205,7 @@ return (
                 </select> 
             </div> 
         </div> 
+
         {formData.universityType && ( 
             <div className="input-group" style={{ marginTop: '12px' }}> 
                 <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div> 
@@ -169,59 +214,43 @@ return (
                     onChange={(e) => setFormData({ ...formData, sap: e.target.value })} 
                     onBlur={(e) => handleBlur('sap', e.target.value, formData.universityType, 'leader')} /> 
                 </div> 
-                {valErrors['leader_sap'] && <p className="error-message-inline">{valErrors['leader_sap']}</p>} 
+                {valErrors['leader_sap'] && <p className="error-message-inline">{valErrors['leader_sap']}</p>}
             </div> 
         )} 
+
         <div className="input-group" style={{ marginTop: '20px' }}> 
             <div className="label-row"><span>CONTACT INFO <span className="v-tag">*</span></span></div> 
             <div className={`dual-glow-capsule animated-field ${(valErrors['leader_email'] || valErrors['leader_phone']) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}> 
-                <input className="capsule-input-left" style={{ flex: 1, minWidth: 0 }} placeholder="Email" value={formData.email} 
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })} 
-                onBlur={(e) => handleBlur('email', e.target.value, null, 'leader')} /> 
+                <input className="capsule-input-left" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onBlur={(e) => handleBlur('email', e.target.value, null, 'leader')} /> 
                 <div className="capsule-divider"></div> 
-                <input className="capsule-input-right" style={{ flex: 1, minWidth: 0 }} placeholder="Phone" value={formData.phone} 
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
-                onBlur={(e) => handleBlur('phone', e.target.value, null, 'leader')} /> 
+                <input className="capsule-input-right" placeholder="Phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} onBlur={(e) => handleBlur('phone', e.target.value, null, 'leader')} /> 
             </div> 
+            {(valErrors['leader_email'] || valErrors['leader_phone']) && <p className="error-message-inline">{valErrors['leader_email'] || valErrors['leader_phone']}</p>}
         </div>
-        {!isForgeComplete && (
+
+        {!isForgeComplete ? (
             <button className={`neon-shade-btn next-glow animated-btn ${!isInitialFormValid() ? 'btn-locked' : ''}`} style={{ width: '100%', marginTop: '30px' }} onClick={handleCreateTeamClick}>
                 CREATE TEAM ❯
             </button>
+        ) : (
+            <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}> 
+                <div className="shining-choice-row"> 
+                    <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button> 
+                    <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={() => setStep(8)}>CONNECT PEOPLE</button> 
+                </div> 
+            </div>
         )}
     </div>
 )}
 
-{isForgeComplete && step < 5 && ( 
-<div className="neural-node node-materialize animate-in" style={{ marginTop: '30px' }}> 
-<div className="completion-vfx"><h2 className="glow-status-text">FORGE COMPLETE</h2><p className="sub-hint">GET STARTED!</p></div>
-<div className="shining-choice-row" style={{ marginTop: '20px' }}> 
-<button className="liquid-btn add-btn-shimmer animated-btn" onClick={() => setStep(5)}>ADD MEMBERS</button> 
-<button className="liquid-btn connect-btn-shimmer animated-btn" onClick={() => setStep(8)}>CONNECT PEOPLE</button> 
-</div> 
-</div> 
-)} 
-
-{step === 5 && (
-    <div className="squad-grid-container animate-in">
-        <div className="member-grid">
-            {renderMemberCard('m1', 'MEMBER 02')}
-            {renderMemberCard('m2', 'MEMBER 03')}
-            {renderMemberCard('m3', 'MEMBER 04')}
-            {renderMemberCard('m4', 'MEMBER 05')}
-        </div>
-        <div className="forge-btn-group" style={{ marginTop: '30px', flexDirection: 'column' }}>
-            <button className="liquid-btn connect-btn-shimmer shining-btn animated-btn" style={{ width: '100%', padding: '25px' }} onClick={() => setStep(8)}>
-                SUBMIT & CONNECT SQUAD ❯
-            </button>
-            <button className="back-link-forge" style={{ marginTop: '15px' }} onClick={() => setStep(4)}>[ BACK_TO_CHOICE ]</button>
-        </div>
-    </div>
-)}
+{step === 4 && renderMemberPage('m1', 'NODE_02: MEMBER 02 DETAILS', 5)}
+{step === 5 && renderMemberPage('m2', 'NODE_03: MEMBER 03 DETAILS', 6)}
+{step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', 7)}
+{step === 7 && renderMemberPage('m4', 'NODE_05: MEMBER 05 DETAILS', 8)}
 
 {step === 8 && ( 
 <div className="neural-node node-materialize final-aura"> 
-<div className="completion-vfx"><h2 className="glow-status-text">CONNECT TO COMPLETE YOUR SQUAD</h2><p className="sub-hint">TAP TO <b>FIND</b> YOUR TEAMMATE</p></div> 
+<div className="completion-vfx"><h2 className="glow-status-text">CONNECT TO COMPLETE YOUR TEAM</h2><p className="sub-hint">TAP TO <b>FIND</b> YOUR TEAMMATE</p></div> 
 <div className="kinetic-connector-zone"> 
 <div className="neural-pulse-ring"></div> 
 <button className="kinetic-shimmer-btn animated-btn" onClick={() => navigate('/connect')}> 
@@ -229,6 +258,7 @@ return (
 <div className="shimmer-sweep"></div> 
 </button> 
 </div> 
+<button className="back-link-forge" style={{ marginTop: '30px' }} onClick={() => setStep(7)}>[ EDIT_MEMBERS ]</button>
 </div> 
 )} 
 </div> 

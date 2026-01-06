@@ -26,10 +26,10 @@ const Teamup = () => {
                 <div className="interaction-container">
                     {/* PHASE 01: SQUAD VERIFICATION */}
                     <div className="step-block">
-                        <span className="label-detail">PHASE 01: SQUAD VERIFICATION</span>
+                        <span className="label-detail">PHASE 01: TEAM VERIFICATION</span>
                         <div className="input-group">
                             <div className="label-row" style={{ marginBottom: '15px' }}>
-                                <span>Do you have an established team for this operation?</span>
+                                <span>Do you have an established team?</span>
                             </div>
                             <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
                                 <button 
