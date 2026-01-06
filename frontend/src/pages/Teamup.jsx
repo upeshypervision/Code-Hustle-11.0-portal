@@ -37,14 +37,14 @@ const Teamup = () => {
                                     style={{ marginTop: 0 }}
                                     onClick={() => navigate('/register')}
                                 >
-                                    YES, SQUAD READY
+                                    YES
                                 </button>
                                 <button 
                                     className={`neon-shade-btn next-glow ${hasTeam === true ? 'btn-locked' : ''}`} 
                                     style={{ marginTop: 0, background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
                                     onClick={() => setHasTeam(false)}
                                 >
-                                    NO, PROCEED SOLO
+                                    NO
                                 </button>
                             </div>
                         </div>
