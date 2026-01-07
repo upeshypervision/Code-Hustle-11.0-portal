@@ -129,6 +129,12 @@ export default function AdminPanel() {
   return (
     <div className="dashboard-page">
       <Navbar
+        style={{
+          background: "transparent",
+          backdropFilter: "none",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          fontFamily: "'Orbitron', sans-serif",
+        }}
         userInfo={
           <>
             Admin: <strong>{adminInfo.login_id}</strong>
@@ -137,6 +143,7 @@ export default function AdminPanel() {
         isAdmin={true}
         menuItems={adminMenuItems}
         onMenuItemClick={handleMenuItemClick}
+        hideSubtitle={true}
       />
 
       <div className="admin-layout">
