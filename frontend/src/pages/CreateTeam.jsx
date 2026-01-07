@@ -235,8 +235,7 @@ const CreateTeam = () => {
 
                     {step === 4 && renderMemberPage('m1', 'NODE_02: MEMBER 02 DETAILS', 5)}
                     {step === 5 && renderMemberPage('m2', 'NODE_03: MEMBER 03 DETAILS', 6)}
-                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', 7)}
-                    {step === 7 && renderMemberPage('m4', 'NODE_05: MEMBER 05 DETAILS', 8)}
+                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', 8)}
 
                     {step === 8 && (
                         <div className="neural-node node-materialize final-aura success-node">
@@ -246,7 +245,7 @@ const CreateTeam = () => {
                                 <br></br>
                             </div>
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
-                                <button className="liquid-btn animated-btn" style={{ width: '100%' }} onClick={() => navigate('/connect')}>ACKNOWLEDGE</button>
+                                <button className="liquid-btn animated-btn" style={{ width: '100%' }} onClick={() => navigate('/team-login')}>LOG IN</button>
                             </div>
                         </div>
                     )}

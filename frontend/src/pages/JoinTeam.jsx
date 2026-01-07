@@ -150,8 +150,8 @@ const JoinTeam = () => {
                                 <h2 className="glow-status-text">PROFILE CREATED SUCCESSFULLY!</h2>
                             </div> 
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
-                                <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/connect')}>
-                                    ACKNOWLEDGE ❯
+                                <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/individual-login')}>
+                                    LOG IN❯
                                 </button>
                             </div>
                         </div>
