@@ -213,7 +213,7 @@ def select_problem_statement_route():
     # =========================
     # 5. FETCH TEAM NAME
     # =========================
-    team = db.teams.find_one(
+    team = db.registered_teams.find_one(
         {"team_id": team_id},
         {"team_name": 1, "_id": 0}
     )

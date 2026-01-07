@@ -4,6 +4,7 @@ from datetime import datetime
 import bcrypt
 import random
 import string
+from config import JWT_SECRET, JWT_ALGORITHM
 # Import the specific team email function
 from email_service import send_team_registration_email
 

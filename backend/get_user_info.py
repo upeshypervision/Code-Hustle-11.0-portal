@@ -20,7 +20,7 @@ def get_user_info_route():
             team_id = payload.get("team_id")
             
             # Fetch team data from database
-            team = db["teams"].find_one({"team_id": team_id})
+            team = db["registered_teams"].find_one({"team_id": team_id})
             if team:
                 return jsonify({
                     "success": True,

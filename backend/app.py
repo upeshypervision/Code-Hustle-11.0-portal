@@ -39,7 +39,7 @@ from evaluator import (
 
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
 from Join_team import register_individual_route
-from Create_team import create_team_route # Import the create_team_route function
+from Create_team import create_team_route 
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
