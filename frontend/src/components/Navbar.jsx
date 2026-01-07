@@ -6,10 +6,6 @@ export default function Navbar({
   isAdmin = false,
   menuItems = [],
   onMenuItemClick,
-  style,
-  showHamburger = true,
-  hideSubtitle = false,
-  centerLogo = false,
 }) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,30 +32,18 @@ export default function Navbar({
 
   return (
     <>
-      <header className="top-nav" style={style}>
-        <div className="top-nav-inner" style={centerLogo ? { position: 'relative', justifyContent: 'center' } : {}}>
-          <div
-            className="logo-container"
-            style={centerLogo ? {
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
-            } : {}}
-          >
-            {showHamburger && (
-              <button
-                className="hamburger-menu"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                <span></span>
-                <span></span>
-                <span></span>
-              </button>
-            )}
+      <header className="top-nav">
+        <div className="top-nav-inner">
+          <div className="logo-container">
+            <button
+              className="hamburger-menu"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
             <img
               src="/hypervision-logo.png"
               alt="Hypervision Logo"
@@ -72,31 +56,16 @@ export default function Navbar({
             <div className="logo-mark" style={{ display: "none" }}></div>
             <div>
               <div className="logo-text">Code Hustle</div>
-              {!hideSubtitle && (
-                <div style={{ fontSize: "0.7rem", color: "#9ca3af" }}>
-                  {isAdmin ? "Admin Panel" : "Student Dashboard"}
-                </div>
-              )}
+              <div style={{ fontSize: "0.7rem", color: "#9ca3af" }}>
+                {isAdmin ? "Admin Panel" : "Student Dashboard"}
+              </div>
             </div>
           </div>
-          <div className="nav-right" style={centerLogo ? { marginLeft: 'auto' } : {}}>
+          <div className="nav-right">
             <div className="nav-user">{userInfo}</div>
             <button className="nav-logout" onClick={handleLogout}>
               Logout
             </button>
-            <a
-              href="https://codehustle11.upeshypervision.in/#contact"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-logout"
-              style={{
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              Contact Us
-            </a>
           </div>
         </div>
       </header>
@@ -125,8 +94,9 @@ export default function Navbar({
               {menuItems.map((item, index) => (
                 <li key={item.id || index}>
                   <button
-                    className={`mobile-menu-item ${item.active ? "active" : ""
-                      }`}
+                    className={`mobile-menu-item ${
+                      item.active ? "active" : ""
+                    }`}
                     onClick={() => handleMenuClick(item)}
                   >
                     {item.label || item.name}

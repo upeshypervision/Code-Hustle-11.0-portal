@@ -28,7 +28,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Teamup />} />
         <Route path="/create-team" element={<CreateTeam />} />
-        <Route path="/join" element={<JoinTeam />} />
         <Route
           path="/individual-member"
           element={<TeamUpDashboard />}
