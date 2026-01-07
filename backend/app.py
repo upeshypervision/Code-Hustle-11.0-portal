@@ -38,7 +38,8 @@ from evaluator import (
     check_evaluator_auth_route)
 
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
-
+from individual_registration import register_individual_route
+from Create_team import create_team_route 
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -65,6 +66,14 @@ def validate_hypervision():
 @app.route("/api/register-team", methods=["POST"])
 def register_team():
     return register_team_route()
+
+@app.route("/api/register-individual", methods=["POST"])
+def register_individual():
+    return register_individual_route()
+
+@app.route("/api/create-team", methods=["POST"])
+def create_team():
+    return create_team_route()
 
 @app.route("/api/check-team-name", methods=["POST"])
 def check_team_name():
