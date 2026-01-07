@@ -227,6 +227,44 @@ def fetch_all_hackerrank_submissions():
         print(f"Database error in fetch_all_hackerrank_submissions: {e}")
         return jsonify({"success": False, "error": f"Database error: {str(e)}"}), 500
 
+def fetch_approved_hackerrank_teams():
+    """
+    Admin route: Fetch teams whose Hackerrank submission is APPROVED
+    Used for dropdowns
+    """
+    db = get_db()
+
+    # Admin authentication
+    admin_cookie = request.cookies.get("admin_auth")
+    if not admin_cookie:
+        return jsonify({"success": False, "error": "Admin authentication required"}), 401
+
+    try:
+        jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Admin session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid admin session"}), 401
+
+    try:
+        approved_teams = list(
+            db.Hackerrank_submission.find(
+                {"approval_status": "approved"},
+                {"_id": 0, "team_id": 1, "team_name": 1}
+            )
+        )
+
+        return jsonify({
+            "success": True,
+            "teams": approved_teams
+        }), 200
+
+    except Exception as e:
+        print(f"Database error in fetch_approved_hackerrank_teams: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Failed to fetch approved teams"
+        }), 500
 
 def approve_hackerrank_submission():
     """

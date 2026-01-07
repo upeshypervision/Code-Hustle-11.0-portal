@@ -13,6 +13,7 @@ import Manualgithub from "../components/admin/Manualgithub";
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
 import ManualHackerrank from "../components/admin/ManualHackerrank";
 import ViewHackerrank from "../components/admin/ViewHackerrank";
+import SelectedTeam from "../components/admin/Selected_team";
 
 export default function AdminPanel() {
   const [activeSection, setActiveSection] = useState("rounds");
@@ -37,6 +38,11 @@ export default function AdminPanel() {
       id: "rounds",
       label: "Round Management",
       active: activeSection === "rounds",
+    },
+    {
+      id: "selected-teams",
+      label: "Selected Teams",
+      active: activeSection === "selected-teams",
     },
     {
       id: "view-teams",
@@ -120,6 +126,9 @@ export default function AdminPanel() {
 
       case "view-hackerrank":
         return <ViewHackerrank />;
+
+      case "selected-teams":
+        return <SelectedTeam />;
 
       default:
         return null;

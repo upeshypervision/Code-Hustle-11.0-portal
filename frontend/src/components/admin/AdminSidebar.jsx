@@ -98,6 +98,14 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
             <span>View Hackerrank</span>
           </a>
         </li>
+        <li className="admin-nav-item">
+          <a
+            className={`admin-nav-link ${activeSection === "selected-teams" ? "active" : ""}`}
+            onClick={() => setActiveSection("selected-teams")}
+          >
+            <span>Selected Teams</span>
+          </a>
+        </li>
 
 
 
