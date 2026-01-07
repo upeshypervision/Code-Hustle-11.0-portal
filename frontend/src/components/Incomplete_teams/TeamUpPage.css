@@ -1207,7 +1207,7 @@
     }
 }
 
-.hypervision-badge {
+.team-up-page .hypervision-badge {
     background: linear-gradient(135deg, #0ea5e9, #2563eb);
     color: white;
     font-family: 'Orbitron', sans-serif;
@@ -1226,7 +1226,7 @@
     gap: 6px;
 }
 
-.hypervision-badge::before {
+.team-up-page .hypervision-badge::before {
     content: '★';
     font-size: 0.9rem;
 }
