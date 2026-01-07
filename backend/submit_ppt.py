@@ -255,3 +255,55 @@ def check_ppt_submission_route():
             "success": True,
             "is_submitted": False
         }), 200
+
+def fetch_approved_ppt_teams():
+    """
+    Admin route: Fetch teams whose PPT submission is APPROVED
+    """
+    db = get_db()
+
+    # Admin authentication
+    admin_cookie = request.cookies.get("admin_auth")
+    if not admin_cookie:
+        return jsonify({"success": False, "error": "Admin authentication required"}), 401
+
+    try:
+        jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return jsonify({"success": False, "error": "Admin session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"success": False, "error": "Invalid admin session"}), 401
+
+    try:
+        # Get approved PPT submissions
+        approved_ppt_docs = list(
+            db.ppt_submissions.find(
+                {"approval_status": "approved"},
+                {"_id": 0, "team_id": 1}
+            )
+        )
+        
+        approved_team_ids = [doc["team_id"] for doc in approved_ppt_docs]
+        
+        if not approved_team_ids:
+            return jsonify({"success": True, "teams": []}), 200
+
+        # Fetch details from teams collection TO ENSURE we have names
+        approved_teams = list(
+            db.teams.find(
+                {"team_id": {"$in": approved_team_ids}},
+                {"_id": 0, "team_id": 1, "team_name": 1}
+            )
+        )
+
+        return jsonify({
+            "success": True,
+            "teams": approved_teams
+        }), 200
+
+    except Exception as e:
+        print(f"Database error in fetch_approved_ppt_teams: {e}")
+        return jsonify({
+            "success": False,
+            "error": "Failed to fetch approved teams"
+        }), 500

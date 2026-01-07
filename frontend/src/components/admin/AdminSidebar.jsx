@@ -100,10 +100,10 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
         </li>
         <li className="admin-nav-item">
           <a
-            className={`admin-nav-link ${activeSection === "round-1" ? "active" : ""}`}
-            onClick={() => setActiveSection("round-1")}
+            className={`admin-nav-link ${activeSection === "selected-teams" ? "active" : ""}`}
+            onClick={() => setActiveSection("selected-teams")}
           >
-            <span>Round 1</span>
+            <span>Selected Teams</span>
           </a>
         </li>
 

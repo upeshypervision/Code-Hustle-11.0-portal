@@ -13,14 +13,14 @@ from problemstatement import (
     select_problem_statement_route, get_all_visible_problem_statements_route,
     get_teams_by_ps_route,toggle_ps_visibility_route, check_selected_ps_route
 )
-from submit_ppt import submit_ppt_route, submit_ppt_student_route, check_ppt_submission_route
+from submit_ppt import submit_ppt_route, submit_ppt_student_route, check_ppt_submission_route, fetch_approved_ppt_teams
 from user_access import (
     fetch_teams_route, get_user_info_route,
     fetch_teams_pending_submission_route,
     fetch_submissions_route,
     generate_presigned_url_route
 )
-from git_submission import submit_link_route,check_github_submission_route
+from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from hackerrank_submission import (
@@ -169,6 +169,10 @@ def submit_ppt_student():
 def check_ppt_submission():
     return check_ppt_submission_route()
 
+@app.route('/api/admin/approved-ppt-teams', methods=['GET'])
+def get_approved_ppt_teams():
+    return fetch_approved_ppt_teams()
+
 # --- GitHub Submission Routes ---
 @app.route('/api/submit-link', methods=['POST'])
 def submit_link():
@@ -177,6 +181,10 @@ def submit_link():
 @app.route('/api/check-github-submission', methods=['GET'])
 def check_github_submission():
     return check_github_submission_route()
+
+@app.route('/api/admin/approved-github-teams', methods=['GET'])
+def get_approved_github_teams():
+    return fetch_approved_github_teams()
 
 # --- Hackerrank Submission Routes ---
 @app.route('/api/submit-hackerrank', methods=['POST'])

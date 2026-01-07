@@ -1,0 +1,215 @@
+/* Inline Error Styling - Logic from Register.jsx */
+.error-border {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.2) !important;
+}
+
+.error-message-inline {
+    color: #ff4d4d;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    margin-top: 5px;
+    margin-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* SINGLE COLOR STATIC BUTTONS - MATCHING IMAGE 2 */
+.animated-btn {
+    position: relative;
+    overflow: hidden;
+    /* BACKGROUND: Static single color (no animations, no green) */
+    background: rgba(59, 130, 246, 0.5) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.animated-btn:hover {
+    background: rgba(59, 130, 246, 0.8) !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    transform: scale(1.02);
+}
+
+/* LOCK STATE FOR SEQUENTIAL VALIDATION */
+.btn-locked {
+    opacity: 0.2;
+    cursor: not-allowed !important;
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
+.submit-connect-btn {
+    font-size: 11px !important;
+    letter-spacing: 1px;
+    background: rgba(30, 41, 59, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Removed @keyframes gradient-flow to stop animation */
+
+/* FIELD ANIMATIONS - NEON PULSE */
+.animated-field {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.animated-field:focus-within {
+    border-color: #00d2ff !important;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.4), inset 0 0 5px rgba(0, 210, 255, 0.1);
+}
+
+/* PROGRESS TRACKER - SINGLE COLOR BLUE */
+.forge-progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05); 
+    border-radius: 10px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.forge-progress-glow {
+    height: 100%;
+    /* SINGLE COLOR (Blue) matches the UI theme */
+    background: #3b82f6; 
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* INTERACTIVE ELEMENTS */
+.dual-glow-capsule {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 50px;
+    padding: 5px 20px;
+}
+
+.capsule-input-left, .capsule-input-right {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    padding: 10px 5px;
+    outline: none;
+    width: 100%;
+}
+
+.capsule-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(56, 189, 248, 0.4);
+    margin: 0 10px;
+}
+
+/* FINAL STEP & KINETIC BUTTONS */
+.kinetic-connector-zone {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.kinetic-shimmer-btn {
+    position: relative;
+    padding: 18px 50px;
+    background: rgba(59, 130, 246, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    color: white;
+    font-family: 'Syncopate', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+.shimmer-sweep {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: sweep 2s infinite linear;
+}
+
+@keyframes sweep { 100% { left: 100%; } }
+
+.neural-pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50px;
+    animation: pulse-out 2s infinite;
+}
+
+@keyframes pulse-out {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+
+.shining-choice-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.liquid-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 8px;
+    color: #cbd5e1;
+    padding: 10px 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.back-link-forge {
+    background: none;
+    border: none;
+    color: #ff4d4d !important; 
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ANIMATIONS */
+.node-materialize.animate-in {
+    animation: forgeReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes forgeReveal {
+    0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* MOBILE ADAPTATIONS */
+@media (max-width: 768px) {
+    .dual-glow-capsule {
+        flex-direction: column;
+        border-radius: 15px !important;
+        padding: 10px;
+    }
+    .capsule-divider {
+        width: 80% !important;
+        height: 1px !important;
+        margin: 10px 0 !important;
+    }
+}
