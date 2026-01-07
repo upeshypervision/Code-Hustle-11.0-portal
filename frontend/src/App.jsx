@@ -19,6 +19,8 @@ import CreateTeam from "./pages/CreateTeam.jsx";
 import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
 import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.jsx";
 import JoinTeam from "./pages/JoinTeam.jsx";
+import IndividualLogin from './pages/IndividualLogin.jsx';
+import TeamLogin from './pages/TeamLogin.jsx';
 
 
 import EvaluatorLogin from "./pages/EvaluatorLogin";
@@ -42,6 +44,8 @@ function App() {
         />
         <Route path="/team-up" element={<TeamUpPage />} />
         <Route path="/join" element={<JoinTeam />} />
+        <Route path="/individual-login" element={<IndividualLogin />} />
+        <Route path="/team-login" element={<TeamLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/register" element={<Register />} />

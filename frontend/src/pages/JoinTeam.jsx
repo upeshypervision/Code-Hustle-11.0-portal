@@ -265,8 +265,8 @@ const JoinTeam = () => {
                                 </p>
                             </div>
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
-                                <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/connect')}>
-                                    GO TO LOGIN →
+                                <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/individual-login')}>
+                                    LOG IN❯
                                 </button>
                             </div>
                         </div>
