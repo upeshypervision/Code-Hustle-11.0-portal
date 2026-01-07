@@ -179,14 +179,14 @@ const CreateTeam = () => {
                     {/* UPDATED: If nextStep exists (not last page), back takes 30% width.
                         If nextStep is missing (last page), back takes 100% width.
                     */}
-                    <button 
-                        className="liquid-btn" 
-                        style={{ flex: nextStep ? 0.3 : 1 }} 
+                    <button
+                        className="liquid-btn"
+                        style={{ flex: nextStep ? 0.3 : 1 }}
                         onClick={() => setStep(prev => prev === 4 ? 1 : prev - 1)}
                     >
                         BACK
                     </button>
-                    
+
                     {/* UPDATED: Only render this button if nextStep is provided */}
                     {nextStep && (
                         <button
@@ -198,7 +198,7 @@ const CreateTeam = () => {
                         </button>
                     )}
                 </div>
-                
+
                 <button
                     className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
                     style={{ width: '100%', padding: '15px' }}
