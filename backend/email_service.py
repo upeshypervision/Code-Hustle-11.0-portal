@@ -96,6 +96,24 @@ def send_registration_email(email_id,team_id,password):
 
     })
 
+def send_team_registration_email(email_address, team_id, password):
+    resend.Emails.send({
+        "from": "noreply@upeshypervision.in",
+        "to": email_address,
+        "subject": "Code Hustle 11.0 – Individual Registration",
+        "html": f"""
+        <h2>Welcome to Code Hustle 11.0</h2>
+        <p>You have successfully registered as an team.</p>
+
+        <p><strong>ID:</strong> {team_id}</p>
+        <p><strong>Password:</strong> {password}</p>
+
+        <p>Login here:
+        <a href="https://codehustle11.upeshypervision.in/userlogin  ">
+        Portal Login</a></p>
+        """
+    })
+
 def send_individual_registration_email(email_address, individual_id, password):
     resend.Emails.send({
         "from": "noreply@upeshypervision.in",

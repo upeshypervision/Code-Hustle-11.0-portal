@@ -1,21 +1,15 @@
 from flask import jsonify, request
 from database import get_db
-from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
-import razorpay
 from datetime import datetime
-import jwt
 import bcrypt
 import random
 import string
-from config import JWT_SECRET, JWT_ALGORITHM
 from email_service import send_individual_registration_email # Import the new function
 
 db = get_db()
 
-razor_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
-
-def get_next_individual_id():
+def get_next_individual_id(): #counter for ind id 
     counter = db["counters"].find_one_and_update(
         {"_id": "individual_id"},
         {"$inc": {"sequence_value": 1}},
@@ -97,8 +91,6 @@ def register_individual_route():
         "university_type": university_type,
         "email": email,
         "phone": phone,
-        # Store the hypervision_id as provided (could be empty string)
-        # Or store as None if you prefer explicit null values
         "hypervision_id": hypervision_id or None, 
         "sapid": sapid,
         "college_name": college_name,
@@ -109,7 +101,7 @@ def register_individual_route():
         "timestamp": datetime.utcnow().isoformat()
     })
 
-    # Optional: Send a confirmation email with credentials using the new function
+    # Send a confirmation email with credentials using the new function
     try:
         send_individual_registration_email(
             email_address=email, # Use the email from the form

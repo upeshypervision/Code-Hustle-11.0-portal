@@ -15,6 +15,9 @@ const CreateTeam = () => {
         m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }
     });
 
+    // Define the backend API base URL
+    const API_BASE = "http://localhost:5000"; // Or your backend server's address
+
     const validateField = (name, value, uType, currentMemberKey) => {
         if (!value) return "Required Field";
         if (name === 'email' && !value.includes("@")) return "Invalid format";
@@ -68,6 +71,69 @@ const CreateTeam = () => {
     const updateMember = (mKey, field, value) => {
         setFormData({ ...formData, [mKey]: { ...formData[mKey], [field]: value } });
     };
+
+    // --- NEW: submitCreateTeam function ---
+    const submitCreateTeam = async () => {
+        // Perform initial validation before sending
+        if (!isInitialFormValid()) {
+            console.log("Initial form is not valid");
+            // You might want to show an error message here
+            return;
+        }
+
+        // Check if at least one member is filled
+        const hasValidMember = ['m1', 'm2', 'm3', 'm4'].some(key => isMemberValid(key));
+        if (!hasValidMember) {
+            console.log("At least one member is required");
+            // You might want to show an error message here
+            return;
+        }
+
+        try {
+            // Prepare the payload to match the backend expected structure EXACTLY
+            // Do NOT wrap members in an array. Send them as separate fields m1, m2, m3, m4.
+            // Backend logic handles empty mX objects.
+            const payloadToSend = {
+                tName: formData.tName.trim(),
+                tBio: formData.tBio.trim(),
+                lName: formData.lName.trim(),
+                lAbout: formData.lAbout.trim(),
+                universityType: formData.universityType,
+                email: formData.email.trim().toLowerCase(),
+                phone: formData.phone.trim(),
+                sap: formData.sap.trim(), // This field holds leader's SAP or college name depending on universityType
+                // Send members as individual objects as expected by the backend
+                m1: formData.m1,
+                m2: formData.m2,
+                m3: formData.m3,
+                m4: formData.m4
+            };
+
+            console.log("Sending payload (exact backend format):", payloadToSend);
+
+            const response = await fetch(`${API_BASE}/api/create-team`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payloadToSend) // Send the exact payload
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.error || "Something went wrong");
+                return;
+            }
+
+            console.log("TEAM CREATED:", data);
+            setStep(8); // Navigate to success screen (step 8)
+        } catch (err) {
+            console.error(err);
+            alert("Server not reachable");
+        }
+    };
+    // --- END NEW FUNCTION ---
 
     const renderMemberPage = (mKey, label, nextStep) => (
         <div className="neural-node node-materialize animate-in">
@@ -132,7 +198,12 @@ const CreateTeam = () => {
                         {nextStep === 8 ? "FINALIZE ❯" : "NEXT MEMBER ❯"}
                     </button>
                 </div>
-                <button className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`} style={{ width: '100%', padding: '15px' }} onClick={() => isMemberValid(mKey) && setStep(8)}>
+                {/* ✅ FIXED: Call submitCreateTeam on the final member page button */}
+                <button
+                    className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
+                    style={{ width: '100%', padding: '15px' }}
+                    onClick={() => isMemberValid(mKey) && submitCreateTeam()} // Changed onClick to call submitCreateTeam
+                >
                     SUBMIT & CONNECT TEAM ❯
                 </button>
             </div>
@@ -226,7 +297,7 @@ const CreateTeam = () => {
                                 <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}>
                                     <div className="shining-choice-row">
                                         <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button>
-                                        <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={() => setStep(8)}>CREATE TEAM</button>
+                                        <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={submitCreateTeam}>CREATE TEAM</button> {/* Changed onClick to call submitCreateTeam */}
                                     </div>
                                 </div>
                             )}
