@@ -4,7 +4,7 @@ from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route
+from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route, individual_login_route
 from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
@@ -90,6 +90,10 @@ def razorpay_webhook():
 @app.route("/api/student-login", methods=["POST"])
 def student_login():
     return student_login_route()
+
+@app.route("/api/individual-login", methods=["POST"])
+def individual_login():
+    return individual_login_route() 
 
 @app.route("/api/evaluator-login", methods=["POST"])
 def evaluator_login():

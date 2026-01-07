@@ -92,7 +92,7 @@ def register_individual_route():
         "role": "individual",
         "timestamp": datetime.utcnow().isoformat()
     }
-
+    db.individuals.insert_one(document_to_insert)
     # Send a confirmation email with credentials using the new function
     try:
         send_individual_registration_email(
