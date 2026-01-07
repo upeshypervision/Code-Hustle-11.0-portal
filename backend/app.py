@@ -38,7 +38,7 @@ from evaluator import (
     check_evaluator_auth_route)
 
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
-from Join_team import register_individual_route
+from individual_registration import register_individual_route
 from Create_team import create_team_route 
 
 app = Flask(__name__)

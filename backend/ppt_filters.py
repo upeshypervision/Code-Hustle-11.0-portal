@@ -23,7 +23,7 @@ def get_teams_without_ppt_route():
         db = get_db()
         
         # Get all teams
-        all_teams = list(db.registered_teams.find({}, {"_id": 0, "team_id": 1, "team_name": 1}))
+        all_teams = list(db.teams.find({}, {"_id": 0, "team_id": 1, "team_name": 1}))
         
         # Get all team_ids that have submitted PPTs
         submitted_team_ids = set(
@@ -73,7 +73,7 @@ def get_teams_with_ppt_route():
         teams_with_submissions = []
         for submission in submissions:
             team_id = submission.get("team_id")
-            team = db.registered_teams.find_one({"team_id": team_id}, {"team_name": 1, "_id": 0})
+            team = db.teams.find_one({"team_id": team_id}, {"team_name": 1, "_id": 0})
             
             if team:
                 teams_with_submissions.append({

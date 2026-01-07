@@ -12,14 +12,14 @@ db = get_db()
 
 def get_next_team_id():
     counter = db["counters"].find_one_and_update(
-        {"_id": "teamid"},
+        {"_id": "create_id"},
         {"$inc": {"sequence_value": 1}},  # Increment by 1 for each new team
         upsert=True,
         return_document=True
     )
     new_num = counter["sequence_value"]
     print(f"Generated Team Counter Value: {new_num}") # Debug print
-    return f"CH{new_num:04d}" # Format like CH0001, CH0002, etc.
+    return f"TM{new_num:03d}" 
 
 # Remove the get_next_temp_member_id function as it's no longer needed for members
 
@@ -69,13 +69,6 @@ def create_team_route():
         else:
             leader_college_name = data["sap"].strip()
     print(f"Parsed leader SAP/College: SAPID={leader_sapid}, CollegeName={leader_college_name}") # Debug print
-
-    # Check for duplicate team name
-    existing_team = db["create_team"].find_one({"team_name": {"$regex": f"^{team_name}$", "$options": "i"}})
-    if existing_team:
-        print(f"Team name '{team_name}' already exists in DB") # Debug print
-        return jsonify({"error": "Team name already taken"}), 400
-    print(f"Team name '{team_name}' is unique") # Debug print
 
     members = []
     sap_ids_in_team = [leader_sapid] if leader_sapid else []
@@ -190,8 +183,6 @@ def create_team_route():
         "team_id": team_id, # Uses CHxxxx
         "team_name": team_name,
         "team_bio": team_bio,
-        "status": "UNPAID", # Mark as UNPAID initially
-        "has_participated": False, # Mark as not participated initially
         "leader": leader_obj, # Leader has an ID
         "members": processed_members, # Members do NOT have member_id
         "created_at": datetime.utcnow().isoformat() # Add creation timestamp

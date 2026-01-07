@@ -16,7 +16,7 @@ def fetch_teamsnosubmission():
     db = get_db()
     
     # Get all teams with team_id and team_name
-    all_teams = list(db.registered_teams.find({}, {"_id": 0, "team_id": 1, "team_name": 1}))
+    all_teams = list(db.teams.find({}, {"_id": 0, "team_id": 1, "team_name": 1}))
     
     # Get team_ids that have submitted
     submitted_team_ids = set(db.github_submissions.distinct("team_id"))

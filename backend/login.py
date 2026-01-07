@@ -19,7 +19,7 @@ def student_login_route():
     if not team_id or not password:
         return jsonify({"error": "Team ID and password required"}), 400
 
-    team = db["registered_teams"].find_one({"team_id": team_id})
+    team = db["teams"].find_one({"team_id": team_id})
     if not team or not verify_password(team["password_hashed"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 

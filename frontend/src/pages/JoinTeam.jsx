@@ -268,12 +268,6 @@ const JoinTeam = () => {
                                     Your registration is complete!<br />
                                     <strong style={{ color: '#10b981' }}>Individual credentials</strong> have been sent to your registered email address.
                                 </p>
-                                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '20px', borderRadius: '12px', border: '2px solid rgba(16, 185, 129, 0.5)', margin: '20px 0', maxWidth: '400px', marginInline: 'auto' }}>
-                                    <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.6' }}>
-                                        <strong>ID:</strong> {individualId}<br />
-                                        <strong>Password:</strong> {password}
-                                    </p>
-                                </div>
                                 <p style={{ marginTop: '10px', opacity: 0.7, fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
                                     Use them to login to the User Portal.
                                 </p>

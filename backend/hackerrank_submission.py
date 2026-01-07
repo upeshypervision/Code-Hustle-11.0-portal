@@ -76,7 +76,7 @@ def submit_hackerrank_route():
         return jsonify({"success": False, "error": "Invalid Hackerrank link format."}), 400
     
     # ---------- CHECK TEAM EXISTS ----------
-    team = db.registered_teams.find_one({"team_id": team_id})
+    team = db.teams.find_one({"team_id": team_id})
     if not team:
         return jsonify({"success": False, "error": "Team not found."}), 404
     
@@ -182,7 +182,7 @@ def fetch_teams_no_hackerrank_submission():
         
         # Find teams whose ID is NOT in the submitted list
         pending_teams = list(
-            db["registered_teams"].find(
+            db["teams"].find(
                 {"team_id": {"$nin": submitted_team_ids}},
                 {"_id": 0, "team_id": 1, "team_name": 1}
             ).sort("team_id", 1)

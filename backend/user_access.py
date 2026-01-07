@@ -130,14 +130,14 @@ def select_problem_statement_route():
     if db.ppt_submissions.find_one({"team_id": team_id}):
         return jsonify({"success": False, "error": "Cannot select Problem Statement after submission."}), 400
 
-    team_doc = db.registered_teams.find_one({"team_id": team_id})
+    team_doc = db.teams.find_one({"team_id": team_id})
     if not team_doc:
         return jsonify({"success": False, "error": "Team not found."}), 404
 
     if team_doc.get('selected_ps_id'):
         return jsonify({"success": False, "error": "Problem Statement already selected and locked."}), 400
 
-    result = db.registered_teams.update_one({"team_id": team_id}, {"$set": {"selected_ps_id": ps_id}})
+    result = db.teams.update_one({"team_id": team_id}, {"$set": {"selected_ps_id": ps_id}})
     if result.modified_count > 0:
         return jsonify({"success": True, "message": "Problem Statement selected and locked successfully."})
     else:

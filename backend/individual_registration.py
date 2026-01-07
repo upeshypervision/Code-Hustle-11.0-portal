@@ -68,13 +68,6 @@ def register_individual_route():
             return jsonify({"error": "collegeName is required for non-UPES students"}), 400
 
     # ----------------------------
-    # DUPLICATE EMAIL CHECK
-    # ----------------------------
-    if db["individual"].find_one({"email": email}) \
-       or db["teams"].find_one({"leader.email": email}):
-        return jsonify({"error": "Email already registered"}), 400
-
-    # ----------------------------
     # GENERATE INDIVIDUAL ID AND CREDENTIALS
     # ----------------------------
     individual_id = get_next_individual_id()
@@ -84,22 +77,21 @@ def register_individual_route():
     # ----------------------------
     # SAVE DIRECTLY (NO PAYMENT)
     # ----------------------------
-    db["individual"].insert_one({
+    document_to_insert = {
         "individual_id": individual_id,
         "full_name": full_name,
         "about": about,
         "university_type": university_type,
         "email": email,
         "phone": phone,
-        "hypervision_id": hypervision_id or None, 
-        "sapid": sapid,
-        "college_name": college_name,
+        "hypervision_id": hypervision_id or None,
+        # Conditionally add sapid or college_name
+        "sapid": sapid if university_type == "upes" else None,
+        "college_name": college_name if university_type != "upes" else None,
         "password_hashed": password_hashed, # Store the hashed password
-        "amount": 0,
-        "status": "Joined",
         "role": "individual",
         "timestamp": datetime.utcnow().isoformat()
-    })
+    }
 
     # Send a confirmation email with credentials using the new function
     try:

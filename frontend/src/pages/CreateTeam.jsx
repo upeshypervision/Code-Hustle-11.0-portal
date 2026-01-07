@@ -15,8 +15,7 @@ const CreateTeam = () => {
         m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }
     });
 
-    // Define the backend API base URL
-    const API_BASE = "http://localhost:5000"; // Or your backend server's address
+    const API_BASE = "http://localhost:5000";
 
     const validateField = (name, value, uType, currentMemberKey) => {
         if (!value) return "Required Field";
@@ -72,27 +71,19 @@ const CreateTeam = () => {
         setFormData({ ...formData, [mKey]: { ...formData[mKey], [field]: value } });
     };
 
-    // --- NEW: submitCreateTeam function ---
     const submitCreateTeam = async () => {
-        // Perform initial validation before sending
         if (!isInitialFormValid()) {
             console.log("Initial form is not valid");
-            // You might want to show an error message here
             return;
         }
 
-        // Check if at least one member is filled
         const hasValidMember = ['m1', 'm2', 'm3', 'm4'].some(key => isMemberValid(key));
         if (!hasValidMember) {
             console.log("At least one member is required");
-            // You might want to show an error message here
             return;
         }
 
         try {
-            // Prepare the payload to match the backend expected structure EXACTLY
-            // Do NOT wrap members in an array. Send them as separate fields m1, m2, m3, m4.
-            // Backend logic handles empty mX objects.
             const payloadToSend = {
                 tName: formData.tName.trim(),
                 tBio: formData.tBio.trim(),
@@ -101,22 +92,19 @@ const CreateTeam = () => {
                 universityType: formData.universityType,
                 email: formData.email.trim().toLowerCase(),
                 phone: formData.phone.trim(),
-                sap: formData.sap.trim(), // This field holds leader's SAP or college name depending on universityType
-                // Send members as individual objects as expected by the backend
+                sap: formData.sap.trim(),
                 m1: formData.m1,
                 m2: formData.m2,
                 m3: formData.m3,
                 m4: formData.m4
             };
 
-            console.log("Sending payload (exact backend format):", payloadToSend);
-
             const response = await fetch(`${API_BASE}/api/create-team`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(payloadToSend) // Send the exact payload
+                body: JSON.stringify(payloadToSend)
             });
 
             const data = await response.json();
@@ -126,15 +114,14 @@ const CreateTeam = () => {
                 return;
             }
 
-            console.log("TEAM CREATED:", data);
-            setStep(8); // Navigate to success screen (step 8)
+            setStep(8);
         } catch (err) {
             console.error(err);
             alert("Server not reachable");
         }
     };
-    // --- END NEW FUNCTION ---
 
+    // --- MODIFIED RENDER FUNCTION ---
     const renderMemberPage = (mKey, label, nextStep) => (
         <div className="neural-node node-materialize animate-in">
             <span className="label-detail">{label}</span>
@@ -189,20 +176,33 @@ const CreateTeam = () => {
 
             <div className="forge-btn-group" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    <button className="liquid-btn" style={{ flex: 0.3 }} onClick={() => setStep(prev => prev === 4 ? 1 : prev - 1)}>BACK</button>
-                    <button
-                        className={`liquid-btn animated-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
-                        style={{ flex: 1 }}
-                        onClick={() => isMemberValid(mKey) && setStep(nextStep)}
+                    {/* UPDATED: If nextStep exists (not last page), back takes 30% width.
+                        If nextStep is missing (last page), back takes 100% width.
+                    */}
+                    <button 
+                        className="liquid-btn" 
+                        style={{ flex: nextStep ? 0.3 : 1 }} 
+                        onClick={() => setStep(prev => prev === 4 ? 1 : prev - 1)}
                     >
-                        {nextStep === 8 ? "FINALIZE ❯" : "NEXT MEMBER ❯"}
+                        BACK
                     </button>
+                    
+                    {/* UPDATED: Only render this button if nextStep is provided */}
+                    {nextStep && (
+                        <button
+                            className={`liquid-btn animated-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
+                            style={{ flex: 1 }}
+                            onClick={() => isMemberValid(mKey) && setStep(nextStep)}
+                        >
+                            {nextStep === 8 ? "FINALIZE ❯" : "NEXT MEMBER ❯"}
+                        </button>
+                    )}
                 </div>
-                {/* ✅ FIXED: Call submitCreateTeam on the final member page button */}
+                
                 <button
                     className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
                     style={{ width: '100%', padding: '15px' }}
-                    onClick={() => isMemberValid(mKey) && submitCreateTeam()} // Changed onClick to call submitCreateTeam
+                    onClick={() => isMemberValid(mKey) && submitCreateTeam()}
                 >
                     SUBMIT & CONNECT TEAM ❯
                 </button>
@@ -297,7 +297,7 @@ const CreateTeam = () => {
                                 <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}>
                                     <div className="shining-choice-row">
                                         <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button>
-                                        <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={submitCreateTeam}>CREATE TEAM</button> {/* Changed onClick to call submitCreateTeam */}
+                                        <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={submitCreateTeam}>CREATE TEAM</button>
                                     </div>
                                 </div>
                             )}
@@ -306,8 +306,7 @@ const CreateTeam = () => {
 
                     {step === 4 && renderMemberPage('m1', 'NODE_02: MEMBER 02 DETAILS', 5)}
                     {step === 5 && renderMemberPage('m2', 'NODE_03: MEMBER 03 DETAILS', 6)}
-                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', 7)}
-                    {step === 7 && renderMemberPage('m4', 'NODE_05: MEMBER 05 DETAILS', 8)}
+                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', null)} {/* Passed null implicitly, but explicit makes intent clear */}
 
                     {step === 8 && (
                         <div className="neural-node node-materialize final-aura success-node">
