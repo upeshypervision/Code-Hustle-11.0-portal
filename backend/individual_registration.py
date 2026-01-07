@@ -50,7 +50,6 @@ def register_individual_route():
         )
         if not hypervision_member:
             return jsonify({"error": "Invalid HyperVision ID"}), 400
-    # If hypervision_id is empty, hypervision_member remains None
 
     # ----------------------------
     # UNIVERSITY VALIDATION
@@ -85,7 +84,6 @@ def register_individual_route():
         "email": email,
         "phone": phone,
         "hypervision_id": hypervision_id or None,
-        # Conditionally add sapid or college_name
         "sapid": sapid if university_type == "upes" else None,
         "college_name": college_name if university_type != "upes" else None,
         "password_hashed": password_hashed, # Store the hashed password

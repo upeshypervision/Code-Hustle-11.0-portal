@@ -1,10 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../UserNavbar";
 import "../../styles/global.css"; // Ensure global styles are available
 
 import "./TeamUpPage.css";
 
 const TeamUpPage = () => {
+    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
     const [selectedRequest, setSelectedRequest] = React.useState(null);
     const [selectedMember, setSelectedMember] = React.useState(null);
@@ -12,6 +14,10 @@ const TeamUpPage = () => {
     const [chatTarget, setChatTarget] = React.useState(null);
     const [chatMessage, setChatMessage] = React.useState("");
     const [isChatExpanded, setIsChatExpanded] = React.useState(false);
+
+    // Delete Confirmation State
+    const [memberToDelete, setMemberToDelete] = React.useState(null);
+    const [deleteReason, setDeleteReason] = React.useState("");
 
     // Dummy Chat History
     // BACKEND INTEGRATION:
@@ -96,6 +102,7 @@ const TeamUpPage = () => {
     };
 
     const [teamData, setTeamData] = React.useState(initialTeamData);
+    const totalCount = 1 + (teamData.members ? teamData.members.length : 0) + (teamData.joinedMembers ? teamData.joinedMembers.length : 0);
 
     const handleDeleteMember = (id) => {
         // BACKEND INTEGRATION:
@@ -107,6 +114,27 @@ const TeamUpPage = () => {
             members: prev.members.filter(member => member.id !== id),
             joinedMembers: prev.joinedMembers.filter(member => member.id !== id)
         }));
+    };
+
+    const handleJoinedMemberDeleteClick = (member) => {
+        setMemberToDelete(member);
+        setDeleteReason("");
+    };
+
+    const confirmDeleteMember = () => {
+        if (memberToDelete) {
+            // Log reason (for backend later)
+            console.log(`Deleting member ${memberToDelete.name} for reason: ${deleteReason}`);
+
+            handleDeleteMember(memberToDelete.id);
+            setMemberToDelete(null);
+            setDeleteReason("");
+        }
+    };
+
+    const cancelDeleteMember = () => {
+        setMemberToDelete(null);
+        setDeleteReason("");
     };
 
     const handleViewMember = (member) => {
@@ -219,12 +247,7 @@ const TeamUpPage = () => {
                                     <div style={{ fontSize: "1.05rem", marginBottom: "12px" }}>
                                         Phone: {teamData.leader.phone}
                                     </div>
-                                    <div style={{ fontSize: "1.05rem" }}>
-                                        Member of UPES-Hypervision:{" "}
-                                        <span style={{ color: "#60a5fa", fontWeight: "600" }}>
-                                            {teamData.leader.isUPESHypervision ? "Yes" : "No"}
-                                        </span>
-                                    </div>
+
                                 </div>
                                 <div style={{
                                     background: "rgba(255,255,255,0.05)",
@@ -285,7 +308,9 @@ const TeamUpPage = () => {
                         {/* Members Section */}
                         {/* Members Section */}
                         <div className="team-section neural-node">
-                            <span className="label-detail teamup-label" style={{ marginBottom: "20px" }}>TEAM MEMBERS</span>
+                            <span className="label-detail teamup-label" style={{ marginBottom: "20px", fontWeight: totalCount >= 5 ? "800" : "600" }}>
+                                TEAM MEMBERS {totalCount}/5
+                            </span>
                             <div className="members-list">
                                 {teamData.members.map((member) => (
                                     <div key={member.id} className="member-item">
@@ -333,7 +358,7 @@ const TeamUpPage = () => {
                                                         </button>
                                                         <button
                                                             className="delete-btn"
-                                                            onClick={() => handleDeleteMember(member.id)}
+                                                            onClick={() => handleJoinedMemberDeleteClick(member)}
                                                             aria-label={`Delete ${member.name}`}
                                                         >
                                                             Delete
@@ -379,6 +404,20 @@ const TeamUpPage = () => {
                                         <p className="no-requests">No pending requests.</p>
                                     )}
                                 </div>
+                                {totalCount >= 3 && (
+                                    <div style={{ marginTop: "60px", display: "flex", justifyContent: "center", width: "100%" }}>
+                                        <button
+                                            className="member-view-btn"
+                                            onClick={() => navigate("/register")}
+                                            style={{
+                                                padding: "12px 32px",
+                                                fontSize: "1rem",
+                                            }}
+                                        >
+                                            Register Now
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div >
                     </div >
@@ -541,6 +580,72 @@ const TeamUpPage = () => {
                     </div>
                 )
             }
+            {/* Delete Confirmation Modal */}
+            {memberToDelete && (
+                <div className="modal-overlay" onClick={cancelDeleteMember}>
+                    <div className="modal-content request-modal-card" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="member-card-title" style={{ color: "#ef4444", textShadow: "0 0 15px rgba(239, 68, 68, 0.4)" }}>Remove Member</h2>
+                        <div className="member-card-body" style={{ gap: "20px" }}>
+                            <p style={{ color: "#cbd5e1", fontSize: "1rem", textAlign: "center", marginBottom: "0" }}>
+                                Are you sure you want to remove <span style={{ color: "#fff", fontWeight: "bold" }}>{memberToDelete.name}</span>?
+                            </p>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                                <label style={{ color: "#94a3b8", fontSize: "0.9rem", fontFamily: "'Space Mono', monospace" }}>
+                                    Reason for removal (required, min 15 words):
+                                </label>
+                                <textarea
+                                    value={deleteReason}
+                                    onChange={(e) => setDeleteReason(e.target.value)}
+                                    placeholder="Please explain why you are removing this member..."
+                                    style={{
+                                        width: "100%",
+                                        minHeight: "100px",
+                                        background: "rgba(15, 23, 42, 0.6)",
+                                        border: "1px solid rgba(148, 163, 184, 0.2)",
+                                        borderRadius: "8px",
+                                        padding: "12px",
+                                        color: "#fff",
+                                        fontFamily: "inherit",
+                                        resize: "vertical"
+                                    }}
+                                />
+                                <div style={{
+                                    textAlign: "right",
+                                    fontSize: "0.8rem",
+                                    color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15 ? "#f87171" : "#4ade80",
+                                    fontFamily: "'Space Mono', monospace"
+                                }}>
+                                    Word count: {deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length}/15
+                                </div>
+                            </div>
+
+                            <div className="request-modal-actions">
+                                <button
+                                    className="modal-action-btn"
+                                    onClick={cancelDeleteMember}
+                                    style={{ background: "rgba(148, 163, 184, 0.2)", color: "#e2e8f0", border: "1px solid rgba(148, 163, 184, 0.3)" }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="modal-action-btn"
+                                    onClick={confirmDeleteMember}
+                                    disabled={deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15}
+                                    style={{
+                                        background: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)",
+                                        color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "#ef4444" : "rgba(239, 68, 68, 0.5)",
+                                        border: "1px solid rgba(239, 68, 68, 0.3)",
+                                        cursor: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "pointer" : "not-allowed"
+                                    }}
+                                >
+                                    Remove Member
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div >
     );
 };
