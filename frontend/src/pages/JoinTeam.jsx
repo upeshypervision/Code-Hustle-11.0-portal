@@ -6,7 +6,7 @@ import './JoinTeam.css';
 
 const JoinTeam = () => { 
     const navigate = useNavigate(); 
-    const [isSubmitted, setIsSubmitted] = useState(false); // Added state for success view
+    const [isSubmitted, setIsSubmitted] = useState(false);
     const [valErrors, setValErrors] = useState({}); 
     const [formData, setFormData] = useState({ 
         fullName: '', 
@@ -17,39 +17,117 @@ const JoinTeam = () => {
         phone: '',
         hypervisionId: '' 
     }); 
+    
+    // State for displaying credentials after submission
+    const [individualId, setIndividualId] = useState("");
+    const [password, setPassword] = useState("");
 
-    const validateField = (name, value, uType) => { 
-        if (!value && name !== 'hypervisionId') return "Required Field"; 
-        if (name === 'email' && !value.includes("@")) return "Invalid format"; 
-        if (name === 'phone' && value.length !== 10) return "10 digits required"; 
-        if (name === 'sapid') { 
-            if (uType === 'UPES' && value.length !== 9) return "Must be 9 digits"; 
-        } 
-        return ""; 
+    const API_BASE = "http://localhost:5000"; 
+
+    const validateField = (name, value, uType) => {
+        if (!value.trim() && name !== 'hypervisionId') return "Required Field";
+
+        if (name === 'email' && !value.includes("@"))
+            return "Invalid email";
+
+        if (name === 'phone' && value.length !== 10)
+            return "10 digits required";
+
+        if (name === 'sapid' && uType === 'upes') {
+            if (!/^\d{9}$/.test(value))
+                return "SAP ID must be 9 digits";
+        }
+
+        return "";
     }; 
 
     const handleBlur = (field, value) => { 
-        const error = validateField(field, value, formData.universityType); 
+        const error = validateField(field, value, formData.universityType.toLowerCase()); 
         setValErrors(prev => ({ ...prev, [field]: error })); 
     }; 
 
-    const isFormValid = () => { 
-        const emailErr = validateField('email', formData.email); 
-        const phoneErr = validateField('phone', formData.phone); 
-        const sapErr = validateField('sapid', formData.sapid, formData.universityType); 
-        
-        return (
-            formData.fullName.trim() !== '' && 
-            formData.bio.trim() !== '' && 
-            formData.universityType !== '' && 
-            formData.sapid.trim() !== '' && 
-            !emailErr && !phoneErr && !sapErr
-        ); 
+    const isFormValid = () => {
+        const uType = formData.universityType.toLowerCase();
+
+        if (!formData.fullName.trim()) return false;
+        if (!formData.bio.trim()) return false;
+        if (!uType) return false;
+        if (!formData.email.trim()) return false;
+        if (!formData.phone.trim()) return false;
+
+        if (uType === 'upes') {
+            if (!formData.sapid.trim()) return false;
+            if (validateField('sapid', formData.sapid, uType)) return false;
+        } else {
+            if (!formData.sapid.trim()) return false;
+        }
+
+        if (validateField('email', formData.email, uType)) return false;
+        if (validateField('phone', formData.phone, uType)) return false;
+        if (validateField('hypervisionId', formData.hypervisionId, uType)) return false;
+
+        return true;
     }; 
 
     const updateField = (field, value) => { 
         setFormData({ ...formData, [field]: value }); 
     }; 
+
+    const handleSubmit = async () => {
+        if (!isFormValid()) {
+             console.log("Form is invalid according to current rules");
+             return;
+        }
+
+        try {
+            const payload = {
+                fullName: formData.fullName.trim(),
+                about: formData.bio.trim(),
+                universityType: formData.universityType.toLowerCase(),
+                email: formData.email.trim().toLowerCase(),
+                phone: formData.phone.trim(),
+                hypervisionId: formData.hypervisionId.trim()
+            };
+
+            if (payload.universityType === 'upes') {
+                payload.sapid = formData.sapid.trim();
+            } else {
+                payload.collegeName = formData.sapid.trim();
+            }
+
+            console.log("Sending payload:", payload);
+
+            const response = await fetch(`${API_BASE}/api/register-individual`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            console.log("Response status:", response.status);
+
+            const result = await response.json();
+            console.log("Response ", result);
+
+            if (response.ok && result.success) {
+                 // Set the credentials in state for display
+                 setIndividualId(result.individual_id);
+                 setPassword(result.password);
+                 
+                 // Print credentials to console
+                 console.log("Individual ID:", result.individual_id);
+                 console.log("Password:", result.password);
+                 
+                 setIsSubmitted(true);
+            } else {
+                alert(result.error || `Registration failed. Server responded with status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error joining individually:', error);
+            alert('An unexpected error occurred during joining. Please try again.');
+        }
+    };
 
     return ( 
         <div className="app-viewport forge-container"> 
@@ -70,74 +148,112 @@ const JoinTeam = () => {
                         <div className="neural-node node-materialize animate-in"> 
                             <span className="label-detail">NODE: PARTICIPANT PROFILE</span> 
                             
-                            {/* NAME FIELD */}
                             <div className="input-group"> 
                                 <div className="label-row"><span>FULL NAME <span className="v-tag">*</span></span></div> 
                                 <div className={`glow-input-container animated-field ${valErrors.fullName ? 'error-border' : ''}`}> 
-                                    <input className="glow-input" placeholder="Enter your name..." value={formData.fullName} onChange={(e) => updateField('fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value)} /> 
+                                    <input 
+                                        className="glow-input" 
+                                        placeholder="Enter your name..." 
+                                        value={formData.fullName} 
+                                        onChange={(e) => updateField('fullName', e.target.value)} 
+                                        onBlur={(e) => handleBlur('fullName', e.target.value)} 
+                                    /> 
                                 </div> 
                                 {valErrors.fullName && <p className="error-message-inline">{valErrors.fullName}</p>}
                             </div> 
 
-                            {/* BIO FIELD */}
                             <div className="input-group" style={{ marginTop: '12px' }}> 
                                 <div className="label-row"><span>ABOUT & SKILLS <span className="v-tag">*</span></span></div> 
                                 <div className={`glow-input-container animated-field ${valErrors.bio ? 'error-border' : ''}`}> 
-                                    <textarea className="glow-input" rows="3" placeholder="Tell us about your technical stack and skills..." value={formData.bio} onChange={(e) => updateField('bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value)}></textarea> 
+                                    <textarea 
+                                        className="glow-input" 
+                                        rows="3" 
+                                        placeholder="Tell us about your technical stack and skills..." 
+                                        value={formData.bio} 
+                                        onChange={(e) => updateField('bio', e.target.value)} 
+                                        onBlur={(e) => handleBlur('bio', e.target.value)}
+                                    ></textarea> 
                                 </div> 
                                 {valErrors.bio && <p className="error-message-inline">{valErrors.bio}</p>}
                             </div>
 
-                            {/* UNIVERSITY SELECT */}
                             <div className="input-group" style={{ marginTop: '12px' }}> 
                                 <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div> 
                                 <div className="glow-input-container animated-field"> 
-                                    <select className="glow-input" value={formData.universityType} onChange={(e) => updateField('universityType', e.target.value)}> 
+                                    <select 
+                                        className="glow-input" 
+                                        value={formData.universityType}
+                                        onChange={(e) => updateField('universityType', e.target.value.toLowerCase())}
+                                    > 
                                         <option value="">Select</option> 
-                                        <option value="UPES">UPES</option> 
-                                        <option value="Others">Others</option> 
+                                        <option value="upes">UPES</option> 
+                                        <option value="others">Others</option> 
                                     </select> 
                                 </div> 
                             </div> 
 
-                            {/* SAP ID / UNI NAME */}
                             {formData.universityType && ( 
                                 <div className="input-group" style={{ marginTop: '12px' }}> 
-                                    <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNIVERSITY NAME'} <span className="v-tag">*</span></span></div> 
+                                    <div className="label-row">
+                                        <span>
+                                            {formData.universityType === 'upes' ? 'SAP ID' : 'UNIVERSITY NAME'} 
+                                            <span className="v-tag">*</span>
+                                        </span>
+                                    </div> 
                                     <div className={`glow-input-container animated-field ${valErrors.sapid ? 'error-border' : ''}`}> 
-                                        <input className="glow-input" placeholder={formData.universityType === 'UPES' ? '9 Digits' : 'Enter University Name'} value={formData.sapid} 
-                                        onChange={(e) => updateField('sapid', e.target.value)} 
-                                        onBlur={(e) => handleBlur('sapid', e.target.value)} /> 
+                                        <input 
+                                            className="glow-input" 
+                                            placeholder={formData.universityType === 'upes' ? '9 Digits' : 'Enter University Name'} 
+                                            value={formData.sapid} 
+                                            onChange={(e) => updateField('sapid', e.target.value)} 
+                                            onBlur={(e) => handleBlur('sapid', e.target.value)} 
+                                        /> 
                                     </div> 
                                     {valErrors.sapid && <p className="error-message-inline">{valErrors.sapid}</p>}
                                 </div> 
                             )} 
 
-                            {/* HYPERVISION ID (OPTIONAL) */}
                             <div className="input-group" style={{ marginTop: '12px' }}> 
-                                <div className="label-row"><span>HYPERVISION ID</span></div> 
-                                <div className="glow-input-container animated-field"> 
-                                    <input className="glow-input" placeholder="Enter ID if applicable..." value={formData.hypervisionId} onChange={(e) => updateField('hypervisionId', e.target.value)} /> 
+                                <div className="label-row"><span>HYPERVISION ID (Optional)</span></div>
+                                <div className={`glow-input-container animated-field ${valErrors.hypervisionId ? 'error-border' : ''}`}>
+                                    <input 
+                                        className="glow-input" 
+                                        placeholder="Enter your Hypervision ID (if applicable)..." 
+                                        value={formData.hypervisionId} 
+                                        onChange={(e) => updateField('hypervisionId', e.target.value)} 
+                                    /> 
                                 </div> 
+                                {formData.hypervisionId && valErrors.hypervisionId && <p className="error-message-inline">{valErrors.hypervisionId}</p>}
                             </div> 
 
-                            {/* CONTACT INFO CAPSULE */}
                             <div className="input-group" style={{ marginTop: '12px' }}> 
                                 <div className="label-row"><span>CONTACT DETAILS <span className="v-tag">*</span></span></div> 
                                 <div className={`dual-glow-capsule animated-field ${(valErrors.email || valErrors.phone) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center' }}> 
-                                    <input className="capsule-input-left" placeholder="Email Address" value={formData.email} onChange={(e) => updateField('email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value)} /> 
+                                    <input 
+                                        className="capsule-input-left" 
+                                        placeholder="Email Address" 
+                                        value={formData.email} 
+                                        onChange={(e) => updateField('email', e.target.value)} 
+                                        onBlur={(e) => handleBlur('email', e.target.value)} 
+                                    /> 
                                     <div className="capsule-divider"></div> 
-                                    <input className="capsule-input-right" placeholder="Phone" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value)} /> 
+                                    <input 
+                                        className="capsule-input-right" 
+                                        placeholder="Phone" 
+                                        value={formData.phone} 
+                                        onChange={(e) => updateField('phone', e.target.value)} 
+                                        onBlur={(e) => handleBlur('phone', e.target.value)} 
+                                    /> 
                                 </div> 
                                 {(valErrors.email || valErrors.phone) && <p className="error-message-inline">{valErrors.email || valErrors.phone}</p>}
                             </div> 
 
-                            {/* JOIN BUTTON */}
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
                                 <button 
                                     className={`liquid-btn animated-btn ${!isFormValid() ? 'btn-locked' : ''}`} 
                                     style={{ width: '100%', padding: '18px' }} 
-                                    onClick={() => isFormValid() && setIsSubmitted(true)}
+                                    onClick={handleSubmit}
+                                    disabled={!isFormValid()}
                                 >
                                     JOIN & CONNECT ❯
                                 </button>
@@ -147,11 +263,24 @@ const JoinTeam = () => {
                         /* SUCCESS PAGE VIEW */
                         <div className="neural-node node-materialize animate-in success-node"> 
                             <div className="completion-vfx" style={{ textAlign: 'center', padding: '20px 0' }}>
-                                <h2 className="glow-status-text">PROFILE CREATED SUCCESSFULLY!</h2>
+                                <h2 className="glow-status-text">JOINED SUCCESSFULLY!</h2>
+                                <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.8' }}>
+                                    Your registration is complete!<br />
+                                    <strong style={{ color: '#10b981' }}>Individual credentials</strong> have been sent to your registered email address.
+                                </p>
+                                <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '20px', borderRadius: '12px', border: '2px solid rgba(16, 185, 129, 0.5)', margin: '20px 0', maxWidth: '400px', marginInline: 'auto' }}>
+                                    <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.6' }}>
+                                        <strong>ID:</strong> {individualId}<br />
+                                        <strong>Password:</strong> {password}
+                                    </p>
+                                </div>
+                                <p style={{ marginTop: '10px', opacity: 0.7, fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
+                                    Use them to login to the User Portal.
+                                </p>
                             </div> 
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
                                 <button className="liquid-btn animated-btn" style={{ width: '100%', padding: '18px' }} onClick={() => navigate('/connect')}>
-                                    ACKNOWLEDGE ❯
+                                    GO TO LOGIN →
                                 </button>
                             </div>
                         </div>
