@@ -21,6 +21,9 @@ import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.js
 import JoinTeam from "./pages/JoinTeam.jsx";
 
 
+import EvaluatorLogin from "./pages/EvaluatorLogin";
+import EvaluatorPanel from "./pages/EvaluatorPanel";
+
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 
 function App() {
@@ -41,7 +44,18 @@ function App() {
         <Route path="/join" element={<JoinTeam />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/evaluator-login" element={<EvaluatorLogin />} />
+        <Route
+          path="/evaluator-dashboard"
+          element={
+            <ProtectedRoute role="evaluator">
+              <EvaluatorPanel />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/Arena"

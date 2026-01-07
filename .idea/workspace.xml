@@ -5,35 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/TeamUpPage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/teamuppage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamDetailsModal.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamUp.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamUpDashboard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Teamup.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/pages/Teamup.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/git_submission.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/git_submission.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/submit_ppt.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/submit_ppt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/login.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/user_access.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/user_access.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Navbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/UserNavbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/UserNavbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminDashboard.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ProtectedRoute.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ProtectedRoute.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminSidebar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Round1.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/RoundManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/user_dash/UserSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/user_dash/UserSidebar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdminPanel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdminPanel.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Registration.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Registration.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPortal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/styles/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles/global.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +64,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Merging team__selection",
+    "git-widget-placeholder": "team__selection",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

@@ -183,6 +183,7 @@ def check_github_submission_route():
 def fetch_approved_github_teams():
     """
     Admin route: Fetch teams whose GitHub submission is APPROVED (Winner)
+    Returns complete team data including members, leader, etc.
     """
     db = get_db()
 
@@ -200,10 +201,23 @@ def fetch_approved_github_teams():
 
     try:
         # Get approved GitHub submissions (Winners)
-        approved_teams = list(
+        approved_github_docs = list(
             db.github_submissions.find(
                 {"approval_status": "approved"},
-                {"_id": 0, "team_id": 1, "team_name": 1}
+                {"_id": 0, "team_id": 1}
+            )
+        )
+        
+        approved_team_ids = [doc["team_id"] for doc in approved_github_docs]
+        
+        if not approved_team_ids:
+            return jsonify({"success": True, "teams": []}), 200
+
+        # Fetch COMPLETE team data from teams collection
+        approved_teams = list(
+            db.teams.find(
+                {"team_id": {"$in": approved_team_ids}},
+                {"_id": 0, "password_hashed": 0}  # Exclude only sensitive fields
             )
         )
 

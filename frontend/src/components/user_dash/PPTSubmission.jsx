@@ -80,6 +80,25 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
     }, []);
 
+    // Listen for PPT approval updates
+    useEffect(() => {
+        const handlePPTApprovalUpdate = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/api/check-ppt-submission", {
+                    credentials: "include",
+                });
+                const data = await res.json();
+                if (data.success && data.is_submitted) {
+                    setSubmittedFile(data.submission);
+                }
+            } catch (err) {
+                console.error("Error refetching PPT status:", err);
+            }
+        };
+        socket.on("ppt_approval_updated", handlePPTApprovalUpdate);
+        return () => socket.off("ppt_approval_updated", handlePPTApprovalUpdate);
+    }, []);
+
     // --- CHECK ROUND STATUS ---
     useEffect(() => {
         const checkRoundStatus = async () => {
