@@ -316,7 +316,7 @@ const CreateTeam = () => {
                                 <br></br>
                             </div>
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
-                                <button className="liquid-btn animated-btn" style={{ width: '100%' }} onClick={() => navigate('/connect')}>ACKNOWLEDGE</button>
+                                <button className="liquid-btn animated-btn" style={{ width: '100%' }} onClick={() => navigate('/team-login')}>LOG IN</button>
                             </div>
                         </div>
                     )}
