@@ -171,4 +171,45 @@ def evaluator_login_route():
     )
     return response
 
+def individual_login_route():
+    data = request.json or {}
 
+    individual_id = data.get("individual_id", "").strip()
+    password = data.get("password", "").strip()
+
+    if not individual_id or not password:
+        return jsonify({"error": "Team ID and password required"}), 400
+
+    individual = db["individual"].find_one({"individual_id": individual_id})
+    if not individual or not verify_password(individual["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    payload = {
+        "individual_id": individual_id,
+        "role": "student",
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({
+        "success": True,
+        "message": "Login successful",
+        "individual_id": individual["individual_id"],
+        "leader": individual["leader"],
+        "members": individual["members"],
+        "status": individual["status"]
+    }))
+    
+    response.set_cookie(
+        'student_auth',
+        token,
+        httponly=True,        # Prevents XSS
+        secure=COOKIE_SECURE, # Auto-set based on environment
+        samesite='Lax',
+        max_age=JWT_EXPIRE_HOURS * 3600
+    )
+    return response
