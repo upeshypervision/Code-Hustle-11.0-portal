@@ -2,6 +2,7 @@ from config import RESEND_APIKEY
 import resend
 
 resend.api_key = RESEND_APIKEY
+
 def send_registration_email(email_id,team_id,password):
     resend.Emails.send({
         "from": "noreply@upeshypervision.in",
@@ -14,7 +15,7 @@ def send_registration_email(email_id,team_id,password):
 
       <!-- Top image -->
       <img
-        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0top.png"
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0top.png  "
         width="600"
         style="display:block;"
         alt=""
@@ -38,7 +39,7 @@ def send_registration_email(email_id,team_id,password):
 
       <!-- Bottom image -->
       <img
-        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png"
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png  "
         width="600"
         style="display:block;"
         alt=""
@@ -59,7 +60,7 @@ def send_registration_email(email_id,team_id,password):
     <td align="center">
       <a href="WA link here">
         <img
-          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/main/download.png"
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/main/download.png  "
           width="48"
           alt="Whatsapp"
           style="display:block;"
@@ -78,9 +79,9 @@ def send_registration_email(email_id,team_id,password):
   <!-- Website icon -->
   <tr>
     <td align="center">
-      <a href="https://codehustle11.upeshypervision.in/userlogin">
+      <a href="https://codehustle11.upeshypervision.in/userlogin  ">
         <img
-          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png"
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png  "
           width="68"
           alt="Website"
           style="display:block;"
@@ -93,4 +94,22 @@ def send_registration_email(email_id,team_id,password):
 </table>
 """
 
+    })
+
+def send_individual_registration_email(email_address, individual_id, password):
+    resend.Emails.send({
+        "from": "noreply@upeshypervision.in",
+        "to": email_address,
+        "subject": "Code Hustle 11.0 – Individual Registration",
+        "html": f"""
+        <h2>Welcome to Code Hustle 11.0</h2>
+        <p>You have successfully registered as an individual participant.</p>
+
+        <p><strong>ID:</strong> {individual_id}</p>
+        <p><strong>Password:</strong> {password}</p>
+
+        <p>Login here:
+        <a href="https://codehustle11.upeshypervision.in/userlogin  ">
+        Portal Login</a></p>
+        """
     })
