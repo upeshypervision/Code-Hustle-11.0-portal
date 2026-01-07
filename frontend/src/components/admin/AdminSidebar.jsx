@@ -51,6 +51,15 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
 
         <li className="admin-nav-item">
           <a
+            className={`admin-nav-link ${activeSection === "review-ppts" ? "active" : ""}`}
+            onClick={() => setActiveSection("review-ppts")}
+          >
+            <span>Review PPTs</span>
+          </a>
+        </li>
+
+        <li className="admin-nav-item">
+          <a
             className={`admin-nav-link ${activeSection === "manual-ppt" ? "active" : ""
               }`}
             onClick={() => setActiveSection("manual-ppt")}

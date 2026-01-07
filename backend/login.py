@@ -119,7 +119,56 @@ def check_student_auth_route():
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return jsonify({"authenticated": False}), 401
 
-def setup_login_routes(app):
-    app.route("/api/student-login", methods=["POST"])(student_login_route)
-    app.route("/api/admin-login", methods=["POST"])(admin_login_route)
-    app.route("/api/check-auth", methods=["GET"])(check_auth_route)
+def evaluator_login_route():
+    data = request.json or {}
+    username = data.get("username", "").strip()
+    password = data.get("password", "").strip()
+
+    if not username or not password:
+        return jsonify({"error": "Username and password required"}), 400
+
+    # Query the 'evaluator' table
+    try:
+        evaluator = db["evaluator"].find_one({"username": username})
+        
+        if not evaluator:
+             return jsonify({"error": "Invalid credentials"}), 401
+
+        # Check if password field exists
+        if "password" not in evaluator:
+            return jsonify({"error": "Invalid credentials"}), 401
+
+        stored_hash = evaluator["password"]
+        
+        # Verify password (handle both string and bytes for stored_hash)
+        if isinstance(stored_hash, bytes):
+            stored_hash = stored_hash.decode('utf-8')
+            
+        if not verify_password(stored_hash, password):
+            return jsonify({"error": "Invalid credentials"}), 401
+
+    except Exception:
+        return jsonify({"error": "Internal Server Error"}), 500
+
+    # --- JWT GENERATION ---
+    expire_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=12) # 12 hour session
+    payload = {
+        "username": username,
+        "role": "evaluator",
+        "exp": expire_date
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({"success": True, "message": "Login successful"}))
+    response.set_cookie(
+        'evaluator_auth',
+        token,
+        httponly=True,        # Prevents XSS
+        secure=COOKIE_SECURE, # Auto-set based on environment
+        samesite='Lax',
+        max_age=12 * 3600     # 12 hours in seconds
+    )
+    return response
+
+

@@ -259,6 +259,7 @@ def check_ppt_submission_route():
 def fetch_approved_ppt_teams():
     """
     Admin route: Fetch teams whose PPT submission is APPROVED
+    Returns complete team data including members, leader, etc.
     """
     db = get_db()
 
@@ -288,11 +289,11 @@ def fetch_approved_ppt_teams():
         if not approved_team_ids:
             return jsonify({"success": True, "teams": []}), 200
 
-        # Fetch details from teams collection TO ENSURE we have names
+        # Fetch COMPLETE team data from teams collection
         approved_teams = list(
             db.teams.find(
                 {"team_id": {"$in": approved_team_ids}},
-                {"_id": 0, "team_id": 1, "team_name": 1}
+                {"_id": 0, "password_hashed": 0}  # Exclude only sensitive fields
             )
         )
 

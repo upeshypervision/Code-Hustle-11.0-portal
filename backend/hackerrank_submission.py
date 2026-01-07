@@ -230,7 +230,7 @@ def fetch_all_hackerrank_submissions():
 def fetch_approved_hackerrank_teams():
     """
     Admin route: Fetch teams whose Hackerrank submission is APPROVED
-    Used for dropdowns
+    Returns complete team data including members, leader, etc.
     """
     db = get_db()
 
@@ -247,10 +247,24 @@ def fetch_approved_hackerrank_teams():
         return jsonify({"success": False, "error": "Invalid admin session"}), 401
 
     try:
-        approved_teams = list(
+        # Get approved Hackerrank submissions
+        approved_submissions = list(
             db.Hackerrank_submission.find(
                 {"approval_status": "approved"},
-                {"_id": 0, "team_id": 1, "team_name": 1}
+                {"_id": 0, "team_id": 1}
+            )
+        )
+        
+        approved_team_ids = [doc["team_id"] for doc in approved_submissions]
+        
+        if not approved_team_ids:
+            return jsonify({"success": True, "teams": []}), 200
+
+        # Fetch COMPLETE team data from teams collection
+        approved_teams = list(
+            db.teams.find(
+                {"team_id": {"$in": approved_team_ids}},
+                {"_id": 0, "password_hashed": 0}  # Exclude only sensitive fields
             )
         )
 

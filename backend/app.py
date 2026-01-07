@@ -1,12 +1,10 @@
-# backend/app.py
 from flask import Flask, request, jsonify
-from database import db
 from flask_cors import CORS
 from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route
+from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route
 from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
@@ -23,15 +21,7 @@ from user_access import (
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
-from hackerrank_submission import (
-    submit_hackerrank_route, 
-    check_hackerrank_submission_route,
-    fetch_teams_no_hackerrank_submission,
-    fetch_all_hackerrank_submissions,
-    approve_hackerrank_submission
-)
 from round_management import get_round_status_route, update_round_status_route
-from flask_socketio import SocketIO, emit
 from socketio_instance import socketio
 from hackerrank_submission import (
     submit_hackerrank_route, 
@@ -39,8 +29,16 @@ from hackerrank_submission import (
     fetch_teams_no_hackerrank_submission,
     fetch_all_hackerrank_submissions,
     approve_hackerrank_submission,
-    fetch_approved_hackerrank_teams  
+    fetch_approved_hackerrank_teams
 )
+from evaluator import (
+    get_assigned_submissions_route,
+    submit_marks_route,
+    distribute_submissions_route,
+    check_evaluator_auth_route)
+
+from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
+
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -83,6 +81,38 @@ def razorpay_webhook():
 @app.route("/api/student-login", methods=["POST"])
 def student_login():
     return student_login_route()
+
+@app.route("/api/evaluator-login", methods=["POST"])
+def evaluator_login():
+    return evaluator_login_route()
+
+@app.route("/api/check-evaluator-auth", methods=["GET"])
+def check_evaluator_auth():
+    return check_evaluator_auth_route()
+
+@app.route("/api/evaluator/assigned-submissions", methods=["GET"])
+def get_assigned_submissions():
+    return get_assigned_submissions_route()
+
+@app.route("/api/evaluator/submit-marks", methods=["POST"])
+def submit_marks():
+    return submit_marks_route()
+
+@app.route("/api/admin/distribute-submissions", methods=["POST"])
+def distribute_submissions():
+    return distribute_submissions_route()
+
+
+# PPT Review Routes (Admin)
+@app.route("/api/admin/evaluated-ppts", methods=["GET"])
+def get_evaluated_ppts():
+    return get_evaluated_submissions_route()
+
+@app.route("/api/admin/update-ppt-approval", methods=["POST"])
+def update_ppt_approval():
+    return update_ppt_approval_route()
+
+
 
 @app.route("/api/admin/add-team", methods=["POST"])
 def register_manual_team():

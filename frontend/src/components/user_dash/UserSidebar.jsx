@@ -3,10 +3,10 @@ import React from 'react';
 export default function UserSidebar({ activeTab, setActiveTab }) {
     const menuItems = [
         { id: 'dashboard', label: 'DASHBOARD' },
-        { id: 'hackerrank-submission', label: 'ROUND 1: HACKERRANK PROTOCOL' },
-        { id: 'ps-selection', label: 'ROUND 2: PROBLEM STATEMENT' },
-        { id: 'ppt-submission', label: 'ROUND 2: PPT SUBMISSION' },
-        { id: 'github-submission', label: 'ROUND 3: GITHUB LINK SUBMISSION' },
+        { id: 'hackerrank-submission', label: 'HACKERRANK PROTOCOL' },
+        { id: 'ps-selection', label: 'PROBLEM STATEMENT SUBMISSION' },
+        { id: 'ppt-submission', label: 'PPT SUBMISSION' },
+        { id: 'github-submission', label: 'GITHUB LINK SUBMISSION' },
     ];
 
     return (

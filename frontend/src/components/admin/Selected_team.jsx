@@ -55,8 +55,18 @@ export default function SelectedTeam() {
     }
   };
 
+  const [expandedTeamId, setExpandedTeamId] = useState(null);
+
+  const toggleExpand = (id) => {
+    setExpandedTeamId(expandedTeamId === id ? null : id);
+  };
+
+  // Reuse styling from ViewTeams or embed simpler version if CSS not imported
+  // But strictly, we should try to match the UI.
+
   return (
     <div className="admin-content">
+      {/* Existing Styles + New embedded styles for tables to avoid dependency issues if ViewTeams.css isn't global */}
       <style>
         {`
           .custom-select {
@@ -91,6 +101,73 @@ export default function SelectedTeam() {
             color: #fff;
             padding: 10px;
           }
+          
+          /* New Styles for Expanded View */
+          .st-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          .st-header {
+             padding: 15px 20px;
+             display: flex;
+             align-items: center;
+             justify-content: space-between;
+             cursor: pointer;
+             transition: background 0.2s;
+          }
+          .st-header:hover {
+             background: rgba(255,255,255,0.08);
+          }
+          .st-details {
+             padding: 0 20px 20px 20px;
+             border-top: 1px solid rgba(255,255,255,0.05);
+             animation: slideDown 0.3s ease-out;
+             background: rgba(0,0,0,0.2);
+          }
+          @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .navy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+          }
+          .navy-table th {
+            text-align: left;
+            padding: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          .navy-table td {
+            padding: 10px;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          .info-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+             gap: 20px;
+             margin-top: 20px;
+          }
+          .info-item {
+             display: flex;
+             flex-direction: column;
+          }
+          .info-label {
+             color: #94a3b8;
+             font-size: 0.8rem;
+             margin-bottom: 5px;
+          }
+          .info-val {
+             color: #fff;
+             font-weight: 500;
+          }
         `}
       </style>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
@@ -116,39 +193,93 @@ export default function SelectedTeam() {
           No teams found for {getRoundTitle()}.
         </p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <div className="teams-list">
           {teams.map((team, index) => (
-            <li
-              key={team.team_id || index}
-              style={{
-                padding: "12px 16px",
-                marginBottom: "10px",
-                background: "rgba(255,255,255,0.05)",
-                borderRadius: "8px",
-                color: "#fff",
-                fontWeight: "600",
-                display: "flex",
-                alignItems: "center"
-              }}
-            >
-              <span style={{
-                marginRight: "15px",
-                opacity: 0.5,
-                fontSize: "0.8rem",
-                fontFamily: "monospace",
-                width: "25px"
-              }}>
-                {index + 1}.
-              </span>
-              <span style={{ color: "#22c55e", marginRight: "10px" }}>
-                {team.team_id}
-              </span>
-              {team.team_name && (
-                <span style={{ opacity: 0.9 }}> – {team.team_name}</span>
+            <div key={team.team_id || index} className="st-card">
+              <div
+                className="st-header"
+                onClick={() => toggleExpand(team.team_id)}
+              >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{
+                    marginRight: "15px",
+                    opacity: 0.5,
+                    fontSize: "0.8rem",
+                    fontFamily: "monospace",
+                    width: "25px"
+                  }}>
+                    {index + 1}.
+                  </span>
+                  <span style={{ color: "#22c55e", marginRight: "10px", fontWeight: "bold" }}>
+                    {team.team_id}
+                  </span>
+                  {team.team_name && (
+                    <span style={{ color: "#fff", fontWeight: "600", fontSize: '1.1rem' }}> – {team.team_name}</span>
+                  )}
+                </div>
+                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem" }}>
+                  {expandedTeamId === team.team_id ? "▲ Collapse" : "▼ Details"}
+                </span>
+              </div>
+
+              {expandedTeamId === team.team_id && (
+                <div className="st-details">
+                  {/* Members Table */}
+                  <table className="navy-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>SAP ID</th>
+                        <th>Contact</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Leader */}
+                      {team.leader && (
+                        <tr>
+                          <td style={{ color: "#fff", fontWeight: 600 }}>{team.leader.fullName}</td>
+                          <td style={{ color: "#38bdf8" }}>LEADER</td>
+                          <td>{team.leader.email}</td>
+                          <td>{team.leader.sapid}</td>
+                          <td>{team.leader.phone}</td>
+                        </tr>
+                      )}
+                      {/* Members */}
+                      {team.members && team.members.map((m, idx) => (
+                        <tr key={idx}>
+                          <td>{m.fullName}</td>
+                          <td>MEMBER</td>
+                          <td>{m.email}</td>
+                          <td>{m.sapid}</td>
+                          <td>{m.phone}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Info Grid (No Payment) */}
+                  <div className="info-grid">
+                    <div className="info-item">
+                      <span className="info-label">Assigned Problem Statement</span>
+                      <span className="info-val" style={{ color: team.selected_ps_id ? '#fbbf24' : '#94a3b8' }}>
+                        {team.selected_ps_id || "Not Selected"}
+                      </span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">Registration Date</span>
+                      <span className="info-val">
+                        {team.timestamp ? new Date(team.timestamp).toLocaleDateString() : "N/A"}
+                      </span>
+                    </div>
+                    {/* Add other non-payment fields if available */}
+                  </div>
+                </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

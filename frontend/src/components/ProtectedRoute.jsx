@@ -9,7 +9,9 @@ export default function ProtectedRoute({ children, role = "admin" }) {
       const endpoint =
         role === "student"
           ? "http://localhost:5000/api/check-student-auth"
-          : "http://localhost:5000/api/check-auth";
+          : role === "evaluator"
+            ? "http://localhost:5000/api/check-evaluator-auth"
+            : "http://localhost:5000/api/check-auth";
 
       try {
         const res = await fetch(endpoint, {
@@ -32,13 +34,18 @@ export default function ProtectedRoute({ children, role = "admin" }) {
       <div style={{ color: "#fff", padding: "20px", textAlign: "center" }}>
         {role === "student"
           ? "Authenticating Session..."
-          : "Verifying Access..."}
+          : role === "evaluator"
+            ? "Verifying Evaluator..."
+            : "Verifying Access..."}
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    const redirectPath = role === "student" ? "/userlogin" : "/admin-login";
+    const redirectPath =
+      role === "student" ? "/userlogin" :
+        role === "evaluator" ? "/evaluator-login" :
+          "/admin-login";
     return <Navigate to={redirectPath} replace />;
   }
 
