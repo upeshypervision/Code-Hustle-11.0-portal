@@ -202,21 +202,35 @@ def fetch_submissions_route():
 # ✅ ONLY ONE DEFINITION — OPTIMIZED
 def generate_presigned_url_route(team_id):
     """
-    Generate a presigned S3 URL for admin to view/download a team's submission.
+    Generate a presigned S3 URL for admin OR evaluator to view/download a team's submission.
     Supports ?disposition=inline (default) or ?disposition=attachment.
     """
     admin_cookie = request.cookies.get('admin_auth')
-    if not admin_cookie:
-        return jsonify({"error": "Admin authentication required"}), 401
+    evaluator_cookie = request.cookies.get('evaluator_auth')
+    
+    auth_success = False
 
-    try:
-        payload = jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        if payload.get("role") != "admin":
-            return jsonify({"error": "Forbidden"}), 403
-    except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Session expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid session"}), 401
+    # Check Admin Auth
+    if admin_cookie:
+        try:
+            payload = jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            if payload.get("role") == "admin":
+                auth_success = True
+        except:
+            pass
+            
+    # Check Evaluator Auth (if not already admin authenticated)
+    if not auth_success and evaluator_cookie:
+        try:
+            payload = jwt.decode(evaluator_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            # Evaluators just need a valid token with a username
+            if payload.get("username"):
+                auth_success = True
+        except:
+            pass
+
+    if not auth_success:
+        return jsonify({"error": "Admin or Evaluator authentication required"}), 401
 
     try:
         submission = db.ppt_submissions.find_one({"team_id": team_id})

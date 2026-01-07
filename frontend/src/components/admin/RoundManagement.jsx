@@ -8,6 +8,7 @@ export default function RoundManagement() {
   const [githubSubmissionState, setGithubSubmissionState] = useState("not_started");
   const [hackerrankSubmissionState, setHackerrankSubmissionState] = useState("not_started");
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
 
   // Fetch current round status on mount
   useEffect(() => {
@@ -58,7 +59,33 @@ export default function RoundManagement() {
     }
   };
 
-  const handleStateChange = (roundType, newState) => {
+  const handleStateChange = async (roundType, newState) => {
+    // Check if closing PPT upload round
+    if (roundType === 'ppt_upload' && newState === 'closed') {
+      // Automatically distribute without blocking confirm, or assume user action of verify
+      // User requested "remove the js alert", implying streamlined flow.
+      // We will trigger distribution and show a toast.
+
+      // Trigger distribution
+      try {
+        setNotification({ type: 'info', message: 'Distributing submissions...' });
+        const res = await fetch('http://localhost:5000/api/admin/distribute-submissions', {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (data.success) {
+          setNotification({ type: 'success', message: data.message || "Submissions distributed successfully!" });
+          setTimeout(() => setNotification(null), 5000);
+        } else {
+          setNotification({ type: 'error', message: "Distribution Warning: " + data.error });
+        }
+      } catch (err) {
+        console.error("Distribution error:", err);
+        setNotification({ type: 'error', message: "Error triggering submission distribution." });
+      }
+    }
+
     // Update local state
     switch (roundType) {
       case 'ps_selection':
@@ -96,6 +123,24 @@ export default function RoundManagement() {
         >
           Control access to specific round activities for participants.
         </p>
+
+        {notification && (
+          <div style={{
+            marginTop: "15px",
+            padding: "10px 15px",
+            borderRadius: "6px",
+            background: notification.type === 'success' ? 'rgba(34, 197, 94, 0.1)' :
+              notification.type === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+            border: `1px solid ${notification.type === 'success' ? '#22c55e' :
+              notification.type === 'error' ? '#ef4444' : '#3b82f6'}`,
+            color: notification.type === 'success' ? '#22c55e' :
+              notification.type === 'error' ? '#ef4444' : '#60a5fa',
+            fontSize: "0.9rem",
+            fontWeight: "500"
+          }}>
+            {notification.message}
+          </div>
+        )}
       </div>
 
 

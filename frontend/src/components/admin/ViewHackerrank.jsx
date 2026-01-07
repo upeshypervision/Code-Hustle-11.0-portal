@@ -60,10 +60,6 @@ export default function ViewHackerrank() {
     };
 
     const handleApprove = async (teamId) => {
-        if (!confirm(`Approve Hackerrank submission for team ${teamId}? This will qualify them for Round 2.`)) {
-            return;
-        }
-
         setProcessingTeamId(teamId);
         try {
             const res = await fetch(`${API}/api/admin/approve-hackerrank`, {
@@ -77,21 +73,16 @@ export default function ViewHackerrank() {
             if (data.success) {
                 fetchSubmissions(); // Refresh list
             } else {
-                alert(data.error || 'Failed to approve submission');
+                console.error('Failed to approve submission:', data.error);
             }
         } catch (err) {
-            console.error(err);
-            alert('Server connection failed');
+            console.error('Server connection failed:', err);
         } finally {
             setProcessingTeamId(null);
         }
     };
 
     const handleReject = async (teamId) => {
-        if (!confirm(`Reject Hackerrank submission for team ${teamId}?`)) {
-            return;
-        }
-
         setProcessingTeamId(teamId);
         try {
             const res = await fetch(`${API}/api/admin/approve-hackerrank`, {
@@ -105,11 +96,10 @@ export default function ViewHackerrank() {
             if (data.success) {
                 fetchSubmissions(); // Refresh list
             } else {
-                alert(data.error || 'Failed to reject submission');
+                console.error('Failed to reject submission:', data.error);
             }
         } catch (err) {
-            console.error(err);
-            alert('Server connection failed');
+            console.error('Server connection failed:', err);
         } finally {
             setProcessingTeamId(null);
         }
@@ -159,8 +149,8 @@ export default function ViewHackerrank() {
                                                         sub.approval_status === 'pending' ? '#eab308' :
                                                             '#ef4444',
                                                 border: `1px solid ${sub.approval_status === 'approved' ? '#22c55e' :
-                                                        sub.approval_status === 'pending' ? '#eab308' :
-                                                            '#ef4444'
+                                                    sub.approval_status === 'pending' ? '#eab308' :
+                                                        '#ef4444'
                                                     }`,
                                                 padding: '2px 8px',
                                                 borderRadius: '4px',
