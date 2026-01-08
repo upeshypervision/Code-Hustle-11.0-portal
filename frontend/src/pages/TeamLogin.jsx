@@ -54,6 +54,8 @@ export default function TeamLogin() {
       const data = await response.json();
 
       if (response.ok) {
+        // Cookie is set by backend automatically
+
         setMessage({ type: 'success', text: 'Login successful. Redirecting...' });
         setTimeout(() => {
           navigate('/team-up');

@@ -5,6 +5,7 @@ import bcrypt
 import random
 import string
 from email_service import send_team_registration_email
+from sanitizer import sanitize_team_data
 
 db = get_db()
 
@@ -22,6 +23,10 @@ def get_next_team_id():
 
 def create_team_route():
     data = request.json
+    
+    # SECURITY: Sanitize all input data before processing
+    data = sanitize_team_data(data)
+    
     required_top_fields = ["tName", "tBio", "lName", "lAbout", "universityType", "email", "phone"]
     for field in required_top_fields:
         if field not in data or not str(data[field]).strip():
@@ -55,6 +60,8 @@ def create_team_route():
 
     members = []
     sap_ids_in_team = [leader_sapid] if leader_sapid else []
+    emails_in_team = [leader_email]  # Track emails to prevent duplicates
+    phones_in_team = [leader_phone]  # Track phones to prevent duplicates
 
     for i in range(1, 5):
         m_key = f"m{i}"
@@ -67,11 +74,21 @@ def create_team_route():
                     return jsonify({"error": f"{field} is required for {m_key}"}), 400
 
             member_email = m["email"].strip().lower()
+            
+            # Check for duplicate email
+            if member_email in emails_in_team:
+                return jsonify({"error": f"Duplicate email found in team members"}), 400
+            emails_in_team.append(member_email)
 
             # Validate phone number length without regex
             member_phone = m["phone"].strip()
             if not member_phone.isdigit() or len(member_phone) != 10:
                 return jsonify({"error": f"Phone must be 10 digits for {m_key}"}), 400
+            
+            # Check for duplicate phone
+            if member_phone in phones_in_team:
+                return jsonify({"error": f"Duplicate phone number found in team members"}), 400
+            phones_in_team.append(member_phone)
 
             m_sapid = None
             m_college = None
@@ -108,7 +125,6 @@ def create_team_route():
 
     # --- Create Leader Object (Still gets an ID) ---
     leader_obj = {
-        "member_id": get_next_team_id()[2:],
         "full_name": leader_name,
         "bio": leader_about,
         "email": leader_email,

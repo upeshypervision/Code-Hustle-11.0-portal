@@ -20,6 +20,7 @@ from user_access import (
 )
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_info import fetch_teamsnosubmission, view_githubsubmission_route
+from Indidashboard import get_individual_dashboard_data, get_available_teams
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
@@ -40,16 +41,25 @@ from evaluator import (
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
 from individual_registration import register_individual_route
 from createteam_registration import create_team_route
+from TeamDashboard import get_team_dashboard_data, delete_team_member
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
-
 
 socketio.init_app(
     app,
     cors_allowed_origins=["http://localhost:5173"],
     supports_credentials=True
 )
+
+@app.route('/api/team-details', methods=['GET'])
+def get_team_dashboard():
+    return get_team_dashboard_data()
+
+@app.route('/api/team-member/delete', methods=['DELETE'])
+def delete_member():
+    return delete_team_member()
+
 
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
@@ -295,6 +305,21 @@ def get_round_status():
 @app.route('/api/admin/round-status', methods=['POST'])
 def update_round_status():
     return update_round_status_route()
+
+# ----------------------------
+# INDIVIDUAL DASHBOARD ROUTE
+# ----------------------------
+@app.route('/api/individual-dashboard', methods=['GET', 'OPTIONS'])
+def individual_dashboard():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_individual_dashboard_data()
+
+@app.route('/api/available-teams', methods=['GET', 'OPTIONS'])
+def available_teams():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_available_teams()
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)
