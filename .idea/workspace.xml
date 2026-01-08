@@ -7,9 +7,12 @@
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/Create_team.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Create_team.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/individual_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/individual_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/login.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/IndividualLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/IndividualLogin.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

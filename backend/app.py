@@ -4,7 +4,7 @@ from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route
+from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route,individual_login_route,team_login_route
 from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
@@ -63,6 +63,11 @@ def check_student_auth():
 def validate_hypervision():
     return validate_hypervision_route()
 
+@app.route("/api/individual-login", methods=["POST"])
+def individual_login():
+    return individual_login_route()
+
+
 @app.route("/api/register-team", methods=["POST"])
 def register_team():
     return register_team_route()
@@ -74,6 +79,10 @@ def register_individual():
 @app.route("/api/create-team", methods=["POST"])
 def create_team():
     return create_team_route()
+
+@app.route("/api/team-login", methods=["POST"])
+def team_login():
+    return team_login_route()
 
 @app.route("/api/check-team-name", methods=["POST"])
 def check_team_name():

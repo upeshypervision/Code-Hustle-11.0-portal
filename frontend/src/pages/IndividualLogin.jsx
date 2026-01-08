@@ -4,7 +4,7 @@ import './Registration.css'; // Reusing the same CSS for consistency
 
 export default function IndividualLogin() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ teamId: '', password: '' });
+  const [formData, setFormData] = useState({ individualId: '', password: '' });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState({ type: '', text: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,8 +21,8 @@ export default function IndividualLogin() {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.teamId.trim()) {
-      newErrors.teamId = true;
+    if (!formData.individualId.trim()) {
+      newErrors.individualId = true;
     }
     if (!formData.password || formData.password.length < 5) {
       newErrors.password = true;
@@ -32,7 +32,7 @@ export default function IndividualLogin() {
       setErrors(newErrors);
       setMessage({
         type: 'error',
-        text: 'Please enter a valid Team ID and Password.'
+        text: 'Please enter a valid Individual ID and Password.'
       });
       return;
     }
@@ -41,12 +41,12 @@ export default function IndividualLogin() {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('http://localhost:5000/api/student-login', {
+      const response = await fetch('http://localhost:5000/api/individual-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          team_id: formData.teamId,
+          individual_id: formData.individualId,
           password: formData.password
         }),
       });
@@ -54,9 +54,9 @@ export default function IndividualLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Login successful. Entering the arena...' });
+        setMessage({ type: 'success', text: 'Login successful. Redirecting...' });
         setTimeout(() => {
-          navigate('/Arena');
+          navigate('/individual-member');
         }, 800);
       } else {
         setMessage({ type: 'error', text: data.error || 'Invalid credentials' });
@@ -90,13 +90,13 @@ export default function IndividualLogin() {
 
           <form onSubmit={handleSubmit}>
             <div className="input-group">
-              <div className="label-row"><span>Team ID</span></div>
-              <div className={`glow-input-container ${errors.teamId ? 'error-border' : ''}`}>
+              <div className="label-row"><span>Individual ID</span></div>
+              <div className={`glow-input-container ${errors.individualId ? 'error-border' : ''}`}>
                 <input
                   className="glow-input"
-                  name="teamId"
-                  placeholder="e.g., CH-TEAM-001"
-                  value={formData.teamId}
+                  name="individualId"
+                  placeholder="e.g., IND001"
+                  value={formData.individualId}
                   onChange={handleChange}
                 />
               </div>

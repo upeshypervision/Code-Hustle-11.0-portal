@@ -98,9 +98,6 @@ def create_team_route():
                 "college_name": m_college
             })
 
-    if len(members) < 1:
-        return jsonify({"error": "At least one member is required"}), 400
-
     # --- Generate Team ID ---
     team_id = get_next_team_id()
 

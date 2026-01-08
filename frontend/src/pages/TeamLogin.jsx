@@ -41,7 +41,7 @@ export default function TeamLogin() {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('http://localhost:5000/api/student-login', {
+      const response = await fetch('http://localhost:5000/api/team-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -54,9 +54,9 @@ export default function TeamLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Login successful. Entering the arena...' });
+        setMessage({ type: 'success', text: 'Login successful. Redirecting...' });
         setTimeout(() => {
-          navigate('/Arena');
+          navigate('/team-up');
         }, 800);
       } else {
         setMessage({ type: 'error', text: data.error || 'Invalid credentials' });

@@ -77,12 +77,6 @@ const CreateTeam = () => {
             return;
         }
 
-        const hasValidMember = ['m1', 'm2', 'm3', 'm4'].some(key => isMemberValid(key));
-        if (!hasValidMember) {
-            console.log("At least one member is required");
-            return;
-        }
-
         try {
             const payloadToSend = {
                 tName: formData.tName.trim(),
