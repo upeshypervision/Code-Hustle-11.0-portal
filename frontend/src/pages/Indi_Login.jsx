@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css'; // Reusing the same CSS for consistency
 
-export default function IndividualLogin() {
+export default function Indi_Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ individualId: '', password: '' });
   const [errors, setErrors] = useState({});

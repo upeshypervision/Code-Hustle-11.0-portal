@@ -5,9 +5,9 @@ import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
 import "../../pages/Registration.css";
-import "./TeamUp.css";
+import "./Indi.css";
 
-const TeamUpDashboard = () => {
+const Indi_Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const userDetails = location.state?.userDetails || {
@@ -193,9 +193,8 @@ const TeamUpDashboard = () => {
         <div className="teamup-layout">
           {/* User Details Section - Left Sidebar (Desktop) / Mobile Modal */}
           <div
-            className={`member-details-sidebar ${
-              showProfile ? "mobile-visible" : ""
-            }`}
+            className={`member-details-sidebar ${showProfile ? "mobile-visible" : ""
+              }`}
           >
             <div
               className="neural-node node-materialize animate-enter delay-1"
@@ -553,14 +552,14 @@ const TeamUpDashboard = () => {
                                       team.requestStatus === "Accepted"
                                         ? "rgba(40, 167, 69, 0.2)"
                                         : team.requestStatus === "Declined"
-                                        ? "rgba(220, 53, 69, 0.2)"
-                                        : "rgba(255, 193, 7, 0.1)",
+                                          ? "rgba(220, 53, 69, 0.2)"
+                                          : "rgba(255, 193, 7, 0.1)",
                                     color:
                                       team.requestStatus === "Accepted"
                                         ? "#28a745"
                                         : team.requestStatus === "Declined"
-                                        ? "#dc3545"
-                                        : "#ffc107",
+                                          ? "#dc3545"
+                                          : "#ffc107",
                                   }}
                                 >
                                   {team.requestStatus}
@@ -738,13 +737,13 @@ const TeamUpDashboard = () => {
                       <div className="label-row">
                         <span>LEADER</span>
                       </div>
-                        <div
-                          className="glow-input-container"
-                          style={{
-                            padding: "24px",
-                            width: "100%",
-                          }}
-                        >
+                      <div
+                        className="glow-input-container"
+                        style={{
+                          padding: "24px",
+                          width: "100%",
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
@@ -1091,4 +1090,4 @@ const TeamUpDashboard = () => {
   );
 };
 
-export default TeamUpDashboard;
+export default Indi_Dashboard;

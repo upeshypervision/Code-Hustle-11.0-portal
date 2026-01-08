@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./TeamUp.css";
+import "./Indi.css";
 
 const ChatBox = ({ team, userDetails, onClose }) => {
   const [messages, setMessages] = useState([
@@ -172,9 +172,8 @@ const ChatBox = ({ team, userDetails, onClose }) => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`chatbox-message ${
-              msg.sender === "user" ? "message-right" : "message-left"
-            }`}
+            className={`chatbox-message ${msg.sender === "user" ? "message-right" : "message-left"
+              }`}
           >
             <div className="chatbox-message-bubble">
               <div className="chatbox-message-name">{msg.name}</div>

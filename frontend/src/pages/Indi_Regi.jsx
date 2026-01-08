@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css';
-import './CreateTeam.css';
-import './JoinTeam.css';
+import './Team_Regi.css';
+import './Indi_Regi.css';
 
-const JoinTeam = () => {
+const Indi_Regi = () => {
     const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [valErrors, setValErrors] = useState({});
@@ -277,4 +277,4 @@ const JoinTeam = () => {
     );
 };
 
-export default JoinTeam;
+export default Indi_Regi;

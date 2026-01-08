@@ -1,9 +1,9 @@
 import React from "react";
 import "../../pages/Registration.css";
-import "../../pages/CreateTeam.css";
-import "./TeamUp.css";
+import "../../pages/Team_Regi.css";
+import "./Indi.css";
 
-const TeamDetailsModal = ({ team, onClose }) => {
+const Indi_TeamDetails = ({ team, onClose }) => {
   if (!team) return null;
 
   const handleSendRequest = () => {
@@ -191,4 +191,4 @@ const TeamDetailsModal = ({ team, onClose }) => {
   );
 };
 
-export default TeamDetailsModal;
+export default Indi_TeamDetails;

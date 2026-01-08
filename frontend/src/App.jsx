@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
-import {BrowserRouter as Router,
+import {
+  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -10,13 +11,13 @@ import Userlogin from "./pages/StudentLogin.jsx";
 import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
-import Teamup from "./pages/Teamup.jsx";
-import TeamUpPage from "./components/Incomplete_teams/teamuppage.jsx";
-import CreateTeam from "./pages/CreateTeam.jsx";
-import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
+import Landing_Page from "./pages/Landing_Page.jsx";
+import Incomp_Page from "./components/Incomplete_teams/Incomp_Page.jsx";
+import Team_Regi from "./pages/Team_Regi.jsx";
+import Indi_Dashboard from "./components/Individual-Member/Indi_Dashboard.jsx";
 import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.jsx";
-import JoinTeam from "./pages/JoinTeam.jsx";
-import IndividualLogin from './pages/IndividualLogin.jsx';
+import Indi_Regi from "./pages/Indi_Regi.jsx";
+import Indi_Login from './pages/Indi_Login.jsx';
 import TeamLogin from './pages/TeamLogin.jsx';
 import EvaluatorLogin from "./pages/EvaluatorLogin";
 import EvaluatorPanel from "./pages/EvaluatorPanel";
@@ -27,19 +28,19 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Teamup />} />
-        <Route path="/create-team" element={<CreateTeam />} />
+        <Route path="/" element={<Landing_Page />} />
+        <Route path="/create-team" element={<Team_Regi />} />
         <Route
           path="/individual-member"
-          element={<TeamUpDashboard />}
+          element={<Indi_Dashboard />}
         />
         <Route
           path="/accepted-team"
           element={<AcceptedTeamPage />}
         />
-        <Route path="/team-up" element={<TeamUpPage />} />
-        <Route path="/join" element={<JoinTeam />} />
-        <Route path="/individual-login" element={<IndividualLogin />} />
+        <Route path="/team-up" element={<Incomp_Page />} />
+        <Route path="/join" element={<Indi_Regi />} />
+        <Route path="/individual-login" element={<Indi_Login />} />
         <Route path="/team-login" element={<TeamLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />

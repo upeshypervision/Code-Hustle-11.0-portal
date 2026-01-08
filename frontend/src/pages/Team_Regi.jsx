@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css';
-import './CreateTeam.css';
+import './Team_Regi.css';
 
-const CreateTeam = () => {
+const Team_Regi = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [valErrors, setValErrors] = useState({});
@@ -321,4 +321,4 @@ const CreateTeam = () => {
     );
 };
 
-export default CreateTeam;
+export default Team_Regi;

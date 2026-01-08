@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import GlobalNavbar from "../GlobalNavbar";
 import "../../styles/global.css"; // Ensure global styles are available
 
-import "./TeamUpPage.css";
+import "./Incomp_Page.css";
 
-const TeamUpPage = () => {
+const Incomp_Page = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [selectedRequest, setSelectedRequest] = React.useState(null);
@@ -282,9 +282,8 @@ const TeamUpPage = () => {
         <div className="team-page-layout">
           {/* Left Sidebar */}
           <aside
-            className={`team-sidebar member-details-sidebar ${
-              showProfile ? "mobile-visible" : ""
-            }`}
+            className={`team-sidebar member-details-sidebar ${showProfile ? "mobile-visible" : ""
+              }`}
           >
             <div className="neural-node">
               <span className="label-detail teamup-label">TEAM LEADER</span>
@@ -656,9 +655,8 @@ const TeamUpPage = () => {
       {chatTarget && (
         <div className="modal-overlay chat-overlay" onClick={closeChatModal}>
           <div
-            className={`modal-content chat-modal-card ${
-              isChatExpanded ? "expanded" : ""
-            }`}
+            className={`modal-content chat-modal-card ${isChatExpanded ? "expanded" : ""
+              }`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="chat-header">
@@ -903,4 +901,4 @@ const TeamUpPage = () => {
   );
 };
 
-export default TeamUpPage;
+export default Incomp_Page;

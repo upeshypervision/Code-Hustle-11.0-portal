@@ -5,7 +5,7 @@ import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
 import "../../pages/Registration.css";
-import "./TeamUp.css";
+import "./Indi.css";
 
 const AcceptedTeamPage = () => {
   const location = useLocation();
@@ -71,9 +71,8 @@ const AcceptedTeamPage = () => {
         <div className="teamup-layout">
           {/* User Details Section - Left Sidebar (Desktop) / Mobile Modal */}
           <div
-            className={`member-details-sidebar ${
-              showProfile ? "mobile-visible" : ""
-            }`}
+            className={`member-details-sidebar ${showProfile ? "mobile-visible" : ""
+              }`}
           >
             {/* Mobile Close Button */}
             <button
@@ -262,28 +261,28 @@ const AcceptedTeamPage = () => {
                     <div className="label-row">
                       <span>TEAM VISION</span>
                     </div>
-                      <div
-                        className="glow-input-container"
+                    <div
+                      className="glow-input-container"
+                      style={{
+                        padding: "24px",
+                        background: "rgba(255,255,255,0.03)",
+                        width: "100%",
+                      }}
+                    >
+                      <p
                         style={{
-                          padding: "24px",
-                          background: "rgba(255,255,255,0.03)",
-                          width: "100%",
+                          color: "#ddd",
+                          fontSize: "1.1rem",
+                          lineHeight: "1.7",
+                          margin: 0,
+                          wordWrap: "break-word",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
                         }}
                       >
-                        <p
-                          style={{
-                            color: "#ddd",
-                            fontSize: "1.1rem",
-                            lineHeight: "1.7",
-                            margin: 0,
-                            wordWrap: "break-word",
-                            wordBreak: "break-word",
-                            overflowWrap: "break-word",
-                          }}
-                        >
-                          {team.vision}
-                        </p>
-                      </div>
+                        {team.vision}
+                      </p>
+                    </div>
                   </div>
 
                   <div

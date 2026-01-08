@@ -19,7 +19,7 @@ from user_access import (
     generate_presigned_url_route
 )
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
-from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
+from get_info import fetch_teamsnosubmission, view_githubsubmission_route
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
@@ -39,7 +39,7 @@ from evaluator import (
 
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
 from individual_registration import register_individual_route
-from Create_team import create_team_route 
+from createteam_registration import create_team_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)

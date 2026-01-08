@@ -49,6 +49,7 @@ def create_team_route():
             if not data["sap"].strip().isdigit() or len(data["sap"].strip()) != 9:
                 return jsonify({"error": "SAP ID must be 9 digits"}), 400
             leader_sapid = data["sap"].strip()
+            leader_college_name = "UPES"  # Store "UPES" as college name
         else:
             leader_college_name = data["sap"].strip()
 
@@ -84,6 +85,7 @@ def create_team_route():
                         return jsonify({"error": f"Duplicate SAP ID in team"}), 400
                     m_sapid = m["sapid"]
                     sap_ids_in_team.append(m_sapid)
+                    m_college = "UPES"  # Store "UPES" as college name
                 else:
                     m_college = m["sapid"]
 
@@ -91,7 +93,6 @@ def create_team_route():
                 # Temporarily store member data without ID or password
                 "full_name": m["fullName"].strip(),
                 "bio": m["bio"].strip(),
-                "university_type": m["universityType"].strip().lower(),
                 "email": member_email,
                 "phone": member_phone,
                 "sapid": m_sapid,
@@ -107,12 +108,11 @@ def create_team_route():
 
     # --- Create Leader Object (Still gets an ID) ---
     leader_obj = {
-        "member_id": get_next_team_id()[2:], # Reusing team_id counter prefix CH, taking the number part - e.g., CH0007 -> 0007. Or use a separate counter if distinct leader IDs are needed.
+        "member_id": get_next_team_id()[2:],
         "full_name": leader_name,
         "bio": leader_about,
         "email": leader_email,
         "phone": leader_phone,
-        "university_type": university_type,
         "sapid": leader_sapid,
         "college_name": leader_college_name,
         "password_hash": leader_password_hashed
@@ -129,7 +129,6 @@ def create_team_route():
             # NO "member_id" field added here
             "full_name": m_data["full_name"],
             "bio": m_data["bio"],
-            "university_type": m_data["university_type"],
             "email": m_data["email"],
             "phone": m_data["phone"],
             "sapid": m_data["sapid"],

@@ -4,9 +4,13 @@ import jwt
 from config import JWT_SECRET, JWT_ALGORITHM
 
 def fetch_teamsnosubmission():
+    """
+    Fetch all teams that have not submitted to GitHub.
+    Admin-only route.
+    """
     token = request.cookies.get('admin_auth')
     if not token:
-            return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({"error": "Unauthorized"}), 401
         
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
@@ -30,22 +34,26 @@ def fetch_teamsnosubmission():
     return jsonify({"success": True, "teams": notsubmitted_teams})
 
 def view_githubsubmission_route():
+    """
+    View all GitHub submissions.
+    Admin-only route.
+    """
     token = request.cookies.get('admin_auth')
     if not token:
-            return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({"error": "Unauthorized"}), 401
         
     try:
         jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except:
         return jsonify({"error": "Invalid session"}), 401
+        
     db = get_db()
-    submitted_teams_cursor=db.github_submissions.find().sort("timestamp", -1)
-    submitted_teams=[]
+    submitted_teams_cursor = db.github_submissions.find().sort("timestamp", -1)
+    submitted_teams = []
+    
     for team in submitted_teams_cursor:
         # Convert ObjectId to string if needed, or just exclude _id
         team["_id"] = str(team["_id"])
-        
-        # Ensure sensitive data is handled or sent if needed
-        # We perform a shallow copy to safely modify if needed, but dict is fine
         submitted_teams.append(team)
+        
     return jsonify({"success": True, "teams": submitted_teams})

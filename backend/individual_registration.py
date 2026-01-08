@@ -61,6 +61,7 @@ def register_individual_route():
         sapid = str(data.get("sapid", "")).strip()
         if not sapid:
             return jsonify({"error": "sapid is required for UPES students"}), 400
+        college_name = "UPES"  # Store "UPES" as college name
     else:
         college_name = str(data.get("collegeName", "")).strip()
         if not college_name:
@@ -80,13 +81,12 @@ def register_individual_route():
         "individual_id": individual_id,
         "full_name": full_name,
         "about": about,
-        "university_type": university_type,
         "email": email,
         "phone": phone,
         "hypervision_id": hypervision_id or None,
-        "sapid": sapid if university_type == "upes" else None,
-        "college_name": college_name if university_type != "upes" else None,
-        "password_hashed": password_hashed, # Store the hashed password
+        "sapid": sapid,
+        "college_name": college_name,
+        "password_hashed": password_hashed,
         "role": "individual",
         "timestamp": datetime.utcnow().isoformat()
     }
