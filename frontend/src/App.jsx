@@ -1,6 +1,5 @@
 import { Suspense, lazy } from "react";
-import {
-  BrowserRouter as Router,
+import {BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -11,9 +10,7 @@ import Userlogin from "./pages/StudentLogin.jsx";
 import "./styles/global.css";
 import Register from "./pages/Register.jsx";
 import UserPortal from "./pages/UserPortal.jsx";
-
 import Teamup from "./pages/Teamup.jsx";
-
 import TeamUpPage from "./components/Incomplete_teams/teamuppage.jsx";
 import CreateTeam from "./pages/CreateTeam.jsx";
 import TeamUpDashboard from "./components/Individual-Member/TeamUpDashboard.jsx";
@@ -21,8 +18,6 @@ import AcceptedTeamPage from "./components/Individual-Member/AcceptedTeamPage.js
 import JoinTeam from "./pages/JoinTeam.jsx";
 import IndividualLogin from './pages/IndividualLogin.jsx';
 import TeamLogin from './pages/TeamLogin.jsx';
-
-
 import EvaluatorLogin from "./pages/EvaluatorLogin";
 import EvaluatorPanel from "./pages/EvaluatorPanel";
 
