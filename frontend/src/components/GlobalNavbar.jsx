@@ -1,25 +1,36 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Navbar({
+export default function GlobalNavbar({
   userInfo,
   isAdmin = false,
+  isEvaluator = false,
   menuItems = [],
   onMenuItemClick,
+  onToggleSidebar,
+  showContactUs = false,
 }) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      // For evaluators, just clear the cookie by navigating
+      // For admin/student, use the logout endpoint
+      if (!isEvaluator) {
+        await fetch("http://localhost:5000/api/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      }
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      navigate(isAdmin ? "/admin-login" : "/userlogin");
+      if (isEvaluator) {
+        navigate("/evaluator-login");
+      } else {
+        navigate(isAdmin ? "/admin-login" : "/userlogin");
+      }
     }
   };
 
@@ -30,6 +41,22 @@ export default function Navbar({
     setIsMobileMenuOpen(false);
   };
 
+  const handleHamburgerClick = () => {
+    // On mobile, prioritize mobile menu if menuItems exist
+    // Otherwise, toggle sidebar if provided
+    if (menuItems.length > 0) {
+      setIsMobileMenuOpen(!isMobileMenuOpen);
+    } else if (onToggleSidebar) {
+      onToggleSidebar();
+    }
+  };
+
+  const getSubtitle = () => {
+    if (isEvaluator) return "Evaluator Panel";
+    if (isAdmin) return "Admin Panel";
+    return "Student Dashboard";
+  };
+
   return (
     <>
       <header className="top-nav">
@@ -37,7 +64,7 @@ export default function Navbar({
           <div className="logo-container">
             <button
               className="hamburger-menu"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={handleHamburgerClick}
               aria-label="Toggle menu"
             >
               <span></span>
@@ -50,19 +77,32 @@ export default function Navbar({
               className="logo-img"
               onError={(e) => {
                 e.target.style.display = "none";
-                e.target.nextSibling.style.display = "block";
+                if (e.target.nextSibling) {
+                  e.target.nextSibling.style.display = "block";
+                }
               }}
             />
             <div className="logo-mark" style={{ display: "none" }}></div>
             <div>
               <div className="logo-text">Code Hustle</div>
               <div style={{ fontSize: "0.7rem", color: "#9ca3af" }}>
-                {isAdmin ? "Admin Panel" : "Student Dashboard"}
+                {getSubtitle()}
               </div>
             </div>
           </div>
           <div className="nav-right">
-            <div className="nav-user">{userInfo}</div>
+            {userInfo && <div className="nav-user">{userInfo}</div>}
+            {showContactUs && (
+              <button
+                className="nav-logout"
+                onClick={() =>
+                  (window.location.href =
+                    "https://codehustle11.upeshypervision.in/#contact")
+                }
+              >
+                Contact us
+              </button>
+            )}
             <button className="nav-logout" onClick={handleLogout}>
               Logout
             </button>
@@ -70,7 +110,7 @@ export default function Navbar({
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - Show if menuItems exist OR if we need to show sidebar items */}
       {isMobileMenuOpen && menuItems.length > 0 && (
         <div
           className="mobile-menu-overlay"
@@ -81,7 +121,13 @@ export default function Navbar({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mobile-menu-header">
-              <h3>{isAdmin ? "Admin Menu" : "Navigation"}</h3>
+              <h3>
+                {isEvaluator
+                  ? "Evaluator Menu"
+                  : isAdmin
+                    ? "Admin Menu"
+                    : "Navigation"}
+              </h3>
               <button
                 className="mobile-menu-close"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -110,3 +156,4 @@ export default function Navbar({
     </>
   );
 }
+

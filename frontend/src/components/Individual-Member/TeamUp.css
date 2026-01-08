@@ -65,84 +65,11 @@
   background-attachment: fixed;
 }
 
-/* Glass Navbar Styles */
-.glass-navbar {
-  background: rgba(10, 11, 30, 0.7) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s ease;
-}
-
-.glass-navbar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent);
-}
-
-.glass-navbar-inner {
-  padding: 12px 32px !important;
-}
-
-.glass-navbar .logo-container {
-  gap: 12px;
-}
-
-.glass-navbar .logo-text {
-  color: #fff;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  font-size: 1.1rem;
-}
-
-.glass-navbar .nav-right {
-  gap: 16px;
-}
-
-.glass-navbar .nav-user {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.glass-navbar .nav-logout {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  padding: 8px 16px !important;
-  font-size: 0.9rem !important;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.glass-navbar .nav-logout:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  color: #fff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.glass-navbar .hamburger-menu span {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.glass-navbar .hamburger-menu:hover span {
-  background: #60a5fa;
-}
+/* Navbar styles moved to global.css */
 
 /* Base Dashboard Styles */
 .dashboard-container {
-  padding: 120px 32px 32px 32px;
+  padding: 45px 32px 32px 32px;
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
@@ -359,7 +286,7 @@
 
   /* Override admin-content padding for mobile */
   .admin-content.dashboard-container {
-    padding-top: 140px !important;
+    padding-top: 20px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: 20px !important;
@@ -390,18 +317,6 @@
     padding-right: 16px !important;
   }
 
-  .glass-navbar-inner {
-    padding: 10px 20px !important;
-  }
-
-  .glass-navbar .nav-user {
-    font-size: 0.9rem;
-  }
-
-  .glass-navbar .nav-logout {
-    padding: 6px 12px !important;
-    font-size: 0.85rem !important;
-  }
 
   /* Glass mobile menu overlay */
   .glass-mobile-overlay {

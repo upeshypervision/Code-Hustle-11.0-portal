@@ -21,7 +21,7 @@ export default function ViewSubmissions() {
         };
     }, []);
 
-    // 2. LOGIC: Fetch function from the Logic code (Port 5000)
+    // 2. LOGIC: Fetch function from the Logic code (Port 5001)
     const fetchSubmissions = async () => {
         setLoading(true);
         setError('');

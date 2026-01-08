@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import UserNavbar from "../UserNavbar";
+import GlobalNavbar from "../GlobalNavbar";
 import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
@@ -171,8 +171,7 @@ const TeamUpDashboard = () => {
       style={{ minHeight: "100vh", background: "#0a0b1e" }}
     >
       {/* Same Navbar as User Panel but customized if needed */}
-      <UserNavbar
-        variant="glass"
+      <GlobalNavbar
         userInfo={null}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
@@ -187,6 +186,7 @@ const TeamUpDashboard = () => {
             setShowProfile(!showProfile);
           }
         }}
+        showContactUs={true}
       />
 
       <div className="admin-content dashboard-container">
