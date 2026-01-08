@@ -116,9 +116,18 @@ def create_team_route():
                 "college_name": m_college
             })
 
+    # DUPLICATE TEAM NAME CHECK
+    existing_team = db["create_team"].find_one(
+        {"team_name": {"$regex": f"^{team_name}$", "$options": "i"}}
+    )
+    if existing_team:
+        return jsonify({
+            "error": "Team name already exists. Choose a unique team name."
+        }), 400
+
     # --- Generate Team ID ---
     team_id = get_next_team_id()
-
+    
     # --- Generate Password for Leader ---
     leader_password_plain = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     leader_password_hashed = bcrypt.hashpw(leader_password_plain.encode(), bcrypt.gensalt()).decode()
