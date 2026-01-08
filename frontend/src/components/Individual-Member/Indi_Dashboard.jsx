@@ -29,11 +29,12 @@ const Indi_Dashboard = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [chatTeam, setChatTeam] = useState(null);
+  const [activeView, setActiveView] = useState("available"); // "available" or "sent-requests"
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/individual-dashboard", {
+        const response = await fetch("http://localhost:5001/api/individual-dashboard", {
           method: "GET",
           credentials: "include",
         });
@@ -61,7 +62,7 @@ const Indi_Dashboard = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/available-teams", {
+        const response = await fetch("http://localhost:5001/api/available-teams", {
           method: "GET",
           credentials: "include",
         });
@@ -91,11 +92,32 @@ const Indi_Dashboard = () => {
             id: "profile",
             label: "Profile",
             name: "Profile",
+            active: showProfile,
+          },
+          {
+            id: "available-teams",
+            label: "Available Teams",
+            name: "Available Teams",
+            active: activeView === "available" && !selectedTeam,
+          },
+          {
+            id: "sent-requests",
+            label: "Sent Requests",
+            name: "Sent Requests",
+            active: activeView === "sent-requests" && !selectedTeam,
           },
         ]}
         onMenuItemClick={(item) => {
           if (item.id === "profile") {
             setShowProfile(!showProfile);
+          } else if (item.id === "available-teams") {
+            setActiveView("available");
+            setSelectedTeam(null);
+            setShowProfile(false);
+          } else if (item.id === "sent-requests") {
+            setActiveView("sent-requests");
+            setSelectedTeam(null);
+            setShowProfile(false);
           }
         }}
         showContactUs={true}
@@ -184,122 +206,70 @@ const Indi_Dashboard = () => {
           <div className="teams-content-section">
             {!selectedTeam ? (
               <>
-                {/* 1. AVAILABLE TEAMS SECTION (TOP) */}
-                <Indi_AvailableTeams
-                  teams={teams}
-                  onViewTeam={setSelectedTeam}
-                  scrollToTop={scrollToTop}
-                />
-
-                {/* 2. SENT REQUESTS SECTION (BOTTOM) */}
-                <div
-                  className="neural-node node-materialize animate-enter delay-3"
-                  style={{ marginBottom: "40px" }}
-                >
-                  <span className="label-detail teamup-label">
-                    SENT REQUESTS (Status)
-                  </span>
-                  <div className="indi-table-container">
-                    <table className="indi-table">
-                      <thead>
-                        <tr>
-                          <th style={{ width: "15%" }}>Team ID</th>
-                          <th style={{ width: "25%" }}>Team Name</th>
-                          <th style={{ width: "15%" }}>Members</th>
-                          <th style={{ width: "15%" }}>Req Status</th>
-                          <th style={{ width: "15%" }}>Chat</th>
-                          <th style={{ width: "15%" }}>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {teams
-                          .filter((t) => t.requestStatus)
-                          .map((team) => (
-                            <tr key={team.teamId} className="team-row">
-                              <td className="indi-td-id">{team.teamId}</td>
-                              <td className="indi-td-name">{team.teamName}</td>
-                              <td className="indi-td-members">
-                                {team.memberCount}/5
-                              </td>
-                              <td style={{ padding: "15px" }}>
-                                <span
-                                  className="indi-status-tag"
-                                  style={{
-                                    background:
-                                      team.requestStatus === "Accepted"
-                                        ? "rgba(40, 167, 69, 0.2)"
-                                        : team.requestStatus === "Declined"
-                                          ? "rgba(220, 53, 69, 0.2)"
-                                          : "rgba(255, 193, 7, 0.1)",
-                                    color:
-                                      team.requestStatus === "Accepted"
-                                        ? "#28a745"
-                                        : team.requestStatus === "Declined"
-                                          ? "#dc3545"
-                                          : "#ffc107",
-                                  }}
-                                >
-                                  {team.requestStatus}
-                                </span>
-                              </td>
-                              <td style={{ padding: "15px" }}>
-                                <button
-                                  className="edit-btn"
-                                  onClick={() => {
-                                    setChatTeam(team);
-                                    setShowChat(true);
-                                  }}
-                                  style={{
-                                    background:
-                                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                                    color: "#fff",
-                                    border: "none",
-                                    padding: "8px 16px",
-                                    borderRadius: "6px",
-                                    cursor: "pointer",
-                                    fontSize: "0.95rem",
-                                    fontWeight: "500",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    boxShadow:
-                                      "0 2px 5px rgba(102, 126, 234, 0.4)",
-                                  }}
-                                >
-                                  <span>💬</span> Chat
-                                </button>
-                              </td>
-                              <td style={{ padding: "15px" }}>
-                                <button
-                                  className="indi-btn-view"
-                                  onClick={() => {
-                                    scrollToTop();
-                                    setSelectedTeam(team);
-                                  }}
-                                >
-                                  View
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        {teams.filter((t) => t.requestStatus).length === 0 && (
-                          <tr>
-                            <td
-                              colSpan="6"
-                              style={{
-                                textAlign: "center",
-                                padding: "40px",
-                                color: "#aaa",
-                              }}
-                            >
-                              No sent requests.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                {/* Desktop Navigation Tabs */}
+                <div className="indi-view-tabs" style={{ 
+                  display: "flex", 
+                  gap: "12px", 
+                  marginBottom: "24px",
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+                  paddingBottom: "12px"
+                }}>
+                  <button
+                    onClick={() => setActiveView("available")}
+                    style={{
+                      padding: "10px 20px",
+                      background: activeView === "available" 
+                        ? "linear-gradient(135deg, #3b82f6, #2563eb)" 
+                        : "transparent",
+                      color: activeView === "available" ? "#fff" : "#94a3b8",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "0.95rem",
+                      fontWeight: "600",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Available Teams
+                  </button>
+                  <button
+                    onClick={() => setActiveView("sent-requests")}
+                    style={{
+                      padding: "10px 20px",
+                      background: activeView === "sent-requests" 
+                        ? "linear-gradient(135deg, #3b82f6, #2563eb)" 
+                        : "transparent",
+                      color: activeView === "sent-requests" ? "#fff" : "#94a3b8",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "0.95rem",
+                      fontWeight: "600",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    Sent Requests
+                  </button>
                 </div>
+
+                {/* Content based on active view */}
+                {activeView === "available" ? (
+                  <Indi_AvailableTeams
+                    teams={teams}
+                    onViewTeam={setSelectedTeam}
+                    scrollToTop={scrollToTop}
+                  />
+                ) : (
+                  <Indi_SentRequest
+                    teams={teams}
+                    onViewTeam={setSelectedTeam}
+                    onChat={(team) => {
+                      setChatTeam(team);
+                      setShowChat(true);
+                    }}
+                    scrollToTop={scrollToTop}
+                  />
+                )}
               </>
             ) : (
               /* Team Details Section */

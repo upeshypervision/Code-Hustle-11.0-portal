@@ -21,7 +21,7 @@ export default function ReviewEvaluatedPPTs() {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/admin/evaluated-ppts', {
+            const res = await fetch('http://localhost:5001/api/admin/evaluated-ppts', {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -42,7 +42,7 @@ export default function ReviewEvaluatedPPTs() {
 
     const handleAction = async (teamId, action) => {
         try {
-            const res = await fetch('http://localhost:5000/api/admin/update-ppt-approval', {
+            const res = await fetch('http://localhost:5001/api/admin/update-ppt-approval', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

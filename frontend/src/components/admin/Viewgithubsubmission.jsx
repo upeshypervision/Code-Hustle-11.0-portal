@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import socket from "../../socket";
 import "./Viewgithubsubmission.css";
 
-const API = "http://localhost:5000";
+const API = "http://localhost:5001";
 
 export default function ViewGithubSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -78,10 +78,11 @@ export default function ViewGithubSubmissions() {
             <div key={idx} className="submission-row">
               <div className="submission-info">
                 <div
+                  className="team-name-wrapper"
                   style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
                   <p className="team-name">{sub.team_name}</p>
-                  <span className={`badge-via ${sub.submitted_via}`}>
+                  <span className={`badge-via badge-via-desktop ${sub.submitted_via}`}>
                     {sub.submitted_via}
                   </span>
                 </div>
@@ -93,9 +94,14 @@ export default function ViewGithubSubmissions() {
                 )}
               </div>
 
-              <button className="btn-view" onClick={() => openModal(sub)}>
-                View Details
-              </button>
+              <div className="submission-right-section">
+                <span className={`badge-via badge-via-mobile ${sub.submitted_via}`}>
+                  {sub.submitted_via}
+                </span>
+                <button className="btn-view" onClick={() => openModal(sub)}>
+                  View Details
+                </button>
+              </div>
             </div>
           ))}
         </div>

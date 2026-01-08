@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import socket from "../../socket";
 import "./Viewgithubsubmission.css"; // Reuse existing styles
 
-const API = "http://localhost:5000";
+const API = "http://localhost:5001";
 
 export default function ViewHackerrank() {
     const [submissions, setSubmissions] = useState([]);
@@ -174,34 +174,9 @@ export default function ViewHackerrank() {
                                 </a>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <div className="submission-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                                 {!sub.approval_status || sub.approval_status === 'pending' ? (
                                     <>
-                                        <button
-                                            className="btn-approve"
-                                            onClick={() => handleApprove(sub.team_id)}
-                                            disabled={processingTeamId === sub.team_id}
-                                            style={{
-                                                background: '#22c55e',
-                                                color: '#fff',
-                                                border: 'none',
-                                                padding: '6px 12px',
-                                                borderRadius: '6px',
-                                                cursor: processingTeamId === sub.team_id ? 'not-allowed' : 'pointer',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '600',
-                                                letterSpacing: '0.5px',
-                                                textTransform: 'uppercase',
-                                                opacity: processingTeamId === sub.team_id ? 0.6 : 1,
-                                                boxShadow: '0 2px 4px rgba(34, 197, 94, 0.2)',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
-                                            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-                                            title="Approve Submission"
-                                        >
-                                            Approve
-                                        </button>
                                         <button
                                             className="btn-reject"
                                             onClick={() => handleReject(sub.team_id)}
@@ -226,6 +201,31 @@ export default function ViewHackerrank() {
                                             title="Reject Submission"
                                         >
                                             Reject
+                                        </button>
+                                        <button
+                                            className="btn-approve"
+                                            onClick={() => handleApprove(sub.team_id)}
+                                            disabled={processingTeamId === sub.team_id}
+                                            style={{
+                                                background: '#22c55e',
+                                                color: '#fff',
+                                                border: 'none',
+                                                padding: '6px 12px',
+                                                borderRadius: '6px',
+                                                cursor: processingTeamId === sub.team_id ? 'not-allowed' : 'pointer',
+                                                fontSize: '0.75rem',
+                                                fontWeight: '600',
+                                                letterSpacing: '0.5px',
+                                                textTransform: 'uppercase',
+                                                opacity: processingTeamId === sub.team_id ? 0.6 : 1,
+                                                boxShadow: '0 2px 4px rgba(34, 197, 94, 0.2)',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
+                                            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                                            title="Approve Submission"
+                                        >
+                                            Approve
                                         </button>
                                     </>
                                 ) : null}

@@ -17,11 +17,11 @@ const Indi_AvailableTeams = ({ teams, onViewTeam, scrollToTop }) => {
                 <table className="indi-table">
                     <thead>
                         <tr>
-                            <th style={{ width: "13%" }}>Team ID</th>
-                            <th style={{ width: "23%" }}>Team Name</th>
-                            <th style={{ width: "34%" }}>Team Bio</th>
-                            <th style={{ width: "10%" }}>Members</th>
-                            <th style={{ width: "19%" }}>Action</th>
+                            <th style={{ width: "12%" }}>Team ID</th>
+                            <th style={{ width: "20%" }}>Team Name</th>
+                            <th style={{ width: "36%" }}>Team Vision</th>
+                            <th style={{ width: "12%" }}>Members</th>
+                            <th style={{ width: "20%" }}>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,10 +32,10 @@ const Indi_AvailableTeams = ({ teams, onViewTeam, scrollToTop }) => {
                                 <td className="indi-td-bio">
                                     {team.vision && team.vision.length > 100
                                         ? sanitizeText(team.vision.substring(0, 100), 100) + "..."
-                                        : sanitizeText(team.vision, 100) || "No bio available"}
+                                        : sanitizeText(team.vision, 100) || "No vision available"}
                                 </td>
                                 <td className="indi-td-members">{team.memberCount}/5</td>
-                                <td style={{ padding: "15px" }}>
+                                <td style={{ padding: "15px", width: "20%" }}>
                                     <button
                                         className="indi-btn-view"
                                         onClick={() => {
