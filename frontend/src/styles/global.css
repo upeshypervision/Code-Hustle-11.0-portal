@@ -281,22 +281,27 @@ h3 {
 .top-nav {
   position: sticky;
   top: 0;
-  z-index: 20;
-  backdrop-filter: blur(16px);
-  background: linear-gradient(to right,
-      rgba(15, 23, 42, 0.95),
-      rgba(15, 23, 42, 0.92));
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  z-index: 1000;
+  width: 100%;
+  background: linear-gradient(180deg,
+      rgba(90, 32, 32, 0.85) 0%,
+      rgba(60, 24, 24, 0.88) 20%,
+      rgba(30, 14, 14, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .top-nav-inner {
+  width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  padding: 8px 16px;
+  padding: 12px 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 .logo-container {
@@ -307,7 +312,7 @@ h3 {
 }
 
 .logo-img {
-  height: 40px;
+  height: 32px;
   width: auto;
   object-fit: contain;
 }
@@ -322,8 +327,9 @@ h3 {
 }
 
 .logo-text {
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  font-size: 1.1rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -331,7 +337,7 @@ h3 {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
 }
 
 .nav-user {
@@ -340,23 +346,20 @@ h3 {
 }
 
 .nav-logout {
-  font-size: 0.8rem;
-  padding: 5px 10px;
-  border-radius: 999px;
-  border: none;
-  /* Removed box/border */
   background: transparent;
-  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 6px 16px;
+  border-radius: 20px;
   cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
   font-family: 'Orbitron', sans-serif;
-  /* Orbitron font */
-  transition: opacity var(--transition-fast);
+  transition: 0.3s;
 }
 
 .nav-logout:hover {
-  opacity: 0.8;
-  background: transparent;
-  border-color: transparent;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .dashboard-page {
@@ -1115,7 +1118,7 @@ input:checked+.toggle-slider:before {
 
 /* Hamburger Menu Styles */
 .hamburger-menu {
-  display: none;
+  display: none; /* Hidden on desktop */
   flex-direction: column;
   justify-content: space-around;
   width: 24px;
@@ -1284,18 +1287,19 @@ input:checked+.toggle-slider:before {
   /* --- NAVBAR RESPONSIVE ADJUSTMENTS --- */
   @media (max-width: 768px) {
     .top-nav-inner {
-      padding: 16px 20px;
-      /* Increased vertical padding */
+      padding: 12px 15px;
     }
 
     .logo-img {
-      height: 48px;
-      /* Larger logo */
+      height: 32px;
     }
 
     .logo-text {
-      font-size: 1.1rem;
-      /* Slightly larger text */
+      font-size: 1rem;
+    }
+
+    .hamburger-menu {
+      display: flex !important; /* Show hamburger only on mobile */
     }
 
     .nav-right {

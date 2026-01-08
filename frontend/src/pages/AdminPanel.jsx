@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
+import GlobalNavbar from "../components/GlobalNavbar";
 import AdminSidebar from "../components/admin/AdminSidebar";
 import RoundManagement from "../components/admin/RoundManagement";
 import ProblemStatements from "../components/admin/ProblemStatements";
@@ -34,16 +34,12 @@ export default function AdminPanel() {
       .catch((err) => console.error("Error fetching admin info:", err));
   }, []);
 
+  // Menu items matching the exact order and names from AdminSidebar
   const adminMenuItems = [
     {
       id: "rounds",
       label: "Round Management",
       active: activeSection === "rounds",
-    },
-    {
-      id: "selected-teams",
-      label: "Selected Teams",
-      active: activeSection === "selected-teams",
     },
     {
       id: "view-teams",
@@ -57,7 +53,7 @@ export default function AdminPanel() {
     },
     {
       id: "submissions",
-      label: "View Submissions",
+      label: "View PPT Submissions",
       active: activeSection === "submissions",
     },
     {
@@ -71,14 +67,14 @@ export default function AdminPanel() {
       active: activeSection === "manual-ppt",
     },
     {
-      id: "manual-github",
-      label: "Manual GitHub Submission",
-      active: activeSection === "manual-github",
-    },
-    {
       id: "view-github-submissions",
       label: "View GitHub Submissions",
       active: activeSection === "view-github-submissions",
+    },
+    {
+      id: "manual-github",
+      label: "Manual GitHub Submission",
+      active: activeSection === "manual-github",
     },
     {
       id: "manual-hackerrank",
@@ -89,6 +85,11 @@ export default function AdminPanel() {
       id: "view-hackerrank",
       label: "View Hackerrank",
       active: activeSection === "view-hackerrank",
+    },
+    {
+      id: "selected-teams",
+      label: "Selected Teams",
+      active: activeSection === "selected-teams",
     },
     {
       id: "add-participant",
@@ -146,13 +147,7 @@ export default function AdminPanel() {
 
   return (
     <div className="dashboard-page">
-      <Navbar
-        style={{
-          background: "transparent",
-          backdropFilter: "none",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-          fontFamily: "'Orbitron', sans-serif",
-        }}
+      <GlobalNavbar
         userInfo={
           <>
             Admin: <strong>{adminInfo.login_id}</strong>
@@ -161,7 +156,6 @@ export default function AdminPanel() {
         isAdmin={true}
         menuItems={adminMenuItems}
         onMenuItemClick={handleMenuItemClick}
-        hideSubtitle={true}
       />
 
       <div className="admin-layout">

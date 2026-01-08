@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import UserNavbar from '../components/UserNavbar';
+import GlobalNavbar from '../components/GlobalNavbar';
 import UserSidebar from '../components/user_dash/UserSidebar';
 import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
@@ -26,13 +26,27 @@ export default function UserPortal() {
     // Hoisted state for sidebar
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    // Menu items for mobile menu (matching UserSidebar)
+    const userMenuItems = [
+        { id: 'dashboard', label: 'Dashboard', active: activeTab === 'dashboard' },
+        { id: 'hackerrank-submission', label: 'Hackerrank Protocol', active: activeTab === 'hackerrank-submission' },
+        { id: 'ps-selection', label: 'Problem Statement', active: activeTab === 'ps-selection' },
+        { id: 'ppt-submission', label: 'PPT Submission', active: activeTab === 'ppt-submission' },
+        { id: 'github-submission', label: 'GitHub Link Submission', active: activeTab === 'github-submission' },
+    ];
+
+    const handleMenuItemClick = (item) => {
+        setActiveTab(item.id);
+        setIsSidebarOpen(false); // Close sidebar if open
+    };
+
     // Persist activeTab to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('userPortalActiveTab', activeTab);
     }, [activeTab]);
 
     useEffect(() => {
-        // CHECK YOUR PORT: Is your backend on 5000 or 5001?
+        // CHECK YOUR PORT: Is your backend on 5001?
         // Ensure this matches your Flask/Node server console.
         fetch('http://localhost:5000/api/user-info', {
             method: 'GET',
@@ -79,14 +93,17 @@ export default function UserPortal() {
     // 2. Main Render
     return (
         <div className="dashboard-page" style={{ background: 'transparent', minHeight: '100vh' }}>
-            <UserNavbar
+            <GlobalNavbar
                 onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                menuItems={userMenuItems}
+                onMenuItemClick={handleMenuItemClick}
                 userInfo={
                     <div className="team-name-badge">
                         <span className="team-name-label">TEAM:</span>
                         <span className="team-name-value">{teamInfo.login_id}</span>
                     </div>
                 }
+                showContactUs={true}
             />
 
             {/* DASHBOARD VIEW */}

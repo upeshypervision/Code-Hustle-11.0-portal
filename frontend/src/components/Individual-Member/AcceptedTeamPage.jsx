@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import UserNavbar from "../UserNavbar";
+import GlobalNavbar from "../GlobalNavbar";
 import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
@@ -49,8 +49,7 @@ const AcceptedTeamPage = () => {
       className="dashboard-page"
       style={{ minHeight: "100vh", background: "#0a0b1e" }}
     >
-      <UserNavbar
-        variant="glass"
+      <GlobalNavbar
         userInfo={null}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
@@ -65,6 +64,7 @@ const AcceptedTeamPage = () => {
             setShowProfile(!showProfile);
           }
         }}
+        showContactUs={true}
       />
 
       <div className="admin-content dashboard-container">
