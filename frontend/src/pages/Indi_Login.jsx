@@ -56,7 +56,7 @@ export default function Indi_Login() {
       if (response.ok) {
         setMessage({ type: 'success', text: 'Login successful. Redirecting...' });
         setTimeout(() => {
-          navigate('/individual-member');
+          navigate('/indimember');
         }, 800);
       } else {
         setMessage({ type: 'error', text: data.error || 'Invalid credentials' });

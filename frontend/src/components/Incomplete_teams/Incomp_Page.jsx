@@ -14,6 +14,36 @@ const Incomp_Page = () => {
   const [chatTarget, setChatTarget] = React.useState(null);
   const [chatMessage, setChatMessage] = React.useState("");
   const [isChatExpanded, setIsChatExpanded] = React.useState(false);
+  const API_BASE = "http://localhost:5000"; // Define API Base
+
+  React.useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/team-details`, {
+          credentials: "include" // Important: send cookies
+        });
+
+        if (response.status === 401) {
+          console.log("Unauthorized, redirecting to login");
+          navigate('/team-login');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch team data");
+        }
+        const data = await response.json();
+        setTeamData(prev => ({
+          ...prev,
+          ...data // Merge fetched data
+        }));
+      } catch (error) {
+        console.error("Error loading team data:", error);
+      }
+    };
+
+    fetchTeamData();
+  }, [navigate]);
 
   // Delete Confirmation State
   const [memberToDelete, setMemberToDelete] = React.useState(null);
@@ -79,81 +109,22 @@ const Incomp_Page = () => {
   //            .then(res => res.json())
   //            .then(data => setTeamData(data));
   //    }, []);
+  // Initial empty state matching structure
   const initialTeamData = {
-    teamName: "Power Rangers",
-    teamVision:
-      "To revolutionize the way developers collaborate by building a seamless, AI-driven platform that enhances productivity and innovation.",
+    teamName: "Loading...",
+    teamVision: "",
     leader: {
-      name: "Aryan Sharma",
-      details:
-        "Full Stack Developer & AI Enthusiast. Leading the vision and architecture of Nebula Nova.",
-      university: "UPES",
-      sapId: "500012345",
-      email: "aryan.sharma@example.com",
-      phone: "+91 99999 99999",
-      isUPESHypervision: true,
+      name: "",
+      details: "",
+      university: "",
+      sapId: "",
+      email: "",
+      phone: "",
+      isUPESHypervision: false,
     },
-    members: [
-      {
-        id: 1,
-        name: "Rohan Gupta",
-        about:
-          "Backend Developer & Algorithm Expert. Specializes in high-performance system design and data structures.",
-        university: "UPES",
-        email: "rohan.g@example.com",
-        phone: "+91 98765 43210",
-      },
-      {
-        id: 2,
-        name: "Isha Malhotra",
-        about:
-          "Cloud Computing Engineer & Backend Specialist. Focused on scalable server-side architectures and API security.",
-        university: "IIT Delhi",
-        email: "isha.m@example.com",
-        phone: "+91 91234 56789",
-      },
-      {
-        id: 3,
-        name: "Vikram Singh",
-        about:
-          "Frontend Developer & UI/UX Enthusiast. Passionate about creating immersive and responsive web experiences.",
-        university: "BITS Pilani",
-        email: "vikram.s@example.com",
-        phone: "+91 99887 76655",
-      },
-    ],
+    members: [],
     joinedMembers: [],
-    joinRequests: [
-      {
-        id: 101,
-        name: "Arjun Verma",
-        about:
-          "I am a passionate backend developer with experience in Node.js and MongoDB. I love solving complex algorithmic problems.",
-        email: "arjun.v@example.com",
-        university: "VIT Vellore",
-        phone: "+91 88888 88888",
-        isHypervision: true,
-      },
-      {
-        id: 102,
-        name: "Sneha Reddy",
-        about:
-          "Frontend wizard who loves crafting beautiful user interfaces using React and Tailwind CSS. Open source contributor.",
-        email: "sneha.r@example.com",
-        university: "SRM University",
-        phone: "+91 77777 77777",
-        isHypervision: false,
-      },
-      {
-        id: 103,
-        name: "Kavya Patel",
-        about:
-          "UI/UX Designer with a knack for creating intuitive and accessible designs. Proficient in Figma and Adobe XD.",
-        email: "kavya.p@example.com",
-        university: "Nirma University",
-        phone: "+91 66666 66666",
-      },
-    ],
+    joinRequests: [],
   };
 
   const [teamData, setTeamData] = React.useState(initialTeamData);
@@ -162,16 +133,36 @@ const Incomp_Page = () => {
     (teamData.members ? teamData.members.length : 0) +
     (teamData.joinedMembers ? teamData.joinedMembers.length : 0);
 
-  const handleDeleteMember = (id) => {
-    // BACKEND INTEGRATION:
-    // 1. Make a DELETE request to remove the member.
-    //    fetch(`/api/team/members/${id}`, { method: 'DELETE' })
-    //        .then(() => removeMemberFromState(id));
-    setTeamData((prev) => ({
-      ...prev,
-      members: prev.members.filter((member) => member.id !== id),
-      joinedMembers: prev.joinedMembers.filter((member) => member.id !== id),
-    }));
+  const handleDeleteMember = async (member) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team-member/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: member.email
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Remove from local state after successful deletion
+        setTeamData((prev) => ({
+          ...prev,
+          members: prev.members.filter((m) => m.email !== member.email),
+          joinedMembers: prev.joinedMembers.filter((m) => m.email !== member.email),
+        }));
+        alert('Member deleted successfully');
+      } else {
+        alert(data.error || 'Failed to delete member');
+      }
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      alert('Failed to delete member');
+    }
   };
 
   const handleJoinedMemberDeleteClick = (member) => {
@@ -437,7 +428,7 @@ const Incomp_Page = () => {
                       </button>
                       <button
                         className="delete-btn"
-                        onClick={() => handleDeleteMember(member.id)}
+                        onClick={() => handleDeleteMember(member)}
                         aria-label={`Delete ${member.name}`}
                       >
                         Delete

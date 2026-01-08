@@ -7,20 +7,66 @@ const Team_Regi = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [valErrors, setValErrors] = useState({});
+
+    // Initial state for Leader + 3 Members
     const [formData, setFormData] = useState({
         tName: '', tBio: '', lName: '', lAbout: '', sap: '', phone: '', email: '', universityType: '',
         m1: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' },
         m2: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' },
-        m3: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' },
-        m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }
+        m3: { fullName: '', sapid: '', email: '', phone: '', universityType: '', bio: '' }
     });
 
     const API_BASE = "http://localhost:5000";
 
+    // --- UPDATED VALIDATION LOGIC ---
     const validateField = (name, value, uType, currentMemberKey) => {
         if (!value) return "Required Field";
-        if (name === 'email' && !value.includes("@")) return "Invalid format";
-        if (name === 'phone' && value.length !== 10) return "10 digits required";
+
+        // 1. Email Format & Uniqueness Check
+        if (name === 'email') {
+            if (!value.includes("@")) return "Invalid format";
+
+            // Collect all emails currently in state
+            const allEmails = [
+                { key: 'leader', val: formData.email },
+                { key: 'm1', val: formData.m1.email },
+                { key: 'm2', val: formData.m2.email },
+                { key: 'm3', val: formData.m3.email }
+            ];
+
+            // Find if this email exists in another member's data (case-insensitive)
+            const duplicate = allEmails.find(item =>
+                item.val.toLowerCase() === value.toLowerCase() && // Match found
+                item.val !== '' &&                                // Not empty
+                item.key !== currentMemberKey                     // Not checking against self
+            );
+
+            if (duplicate) return "Email already used in team";
+        }
+
+        // 2. Phone Length & Uniqueness Check
+        if (name === 'phone') {
+            if (value.length !== 10) return "10 digits required";
+
+            // Collect all phones currently in state
+            const allPhones = [
+                { key: 'leader', val: formData.phone },
+                { key: 'm1', val: formData.m1.phone },
+                { key: 'm2', val: formData.m2.phone },
+                { key: 'm3', val: formData.m3.phone }
+            ];
+
+            // Find if this phone exists in another member's data
+            const duplicate = allPhones.find(item =>
+                item.val === value &&
+                item.val !== '' &&
+                item.key !== currentMemberKey
+            );
+
+            if (duplicate) return "Phone already used in team";
+        }
+
+        // 3. SAP ID Uniqueness Check (Only if University is UPES)
         if (name === 'sap' || name === 'sapid') {
             if (uType === 'UPES') {
                 if (value.length !== 9) return "Must be 9 digits";
@@ -29,11 +75,10 @@ const Team_Regi = () => {
                     { key: 'leader', val: formData.sap },
                     { key: 'm1', val: formData.m1.sapid },
                     { key: 'm2', val: formData.m2.sapid },
-                    { key: 'm3', val: formData.m3.sapid },
-                    { key: 'm4', val: formData.m4.sapid }
+                    { key: 'm3', val: formData.m3.sapid }
                 ];
                 const duplicate = allSaps.find(s => s.val === value && s.val !== '' && s.key !== currentMemberKey);
-                if (duplicate) return "Already used";
+                if (duplicate) return "SAP ID already used";
             }
         }
         return "";
@@ -46,16 +91,18 @@ const Team_Regi = () => {
 
     const isMemberValid = (mKey) => {
         const m = formData[mKey];
-        const emailErr = validateField('email', m.email);
-        const phoneErr = validateField('phone', m.phone);
+        // Pass mKey to validateField to ensure we don't flag the member against themselves
+        const emailErr = validateField('email', m.email, null, mKey);
+        const phoneErr = validateField('phone', m.phone, null, mKey);
         const sapErr = validateField('sapid', m.sapid, m.universityType, mKey);
+
         return m.fullName && m.bio && m.universityType && m.sapid && !emailErr && !phoneErr && !sapErr;
     };
 
     const isInitialFormValid = () => {
         const sapErr = validateField('sap', formData.sap, formData.universityType, 'leader');
-        const emailErr = validateField('email', formData.email);
-        const phoneErr = validateField('phone', formData.phone);
+        const emailErr = validateField('email', formData.email, null, 'leader');
+        const phoneErr = validateField('phone', formData.phone, null, 'leader');
 
         return (
             formData.tName.trim() !== '' &&
@@ -89,8 +136,8 @@ const Team_Regi = () => {
                 sap: formData.sap.trim(),
                 m1: formData.m1,
                 m2: formData.m2,
-                m3: formData.m3,
-                m4: formData.m4
+                m3: formData.m3
+                // Removed m4 as per requirement (Leader + 3 Members)
             };
 
             const response = await fetch(`${API_BASE}/api/create-team`, {
@@ -115,24 +162,34 @@ const Team_Regi = () => {
         }
     };
 
-    // --- MODIFIED RENDER FUNCTION ---
+    // --- RENDER HELPERS ---
     const renderMemberPage = (mKey, label, nextStep) => (
         <div className="neural-node node-materialize animate-in">
             <span className="label-detail">{label}</span>
             <div className="input-group">
                 <div className="label-row"><span>FULL NAME <span className="v-tag">*</span></span></div>
                 <div className={`glow-input-container animated-field ${valErrors[`${mKey}_fullName`] ? 'error-border' : ''}`}>
-                    <input className="glow-input" placeholder="Member Name..." value={formData[mKey].fullName} onChange={(e) => updateMember(mKey, 'fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value, null, mKey)} />
+                    <input className="glow-input" placeholder="Member Name..." value={formData[mKey].fullName} maxLength={100} onChange={(e) => updateMember(mKey, 'fullName', e.target.value)} onBlur={(e) => handleBlur('fullName', e.target.value, null, mKey)} />
                 </div>
-                {valErrors[`${mKey}_fullName`] && <p className="error-message-inline">{valErrors[`${mKey}_fullName`]}</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                    {valErrors[`${mKey}_fullName`] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors[`${mKey}_fullName`]}</p> : <span></span>}
+                    <span style={{ fontSize: '0.7rem', color: formData[mKey].fullName.length >= 100 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                        {formData[mKey].fullName.length}/100
+                    </span>
+                </div>
             </div>
 
             <div className="input-group" style={{ marginTop: '12px' }}>
                 <div className="label-row"><span>ABOUT & SKILLS <span className="v-tag">*</span></span></div>
                 <div className={`glow-input-container animated-field ${valErrors[`${mKey}_bio`] ? 'error-border' : ''}`}>
-                    <textarea className="glow-input" rows="2" placeholder="Technical stack, skills..." value={formData[mKey].bio} onChange={(e) => updateMember(mKey, 'bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value, null, mKey)}></textarea>
+                    <textarea className="glow-input" rows="2" placeholder="Technical stack, skills..." value={formData[mKey].bio} maxLength={500} onChange={(e) => updateMember(mKey, 'bio', e.target.value)} onBlur={(e) => handleBlur('bio', e.target.value, null, mKey)}></textarea>
                 </div>
-                {valErrors[`${mKey}_bio`] && <p className="error-message-inline">{valErrors[`${mKey}_bio`]}</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                    {valErrors[`${mKey}_bio`] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors[`${mKey}_bio`]}</p> : <span></span>}
+                    <span style={{ fontSize: '0.7rem', color: formData[mKey].bio.length >= 500 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                        {formData[mKey].bio.length}/500
+                    </span>
+                </div>
             </div>
 
             <div className="input-group" style={{ marginTop: '12px' }}>
@@ -151,28 +208,31 @@ const Team_Regi = () => {
                     <div className="label-row"><span>{formData[mKey].universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div>
                     <div className={`glow-input-container animated-field ${valErrors[`${mKey}_sapid`] ? 'error-border' : ''}`}>
                         <input className="glow-input" placeholder={formData[mKey].universityType === 'UPES' ? '9 Digits' : 'Name'} value={formData[mKey].sapid}
+                            maxLength={formData[mKey].universityType === 'UPES' ? 9 : 200}
                             onChange={(e) => updateMember(mKey, 'sapid', e.target.value)}
                             onBlur={(e) => handleBlur('sapid', e.target.value, formData[mKey].universityType, mKey)} />
                     </div>
-                    {valErrors[`${mKey}_sapid`] && <p className="error-message-inline">{valErrors[`${mKey}_sapid`]}</p>}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                        {valErrors[`${mKey}_sapid`] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors[`${mKey}_sapid`]}</p> : <span></span>}
+                        <span style={{ fontSize: '0.7rem', color: formData[mKey].sapid.length >= (formData[mKey].universityType === 'UPES' ? 9 : 200) ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                            {formData[mKey].sapid.length}/{formData[mKey].universityType === 'UPES' ? 9 : 200}
+                        </span>
+                    </div>
                 </div>
             )}
 
             <div className="input-group" style={{ marginTop: '12px' }}>
                 <div className="label-row"><span>CONTACT <span className="v-tag">*</span></span></div>
                 <div className={`dual-glow-capsule animated-field ${(valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center' }}>
-                    <input className="capsule-input-left" placeholder="Email" value={formData[mKey].email} onChange={(e) => updateMember(mKey, 'email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value, null, mKey)} />
+                    <input className="capsule-input-left" placeholder="Email" value={formData[mKey].email} maxLength={100} onChange={(e) => updateMember(mKey, 'email', e.target.value)} onBlur={(e) => handleBlur('email', e.target.value, null, mKey)} />
                     <div className="capsule-divider"></div>
-                    <input className="capsule-input-right" placeholder="Phone" value={formData[mKey].phone} onChange={(e) => updateMember(mKey, 'phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value, null, mKey)} />
+                    <input className="capsule-input-right" placeholder="Phone" value={formData[mKey].phone} maxLength={10} onChange={(e) => updateMember(mKey, 'phone', e.target.value)} onBlur={(e) => handleBlur('phone', e.target.value, null, mKey)} />
                 </div>
                 {(valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]) && <p className="error-message-inline">{valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]}</p>}
             </div>
 
             <div className="forge-btn-group" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                    {/* UPDATED: If nextStep exists (not last page), back takes 30% width.
-                        If nextStep is missing (last page), back takes 100% width.
-                    */}
                     <button
                         className="liquid-btn"
                         style={{ flex: nextStep ? 0.3 : 1 }}
@@ -181,7 +241,6 @@ const Team_Regi = () => {
                         BACK
                     </button>
 
-                    {/* UPDATED: Only render this button if nextStep is provided */}
                     {nextStep && (
                         <button
                             className={`liquid-btn animated-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
@@ -225,33 +284,53 @@ const Team_Regi = () => {
                             <div className="input-group">
                                 <div className="label-row"><span>TEAM NAME <span className="v-tag">*</span></span></div>
                                 <div className={`glow-input-container animated-field ${valErrors['leader_tName'] ? 'error-border' : ''}`}>
-                                    <input className="glow-input" autoFocus placeholder="The Avengers..." value={formData.tName} onChange={(e) => setFormData({ ...formData, tName: e.target.value })} onBlur={(e) => handleBlur('tName', e.target.value, null, 'leader')} />
+                                    <input className="glow-input" autoFocus placeholder="The Avengers..." value={formData.tName} maxLength={100} onChange={(e) => setFormData({ ...formData, tName: e.target.value })} onBlur={(e) => handleBlur('tName', e.target.value, null, 'leader')} />
                                 </div>
-                                {valErrors['leader_tName'] && <p className="error-message-inline">{valErrors['leader_tName']}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors['leader_tName'] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors['leader_tName']}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.tName.length >= 100 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.tName.length}/100
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
                                 <div className="label-row"><span>TEAM VISION <span className="v-tag">*</span></span></div>
                                 <div className={`glow-input-container animated-field ${valErrors['leader_tBio'] ? 'error-border' : ''}`}>
-                                    <textarea className="glow-input" rows="2" placeholder="What is your team goal?" value={formData.tBio} onChange={(e) => setFormData({ ...formData, tBio: e.target.value })} onBlur={(e) => handleBlur('tBio', e.target.value, null, 'leader')}></textarea>
+                                    <textarea className="glow-input" rows="2" placeholder="What is your team goal?" value={formData.tBio} maxLength={1000} onChange={(e) => setFormData({ ...formData, tBio: e.target.value })} onBlur={(e) => handleBlur('tBio', e.target.value, null, 'leader')}></textarea>
                                 </div>
-                                {valErrors['leader_tBio'] && <p className="error-message-inline">{valErrors['leader_tBio']}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors['leader_tBio'] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors['leader_tBio']}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.tBio.length >= 1000 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.tBio.length}/1000
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
                                 <div className="label-row"><span>LEADER NAME <span className="v-tag">*</span></span></div>
                                 <div className={`glow-input-container animated-field ${valErrors['leader_lName'] ? 'error-border' : ''}`}>
-                                    <input className="glow-input" placeholder="Full Name..." value={formData.lName} onChange={(e) => setFormData({ ...formData, lName: e.target.value })} onBlur={(e) => handleBlur('lName', e.target.value, null, 'leader')} />
+                                    <input className="glow-input" placeholder="Full Name..." value={formData.lName} maxLength={100} onChange={(e) => setFormData({ ...formData, lName: e.target.value })} onBlur={(e) => handleBlur('lName', e.target.value, null, 'leader')} />
                                 </div>
-                                {valErrors['leader_lName'] && <p className="error-message-inline">{valErrors['leader_lName']}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors['leader_lName'] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors['leader_lName']}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.lName.length >= 100 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.lName.length}/100
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
                                 <div className="label-row"><span>ABOUT LEADER <span className="v-tag">*</span></span></div>
                                 <div className={`glow-input-container animated-field ${valErrors['leader_lAbout'] ? 'error-border' : ''}`}>
-                                    <textarea className="glow-input" rows="2" placeholder="Bio & Technical skills..." value={formData.lAbout} onChange={(e) => setFormData({ ...formData, lAbout: e.target.value })} onBlur={(e) => handleBlur('lAbout', e.target.value, null, 'leader')}></textarea>
+                                    <textarea className="glow-input" rows="2" placeholder="Bio & Technical skills..." value={formData.lAbout} maxLength={500} onChange={(e) => setFormData({ ...formData, lAbout: e.target.value })} onBlur={(e) => handleBlur('lAbout', e.target.value, null, 'leader')}></textarea>
                                 </div>
-                                {valErrors['leader_lAbout'] && <p className="error-message-inline">{valErrors['leader_lAbout']}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors['leader_lAbout'] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors['leader_lAbout']}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.lAbout.length >= 500 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.lAbout.length}/500
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
@@ -270,19 +349,25 @@ const Team_Regi = () => {
                                     <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div>
                                     <div className={`glow-input-container animated-field ${valErrors['leader_sap'] ? 'error-border' : ''}`}>
                                         <input className="glow-input" placeholder={formData.universityType === 'UPES' ? '9 Digits' : 'Name'} value={formData.sap}
+                                            maxLength={formData.universityType === 'UPES' ? 9 : 200}
                                             onChange={(e) => setFormData({ ...formData, sap: e.target.value })}
                                             onBlur={(e) => handleBlur('sap', e.target.value, formData.universityType, 'leader')} />
                                     </div>
-                                    {valErrors['leader_sap'] && <p className="error-message-inline">{valErrors['leader_sap']}</p>}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                        {valErrors['leader_sap'] ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors['leader_sap']}</p> : <span></span>}
+                                        <span style={{ fontSize: '0.7rem', color: formData.sap.length >= (formData.universityType === 'UPES' ? 9 : 200) ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                            {formData.sap.length}/{formData.universityType === 'UPES' ? 9 : 200}
+                                        </span>
+                                    </div>
                                 </div>
                             )}
 
                             <div className="input-group" style={{ marginTop: '20px' }}>
                                 <div className="label-row"><span>CONTACT INFO <span className="v-tag">*</span></span></div>
                                 <div className={`dual-glow-capsule animated-field ${(valErrors['leader_email'] || valErrors['leader_phone']) ? 'error-border' : ''}`} style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
-                                    <input className="capsule-input-left" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onBlur={(e) => handleBlur('email', e.target.value, null, 'leader')} />
+                                    <input className="capsule-input-left" placeholder="Email" value={formData.email} maxLength={100} onChange={(e) => setFormData({ ...formData, email: e.target.value })} onBlur={(e) => handleBlur('email', e.target.value, null, 'leader')} />
                                     <div className="capsule-divider"></div>
-                                    <input className="capsule-input-right" placeholder="Phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} onBlur={(e) => handleBlur('phone', e.target.value, null, 'leader')} />
+                                    <input className="capsule-input-right" placeholder="Phone" value={formData.phone} maxLength={10} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} onBlur={(e) => handleBlur('phone', e.target.value, null, 'leader')} />
                                 </div>
                                 {(valErrors['leader_email'] || valErrors['leader_phone']) && <p className="error-message-inline">{valErrors['leader_email'] || valErrors['leader_phone']}</p>}
                             </div>
@@ -300,7 +385,7 @@ const Team_Regi = () => {
 
                     {step === 4 && renderMemberPage('m1', 'NODE_02: MEMBER 02 DETAILS', 5)}
                     {step === 5 && renderMemberPage('m2', 'NODE_03: MEMBER 03 DETAILS', 6)}
-                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', null)} {/* Passed null implicitly, but explicit makes intent clear */}
+                    {step === 6 && renderMemberPage('m3', 'NODE_04: MEMBER 04 DETAILS', null)}
 
                     {step === 8 && (
                         <div className="neural-node node-materialize final-aura success-node">

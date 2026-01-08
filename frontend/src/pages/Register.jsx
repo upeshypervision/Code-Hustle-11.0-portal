@@ -207,17 +207,31 @@ const Registration = () => {
     }
   };
 
-  const renderInput = (member, name, label, placeholder) => (
-    <div className="input-group">
-      <div className="label-row"><span>{label}</span></div>
-      <div className={`glow-input-container ${valErrors[`${member}_${name}`] ? 'error-border' : ''}`}>
-        <input className="glow-input" placeholder={placeholder} value={team[member][name]}
-          onChange={(e) => setTeam({ ...team, [member]: { ...team[member], [name]: e.target.value } })}
-          onBlur={(e) => handleBlur(member, name, e.target.value)} />
+  const renderInput = (member, name, label, placeholder) => {
+    const maxLengths = {
+      fullName: 100,
+      email: 100,
+      phone: 10,
+      sapid: name === 'sapid' && team[member].universityType === 'UPES' ? 9 : 200
+    };
+
+    return (
+      <div className="input-group">
+        <div className="label-row"><span>{label}</span></div>
+        <div className={`glow-input-container ${valErrors[`${member}_${name}`] ? 'error-border' : ''}`}>
+          <input
+            className="glow-input"
+            placeholder={placeholder}
+            value={team[member][name]}
+            maxLength={maxLengths[name] || 200}
+            onChange={(e) => setTeam({ ...team, [member]: { ...team[member], [name]: e.target.value } })}
+            onBlur={(e) => handleBlur(member, name, e.target.value)}
+          />
+        </div>
+        {valErrors[`${member}_${name}`] && <p className="error-message-inline">{valErrors[`${member}_${name}`]}</p>}
       </div>
-      {valErrors[`${member}_${name}`] && <p className="error-message-inline">{valErrors[`${member}_${name}`]}</p>}
-    </div>
-  );
+    );
+  };
 
   const renderUniversitySection = (member) => (
     <>
@@ -262,8 +276,13 @@ const Registration = () => {
               <div className="input-group">
                 <div className="label-row"><span>Team Name</span></div>
                 <div className="glow-input-container">
-                  <input className="glow-input" placeholder="Enter Team Name" value={teamName}
-                    onChange={(e) => setTeamName(e.target.value)} />
+                  <input
+                    className="glow-input"
+                    placeholder="Enter Team Name"
+                    value={teamName}
+                    maxLength={100}
+                    onChange={(e) => setTeamName(e.target.value)}
+                  />
                 </div>
               </div>
 
@@ -337,11 +356,11 @@ const Registration = () => {
                 <>
                   <div className="input-group">
                     <div className="label-row"><span>HV ID (Optional)</span></div>
-                    <div className="glow-input-container"><input className="glow-input" placeholder="HV-XXXX" value={discount.hyperId} onChange={(e) => setDiscount({ ...discount, hyperId: e.target.value.toUpperCase() })} /></div>
+                    <div className="glow-input-container"><input className="glow-input" placeholder="HV-XXXX" value={discount.hyperId} maxLength={20} onChange={(e) => setDiscount({ ...discount, hyperId: e.target.value.toUpperCase() })} /></div>
                   </div>
                   <div className="input-group">
                     <div className="label-row"><span>Verify Member SAP ID</span></div>
-                    <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} onChange={(e) => setDiscount({ ...discount, verifySapId: e.target.value })} /></div>
+                    <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} maxLength={9} onChange={(e) => setDiscount({ ...discount, verifySapId: e.target.value })} /></div>
                   </div>
 
                   <button className="secondary-add-btn" style={{ width: '100%', padding: '12px', border: '1px solid #38bdf8', color: '#38bdf8', marginBottom: '15px', borderRadius: '30px', background: 'rgba(56, 189, 248, 0.1)', fontWeight: 800 }} onClick={handleVerifyDiscount}>APPLY DISCOUNT</button>

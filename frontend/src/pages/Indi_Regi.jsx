@@ -147,11 +147,17 @@ const Indi_Regi = () => {
                                         className="glow-input"
                                         placeholder="Enter your name..."
                                         value={formData.fullName}
+                                        maxLength={100}
                                         onChange={(e) => updateField('fullName', e.target.value)}
                                         onBlur={(e) => handleBlur('fullName', e.target.value)}
                                     />
                                 </div>
-                                {valErrors.fullName && <p className="error-message-inline">{valErrors.fullName}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors.fullName ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.fullName}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.fullName.length >= 100 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.fullName.length}/100
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
@@ -162,11 +168,17 @@ const Indi_Regi = () => {
                                         rows="3"
                                         placeholder="Tell us about your technical stack and skills..."
                                         value={formData.bio}
+                                        maxLength={500}
                                         onChange={(e) => updateField('bio', e.target.value)}
                                         onBlur={(e) => handleBlur('bio', e.target.value)}
                                     ></textarea>
                                 </div>
-                                {valErrors.bio && <p className="error-message-inline">{valErrors.bio}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {valErrors.bio ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.bio}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.bio.length >= 500 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.bio.length}/500
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
@@ -197,11 +209,17 @@ const Indi_Regi = () => {
                                             className="glow-input"
                                             placeholder={formData.universityType === 'upes' ? '9 Digits' : 'Enter University Name'}
                                             value={formData.sapid}
+                                            maxLength={formData.universityType === 'upes' ? 9 : 200}
                                             onChange={(e) => updateField('sapid', e.target.value)}
                                             onBlur={(e) => handleBlur('sapid', e.target.value)}
                                         />
                                     </div>
-                                    {valErrors.sapid && <p className="error-message-inline">{valErrors.sapid}</p>}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                        {valErrors.sapid ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.sapid}</p> : <span></span>}
+                                        <span style={{ fontSize: '0.7rem', color: formData.sapid.length >= (formData.universityType === 'upes' ? 9 : 200) ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                            {formData.sapid.length}/{formData.universityType === 'upes' ? 9 : 200}
+                                        </span>
+                                    </div>
                                 </div>
                             )}
 
@@ -212,10 +230,16 @@ const Indi_Regi = () => {
                                         className="glow-input"
                                         placeholder="Enter your Hypervision ID (if applicable)..."
                                         value={formData.hypervisionId}
+                                        maxLength={20}
                                         onChange={(e) => updateField('hypervisionId', e.target.value)}
                                     />
                                 </div>
-                                {formData.hypervisionId && valErrors.hypervisionId && <p className="error-message-inline">{valErrors.hypervisionId}</p>}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                                    {formData.hypervisionId && valErrors.hypervisionId ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.hypervisionId}</p> : <span></span>}
+                                    <span style={{ fontSize: '0.7rem', color: formData.hypervisionId.length >= 20 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.hypervisionId.length}/20
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="input-group" style={{ marginTop: '12px' }}>
@@ -225,6 +249,7 @@ const Indi_Regi = () => {
                                         className="capsule-input-left"
                                         placeholder="Email Address"
                                         value={formData.email}
+                                        maxLength={100}
                                         onChange={(e) => updateField('email', e.target.value)}
                                         onBlur={(e) => handleBlur('email', e.target.value)}
                                     />
@@ -233,6 +258,7 @@ const Indi_Regi = () => {
                                         className="capsule-input-right"
                                         placeholder="Phone"
                                         value={formData.phone}
+                                        maxLength={10}
                                         onChange={(e) => updateField('phone', e.target.value)}
                                         onBlur={(e) => handleBlur('phone', e.target.value)}
                                     />

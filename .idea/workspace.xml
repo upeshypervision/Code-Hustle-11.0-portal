@@ -6,26 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Create_team.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/createteam_registration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/get_teams.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/get_user_info.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/individual_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/individual_registration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/createteam_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/createteam_registration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/TeamUpPage.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/teamuppage.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamDetailsModal.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamUp.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/TeamUpDashboard.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CreateTeam.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/IndividualLogin.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/JoinTeam.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Teamup.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Teamup.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_TeamDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_TeamDetails.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Indi_Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Indi_Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Indi_Regi.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Indi_Regi.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Landing_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Landing_Page.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Team_Regi.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Team_Regi.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +67,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "om__indidash",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

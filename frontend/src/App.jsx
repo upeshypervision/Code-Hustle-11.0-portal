@@ -23,7 +23,6 @@ import EvaluatorLogin from "./pages/EvaluatorLogin";
 import EvaluatorPanel from "./pages/EvaluatorPanel";
 
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
-
 function App() {
   return (
     <Router>
@@ -31,7 +30,7 @@ function App() {
         <Route path="/" element={<Landing_Page />} />
         <Route path="/create-team" element={<Team_Regi />} />
         <Route
-          path="/individual-member"
+          path="/indimember"
           element={<Indi_Dashboard />}
         />
         <Route
@@ -39,7 +38,7 @@ function App() {
           element={<AcceptedTeamPage />}
         />
         <Route path="/team-up" element={<Incomp_Page />} />
-        <Route path="/join" element={<Indi_Regi />} />
+        <Route path="/Indiregi" element={<Indi_Regi />} />
         <Route path="/individual-login" element={<Indi_Login />} />
         <Route path="/team-login" element={<TeamLogin />} />
         <Route path="/register" element={<Register />} />

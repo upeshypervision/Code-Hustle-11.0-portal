@@ -62,7 +62,7 @@ const Landing_Page = () => {
                   <button
                     className="neon-shade-btn next-glow"
                     style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate('/join')}
+                    onClick={() => navigate('/Indiregi')}
                   >
                     JOIN TEAM
                   </button>
