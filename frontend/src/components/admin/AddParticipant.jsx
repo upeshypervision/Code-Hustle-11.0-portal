@@ -1,13 +1,22 @@
 import { useState } from "react";
 import "./AddParticipant.css";
 
+const emptyMember = {
+  fullName: "",
+  university: "",
+  sapid: "",
+  email: "",
+  phone: "",
+};
+
 export default function AddParticipant() {
   const [teamName, setTeamName] = useState("");
   const [team, setTeam] = useState({
-    leader: { fullName: "", sapid: "", email: "", phone: "" },
-    m1: { fullName: "", sapid: "", email: "", phone: "" },
-    m2: { fullName: "", sapid: "", email: "", phone: "" },
-    m3: { fullName: "", sapid: "", email: "", phone: "" },
+    leader: { ...emptyMember },
+    m1: { ...emptyMember },
+    m2: { ...emptyMember },
+    m3: { ...emptyMember },
+    m4: { ...emptyMember },
   });
 
   const [participantMessage, setParticipantMessage] = useState({
@@ -24,58 +33,77 @@ export default function AddParticipant() {
     }));
   };
 
+  const isMemberFilled = (m) =>
+    m.fullName || m.university || m.sapid || m.email || m.phone;
+
+  const validateMember = (m) => {
+    if (!m.fullName || !m.email || !m.phone || !m.university) return false;
+    if (!m.sapid) return false;
+    return true;
+  };
+
   const handleAddParticipant = async (e) => {
     e.preventDefault();
     setParticipantMessage({ type: "", text: "" });
     setCreatedTeam(null);
+
     if (!teamName.trim()) {
       setParticipantMessage({ type: "error", text: "Team Name is required." });
       return;
     }
+
     if (
-      !team.leader.fullName ||
-      !team.leader.sapid ||
-      !team.leader.email ||
-      !team.leader.phone
+      !validateMember(team.leader) ||
+      !validateMember(team.m1) ||
+      !validateMember(team.m2)
     ) {
       setParticipantMessage({
         type: "error",
-        text: "Team Leader details are incomplete.",
+        text: "Leader, Member 1 and Member 2 details are mandatory.",
       });
       return;
     }
-    if (
-      !team.m1.fullName ||
-      !team.m1.sapid ||
-      !team.m1.email ||
-      !team.m1.phone
-    ) {
+
+    const optionalMembers = [team.m3, team.m4].filter(isMemberFilled);
+
+    for (let m of optionalMembers) {
+      if (!validateMember(m)) {
+        setParticipantMessage({
+          type: "error",
+          text: "Optional members must have all details filled if added.",
+        });
+        return;
+      }
+    }
+
+    const totalMembers = 1 + 2 + optionalMembers.length;
+
+    if (totalMembers < 3 || totalMembers > 5) {
       setParticipantMessage({
         type: "error",
-        text: "At least Member 1 details are required.",
+        text: "Team must have minimum 3 and maximum 5 members.",
       });
       return;
     }
 
     setIsSubmitting(true);
 
-    const membersList = [team.m1, team.m2, team.m3].filter(
-      (m) => m.fullName.trim() !== ""
-    );
-
     const payload = {
       team_name: teamName,
       leader: team.leader,
-      members: membersList,
+      members: [team.m1, team.m2, ...optionalMembers],
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/add-team", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/admin/add-team",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
@@ -90,10 +118,11 @@ export default function AddParticipant() {
         });
         setTeamName("");
         setTeam({
-          leader: { fullName: "", sapid: "", email: "", phone: "" },
-          m1: { fullName: "", sapid: "", email: "", phone: "" },
-          m2: { fullName: "", sapid: "", email: "", phone: "" },
-          m3: { fullName: "", sapid: "", email: "", phone: "" },
+          leader: { ...emptyMember },
+          m1: { ...emptyMember },
+          m2: { ...emptyMember },
+          m3: { ...emptyMember },
+          m4: { ...emptyMember },
         });
       } else {
         setParticipantMessage({
@@ -101,7 +130,7 @@ export default function AddParticipant() {
           text: data.error || "Failed to add team.",
         });
       }
-    } catch (err) {
+    } catch {
       setParticipantMessage({
         type: "error",
         text: "Server connection failed.",
@@ -111,91 +140,127 @@ export default function AddParticipant() {
     }
   };
 
-  const renderMemberInputs = (key, label) => (
-    <div className="member-section">
-      <span className="section-label">{label}</span>
-      <div className="input-row">
-        <div className="cosmic-input-group">
-          <label className="cosmic-label">Full Name</label>
-          <div className="cosmic-input-container">
-            <input
-              className="cosmic-input"
-              type="text"
-              placeholder="e.g. John Doe"
-              value={team[key].fullName}
-              onChange={(e) =>
-                handleTeamChange(key, "fullName", e.target.value)
-              }
-            />
+  const renderMemberInputs = (key, label, required = false) => {
+    const m = team[key];
+
+    return (
+      <div className="member-section">
+        <span className="section-label">
+          {label} {required && <span className="req">*</span>}
+        </span>
+
+        <div className="input-row">
+          <div className="cosmic-input-group">
+            <label className="cosmic-label">
+              Full Name {required && <span className="req">*</span>}
+            </label>
+            <div className="cosmic-input-container">
+              <input
+                className="cosmic-input"
+                value={m.fullName}
+                onChange={(e) =>
+                  handleTeamChange(key, "fullName", e.target.value)
+                }
+              />
+            </div>
+          </div>
+
+          <div className="cosmic-input-group">
+            <label className="cosmic-label">
+              University {required && <span className="req">*</span>}
+            </label>
+            <div className="cosmic-input-container">
+              <select
+                className="cosmic-input select-input"
+                value={m.university}
+                onChange={(e) =>
+                  handleTeamChange(key, "university", e.target.value)
+                }
+              >
+                <option value="">Select</option>
+                <option value="UPES">UPES</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div className="cosmic-input-group">
-          <label className="cosmic-label">SAP ID</label>
-          <div className="cosmic-input-container">
-            <input
-              className="cosmic-input"
-              type="text"
-              placeholder="e.g. 5000XXXX"
-              value={team[key].sapid}
-              onChange={(e) => handleTeamChange(key, "sapid", e.target.value)}
-            />
+
+        {m.university && (
+          <div className="input-row">
+            <div className="cosmic-input-group">
+              <label className="cosmic-label">
+                {m.university === "UPES"
+                  ? "SAP ID"
+                  : "Institute Name"}{" "}
+                {required && <span className="req">*</span>}
+              </label>
+              <div className="cosmic-input-container">
+                <input
+                  className="cosmic-input"
+                  value={m.sapid}
+                  onChange={(e) =>
+                    handleTeamChange(key, "sapid", e.target.value)
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="input-row">
+          <div className="cosmic-input-group">
+            <label className="cosmic-label">
+              Email {required && <span className="req">*</span>}
+            </label>
+            <div className="cosmic-input-container">
+              <input
+                className="cosmic-input"
+                value={m.email}
+                onChange={(e) =>
+                  handleTeamChange(key, "email", e.target.value)
+                }
+              />
+            </div>
+          </div>
+
+          <div className="cosmic-input-group">
+            <label className="cosmic-label">
+              Phone {required && <span className="req">*</span>}
+            </label>
+            <div className="cosmic-input-container">
+              <input
+                className="cosmic-input"
+                value={m.phone}
+                onChange={(e) =>
+                  handleTeamChange(key, "phone", e.target.value)
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div className="input-row">
-        <div className="cosmic-input-group">
-          <label className="cosmic-label">Email Address</label>
-          <div className="cosmic-input-container">
-            <input
-              className="cosmic-input"
-              type="email"
-              placeholder="email@domain.com"
-              value={team[key].email}
-              onChange={(e) => handleTeamChange(key, "email", e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="cosmic-input-group">
-          <label className="cosmic-label">Phone Number</label>
-          <div className="cosmic-input-container">
-            <input
-              className="cosmic-input"
-              type="text"
-              placeholder="10-digit number"
-              value={team[key].phone}
-              onChange={(e) => handleTeamChange(key, "phone", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="admin-cosmic-wrapper">
-      <header className="admin-cosmic-header">
-        <h2 className="cosmic-title">Manual Team Entry</h2>
-        <p className="cosmic-subtitle">
-          Bypass payment gateway and add teams directly to the database.
-        </p>
-      </header>
-
       <div className="cosmic-card">
         <form onSubmit={handleAddParticipant} className="form-grid">
-          {/* Team Name */}
-          <div className="member-section" style={{ borderColor: "#38bdf840" }}>
-            <span className="section-label" style={{ color: "#fff" }}>
-              TEAM IDENTIFIER
+
+          {/* ✅ FIXED TEAM NAME */}
+          <div className="member-section">
+            <span className="section-label">
+              TEAM NAME <span className="req">*</span>
             </span>
+
             <div className="cosmic-input-group">
               <label className="cosmic-label">
-                Team Name <span style={{ color: "#f87171" }}>*</span>
+                Team Name <span className="req">*</span>
               </label>
               <div className="cosmic-input-container">
                 <input
                   className="cosmic-input"
                   type="text"
-                  style={{ fontSize: "16px", fontWeight: "bold" }}
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   placeholder="Enter Unique Team Name"
@@ -204,55 +269,15 @@ export default function AddParticipant() {
             </div>
           </div>
 
-          {/* Leader */}
-          {renderMemberInputs("leader", "TEAM LEADER (Required)")}
-
-          {/* Member 1 */}
-          {renderMemberInputs("m1", "MEMBER 1 (Required)")}
-
-          {/* Member 2 */}
-          {renderMemberInputs("m2", "MEMBER 2 (Optional)")}
-
-          {/* Member 3 */}
-          {renderMemberInputs("m3", "MEMBER 3 (Optional)")}
+          {renderMemberInputs("leader", "TEAM LEADER", true)}
+          {renderMemberInputs("m1", "MEMBER 1", true)}
+          {renderMemberInputs("m2", "MEMBER 2", true)}
+          {renderMemberInputs("m3", "MEMBER 3")}
+          {renderMemberInputs("m4", "MEMBER 4")}
 
           {participantMessage.text && (
             <div className={`cosmic-msg ${participantMessage.type}`}>
-              {participantMessage.type === "success" ? "✅" : "⚠️"}
               {participantMessage.text}
-            </div>
-          )}
-
-          {createdTeam && (
-            <div className="success-credentials">
-              <h3 style={{ color: "#34d399", margin: "0 0 10px 0" }}>
-                🎉 Team Created!
-              </h3>
-              <p style={{ fontSize: "13px", opacity: 0.8 }}>
-                Credentials sent via email (if enabled).
-              </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  gap: "20px",
-                  justifyContent: "center",
-                }}
-              >
-                <div className="cred-box">
-                  <span className="cred-label">TEAM ID</span>
-                  <span className="cred-value">{createdTeam.teamId}</span>
-                </div>
-                <div className="cred-box">
-                  <span className="cred-label">PASSWORD</span>
-                  <span className="cred-value">{createdTeam.password}</span>
-                </div>
-              </div>
-
-              <p style={{ fontSize: "11px", opacity: 0.6, marginTop: "10px" }}>
-                Please share these details with the team leader if email
-                delivery fails.
-              </p>
             </div>
           )}
 
@@ -261,7 +286,7 @@ export default function AddParticipant() {
             className="cosmic-btn-primary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Processing Registration..." : "REGISTER TEAM NOW"}
+            {isSubmitting ? "Processing..." : "REGISTER TEAM NOW"}
           </button>
         </form>
       </div>
