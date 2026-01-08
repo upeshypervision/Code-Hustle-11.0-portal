@@ -15,21 +15,21 @@ export default function GlobalNavbar({
 
   const handleLogout = async () => {
     try {
-      // For evaluators, just clear the cookie by navigating
-      // For admin/student, use the logout endpoint
-      if (!isEvaluator) {
-        await fetch("http://localhost:5000/api/logout", {
-          method: "POST",
-          credentials: "include",
-        });
-      }
+      // Call the logout endpoint to clear all auth cookies
+      await fetch("http://localhost:5001/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
+      // Navigate to appropriate login page based on user type
       if (isEvaluator) {
         navigate("/evaluator-login");
+      } else if (isAdmin) {
+        navigate("/admin-login");
       } else {
-        navigate(isAdmin ? "/admin-login" : "/userlogin");
+        navigate("/userlogin");
       }
     }
   };
@@ -125,8 +125,8 @@ export default function GlobalNavbar({
                 {isEvaluator
                   ? "Evaluator Menu"
                   : isAdmin
-                    ? "Admin Menu"
-                    : "Navigation"}
+                  ? "Admin Menu"
+                  : "Navigation"}
               </h3>
               <button
                 className="mobile-menu-close"
@@ -156,4 +156,3 @@ export default function GlobalNavbar({
     </>
   );
 }
-

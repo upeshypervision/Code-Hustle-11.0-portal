@@ -16,7 +16,7 @@ export default function EvaluatorDashboard() {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/evaluator/assigned-submissions', {
+            const res = await fetch('http://localhost:5001/api/evaluator/assigned-submissions', {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -39,7 +39,7 @@ export default function EvaluatorDashboard() {
     const handleAction = async (teamId, action) => {
         const disposition = action === 'view' ? 'inline' : 'attachment';
         try {
-            const res = await fetch(`http://localhost:5000/api/admin/submission/${teamId}?disposition=${disposition}`, {
+            const res = await fetch(`http://localhost:5001/api/admin/submission/${teamId}?disposition=${disposition}`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -87,7 +87,7 @@ export default function EvaluatorDashboard() {
         const promises = teamIdsToSubmit.map(async (teamId) => {
             const marks = marksInput[teamId];
             try {
-                const res = await fetch('http://localhost:5000/api/evaluator/submit-marks', {
+                const res = await fetch('http://localhost:5001/api/evaluator/submit-marks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',

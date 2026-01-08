@@ -24,7 +24,7 @@ export default function ManualPPT() {
     setError("");
     try {
       const res = await fetch(
-        "http://localhost:5000/api/admin/teams-without-ppt",
+        "http://localhost:5001/api/admin/teams-without-ppt",
         {
           method: "GET",
           credentials: "include",
@@ -80,7 +80,7 @@ export default function ManualPPT() {
     formData.append("team_id", selectedTeam.team_id);
 
     try {
-      const res = await fetch("http://localhost:5000/api/submit-ppt", {
+      const res = await fetch("http://localhost:5001/api/submit-ppt", {
         method: "POST",
         body: formData,
         credentials: "include",

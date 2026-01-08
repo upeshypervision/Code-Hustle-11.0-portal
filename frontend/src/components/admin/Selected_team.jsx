@@ -27,7 +27,7 @@ export default function SelectedTeam() {
         endpoint = "/api/admin/approved-hackerrank-teams";
     }
 
-    fetch(`http://localhost:5000${endpoint}`, {
+    fetch(`http://localhost:5001${endpoint}`, {
       credentials: "include"
     })
       .then(res => res.json())
@@ -87,6 +87,56 @@ export default function SelectedTeam() {
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 16px;
+            min-width: 180px;
+          }
+          
+          /* Mobile styles to ensure dropdown icon is visible */
+          @media (max-width: 768px) {
+            .selected-teams-header {
+              flex-wrap: nowrap !important;
+              gap: 12px !important;
+            }
+            
+            .selected-teams-header h2 {
+              font-size: 1.2rem !important;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            
+            .custom-select {
+              padding: 10px 40px 10px 16px !important;
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+              background-repeat: no-repeat !important;
+              background-position: right 10px center !important;
+              background-size: 18px !important;
+              min-width: 160px !important;
+              font-size: 0.9rem !important;
+              flex-shrink: 0 !important;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .selected-teams-header {
+              flex-wrap: wrap !important;
+              gap: 10px !important;
+            }
+            
+            .selected-teams-header h2 {
+              font-size: 1.1rem !important;
+              width: 100%;
+            }
+            
+            .custom-select {
+              padding: 8px 36px 8px 12px !important;
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+              background-repeat: no-repeat !important;
+              background-position: right 8px center !important;
+              background-size: 16px !important;
+              min-width: 140px !important;
+              font-size: 0.85rem !important;
+              width: 100%;
+            }
           }
           .custom-select:hover {
             background-color: rgba(255, 255, 255, 0.12);
@@ -136,6 +186,7 @@ export default function SelectedTeam() {
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.9rem;
+            table-layout: fixed;
           }
           .navy-table th {
             text-align: left;
@@ -143,11 +194,37 @@ export default function SelectedTeam() {
             color: #94a3b8;
             font-weight: 600;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
+
+          .navy-table th:nth-child(1) { width: 25%; }
+          .navy-table th:nth-child(2) { width: 15%; }
+          .navy-table th:nth-child(3) { width: 30%; }
+          .navy-table th:nth-child(4) { width: 15%; }
+          .navy-table th:nth-child(5) { width: 15%; }
           .navy-table td {
             padding: 10px;
             color: #cbd5e1;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 0;
+            line-height: 1.4;
+            position: relative;
+          }
+
+          .navy-table td:hover {
+            overflow: visible;
+            white-space: normal;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
           }
           .info-grid {
              display: grid;
@@ -167,11 +244,16 @@ export default function SelectedTeam() {
           .info-val {
              color: #fff;
              font-weight: 500;
+             word-wrap: break-word;
+             word-break: break-word;
+             overflow-wrap: break-word;
+             white-space: normal;
+             line-height: 1.4;
           }
         `}
       </style>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
-        <h2 style={{ color: "#fff", margin: 0, fontSize: "1.5rem", fontWeight: "700" }}>
+      <div className="selected-teams-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", gap: "15px", flexWrap: "wrap" }}>
+        <h2 style={{ color: "#fff", margin: 0, fontSize: "1.5rem", fontWeight: "700", flex: "1", minWidth: "0" }}>
           {getRoundTitle()}
         </h2>
 
@@ -179,6 +261,7 @@ export default function SelectedTeam() {
           value={selectedRound}
           onChange={(e) => setSelectedRound(e.target.value)}
           className="custom-select"
+          style={{ flexShrink: 0 }}
         >
           <option value="round1">Round 1 (Hackerrank)</option>
           <option value="round2">Round 2 (PPT)</option>
@@ -214,7 +297,19 @@ export default function SelectedTeam() {
                     {team.team_id}
                   </span>
                   {team.team_name && (
-                    <span style={{ color: "#fff", fontWeight: "600", fontSize: '1.1rem' }}> – {team.team_name}</span>
+                    <span style={{ 
+                      color: "#fff", 
+                      fontWeight: "600", 
+                      fontSize: '1.1rem',
+                      wordWrap: 'break-word',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'normal',
+                      lineHeight: '1.4',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      display: 'inline-block'
+                    }}> – {team.team_name}</span>
                   )}
                 </div>
                 <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem" }}>

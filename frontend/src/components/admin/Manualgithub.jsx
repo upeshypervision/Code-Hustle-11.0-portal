@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Manualgithub.css";
 
-const API = "http://localhost:5000";
+const API = "http://localhost:5001";
 
 export default function Manualgithub() {
   const [teams, setTeams] = useState([]);
@@ -120,12 +120,15 @@ export default function Manualgithub() {
                 <span className="team-name">{team.team_name}</span>
                 <span className="team-id-small">({team.team_id})</span>
               </div>
-              <button
-                className="btn-add"
-                onClick={() => openModal(team.team_id)}
-              >
-                Add Link
-              </button>
+              <div className="team-right-section">
+                <span className="team-id-mobile">({team.team_id})</span>
+                <button
+                  className="btn-add"
+                  onClick={() => openModal(team.team_id)}
+                >
+                  Add Link
+                </button>
+              </div>
             </div>
           ))}
         </div>
