@@ -7,6 +7,9 @@ const Team_Regi = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [valErrors, setValErrors] = useState({});
+    
+    // --- 1. NEW STATE TO PREVENT DOUBLE CLICK ---
+    const [isSubmitting, setIsSubmitting] = useState(false); 
 
     // Initial state for Leader + 3 Members
     const [formData, setFormData] = useState({
@@ -26,7 +29,6 @@ const Team_Regi = () => {
         if (name === 'email') {
             if (!value.includes("@")) return "Invalid format";
 
-            // Collect all emails currently in state
             const allEmails = [
                 { key: 'leader', val: formData.email },
                 { key: 'm1', val: formData.m1.email },
@@ -34,11 +36,10 @@ const Team_Regi = () => {
                 { key: 'm3', val: formData.m3.email }
             ];
 
-            // Find if this email exists in another member's data (case-insensitive)
             const duplicate = allEmails.find(item =>
-                item.val.toLowerCase() === value.toLowerCase() && // Match found
-                item.val !== '' &&                                // Not empty
-                item.key !== currentMemberKey                     // Not checking against self
+                item.val.toLowerCase() === value.toLowerCase() && 
+                item.val !== '' &&                                
+                item.key !== currentMemberKey                     
             );
 
             if (duplicate) return "Email already used in team";
@@ -48,7 +49,6 @@ const Team_Regi = () => {
         if (name === 'phone') {
             if (value.length !== 10) return "10 digits required";
 
-            // Collect all phones currently in state
             const allPhones = [
                 { key: 'leader', val: formData.phone },
                 { key: 'm1', val: formData.m1.phone },
@@ -56,7 +56,6 @@ const Team_Regi = () => {
                 { key: 'm3', val: formData.m3.phone }
             ];
 
-            // Find if this phone exists in another member's data
             const duplicate = allPhones.find(item =>
                 item.val === value &&
                 item.val !== '' &&
@@ -91,7 +90,6 @@ const Team_Regi = () => {
 
     const isMemberValid = (mKey) => {
         const m = formData[mKey];
-        // Pass mKey to validateField to ensure we don't flag the member against themselves
         const emailErr = validateField('email', m.email, null, mKey);
         const phoneErr = validateField('phone', m.phone, null, mKey);
         const sapErr = validateField('sapid', m.sapid, m.universityType, mKey);
@@ -118,11 +116,18 @@ const Team_Regi = () => {
         setFormData({ ...formData, [mKey]: { ...formData[mKey], [field]: value } });
     };
 
+    // --- 2. UPDATED SUBMIT FUNCTION WITH LOCKING LOGIC ---
     const submitCreateTeam = async () => {
+        // Prevent double clicks
+        if (isSubmitting) return;
+
         if (!isInitialFormValid()) {
             console.log("Initial form is not valid");
             return;
         }
+
+        // Lock the process
+        setIsSubmitting(true);
 
         try {
             const payloadToSend = {
@@ -137,7 +142,6 @@ const Team_Regi = () => {
                 m1: formData.m1,
                 m2: formData.m2,
                 m3: formData.m3
-                // Removed m4 as per requirement (Leader + 3 Members)
             };
 
             const response = await fetch(`${API_BASE}/api/create-team`, {
@@ -151,13 +155,18 @@ const Team_Regi = () => {
             const data = await response.json();
 
             if (!response.ok) {
+                // Unlock if there is an error (so user can try again)
+                setIsSubmitting(false);
                 alert(data.error || "Something went wrong");
                 return;
             }
 
+            // If success, we don't need to unlock because we navigate away/change step
             setStep(8);
         } catch (err) {
             console.error(err);
+            // Unlock on network error
+            setIsSubmitting(false);
             alert("Server not reachable");
         }
     };
@@ -252,12 +261,14 @@ const Team_Regi = () => {
                     )}
                 </div>
 
+                {/* --- 3. UPDATED BUTTON UI FOR MEMBERS --- */}
                 <button
-                    className={`liquid-btn animated-btn submit-connect-btn ${!isMemberValid(mKey) ? 'btn-locked' : ''}`}
-                    style={{ width: '100%', padding: '15px' }}
+                    className={`liquid-btn animated-btn submit-connect-btn ${(!isMemberValid(mKey) || isSubmitting) ? 'btn-locked' : ''}`}
+                    style={{ width: '100%', padding: '15px', cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
                     onClick={() => isMemberValid(mKey) && submitCreateTeam()}
+                    disabled={isSubmitting || !isMemberValid(mKey)} // Native disable
                 >
-                    SUBMIT & CONNECT TEAM ❯
+                    {isSubmitting ? "PROCESSING..." : "SUBMIT & CONNECT TEAM ❯"}
                 </button>
             </div>
         </div>
@@ -376,7 +387,15 @@ const Team_Regi = () => {
                                 <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}>
                                     <div className="shining-choice-row">
                                         <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button>
-                                        <button className="liquid-btn connect-btn-shimmer animated-btn" onClick={submitCreateTeam}>CREATE TEAM</button>
+                                        {/* --- 4. UPDATED BUTTON UI FOR LEADER --- */}
+                                        <button 
+                                            className={`liquid-btn connect-btn-shimmer animated-btn ${isSubmitting ? 'btn-locked' : ''}`}
+                                            onClick={submitCreateTeam}
+                                            disabled={isSubmitting} // Native disable
+                                            style={{ cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                                        >
+                                            {isSubmitting ? "CREATING..." : "CREATE TEAM"}
+                                        </button>
                                     </div>
                                 </div>
                             )}
