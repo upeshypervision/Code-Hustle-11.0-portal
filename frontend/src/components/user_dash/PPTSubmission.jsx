@@ -20,7 +20,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const checkSubmissionStatus = async () => {
             try {
-                const res = await fetch("http://localhost:5001/api/check-ppt-submission", {
+                const res = await fetch("http://localhost:5000/api/check-ppt-submission", {
                     credentials: "include",
                 });
                 const data = await res.json();
@@ -43,7 +43,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const checkHackerrankStatus = async () => {
             try {
-                const res = await fetch("http://localhost:5001/api/check-hackerrank-submission", {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
                     credentials: "include",
                 });
                 const data = await res.json();
@@ -65,7 +65,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const handleApprovalUpdate = async () => {
             try {
-                const res = await fetch("http://localhost:5001/api/check-hackerrank-submission", {
+                const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
                     credentials: "include",
                 });
                 const data = await res.json();
@@ -84,7 +84,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const handlePPTApprovalUpdate = async () => {
             try {
-                const res = await fetch("http://localhost:5001/api/check-ppt-submission", {
+                const res = await fetch("http://localhost:5000/api/check-ppt-submission", {
                     credentials: "include",
                 });
                 const data = await res.json();
@@ -103,7 +103,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const checkRoundStatus = async () => {
             try {
-                const res = await fetch("http://localhost:5001/api/round-status", {
+                const res = await fetch("http://localhost:5000/api/round-status", {
                     credentials: "include",
                 });
                 const data = await res.json();
@@ -161,7 +161,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         formData.append('file', pendingFile);
 
         try {
-            const res = await fetch('http://localhost:5001/api/submit-ppt-student', {
+            const res = await fetch('http://localhost:5000/api/submit-ppt-student', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',

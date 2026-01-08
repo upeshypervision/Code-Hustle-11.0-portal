@@ -35,7 +35,7 @@ const Indi_Dashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/individual-dashboard", {
+        const response = await fetch("http://localhost:5000/api/individual-dashboard", {
           method: "GET",
           credentials: "include",
         });
@@ -63,7 +63,7 @@ const Indi_Dashboard = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await fetch("http://localhost:5001/api/available-teams", {
+        const response = await fetch("http://localhost:5000/api/available-teams", {
           method: "GET",
           credentials: "include",
         });

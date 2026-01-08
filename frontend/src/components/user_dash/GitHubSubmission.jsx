@@ -20,7 +20,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/round-status", {
+        const res = await fetch("http://localhost:5000/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -53,7 +53,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const checkSubmissionStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/check-github-submission", {
+        const res = await fetch("http://localhost:5000/api/check-github-submission", {
           credentials: "include",
         });
         const data = await res.json();
@@ -75,7 +75,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const checkApprovalStatus = async () => {
       try {
         // Check Hackerrank
-        const hrRes = await fetch("http://localhost:5001/api/check-hackerrank-submission", {
+        const hrRes = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
           credentials: "include",
         });
         const hrData = await hrRes.json();
@@ -86,7 +86,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         }
 
         // Check PPT
-        const pptRes = await fetch("http://localhost:5001/api/check-ppt-submission", {
+        const pptRes = await fetch("http://localhost:5000/api/check-ppt-submission", {
           credentials: "include",
         });
         const pptData = await pptRes.json();
@@ -108,7 +108,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const handleHackerrankUpdate = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/check-hackerrank-submission", {
+        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
           credentials: "include",
         });
         const data = await res.json();
@@ -132,7 +132,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5001/api/submit-link", {
+      const res = await fetch("http://localhost:5000/api/submit-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

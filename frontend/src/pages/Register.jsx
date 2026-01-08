@@ -22,7 +22,7 @@ const Registration = () => {
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
 
-  const API_BASE = "http://localhost:5001/api";
+  const API_BASE = "http://localhost:5000/api";
 
   const [team, setTeam] = useState({
     leader: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
