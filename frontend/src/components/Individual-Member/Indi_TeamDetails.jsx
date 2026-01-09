@@ -21,7 +21,7 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
 
         <div className="team-details-title-row">
           <h2 className="team-details-name">{sanitizeText(team.teamName, 100)}</h2>
-          {team.requestStatus && (
+          {team.requestStatus && team.requestStatus !== "Rejected" && (
             <button
               onClick={() => onChat(team)}
               className="team-chat-btn"

@@ -95,7 +95,7 @@ export default function StudentLogin() {
                 <input
                   className="glow-input"
                   name="teamId"
-                  placeholder="e.g., CH-TEAM-001"
+                  placeholder="e.g., CodeHustleXXX"
                   value={formData.teamId}
                   onChange={handleChange}
                 />

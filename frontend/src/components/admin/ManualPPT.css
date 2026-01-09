@@ -161,9 +161,9 @@
 }
 
 .btn-small {
-  background: transparent;
-  color: #cbd5e1;
-  border: 1px solid #334155;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 13px;
@@ -173,8 +173,11 @@
 }
 
 .btn-small:hover {
-  background: #1e293b;
-  border-color: #475569;
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
 }
 
 /* Upload Modal */

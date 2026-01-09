@@ -2,11 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Indi.css";
 
 const ChatBox = ({ team, userDetails, onClose }) => {
+  // Determine display name effectively
+  const displayName = team?.leaderName || team?.name || team?.full_name || "Chat Partner";
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: "leader",
-      name: team?.leaderName || "Team Leader",
+      name: displayName,
       message: "Hii!",
       timestamp: new Date(),
     },
@@ -14,14 +17,14 @@ const ChatBox = ({ team, userDetails, onClose }) => {
       id: 2,
       sender: "user",
       name: "You",
-      message: "Hey! Thanks for reaching out. What's your tech stack?",
+      message: "Hey! Thanks for reaching out.",
       timestamp: new Date(),
     },
     {
       id: 3,
       sender: "leader",
-      name: team?.leaderName || "Team Leader",
-      message: `I work with React, Node.js, and MongoDB.`,
+      name: displayName,
+      message: `I'm interested in working together.`,
       timestamp: new Date(),
     },
     {
@@ -75,11 +78,11 @@ const ChatBox = ({ team, userDetails, onClose }) => {
       <div className="chatbox-header">
         <div className="chatbox-header-left">
           <div className="chatbox-avatar">
-            {getInitials(team?.leaderName || "Team Leader")}
+            {getInitials(displayName)}
           </div>
           <div className="chatbox-header-info">
             <div className="chatbox-name">
-              {team?.leaderName || "Team Leader"}
+              {displayName}
             </div>
             <div className="chatbox-status">
               <span className="status-dot"></span>

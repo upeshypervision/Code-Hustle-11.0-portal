@@ -224,3 +224,75 @@
   color: #ef4444;
   text-align: center;
 }
+
+/* Desktop: Hide mobile team ID */
+.team-id-mobile {
+  display: none;
+}
+
+.team-right-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mobile view layout adjustments */
+@media (max-width: 768px) {
+  .team-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  
+  .team-info {
+    grid-column: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+  
+  .team-name {
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+    display: block;
+  }
+  
+  /* Hide team ID from team-info on mobile */
+  .team-info .team-id-small {
+    display: none;
+  }
+  
+  /* Show mobile team ID in right section */
+  .team-id-mobile {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+  
+  /* Right section: Team ID + Button */
+  .team-right-section {
+    grid-column: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .btn-add {
+    width: 100%;
+    text-align: center;
+    flex-shrink: 0;
+  }
+}

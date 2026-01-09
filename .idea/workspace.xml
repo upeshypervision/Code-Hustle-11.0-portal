@@ -6,19 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/createteam_registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/createteam_registration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/GlobalNavbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/GlobalNavbar.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_TeamDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_TeamDetails.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Indi_Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Indi_Login.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Indi_Regi.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Indi_Regi.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Landing_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Landing_Page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Register.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/TeamLogin.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Team_Regi.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Team_Regi.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StudentLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StudentLogin.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,23 +55,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "om__indidash",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PyCharm 2025.1.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\PyCharm 2025.1.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\hp\PycharmProjects\Codehustel11" />

@@ -97,37 +97,145 @@ def send_registration_email(email_id,team_id,password):
     })
 
 def send_team_registration_email(email_address, team_id, password):
-    resend.Emails.send({
+  resend.Emails.send({
         "from": "noreply@upeshypervision.in",
-        "to": email_address,
-        "subject": "Code Hustle 11.0 – Individual Registration",
+        "to": f"{email_address}",
+        "subject": "Code Hustle 11.0 Team Credentials",
         "html": f"""
-        <h2>Welcome to Code Hustle 11.0</h2>
-        <p>You have successfully registered as an team.</p>
+<table width="100%" bgcolor="#242424" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center">
 
-        <p><strong>ID:</strong> {team_id}</p>
-        <p><strong>Password:</strong> {password}</p>
+      <!-- Top image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/17458963202.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
 
-        <p>Login here:
-        <a href="https://codehustle11.upeshypervision.in/userlogin  ">
-        Portal Login</a></p>
-        """
+      <!-- HTML content -->
+      <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
+        <tr>
+          <td
+          align="centre"
+          style="font-family:Arial, sans-serif; font-size:18px; color:#FFFFFF;">
+            <CENTRE><strong>TEAM ID:</strong> <span style="font-size:22px; font-weight:bold;">
+  {team_id}
+</span><br><br></CENTRE>
+            <CENTRE><strong>PASSWORD:</strong><span style="font-size:22px; font-weight:bold;">
+  {password}
+</span></CENTRE>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Bottom image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png  "
+        width="600"
+        style="display:block;"
+        alt=""
+      />
+
+<!-- Social media footer -->
+<table width="600" cellpadding="16" cellspacing="0" bgcolor="#242424">
+
+ <!-- Portal text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc; padding-top:12px;">
+      Login into the portal
+    </td>
+  </tr>
+
+  <!-- Website icon -->
+  <tr>
+    <td align="center">
+      <a href="https://codehustle11.upeshypervision.in/userlogin  ">
+        <img
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png  "
+          width="68"
+          alt="Website"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
+
+</table>
+</table>
+"""
+
     })
 
 def send_individual_registration_email(email_address, individual_id, password):
-    resend.Emails.send({
+  resend.Emails.send({
         "from": "noreply@upeshypervision.in",
-        "to": email_address,
-        "subject": "Code Hustle 11.0 – Individual Registration",
+        "to": f"{email_address}",
+        "subject": "Code Hustle 11.0 Team Credentials",
         "html": f"""
-        <h2>Welcome to Code Hustle 11.0</h2>
-        <p>You have successfully registered as an individual participant.</p>
+<table width="100%" bgcolor="#242424" cellpadding="0" cellspacing="0">
+  <tr>
+    <td align="center">
 
-        <p><strong>ID:</strong> {individual_id}</p>
-        <p><strong>Password:</strong> {password}</p>
+      <!-- Top image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/1P854761235.png"
+        width="600"
+        style="display:block;"
+        alt=""
+      />
 
-        <p>Login here:
-        <a href="https://codehustle11.upeshypervision.in/userlogin  ">
-        Portal Login</a></p>
-        """
+      <!-- HTML content -->
+      <table width="600" bgcolor="#242424" cellpadding="24" cellspacing="0">
+        <tr>
+          <td
+          align="centre"
+          style="font-family:Arial, sans-serif; font-size:18px; color:#FFFFFF;">
+            <CENTRE><strong>PARTICIPANT ID:</strong> <span style="font-size:22px; font-weight:bold;">
+  {individual_id}
+</span><br><br></CENTRE>
+            <CENTRE><strong>PASSWORD:</strong><span style="font-size:22px; font-weight:bold;">
+  {password}
+</span></CENTRE>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Bottom image -->
+      <img
+        src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/CODE%20HUSTLE%2011.0bottom.png  "
+        width="600"
+        style="display:block;"
+        alt=""
+      />
+
+<!-- Social media footer -->
+<table width="600" cellpadding="16" cellspacing="0" bgcolor="#242424">
+
+ <!-- Portal text -->
+  <tr>
+    <td align="center" style="font-family:Arial, sans-serif; font-size:18px; color:#cccccc; padding-top:12px;">
+      Login into the portal
+    </td>
+  </tr>
+
+  <!-- Website icon -->
+  <tr>
+    <td align="center">
+      <a href="https://codehustle11.upeshypervision.in/userlogin  ">
+        <img
+          src="https://raw.githubusercontent.com/dev-rjav/BORING_IMAGE_ASSET_TUFF/refs/heads/main/34629272.png  "
+          width="68"
+          alt="Website"
+          style="display:block;"
+        >
+      </a>
+    </td>
+  </tr>
+
+</table>
+</table>
+"""
+
     })
