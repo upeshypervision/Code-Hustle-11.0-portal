@@ -87,36 +87,24 @@ const RequestedIndividual = ({ requests, onAccept, onReject, onChat, onView }) =
                                                 Reject
                                             </button>
                                             <button
-                                                className="chat-btn-mobile"
+                                                className="edit-btn"
                                                 onClick={() => onChat(req)}
                                                 style={{
-                                                    background: "transparent",
-                                                    color: "#60a5fa",
-                                                    border: "1px solid rgba(96, 165, 250, 0.3)",
-                                                    padding: "6px 10px",
+                                                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                                    color: "#fff",
+                                                    border: "none",
+                                                    padding: "6px 12px",
                                                     borderRadius: "4px",
                                                     cursor: "pointer",
-                                                    fontSize: "0.85rem"
+                                                    fontSize: "0.85rem",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "4px",
+                                                    marginLeft: "4px"
                                                 }}
                                                 title="Chat"
                                             >
-                                                💬
-                                            </button>
-                                            <button
-                                                className="indi-btn-view"
-                                                onClick={() => onView(req)}
-                                                style={{
-                                                    background: "transparent",
-                                                    color: "#aaa",
-                                                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                                                    padding: "6px 10px",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                    fontSize: "0.85rem"
-                                                }}
-                                                title="View Details"
-                                            >
-                                                👁️
+                                                <span>💬</span> Chat
                                             </button>
                                         </div>
                                     </td>

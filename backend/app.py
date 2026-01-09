@@ -21,9 +21,12 @@ from user_access import (
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_info import fetch_teamsnosubmission, view_githubsubmission_route
 from Indidashboard import get_individual_dashboard_data, get_available_teams
+from individual_requests import send_join_request, get_sent_requests, get_accepted_team
+from team_requests import get_join_requests, accept_join_request, reject_join_request
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
+import socket_events  # Register socket handlers
 from hackerrank_submission import (
     submit_hackerrank_route, 
     check_hackerrank_submission_route,
@@ -320,6 +323,48 @@ def available_teams():
     if request.method == "OPTIONS":
         return "", 200
     return get_available_teams()
+
+# ----------------------------
+# INDIVIDUAL REQUEST ROUTES
+# ----------------------------
+@app.route('/api/individual/send-request', methods=['POST', 'OPTIONS'])
+def individual_send_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return send_join_request()
+
+@app.route('/api/individual/sent-requests', methods=['GET', 'OPTIONS'])
+def individual_sent_requests():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_sent_requests()
+
+@app.route('/api/individual/accepted-team', methods=['GET', 'OPTIONS'])
+def individual_accepted_team():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_accepted_team()
+
+# ----------------------------
+# TEAM REQUEST ROUTES
+# ----------------------------
+@app.route('/api/team/join-requests', methods=['GET', 'OPTIONS'])
+def team_join_requests():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_join_requests()
+
+@app.route('/api/team/accept-request', methods=['POST', 'OPTIONS'])
+def team_accept_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return accept_join_request()
+
+@app.route('/api/team/reject-request', methods=['POST', 'OPTIONS'])
+def team_reject_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return reject_join_request()
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)

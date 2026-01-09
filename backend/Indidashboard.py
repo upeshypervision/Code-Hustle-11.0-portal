@@ -45,7 +45,9 @@ def get_individual_dashboard_data():
         "email": individual.get("email", ""),
         "skills": individual.get("about", ""), # Mapping 'about' to 'skills' as requested
         "isUPESHypervision": individual.get("hypervision_id") if individual.get("hypervision_id") else None,
-        "role": individual.get("role", "individual")
+        "role": individual.get("role", "individual"),
+        "accepted": individual.get("accepted"),  # CRITICAL: Include accepted team ID
+        "id": individual.get("individual_id")  # For socket room joining
     }
     
     # SECURITY: Sanitize output data before sending to frontend

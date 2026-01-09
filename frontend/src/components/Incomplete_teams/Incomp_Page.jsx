@@ -6,6 +6,7 @@ import "../Individual-Member/Indi.css";
 import "./Incomp_Page.css";
 import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
 import { sanitizeText } from "../../utils/sanitizer";
+import socket from "../../socket";
 
 const Incomp_Page = () => {
   const navigate = useNavigate();
@@ -43,6 +44,29 @@ const Incomp_Page = () => {
     (teamData.members ? teamData.members.length : 0) +
     (teamData.joinedMembers ? teamData.joinedMembers.length : 0);
 
+  // Socket listener for new join requests
+  useEffect(() => {
+    if (!teamData.teamId) return;
+
+    // Join team room
+    socket.emit("join_room", { room: `team_${teamData.teamId}` });
+    console.log(`Joined room: team_${teamData.teamId}`);
+
+    // Listen for new join requests
+    const handleNewRequest = (data) => {
+      console.log("New join request received!", data);
+      alert(`📩 New join request from ${data.individualName}!`);
+      // Refresh to show new request
+      window.location.reload();
+    };
+
+    socket.on("new_join_request", handleNewRequest);
+
+    return () => {
+      socket.off("new_join_request", handleNewRequest);
+    };
+  }, [teamData.teamId]);
+
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
@@ -64,7 +88,25 @@ const Incomp_Page = () => {
       }
     };
 
+    const fetchJoinRequests = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/team/join-requests`, {
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setTeamData(prev => ({ ...prev, joinRequests: data.requests }));
+          }
+        }
+      } catch (error) {
+        console.error("Error loading join requests:", error);
+      }
+    };
+
     fetchTeamData();
+    fetchJoinRequests();
   }, [navigate]);
 
   // Chat Logic (Dummy Data)
@@ -116,23 +158,72 @@ const Incomp_Page = () => {
     }
   };
 
-  const handleAcceptRequest = (id) => {
-    const requestToAccept = teamData.joinRequests.find((req) => req.id === id);
-    if (requestToAccept) {
-      setTeamData((prev) => ({
-        ...prev,
-        joinedMembers: [...prev.joinedMembers, { ...requestToAccept, id: Date.now() }],
-        joinRequests: prev.joinRequests.filter((req) => req.id !== id),
-      }));
+  const handleAcceptRequest = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team/accept-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ individual_id: id })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Emit socket event to notify individual
+        socket.emit("request_accepted", {
+          individualId: id,
+          teamName: teamData.teamName
+        });
+
+        // Remove from joinRequests and refresh team data
+        setTeamData((prev) => ({
+          ...prev,
+          joinRequests: prev.joinRequests.filter((req) => req.id !== id),
+        }));
+        alert('Request accepted successfully! Member added to team.');
+        // Refresh team data to get updated member count
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to accept request');
+      }
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      alert('Failed to accept request');
     }
     closeRequestModal();
   };
 
-  const handleRejectRequest = (id) => {
-    setTeamData((prev) => ({
-      ...prev,
-      joinRequests: prev.joinRequests.filter((req) => req.id !== id),
-    }));
+  const handleRejectRequest = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team/reject-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ individual_id: id })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Emit socket event to notify individual
+        socket.emit("request_rejected", {
+          individualId: id,
+          teamName: teamData.teamName
+        });
+
+        setTeamData((prev) => ({
+          ...prev,
+          joinRequests: prev.joinRequests.filter((req) => req.id !== id),
+        }));
+        alert('Request rejected successfully');
+      } else {
+        alert(data.error || 'Failed to reject request');
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      alert('Failed to reject request');
+    }
     closeRequestModal();
   };
 
@@ -234,33 +325,108 @@ const Incomp_Page = () => {
                   </div>
                 </div>
 
-                {/* Members List */}
+                {/* Original Team Members List */}
                 <span className="label-detail teamup-label members-list-label">
                   TEAM MEMBERS ({totalCount}/5)
                 </span>
                 <div className="members-list">
-                  {teamData.members.concat(teamData.joinedMembers).map((member) => (
-                    <div key={member.id} className="member-list-item">
-                      <span className="member-name">
-                        {sanitizeText(member.name, 100)}
-                      </span>
-                      <div className="member-actions">
-                        <button
-                          onClick={() => handleViewMember(member)}
-                          className="member-btn-view"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => handleDeleteMember(member)}
-                          className="member-btn-remove"
-                        >
-                          Remove
-                        </button>
+                  {teamData.members
+                    .concat(teamData.joinedMembers)
+                    .filter(member => !member.joinedViaRequest)
+                    .map((member) => (
+                      <div key={member.id} className="member-list-item">
+                        <span className="member-name">
+                          {sanitizeText(member.name, 100)}
+                        </span>
+                        <div className="member-actions">
+                          <button
+                            onClick={() => handleViewMember(member)}
+                            className="member-btn-view"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => handleDeleteMember(member)}
+                            className="member-btn-remove"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
+
+                {/* Accepted Team Members Section */}
+                {teamData.members.filter(m => m.joinedViaRequest).length > 0 && (
+                  <>
+                    <span className="label-detail teamup-label members-list-label" style={{ marginTop: "40px" }}>
+                      ACCEPTED TEAM MEMBERS ({teamData.members.filter(m => m.joinedViaRequest).length})
+                    </span>
+                    <div className="indi-table-container" style={{ marginTop: "20px" }}>
+                      <table className="indi-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>University</th>
+                            <th>Skills</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {teamData.members
+                            .filter(m => m.joinedViaRequest)
+                            .map((member, idx) => (
+                              <tr key={idx}>
+                                <td>{sanitizeText(member.full_name || member.name, 100)}</td>
+                                <td>{sanitizeText(member.college_name || member.university, 150)}</td>
+                                <td>{sanitizeText(member.bio || member.details, 200)}</td>
+                                <td>
+                                  <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                    <button
+                                      onClick={() => handleViewMember(member)}
+                                      className="indi-btn-view"
+                                      style={{ width: "auto" }}
+                                    >
+                                      View
+                                    </button>
+                                    <button
+                                      onClick={() => handleChatOpen(member)}
+                                      className="edit-btn"
+                                      style={{
+                                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        color: "#fff",
+                                        border: "none",
+                                        padding: "8px 16px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: "6px",
+                                        boxShadow: "0 2px 5px rgba(102, 126, 234, 0.4)",
+                                        whiteSpace: "nowrap"
+                                      }}
+                                    >
+                                      <span>💬</span> Chat
+                                    </button>
+                                    <button
+                                      onClick={() => console.log("Remove member:", member)}
+                                      className="member-btn-remove"
+                                      style={{ padding: "6px 12px", fontSize: "0.9rem" }}
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
 
                 {totalCount >= 3 && (
                   <div className="register-btn-container">

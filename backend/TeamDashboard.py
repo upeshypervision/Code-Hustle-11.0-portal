@@ -36,6 +36,7 @@ def get_team_dashboard_data():
 
     # Map to frontend structure expected by Incomp_Page.jsx
     dashboard_data = {
+        "teamId": team.get("team_id"),  # For socket room joining
         "teamName": team.get("team_name", ""),
         "teamVision": team.get("team_bio", ""),
         "leader": {
@@ -54,7 +55,11 @@ def get_team_dashboard_data():
                 "about": m.get("bio", ""),
                 "university": m.get("college_name", ""),
                 "email": m.get("email", ""),
-                "phone": m.get("phone", "")
+                "phone": m.get("phone", ""),
+                "joinedViaRequest": m.get("joinedViaRequest", False),  # Include the flag
+                "full_name": m.get("full_name", ""),  # Also include for table display
+                "college_name": m.get("college_name", ""),
+                "bio": m.get("bio", "")
             }
             for idx, m in enumerate(members_data)
         ],

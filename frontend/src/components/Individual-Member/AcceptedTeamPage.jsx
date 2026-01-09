@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import GlobalNavbar from "../GlobalNavbar";
 import ChatBox from "./ChatBox";
@@ -10,10 +10,78 @@ import "./Indi.css";
 const AcceptedTeamPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { team, userDetails } = location.state || {};
+  const { team: stateTeam, userDetails: stateUserDetails } = location.state || {};
+
+  const [team, setTeam] = useState(stateTeam || null);
+  const [userDetails, setUserDetails] = useState(stateUserDetails || null);
+  const [loading, setLoading] = useState(!stateTeam);
   const [showChat, setShowChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // If we already have data from navigation state, skip fetching
+      if (stateTeam && stateUserDetails) {
+        console.log("Using state data, skipping fetch");
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        // Fetch individual data to get the accepted team ID
+        const individualResponse = await fetch("http://localhost:5000/api/individual-dashboard", {
+          credentials: "include"
+        });
+        const individualData = await individualResponse.json();
+
+        if (!individualData.success) {
+          console.error("Failed to fetch individual data");
+          setLoading(false);
+          return;
+        }
+
+        setUserDetails(individualData.data);
+
+        // Get the accepted team ID from individual data
+        const acceptedTeamId = individualData.data.accepted;
+
+        if (!acceptedTeamId) {
+          console.log("No accepted team found");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch the accepted team details
+        const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
+          credentials: "include"
+        });
+        const teamData = await teamResponse.json();
+
+        if (teamData.success && teamData.team) {
+          setTeam(teamData.team);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Run only once on mount
+
+  if (loading) {
+    return (
+      <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e", display: "flex", justifyContent: "center", alignItems: "center", color: "#fff" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "20px" }}>⏳</div>
+          <div>Loading your team...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!team) {
     return (
@@ -24,17 +92,23 @@ const AcceptedTeamPage = () => {
         <div
           style={{ padding: "100px 20px", textAlign: "center", color: "#fff" }}
         >
-          <h2>No team data available</h2>
+          <div style={{ fontSize: "3rem", marginBottom: "20px" }}>😔</div>
+          <h2>You are not accepted by any team</h2>
+          <p style={{ color: "#aaa", marginTop: "10px", fontSize: "1.1rem" }}>
+            Keep sending requests to teams you're interested in!
+          </p>
           <button
-            onClick={() => navigate("/individual-member/dashboard")}
+            onClick={() => navigate("/indimember")}
             style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              background: "#007bff",
+              marginTop: "30px",
+              padding: "12px 30px",
+              background: "linear-gradient(135deg, #3b82f6, #2563eb)",
               color: "#fff",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "8px",
               cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "600",
             }}
           >
             Go to Dashboard
