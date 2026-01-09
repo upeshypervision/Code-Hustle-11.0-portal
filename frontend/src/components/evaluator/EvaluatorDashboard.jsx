@@ -130,7 +130,7 @@ export default function EvaluatorDashboard() {
                                         <div className="submission-team-row">
                                             <div className="team-name-group">
                                                 <span className="submission-team">{submission.team_name}</span>
-                                                <span className="team-id-label">({submission.team_id})</span>
+                                                <span className="team-id-label">Team ID: {submission.team_id}</span>
                                             </div>
                                             {(submission.marks || submission.marks_submitted) && (
                                                 <span className="evaluated-badge">✓ EVALUATED</span>

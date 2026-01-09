@@ -398,7 +398,8 @@ const Registration = () => {
                       onChange={(e) => setAgreedToTerms(e.target.checked)}
                   />
                   <label htmlFor="agree-reg" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
-                      I AGREE TO ALL TERMS AND CONDITIONS.
+                    I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{color: '#38bdf8', textDecoration: 'underline'}}>TERMS AND CONDITIONS</a>.
+
                   </label>
               </div>
 
@@ -409,7 +410,6 @@ const Registration = () => {
 
           <footer className="footer-links">
             <a href="/userlogin" className="footer-btn">Sign In</a>
-            <a href="https://code-hustle-11.vercel.app/#contact" className="footer-btn" target="_blank" rel="noopener noreferrer">Contact Us</a>
           </footer>
         </div>
       ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css';
 import './Team_Regi.css';
@@ -18,6 +18,16 @@ const Team_Regi = () => {
         m2: false,
         m3: false
     });
+
+    // --- NEW EFFECT: RESET AGREEMENTS ON STEP CHANGE ---
+    useEffect(() => {
+        setAgreements({
+            leader: false,
+            m1: false,
+            m2: false,
+            m3: false
+        });
+    }, [step]);
 
     // Initial state for Leader + 3 Members
     const [formData, setFormData] = useState({
@@ -102,7 +112,7 @@ const Team_Regi = () => {
         const phoneErr = validateField('phone', m.phone, null, mKey);
         const sapErr = validateField('sapid', m.sapid, m.universityType, mKey);
 
-        return m.fullName && m.bio && m.universityType && m.sapid && !emailErr && !phoneErr && !sapErr && agreements[mKey];
+        return m.fullName && m.bio && m.universityType && m.sapid && !emailErr && !phoneErr && !sapErr;
     };
 
     const isInitialFormValid = () => {
@@ -116,8 +126,7 @@ const Team_Regi = () => {
             formData.lName.trim() !== '' &&
             formData.lAbout.trim() !== '' &&
             formData.universityType !== '' &&
-            !sapErr && !emailErr && !phoneErr &&
-            agreements.leader
+            !sapErr && !emailErr && !phoneErr
         );
     };
 
@@ -125,22 +134,15 @@ const Team_Regi = () => {
         setFormData({ ...formData, [mKey]: { ...formData[mKey], [field]: value } });
     };
 
-    // --- 2. UPDATED SUBMIT FUNCTION WITH LOCKING LOGIC ---
     const submitCreateTeam = async () => {
-        // Prevent double clicks
         if (isSubmitting) return;
 
-        // Final check for agreement based on current step
         const currentKey = step === 1 ? 'leader' : step === 4 ? 'm1' : step === 5 ? 'm2' : 'm3';
-        if (!agreements[currentKey]) {
-            alert("Please agree to the terms for this member.");
-            return;
-        }
+        if (!agreements[currentKey]) return;
 
         if (step === 1 && !isInitialFormValid()) return;
         if (step > 1 && !isMemberValid(currentKey)) return;
 
-        // Lock the process
         setIsSubmitting(true);
 
         try {
@@ -169,23 +171,19 @@ const Team_Regi = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                // Unlock if there is an error (so user can try again)
                 setIsSubmitting(false);
                 alert(data.error || "Something went wrong");
                 return;
             }
 
-            // If success, we don't need to unlock because we navigate away/change step
             setStep(8);
         } catch (err) {
             console.error(err);
-            // Unlock on network error
             setIsSubmitting(false);
             alert("Server not reachable");
         }
     };
 
-    // --- RENDER HELPERS ---
     const renderMemberPage = (mKey, label, nextStep) => (
         <div className="neural-node node-materialize animate-in">
             <span className="label-detail">{label}</span>
@@ -229,7 +227,7 @@ const Team_Regi = () => {
 
             {formData[mKey].universityType && (
                 <div className="input-group" style={{ marginTop: '12px' }}>
-                    <div className="label-row"><span>{formData[mKey].universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div>
+                    <div className="label-row"><span>{formData[mKey].universityType === 'UPES' ? 'SAP ID' : 'UNIVERSITY NAME'} <span className="v-tag">*</span></span></div>
                     <div className={`glow-input-container animated-field ${valErrors[`${mKey}_sapid`] ? 'error-border' : ''}`}>
                         <input className="glow-input" placeholder={formData[mKey].universityType === 'UPES' ? 'Enter Your SAP ID' : 'Enter your University Name'} value={formData[mKey].sapid}
                             maxLength={formData[mKey].universityType === 'UPES' ? 9 : 200}
@@ -255,7 +253,6 @@ const Team_Regi = () => {
                 {(valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]) && <p className="error-message-inline">{valErrors[`${mKey}_email`] || valErrors[`${mKey}_phone`]}</p>}
             </div>
 
-            {/* --- TERMS CHECKBOX FOR MEMBER --- */}
             <div className="input-group" style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <input 
                     type="checkbox" 
@@ -265,7 +262,7 @@ const Team_Regi = () => {
                     onChange={(e) => setAgreements({...agreements, [mKey]: e.target.checked})}
                 />
                 <label htmlFor={`agree-${mKey}`} style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
-                    I AGREE TO ALL TERMS AND CONDITIONS.
+                    I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{color: '#38bdf8', textDecoration: 'underline'}}>TERMS AND CONDITIONS</a>.
                 </label>
             </div>
 
@@ -275,7 +272,6 @@ const Team_Regi = () => {
                         className="liquid-btn"
                         style={{ flex: nextStep ? 0.3 : 1 }}
                         onClick={() => {
-                            setAgreements(prev => ({ ...prev, [mKey]: false }));
                             setStep(prev => prev === 4 ? 1 : prev - 1);
                         }}
                     >
@@ -288,22 +284,20 @@ const Team_Regi = () => {
                             style={{ flex: 1 }}
                             onClick={() => {
                                 if (isMemberValid(mKey)) {
-                                    setAgreements(prev => ({ ...prev, [mKey]: false }));
                                     setStep(nextStep);
                                 }
                             }}
                         >
-                            {nextStep === 8 ? "FINALIZE ❯" : "NEXT MEMBER ❯"}
+                            NEXT MEMBER ❯
                         </button>
                     )}
                 </div>
 
-                {/* --- 3. UPDATED BUTTON UI FOR MEMBERS --- */}
                 <button
-                    className={`liquid-btn animated-btn submit-connect-btn ${(!isMemberValid(mKey) || isSubmitting) ? 'btn-locked' : ''}`}
-                    style={{ width: '100%', padding: '15px', cursor: (isSubmitting || !isMemberValid(mKey)) ? 'not-allowed' : 'pointer' }}
-                    onClick={() => isMemberValid(mKey) && submitCreateTeam()}
-                    disabled={isSubmitting || !isMemberValid(mKey)} // Native disable
+                    className={`liquid-btn animated-btn submit-connect-btn ${(!isMemberValid(mKey) || isSubmitting || !agreements[mKey]) ? 'btn-locked' : ''}`}
+                    style={{ width: '100%', padding: '15px', cursor: (isSubmitting || !isMemberValid(mKey) || !agreements[mKey]) ? 'not-allowed' : 'pointer' }}
+                    onClick={submitCreateTeam}
+                    disabled={isSubmitting || !isMemberValid(mKey) || !agreements[mKey]}
                 >
                     {isSubmitting ? "PROCESSING..." : "SUBMIT & CONNECT TEAM ❯"}
                 </button>
@@ -381,26 +375,24 @@ const Team_Regi = () => {
                                 </div>
                             </div>
 
-                            {/* Fixed dropdown overlap */}
-                            <div className="input-group" style={{ marginTop: '12px', position: 'relative', zIndex: 10 }}> 
+                            <div className="input-group" style={{ marginTop: '12px' }}> 
                                 <div className="label-row"><span>UNIVERSITY <span className="v-tag">*</span></span></div>
                                 <div className="glow-input-container animated-field">
                                     <select 
                                         className="glow-input" 
-                                        style={{ cursor: 'pointer' }} // Visual fix
                                         value={formData.universityType} 
                                         onChange={(e) => setFormData({ ...formData, universityType: e.target.value, sap: '' })}
                                     >
-                                        <option value="" style={{ background: '#0f172a' }}>Select</option>
-                                        <option value="UPES" style={{ background: '#0f172a' }}>UPES</option>
-                                        <option value="Others" style={{ background: '#0f172a' }}>Others</option>
+                                        <option value="">Select</option>
+                                        <option value="UPES">UPES</option>
+                                        <option value="Others">Others</option>
                                     </select>
                                 </div>
                             </div>
 
                             {formData.universityType && (
                                 <div className="input-group" style={{ marginTop: '12px' }}>
-                                    <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNI NAME'} <span className="v-tag">*</span></span></div>
+                                    <div className="label-row"><span>{formData.universityType === 'UPES' ? 'SAP ID' : 'UNIVERSITY NAME'} <span className="v-tag">*</span></span></div>
                                     <div className={`glow-input-container animated-field ${valErrors['leader_sap'] ? 'error-border' : ''}`}>
                                         <input className="glow-input" placeholder={formData.universityType === 'UPES' ? 'Enter Your SAP ID' : 'Enter Your University Name'} value={formData.sap}
                                             maxLength={formData.universityType === 'UPES' ? 9 : 200}
@@ -426,7 +418,6 @@ const Team_Regi = () => {
                                 {(valErrors['leader_email'] || valErrors['leader_phone']) && <p className="error-message-inline">{valErrors['leader_email'] || valErrors['leader_phone']}</p>}
                             </div>
 
-                            {/* --- TERMS CHECKBOX FOR LEADER --- */}
                             <div className="input-group" style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <input 
                                     type="checkbox" 
@@ -436,23 +427,19 @@ const Team_Regi = () => {
                                     onChange={(e) => setAgreements({...agreements, leader: e.target.checked})}
                                 />
                                 <label htmlFor="agree-leader" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
-                                    I AGREE TO ALL TERMS AND CONDITIONS.
+                                    I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{color: '#38bdf8', textDecoration: 'underline'}}>TERMS AND CONDITIONS</a>.
                                 </label>
                             </div>
 
                             {isInitialFormValid() && (
                                 <div className="neural-node node-materialize animate-in" style={{ marginTop: '20px', border: 'none', padding: 0 }}>
                                     <div className="shining-choice-row">
-                                        <button className="liquid-btn animated-btn" onClick={() => {
-                                            setAgreements(prev => ({ ...prev, leader: false }));
-                                            setStep(4);
-                                        }}>ADD MEMBERS</button>
-                                        {/* --- 4. UPDATED BUTTON UI FOR LEADER --- */}
+                                        <button className="liquid-btn animated-btn" onClick={() => setStep(4)}>ADD MEMBERS</button>
                                         <button 
-                                            className={`liquid-btn connect-btn-shimmer animated-btn ${isSubmitting ? 'btn-locked' : ''}`}
+                                            className={`liquid-btn connect-btn-shimmer animated-btn ${(isSubmitting || !agreements.leader) ? 'btn-locked' : ''}`}
+                                            style={{ cursor: (isSubmitting || !agreements.leader) ? 'not-allowed' : 'pointer' }}
                                             onClick={submitCreateTeam}
-                                            disabled={isSubmitting} // Native disable
-                                            style={{ cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
+                                            disabled={isSubmitting || !agreements.leader}
                                         >
                                             {isSubmitting ? "CREATING..." : "CREATE TEAM"}
                                         </button>
@@ -473,9 +460,6 @@ const Team_Regi = () => {
                             <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.8' }}>
                                 Your registration is complete!<br />
                                 <strong style={{ color: '#10b981' }}>Team credentials</strong> have been sent to the leader's registered email address.
-                            </p>
-                            <p style={{ marginTop: '10px', opacity: 0.7, fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
-                                Use them to login to the Team Portal.
                             </p>
                         </div>
                         <div className="forge-btn-group" style={{ marginTop: '30px' }}>
