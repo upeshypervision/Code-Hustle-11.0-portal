@@ -14,10 +14,10 @@ const RequestedIndividual = ({ requests, onAccept, onReject, onChat, onView }) =
                 <table className="indi-table">
                     <thead>
                         <tr>
-                            <th style={{ width: "20%" }}>Name</th>
-                            <th style={{ width: "25%" }}>University</th>
-                            <th style={{ width: "25%" }}>Skills/About</th>
-                            <th style={{ width: "30%" }}>Actions</th>
+                            <th>Name</th>
+                            <th>University</th>
+                            <th>Skills/About</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,58 +53,25 @@ const RequestedIndividual = ({ requests, onAccept, onReject, onChat, onView }) =
                                         {sanitizeText(req.about || req.skills, 60)}
                                     </td>
                                     <td data-label="Actions">
-                                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                        <div className="action-buttons-container">
                                             <button
-                                                className="edit-btn"
+                                                className="indi-btn-accept"
                                                 onClick={() => onAccept(req.id)}
-                                                style={{
-                                                    background: "rgba(40, 167, 69, 0.2)",
-                                                    color: "#28a745",
-                                                    border: "1px solid rgba(40, 167, 69, 0.3)",
-                                                    padding: "6px 12px",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                    fontSize: "0.85rem",
-                                                    flex: 1
-                                                }}
                                             >
                                                 Accept
                                             </button>
                                             <button
-                                                className="delete-btn"
-                                                onClick={() => onReject(req.id)}
-                                                style={{
-                                                    background: "rgba(220, 53, 69, 0.2)",
-                                                    color: "#dc3545",
-                                                    border: "1px solid rgba(220, 53, 69, 0.3)",
-                                                    padding: "6px 12px",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                    fontSize: "0.85rem",
-                                                    flex: 1
-                                                }}
-                                            >
-                                                Reject
-                                            </button>
-                                            <button
-                                                className="edit-btn"
+                                                className="indi-btn-chat"
                                                 onClick={() => onChat(req)}
-                                                style={{
-                                                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                                                    color: "#fff",
-                                                    border: "none",
-                                                    padding: "6px 12px",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                    fontSize: "0.85rem",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: "4px",
-                                                    marginLeft: "4px"
-                                                }}
                                                 title="Chat"
                                             >
-                                                <span>💬</span> Chat
+                                                Chat
+                                            </button>
+                                            <button
+                                                className="indi-btn-remove"
+                                                onClick={() => onReject(req.id)}
+                                            >
+                                                Reject
                                             </button>
                                         </div>
                                     </td>

@@ -1436,7 +1436,8 @@
 
 /* Table Container - No longer scrollable, page scrolls instead */
 .indi-table-container {
-  overflow-x: auto;
+  overflow-x: hidden;
+  /* Prevent horizontal scrollbar on desktop */
   overflow-y: visible;
   border-radius: 8px;
   margin-top: 20px;

@@ -242,7 +242,7 @@ const Incomp_Page = () => {
 
 
   return (
-    <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
+    <div className="dashboard-page team-up-page-container" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
       <GlobalNavbar
         userInfo={null}
         logoutPath="/team-login"
@@ -421,40 +421,22 @@ const Incomp_Page = () => {
                                 <td>{sanitizeText(member.college_name || member.university, 150)}</td>
                                 <td>{sanitizeText(member.bio || member.details, 200)}</td>
                                 <td>
-                                  <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                  <div className="action-buttons-container">
                                     <button
                                       onClick={() => handleViewMember(member)}
                                       className="indi-btn-view"
-                                      style={{ width: "auto" }}
                                     >
                                       View
                                     </button>
                                     <button
                                       onClick={() => handleChatOpen(member)}
-                                      className="edit-btn"
-                                      style={{
-                                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                                        color: "#fff",
-                                        border: "none",
-                                        padding: "8px 16px",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        fontSize: "0.95rem",
-                                        fontWeight: "500",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: "6px",
-                                        boxShadow: "0 2px 5px rgba(102, 126, 234, 0.4)",
-                                        whiteSpace: "nowrap"
-                                      }}
+                                      className="indi-btn-chat"
                                     >
-                                      <span>💬</span> Chat
+                                      Chat
                                     </button>
                                     <button
                                       onClick={() => handleDeleteClick(member)}
                                       className="indi-btn-remove"
-                                      style={{ padding: "6px 12px", fontSize: "0.9rem" }}
                                     >
                                       Remove
                                     </button>
