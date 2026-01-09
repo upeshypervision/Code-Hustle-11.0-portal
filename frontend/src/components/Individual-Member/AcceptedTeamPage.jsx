@@ -1,21 +1,155 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import UserNavbar from "../UserNavbar";
+import GlobalNavbar from "../GlobalNavbar";
 import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
 import "../../pages/Registration.css";
-import "./TeamUp.css";
+import "./Indi.css";
+import socket from "../../socket";
 
 const AcceptedTeamPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { team, userDetails } = location.state || {};
+  const { team: stateTeam, userDetails: stateUserDetails } = location.state || {};
+
+  const [team, setTeam] = useState(stateTeam || null);
+  const [userDetails, setUserDetails] = useState(stateUserDetails || null);
+  const [loading, setLoading] = useState(!stateTeam);
   const [showChat, setShowChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // If we already have data from navigation state, skip fetching
+      if (stateTeam && stateUserDetails) {
+        console.log("Using state data, skipping fetch");
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        // Fetch individual data to get the accepted team ID
+        const individualResponse = await fetch("http://localhost:5000/api/individual-dashboard", {
+          credentials: "include"
+        });
+        const individualData = await individualResponse.json();
+
+        if (!individualData.success) {
+          console.error("Failed to fetch individual data");
+          setLoading(false);
+          return;
+        }
+
+        setUserDetails(individualData.data);
+
+        if (individualData.data.reason) {
+          setRejectionReason(individualData.data.reason);
+        }
+
+        // Get the accepted team ID from individual data
+        const acceptedTeamId = individualData.data.accepted;
+
+        if (!acceptedTeamId) {
+          console.log("No accepted team found");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch the accepted team details
+        const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
+          credentials: "include"
+        });
+        const teamData = await teamResponse.json();
+
+        if (teamData.success && teamData.team) {
+          setTeam(teamData.team);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Run only once on mount
+
+  // Socket.IO Listener for Real-time Removal Updates
+  useEffect(() => {
+    if (userDetails?.id) {
+      const roomName = `individual_${userDetails.id}`;
+      socket.emit("join_room", { room: roomName });
+      console.log(`Joined socket room: ${roomName}`);
+
+      const handleMemberRemoved = (data) => {
+        console.log("Real-time update: Member removed", data);
+        setTeam(null);
+        setRejectionReason(data.reason);
+      };
+
+      socket.on("member_removed", handleMemberRemoved);
+
+      return () => {
+        socket.off("member_removed", handleMemberRemoved);
+      };
+    }
+  }, [userDetails]);
+
+  if (loading) {
+    return (
+      <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e", display: "flex", justifyContent: "center", alignItems: "center", color: "#fff" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "20px" }}>⏳</div>
+          <div>Loading your team...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!team) {
+    if (rejectionReason) {
+      const parts = rejectionReason.split(':');
+      const teamName = parts[0];
+      const reasonText = parts.slice(1).join(':').trim();
+
+      return (
+        <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ textAlign: "center", padding: "40px", background: "rgba(220, 38, 38, 0.1)", borderRadius: "16px", border: "1px solid rgba(220, 38, 38, 0.3)", maxWidth: "600px", margin: "20px" }}>
+            <div style={{ fontSize: "3rem", marginBottom: "20px" }}>⚠️</div>
+            <h2 style={{ color: "#ef4444", marginBottom: "15px", textShadow: "0 0 10px rgba(239, 68, 68, 0.3)" }}>Removed from Team</h2>
+            <div style={{ color: "#fff", fontSize: "1.2rem", marginBottom: "20px" }}>
+              You have been removed from <strong style={{ color: "#f87171" }}>{teamName}</strong>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.3)", padding: "20px", borderRadius: "8px", borderLeft: "4px solid #ef4444", textAlign: "left" }}>
+              <label style={{ color: "#999", fontSize: "0.9rem", display: "block", marginBottom: "8px" }}>REASON:</label>
+              <p style={{ color: "#fff", margin: 0, fontStyle: "italic", fontSize: "1.1rem" }}>"{reasonText}"</p>
+            </div>
+            <button
+              onClick={() => navigate("/indimember")}
+              style={{
+                marginTop: "30px",
+                padding: "12px 30px",
+                background: "linear-gradient(135deg, #ef4444, #b91c1c)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "1rem",
+                fontWeight: "600",
+                boxShadow: "0 4px 15px rgba(239, 68, 68, 0.4)"
+              }}
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
         className="dashboard-page"
@@ -24,17 +158,23 @@ const AcceptedTeamPage = () => {
         <div
           style={{ padding: "100px 20px", textAlign: "center", color: "#fff" }}
         >
-          <h2>No team data available</h2>
+          <div style={{ fontSize: "3rem", marginBottom: "20px" }}>😔</div>
+          <h2>You are not accepted by any team</h2>
+          <p style={{ color: "#aaa", marginTop: "10px", fontSize: "1.1rem" }}>
+            Keep sending requests to teams you're interested in!
+          </p>
           <button
-            onClick={() => navigate("/individual-member/dashboard")}
+            onClick={() => navigate("/indimember")}
             style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              background: "#007bff",
+              marginTop: "30px",
+              padding: "12px 30px",
+              background: "linear-gradient(135deg, #3b82f6, #2563eb)",
               color: "#fff",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "8px",
               cursor: "pointer",
+              fontSize: "1rem",
+              fontWeight: "600",
             }}
           >
             Go to Dashboard
@@ -49,8 +189,7 @@ const AcceptedTeamPage = () => {
       className="dashboard-page"
       style={{ minHeight: "100vh", background: "#0a0b1e" }}
     >
-      <UserNavbar
-        variant="glass"
+      <GlobalNavbar
         userInfo={null}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
@@ -65,15 +204,16 @@ const AcceptedTeamPage = () => {
             setShowProfile(!showProfile);
           }
         }}
+        showContactUs={true}
+        logoutPath="/individual-login"
       />
 
       <div className="admin-content dashboard-container">
         <div className="teamup-layout">
           {/* User Details Section - Left Sidebar (Desktop) / Mobile Modal */}
           <div
-            className={`member-details-sidebar ${
-              showProfile ? "mobile-visible" : ""
-            }`}
+            className={`member-details-sidebar ${showProfile ? "mobile-visible" : ""
+              }`}
           >
             {/* Mobile Close Button */}
             <button
@@ -262,28 +402,28 @@ const AcceptedTeamPage = () => {
                     <div className="label-row">
                       <span>TEAM VISION</span>
                     </div>
-                      <div
-                        className="glow-input-container"
+                    <div
+                      className="glow-input-container"
+                      style={{
+                        padding: "24px",
+                        background: "rgba(255,255,255,0.03)",
+                        width: "100%",
+                      }}
+                    >
+                      <p
                         style={{
-                          padding: "24px",
-                          background: "rgba(255,255,255,0.03)",
-                          width: "100%",
+                          color: "#ddd",
+                          fontSize: "1.1rem",
+                          lineHeight: "1.7",
+                          margin: 0,
+                          wordWrap: "break-word",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
                         }}
                       >
-                        <p
-                          style={{
-                            color: "#ddd",
-                            fontSize: "1.1rem",
-                            lineHeight: "1.7",
-                            margin: 0,
-                            wordWrap: "break-word",
-                            wordBreak: "break-word",
-                            overflowWrap: "break-word",
-                          }}
-                        >
-                          {team.vision}
-                        </p>
-                      </div>
+                        {team.vision}
+                      </p>
+                    </div>
                   </div>
 
                   <div

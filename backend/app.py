@@ -4,7 +4,7 @@ from validate_hypervision import validate_hypervision_route
 from register_team import register_team_route, check_team_name_route, register_manual_team_route
 from verify_payment import verify_payment_route
 from webhook_handler import razorpay_webhook_handler
-from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route
+from login import student_login_route, admin_login_route, check_auth_route, check_student_auth_route,evaluator_login_route,individual_login_route,team_login_route
 from logout import logout_route
 from problemstatement import (
     create_problem_statement_route, get_all_problem_statements_route,
@@ -19,10 +19,14 @@ from user_access import (
     generate_presigned_url_route
 )
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
-from get_teams import fetch_teamsnosubmission, view_githubsubmission_route
+from get_info import fetch_teamsnosubmission, view_githubsubmission_route
+from Indidashboard import get_individual_dashboard_data, get_available_teams
+from individual_requests import send_join_request, get_sent_requests, get_accepted_team
+from team_requests import get_join_requests, accept_join_request, reject_join_request
 from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
+import socket_events  # Register socket handlers
 from hackerrank_submission import (
     submit_hackerrank_route, 
     check_hackerrank_submission_route,
@@ -38,17 +42,27 @@ from evaluator import (
     check_evaluator_auth_route)
 
 from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
-
+from individual_registration import register_individual_route
+from createteam_registration import create_team_route
+from TeamDashboard import get_team_dashboard_data, delete_team_member
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
-
 
 socketio.init_app(
     app,
     cors_allowed_origins=["http://localhost:5173"],
     supports_credentials=True
 )
+
+@app.route('/api/team-details', methods=['GET'])
+def get_team_dashboard():
+    return get_team_dashboard_data()
+
+@app.route('/api/team-member/delete', methods=['DELETE'])
+def delete_member():
+    return delete_team_member()
+
 
 @app.route("/api/check-auth", methods=["GET"])
 def check_auth():
@@ -62,9 +76,26 @@ def check_student_auth():
 def validate_hypervision():
     return validate_hypervision_route()
 
+@app.route("/api/individual-login", methods=["POST"])
+def individual_login():
+    return individual_login_route()
+
+
 @app.route("/api/register-team", methods=["POST"])
 def register_team():
     return register_team_route()
+
+@app.route("/api/register-individual", methods=["POST"])
+def register_individual():
+    return register_individual_route()
+
+@app.route("/api/create-team", methods=["POST"])
+def create_team():
+    return create_team_route()
+
+@app.route("/api/team-login", methods=["POST"])
+def team_login():
+    return team_login_route()
 
 @app.route("/api/check-team-name", methods=["POST"])
 def check_team_name():
@@ -277,6 +308,63 @@ def get_round_status():
 @app.route('/api/admin/round-status', methods=['POST'])
 def update_round_status():
     return update_round_status_route()
+
+# ----------------------------
+# INDIVIDUAL DASHBOARD ROUTE
+# ----------------------------
+@app.route('/api/individual-dashboard', methods=['GET', 'OPTIONS'])
+def individual_dashboard():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_individual_dashboard_data()
+
+@app.route('/api/available-teams', methods=['GET', 'OPTIONS'])
+def available_teams():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_available_teams()
+
+# ----------------------------
+# INDIVIDUAL REQUEST ROUTES
+# ----------------------------
+@app.route('/api/individual/send-request', methods=['POST', 'OPTIONS'])
+def individual_send_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return send_join_request()
+
+@app.route('/api/individual/sent-requests', methods=['GET', 'OPTIONS'])
+def individual_sent_requests():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_sent_requests()
+
+@app.route('/api/individual/accepted-team', methods=['GET', 'OPTIONS'])
+def individual_accepted_team():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_accepted_team()
+
+# ----------------------------
+# TEAM REQUEST ROUTES
+# ----------------------------
+@app.route('/api/team/join-requests', methods=['GET', 'OPTIONS'])
+def team_join_requests():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_join_requests()
+
+@app.route('/api/team/accept-request', methods=['POST', 'OPTIONS'])
+def team_accept_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return accept_join_request()
+
+@app.route('/api/team/reject-request', methods=['POST', 'OPTIONS'])
+def team_reject_request():
+    if request.method == "OPTIONS":
+        return "", 200
+    return reject_join_request()
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)

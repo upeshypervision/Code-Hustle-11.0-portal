@@ -172,3 +172,105 @@ def evaluator_login_route():
     return response
 
 
+def individual_login_route():
+    data = request.json or {}
+
+    individual_id = data.get("individual_id", "").strip()
+    password = data.get("password", "").strip()
+
+    if not individual_id or not password:
+        return jsonify({"error": "Individual ID and password required"}), 400
+
+    individual = db["individuals"].find_one({"individual_id": individual_id})
+    
+    if not individual or not verify_password(individual["password_hashed"], password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    payload = {
+        "individual_id": individual_id,
+        "role": "student",
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+    # --- SET COOKIE RESPONSE ---
+    response = make_response(jsonify({
+        "success": True,
+        "message": "Login successful",
+        "individual_id": individual["individual_id"],
+        "full_name": individual.get("full_name", ""),
+        "email": individual.get("email", ""),
+        "phone": individual.get("phone", ""),
+        "university_type": individual.get("university_type", ""),
+        "sapid": individual.get("sapid"),
+        "college_name": individual.get("college_name"),
+        "about": individual.get("about", "")
+    }))
+
+    response.set_cookie(
+        'individual_auth',
+        token,
+        httponly=True,        # Prevents XSS
+        secure=COOKIE_SECURE, # Auto-set based on environment
+        samesite='Lax',
+        max_age=JWT_EXPIRE_HOURS * 3600
+    )
+    return response
+
+def team_login_route():
+    """
+    Login route for teams created via Create_team.py (stored in create_team collection)
+    """
+    data = request.json or {}
+    
+    team_id = data.get("team_id", "").strip()
+    password = data.get("password", "").strip()
+    
+    if not team_id or not password:
+        return jsonify({"error": "Team ID and password required"}), 400
+    
+    # Look up team in create_team collection
+    team = db["create_team"].find_one({"team_id": team_id})
+    
+    if not team:
+        return jsonify({"error": "Invalid credentials"}), 401
+    
+    # Verify leader password (leader has the login credentials)
+    leader = team.get("leader", {})
+    if not leader or not verify_password(leader.get("password_hash", ""), password):
+        return jsonify({"error": "Invalid credentials"}), 401
+    
+    payload = {
+        "team_id": team_id,
+        "role": "team_leader",
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=JWT_EXPIRE_HOURS)
+    }
+    
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    
+    # Return team data
+    response = make_response(jsonify({
+        "success": True,
+        "message": "Login successful",
+        "team_id": team["team_id"],
+        "team_name": team.get("team_name", ""),
+        "team_bio": team.get("team_bio", ""),
+        "leader": leader,
+        "members": team.get("members", [])
+    }))
+    
+    response.set_cookie(
+        'team_auth',
+        token,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite='Lax',
+        max_age=JWT_EXPIRE_HOURS * 3600
+    )
+    return response
+

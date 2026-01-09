@@ -63,89 +63,30 @@
       rgba(10, 11, 30, 0.95) 100%),
     #0a0b1e !important;
   background-attachment: fixed;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-/* Glass Navbar Styles */
-.glass-navbar {
-  background: rgba(10, 11, 30, 0.7) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s ease;
-}
-
-.glass-navbar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent);
-}
-
-.glass-navbar-inner {
-  padding: 12px 32px !important;
-}
-
-.glass-navbar .logo-container {
-  gap: 12px;
-}
-
-.glass-navbar .logo-text {
-  color: #fff;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  font-size: 1.1rem;
-}
-
-.glass-navbar .nav-right {
-  gap: 16px;
-}
-
-.glass-navbar .nav-user {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.glass-navbar .nav-logout {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  padding: 8px 16px !important;
-  font-size: 0.9rem !important;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.glass-navbar .nav-logout:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  color: #fff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.glass-navbar .hamburger-menu span {
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.glass-navbar .hamburger-menu:hover span {
-  background: #60a5fa;
-}
+/* Navbar styles moved to global.css */
 
 /* Base Dashboard Styles */
 .dashboard-container {
-  padding: 120px 32px 32px 32px;
+  padding: 45px 32px 32px 32px;
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Neural Node Base Styles */
+.neural-node {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* TeamUp Label Styles */
@@ -157,6 +98,7 @@
   position: relative;
   display: inline-block;
   width: 100%;
+  max-width: 100%;
   background: linear-gradient(to right,
       rgba(56, 189, 248, 0.08) 0%,
       rgba(56, 189, 248, 0.15) 20%,
@@ -168,6 +110,7 @@
   padding-left: 34px !important;
   padding-right: 20px !important;
   box-shadow: 0 2px 8px rgba(56, 189, 248, 0.1);
+  box-sizing: border-box;
 }
 
 /* Staggered Animation Classes */
@@ -225,11 +168,16 @@
   display: flex;
   gap: 40px;
   align-items: flex-start;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .member-details-sidebar {
   flex: 0 0 380px;
   min-width: 0;
+  max-width: 380px;
+  overflow: hidden;
 }
 
 .teamup-separator {
@@ -240,11 +188,15 @@
       transparent);
   align-self: stretch;
   margin: 0 10px;
+  flex-shrink: 0;
 }
 
 .teams-content-section {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .mobile-profile-close {
@@ -273,6 +225,8 @@
   flex-direction: column;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Team Details Content Grid */
@@ -289,17 +243,23 @@
   flex: 1;
   min-width: 0;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .team-details-section>div {
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* When team details is shown, ensure it uses full available width */
 .teamup-layout:has(.team-details-section) .teams-content-section {
   flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 .close-team-details-btn {
@@ -359,15 +319,18 @@
 
   /* Override admin-content padding for mobile */
   .admin-content.dashboard-container {
-    padding-top: 140px !important;
+    padding-top: 20px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: 20px !important;
+    overflow-x: hidden;
   }
 
   /* Ensure first section has proper spacing from navbar */
   .teams-content-section {
     padding-top: 0;
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   .teams-content-section .neural-node:first-of-type {
@@ -388,20 +351,10 @@
     margin-right: -15px !important;
     padding-left: 28px !important;
     padding-right: 16px !important;
+    max-width: calc(100% + 30px);
+    box-sizing: border-box;
   }
 
-  .glass-navbar-inner {
-    padding: 10px 20px !important;
-  }
-
-  .glass-navbar .nav-user {
-    font-size: 0.9rem;
-  }
-
-  .glass-navbar .nav-logout {
-    padding: 6px 12px !important;
-    font-size: 0.85rem !important;
-  }
 
   /* Glass mobile menu overlay */
   .glass-mobile-overlay {
@@ -438,11 +391,15 @@
   .teamup-layout {
     flex-direction: column;
     gap: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .member-details-sidebar {
     flex: none;
     width: 100%;
+    max-width: 100%;
     display: none;
     position: fixed;
     top: 80px;
@@ -455,7 +412,9 @@
     padding: 24px 20px 20px 20px;
     padding-top: 32px;
     overflow-y: auto;
+    overflow-x: hidden;
     animation: slideIn 0.3s ease-out;
+    box-sizing: border-box;
   }
 
   .member-details-sidebar.mobile-visible {
@@ -480,6 +439,9 @@
   .teams-content-section {
     flex: none;
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
 
   .mobile-profile-close {
@@ -568,15 +530,262 @@
   /* Adjustments for specific cells */
   .admin-table td button {
     width: 100%;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-wrap: break-word !important;
+    padding: 12px 16px !important;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Convert indi-table to card view on mobile */
+  .indi-table-container {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+
+  .indi-table {
+    min-width: 100% !important;
+    display: block !important;
+  }
+
+  .indi-table thead {
+    display: none !important;
+  }
+
+  .indi-table tbody {
+    display: block !important;
+  }
+
+  .indi-table tr {
+    display: block !important;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .indi-table td {
+    display: block !important;
+    width: 100% !important;
+    padding: 12px 0 !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    text-align: left !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    box-sizing: border-box;
+  }
+
+  .indi-table td:last-child {
+    border-bottom: none !important;
+    padding-top: 16px !important;
+  }
+
+  /* Add labels before each cell using CSS */
+  .indi-table td.indi-td-id:before {
+    content: "Team ID: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  .indi-table td.indi-td-name:before {
+    content: "Team Name: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  .indi-table td.indi-td-bio:before {
+    content: "Team Vision: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .indi-table td.indi-td-members:before {
+    content: "Members: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  /* Style for cells containing status tags */
+  .indi-table td:has(.indi-status-tag):before {
+    content: "Request Status: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* Style for cells containing chat button */
+  .indi-table td:has(.edit-btn.chat-btn-mobile):before,
+  .indi-table td:has(button.edit-btn):before {
+    content: "Chat: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* Style for action cells with View button (not chat) */
+  .indi-table td:has(.indi-btn-view):not(:has(.edit-btn)):before {
+    content: "Action: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* Fallback: if :has() is not supported, use nth-child for sent requests (6 columns) */
+  @supports not selector(:has(*)) {
+    .indi-table tbody tr td:nth-child(4):not(.indi-td-members):before {
+      content: "Request Status: ";
+      font-weight: bold;
+      color: #38bdf8;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .indi-table tbody tr td:nth-child(5):before {
+      content: "Chat: ";
+      font-weight: bold;
+      color: #38bdf8;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .indi-table tbody tr td:nth-child(6):before {
+      content: "Action: ";
+      font-weight: bold;
+      color: #38bdf8;
+      display: block;
+      margin-bottom: 8px;
+    }
+  }
+
+  /* Ensure all buttons show full text and are properly sized */
+  .indi-table td button,
+  .indi-table td .indi-btn-view,
+  .indi-table td .edit-btn,
+  .indi-table td .chat-btn-mobile {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-wrap: break-word !important;
+    padding: 12px 20px !important;
+    min-height: 44px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100% !important;
+    box-sizing: border-box;
+    font-size: 0.95rem !important;
+  }
+
+  /* Style cells containing buttons */
+  .indi-table td:has(button) {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Style status tags */
+  .indi-table td .indi-status-tag {
+    display: inline-block;
+    width: auto;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Ensure bio/vision text is readable */
+  .indi-table td.indi-td-bio {
+    line-height: 1.6;
+    padding-bottom: 16px !important;
+  }
+
+  /* Handle empty state message */
+  .indi-table td[colspan] {
+    display: block !important;
+    text-align: center !important;
+    padding: 40px 20px !important;
+    border: none !important;
+    color: #aaa;
+    font-size: 1rem;
+  }
+
+  /* Ensure team name and ID are prominent in cards */
+  .indi-table td.indi-td-name {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    padding-top: 0 !important;
+    margin-bottom: 8px;
+  }
+
+  .indi-table td.indi-td-id {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px;
+  }
+
+  /* Better spacing for card content */
+  .indi-table tr:first-child td {
+    padding-top: 0;
+  }
+
+  .indi-table tr td:first-child {
+    padding-top: 0 !important;
+  }
+
+  /* Ensure cards don't overflow on small screens */
+  .indi-table-container {
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Make sure card text doesn't get cut off */
+  .indi-table td * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure buttons are touch-friendly and fully visible */
+  .indi-table td button {
+    min-width: 120px;
+    max-width: 100%;
   }
 
   /* Team Details Mobile Styles */
   .team-details-section {
     margin-top: 30px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .team-details-section .neural-node {
     padding: 24px 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .team-details-section h2 {
@@ -587,10 +796,23 @@
   .team-details-section .neural-node>div[style*="grid"] {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .team-details-section .glow-input-container>div[style*="grid"] {
     grid-template-columns: 1fr !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .team-details-grid {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   /* Chat button mobile styling */
@@ -603,6 +825,18 @@
   .team-details-section h2 {
     width: 100% !important;
     min-width: 100% !important;
+  }
+
+  /* Mobile button text display - show complete text */
+  .chat-btn-mobile,
+  .indi-table td .chat-btn-mobile,
+  .indi-table td button.edit-btn {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-wrap: break-word !important;
+    padding: 12px 16px !important;
+    min-height: 44px;
   }
 
   /* Footer Mobile Styles */
@@ -887,11 +1121,14 @@
 @media (max-width: 768px) {
   .chatbox-container {
     width: 100%;
+    max-width: 100%;
     height: 100vh;
     bottom: 0;
     right: 0;
     left: 0;
     border-radius: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .chatbox-container.chatbox-maximized {
@@ -916,5 +1153,343 @@
     padding: 8px !important;
     min-width: 36px;
     min-height: 36px;
+  }
+}
+
+/* Refactored styles from Indi_Dashboard.jsx */
+
+.indi-table-container {
+  margin-top: 28px;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.indi-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ddd;
+  table-layout: fixed;
+  min-width: 600px;
+}
+
+.indi-table th {
+  padding: 15px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indi-table td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indi-td-id {
+  font-family: monospace;
+  color: #aaa;
+  font-size: 1rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indi-td-name {
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.05rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indi-td-bio {
+  color: #ccc;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.indi-td-members {
+  color: #ddd;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.indi-btn-view {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  width: 100%;
+  max-width: 100%;
+  transition: background 0.2s;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.indi-btn-view:hover {
+  background: #0056b3;
+}
+
+.indi-status-tag {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* User Profile Styles */
+.user-profile-header {
+  color: #fff;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.user-profile-sub {
+  font-size: 1.1rem;
+  color: #aaa;
+}
+
+.user-profile-info-row {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.user-skills-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 24px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+/* Team Details View */
+.team-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.team-details-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.team-details-name {
+  color: #fff;
+  margin: 0;
+  font-size: 1.8rem;
+  flex: 1;
+  min-width: 200px;
+  word-wrap: break-word;
+}
+
+.team-details-id {
+  color: #aaa;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+
+.team-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.team-details-full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.team-details-box {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  width: 100%;
+  border-radius: 8px;
+}
+
+.team-details-text {
+  color: #ddd;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.leader-info-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.leader-name {
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.leader-university {
+  color: #aaa;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.skills-section {
+  font-size: 0.95rem;
+  color: #ddd;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.skills-label {
+  color: #aaa;
+  font-size: 0.85rem;
+  display: block;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.member-card {
+  display: flex;
+  flex-direction: column;
+  color: #ddd;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.member-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.member-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.member-university {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.send-request-btn {
+  margin-top: 30px;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 1rem;
+}
+
+/* Table Container - No longer scrollable, page scrolls instead */
+.indi-table-container {
+  overflow-x: auto;
+  overflow-y: visible;
+  border-radius: 8px;
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  /* Slight background to distinguish area */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Horizontal scrollbar for table container (only for wide tables) */
+.indi-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.indi-table-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.indi-table-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.indi-table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Table headers - no longer sticky since page scrolls */
+.indi-table thead {
+  position: relative;
+  z-index: 10;
+  background: #0f172a;
+}
+
+.indi-table thead th {
+  position: relative;
+  z-index: 11;
+}
+
+/* View Tabs - Desktop only */
+.indi-view-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+/* Hide tabs on mobile - navigation via hamburger menu */
+@media (max-width: 768px) {
+  .indi-view-tabs {
+    display: none !important;
   }
 }

@@ -3,34 +3,33 @@ from config import COOKIE_SECURE
 
 def logout_route():
     """
-    Logout endpoint that clears authentication cookies.
-    Works for both student and admin sessions.
+    Logout endpoint that clears all authentication cookies.
+    Works for student, admin, evaluator, individual, and team sessions.
     """
     response = make_response(jsonify({
         "success": True,
         "message": "Logged out successfully"
     }))
     
-    # Clear student auth cookie
-    response.set_cookie(
+    # List of all auth cookies to clear
+    auth_cookies = [
         'student_auth',
-        '',
-        httponly=True,
-        secure=COOKIE_SECURE,  # Auto-set based on environment
-        samesite='Lax',
-        max_age=0,  # Expire immediately
-        path='/'
-    )
-    
-    # Clear admin auth cookie
-    response.set_cookie(
         'admin_auth',
-        '',
-        httponly=True,
-        secure=COOKIE_SECURE,  # Auto-set based on environment
-        samesite='Lax',
-        max_age=0,  # Expire immediately
-        path='/'
-    )
+        'evaluator_auth',
+        'individual_auth',
+        'team_auth'
+    ]
+    
+    # Clear all authentication cookies
+    for cookie_name in auth_cookies:
+        response.set_cookie(
+            cookie_name,
+            '',
+            httponly=True,
+            secure=COOKIE_SECURE,  # Auto-set based on environment
+            samesite='Lax',
+            max_age=0,  # Expire immediately
+            path='/'
+        )
     
     return response, 200

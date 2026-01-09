@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Teamup.css';
+import './Landing_Page.css';
 
-const Teamup = () => {
+const Landing_Page = () => {
   const navigate = useNavigate();
   const [hasTeam, setHasTeam] = useState(null);
 
@@ -33,14 +33,14 @@ const Teamup = () => {
               </div>
               <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
                 <button
-                  className={`neon-shade-btn next-glow ${hasTeam === false ? 'btn-locked' : ''}`}
+                  className={`neon - shade - btn next - glow ${hasTeam === false ? 'btn-locked' : ''} `}
                   style={{ marginTop: 0 }}
                   onClick={() => navigate('/register')}
                 >
                   YES
                 </button>
                 <button
-                  className={`neon-shade-btn next-glow ${hasTeam === true ? 'btn-locked' : ''}`}
+                  className={`neon - shade - btn next - glow ${hasTeam === true ? 'btn-locked' : ''} `}
                   style={{ marginTop: 0, background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
                   onClick={() => setHasTeam(false)}
                 >
@@ -62,7 +62,7 @@ const Teamup = () => {
                   <button
                     className="neon-shade-btn next-glow"
                     style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate('/join')}
+                    onClick={() => navigate('/Indiregi')}
                   >
                     JOIN TEAM
                   </button>
@@ -89,4 +89,4 @@ const Teamup = () => {
   );
 };
 
-export default Teamup;
+export default Landing_Page;
