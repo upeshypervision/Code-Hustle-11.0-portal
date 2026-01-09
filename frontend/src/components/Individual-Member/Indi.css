@@ -338,6 +338,19 @@
     padding-top: 0;
   }
 
+  /* Ensure congratulations banner is properly centered both horizontally and vertically */
+  .teams-content-section .congrats-banner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto !important;
+    margin-top: 15vh !important;
+    margin-bottom: 15vh !important;
+    position: relative !important;
+    text-align: center !important;
+  }
+
   /* Add extra spacing for the first section label */
   .teams-content-section .label-detail:first-of-type {
     margin-top: 0;
@@ -849,6 +862,106 @@
 
   .teamup-footer-content p {
     font-size: 0.85rem;
+  }
+
+  /* Congratulations Banner Mobile Styles */
+  .congrats-banner {
+    padding: 40px 24px !important;
+    margin: 20px auto !important;
+    max-width: 90% !important;
+    width: 90% !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .congrats-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 12px !important;
+    line-height: 1.2 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    text-align: center !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .congrats-title span:first-child {
+    font-size: 1.8rem !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+  }
+
+  .congrats-subtitle {
+    font-size: 1.1rem !important;
+    margin-bottom: 8px !important;
+    padding: 0 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .congrats-team-name {
+    font-size: 1.5rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.3 !important;
+    padding: 0 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .congrats-team-id {
+    font-size: 1rem !important;
+    margin-bottom: 30px !important;
+    padding: 0 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .congrats-button {
+    padding: 14px 24px !important;
+    font-size: 1rem !important;
+    width: auto !important;
+    max-width: calc(100% - 20px) !important;
+    margin: 0 auto !important;
+    display: block !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    letter-spacing: 0.5px !important;
+    text-align: center !important;
+  }
+
+  /* Extra small screens - ensure "Congratulations!" fits on one line */
+  @media (max-width: 360px) {
+    .congrats-title {
+      font-size: 1.3rem !important;
+      gap: 8px !important;
+    }
+    
+    .congrats-title span:first-child {
+      font-size: 1.5rem !important;
+    }
+    
+    .congrats-banner {
+      max-width: 95% !important;
+      width: 95% !important;
+      padding: 35px 20px !important;
+    }
   }
 }
 
