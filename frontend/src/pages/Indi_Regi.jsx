@@ -7,6 +7,7 @@ import './Indi_Regi.css';
 const Indi_Regi = () => {
     const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [valErrors, setValErrors] = useState({});
     const [formData, setFormData] = useState({
         fullName: '',
@@ -70,10 +71,14 @@ const Indi_Regi = () => {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting) return;
+
         if (!isFormValid()) {
             console.log("Form is invalid according to current rules");
             return;
         }
+
+        setIsSubmitting(true);
 
         try {
             const payload = {
@@ -118,6 +123,10 @@ const Indi_Regi = () => {
         } catch (error) {
             console.error('Error joining individually:', error);
             alert('An unexpected error occurred during joining. Please try again.');
+        } finally {
+            if (!isSubmitted) {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -268,12 +277,12 @@ const Indi_Regi = () => {
 
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
                                 <button
-                                    className={`liquid-btn animated-btn ${!isFormValid() ? 'btn-locked' : ''}`}
+                                    className={`liquid-btn animated-btn ${!isFormValid() || isSubmitting ? 'btn-locked' : ''}`}
                                     style={{ width: '100%', padding: '18px' }}
                                     onClick={handleSubmit}
-                                    disabled={!isFormValid()}
+                                    disabled={!isFormValid() || isSubmitting}
                                 >
-                                    JOIN & CONNECT ❯
+                                    {isSubmitting ? "JOINING..." : "JOIN & CONNECT ❯"}
                                 </button>
                             </div>
                         </div>
