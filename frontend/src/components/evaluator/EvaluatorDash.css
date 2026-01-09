@@ -1,0 +1,189 @@
+.admin-section {
+    padding: 20px;
+    width: 95%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.admin-section-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+}
+
+.header-flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-section-title {
+    color: #71b6e8;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.stats-pill-group {
+    display: flex;
+    gap: 8px;
+}
+
+.stats-pill {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
+}
+
+.stats-pill.assigned { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+.stats-pill.pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+
+.panel {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.panel-inner { padding: 20px; }
+
+.panel-subtitle {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.submission-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    gap: 15px;
+    border-left: 4px solid rgba(59, 130, 246, 0.3);
+}
+
+.submission-card.graded-card { border-left: 4px solid #22c55e; }
+
+.submission-info {
+    flex: 1;
+    min-width: 0; 
+}
+
+/* FIX FOR CLASHING ELEMENTS */
+.submission-team-row {
+    display: flex;
+    justify-content: space-between; /* Pushes badge to the far right */
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.team-name-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.submission-team {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.team-id-label { 
+    color: #64748b; 
+    font-size: 0.85rem; 
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.evaluated-badge {
+    background: #22c55e;
+    color: #052e16;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    white-space: nowrap; /* Prevents badge from breaking into two lines */
+}
+
+.submission-meta {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.file-name {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+.submission-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.marks-input-container {
+    background: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.marks-input-container input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 45px;
+    text-align: center;
+    outline: none;
+}
+
+.panel-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+}
+
+.btn-submit-all {
+    background: #22c55e;
+    color: #052e16;
+    border: none;
+    padding: 14px 50px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    max-width: 400px;
+}
+
+@media (max-width: 650px) {
+    .submission-card { flex-direction: column; align-items: flex-start; }
+    .submission-actions { width: 100%; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .header-flex-container { flex-direction: column; align-items: flex-start; }
+}

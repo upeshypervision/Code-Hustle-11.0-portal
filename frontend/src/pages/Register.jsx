@@ -21,6 +21,14 @@ const Registration = () => {
   const [finalPrice, setFinalPrice] = useState(450);
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
+  
+  // --- NEW STATE FOR TERMS AGREEMENT ---
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // RESET checkbox of terms and conditions TERMS EVERY TIME STEP CHANGES 
+  useEffect(() => {
+    setAgreedToTerms(false);
+  }, [step]);
 
   const API_BASE = "http://localhost:5000/api";
 
@@ -170,6 +178,12 @@ const Registration = () => {
   };
 
   const handleRegistrationFlow = async () => {
+    // SECURITY CHECK FOR TERMS
+    if (!agreedToTerms) {
+      setErrorBadge("Please agree to the terms and conditions");
+      return;
+    }
+
     const membersList = [team.m1, team.m2, team.m3, team.m4].filter(m => m.fullName !== "");
     if (membersList.length < 2) {
       setErrorBadge("⚠️ You need at least 2 Team Members besides the Leader (Total 3).");
@@ -374,7 +388,21 @@ const Registration = () => {
                 </h2>
               </div>
 
-              <button className="neon-shade-btn next-glow" disabled={loading} onClick={handleRegistrationFlow}>{loading ? "PROCESSING..." : "REGISTER & PAY"}</button>
+              {/* --- TERMS CHECKBOX FOR REGISTRATION --- */}
+              <div className="input-group" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center' }}>
+                  <input 
+                      type="checkbox" 
+                      id="agree-reg"
+                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  />
+                  <label htmlFor="agree-reg" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
+                      I AGREE TO ALL TERMS AND CONDITIONS.
+                  </label>
+              </div>
+
+              <button className={`neon-shade-btn next-glow ${(loading || !agreedToTerms) ? 'btn-locked' : ''}`} disabled={loading || !agreedToTerms} onClick={handleRegistrationFlow}>{loading ? "PROCESSING..." : "REGISTER & PAY"}</button>
               <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(2)}>← BACK</p>
             </div>
           )}

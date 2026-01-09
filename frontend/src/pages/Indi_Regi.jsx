@@ -8,6 +8,10 @@ const Indi_Regi = () => {
     const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [valErrors, setValErrors] = useState({});
+    
+    // --- NEW STATE FOR TERMS AGREEMENT ---
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
     const [formData, setFormData] = useState({
         fullName: '',
         bio: '',
@@ -50,6 +54,9 @@ const Indi_Regi = () => {
         if (!uType) return false;
         if (!formData.email.trim()) return false;
         if (!formData.phone.trim()) return false;
+
+        // CHECKBOX VALIDATION
+        if (!agreedToTerms) return false;
 
         if (uType === 'upes') {
             if (!formData.sapid.trim()) return false;
@@ -228,16 +235,16 @@ const Indi_Regi = () => {
                                 <div className={`glow-input-container animated-field ${valErrors.hypervisionId ? 'error-border' : ''}`}>
                                     <input
                                         className="glow-input"
-                                        placeholder="Enter your Hypervision ID (if applicable)..."
+                                        placeholder="HYPEXXXX"
                                         value={formData.hypervisionId}
-                                        maxLength={20}
+                                        maxLength={8}
                                         onChange={(e) => updateField('hypervisionId', e.target.value)}
                                     />
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                                     {formData.hypervisionId && valErrors.hypervisionId ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.hypervisionId}</p> : <span></span>}
-                                    <span style={{ fontSize: '0.7rem', color: formData.hypervisionId.length >= 20 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
-                                        {formData.hypervisionId.length}/20
+                                    <span style={{ fontSize: '0.7rem', color: formData.hypervisionId.length >= 8 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.hypervisionId.length}/8
                                     </span>
                                 </div>
                             </div>
@@ -264,6 +271,20 @@ const Indi_Regi = () => {
                                     />
                                 </div>
                                 {(valErrors.email || valErrors.phone) && <p className="error-message-inline">{valErrors.email || valErrors.phone}</p>}
+                            </div>
+
+                            {/* --- TERMS CHECKBOX--- */}
+                            <div className="input-group" style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <input 
+                                    type="checkbox" 
+                                    id="agree-indi"
+                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                    checked={agreedToTerms}
+                                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                />
+                                <label htmlFor="agree-indi" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
+                                    I AGREE TO ALL TERMS AND CONDITIONS.
+                                </label>
                             </div>
 
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>

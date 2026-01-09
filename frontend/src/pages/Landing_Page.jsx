@@ -4,10 +4,9 @@ import './Landing_Page.css';
 
 const Landing_Page = () => {
   const navigate = useNavigate();
-  const [hasTeam, setHasTeam] = useState(null);
 
   return (
-    <div className="app-viewport">
+    <div className="app-viewport forge-container">
       {/* Cosmic Background  */}
       <div className="cosmic-bg">
         <div className="nebula-cloud-blue"></div>
@@ -15,7 +14,8 @@ const Landing_Page = () => {
         <div className="starfield"></div>
       </div>
 
-      <div className="portal-card animate-in">
+      {/* Added 'forge-card' and adjusted wrapper to match Registration pages */}
+      <div className="portal-card animate-in forge-card">
         {/* Header Branding */}
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
@@ -24,64 +24,41 @@ const Landing_Page = () => {
         </header>
 
         <div className="interaction-container">
-          {/* PHASE 01: SQUAD VERIFICATION */}
-          <div className="step-block">
-            <span className="label-detail">PHASE 01: TEAM VERIFICATION</span>
+          <div className="step-block animate-in">
             <div className="input-group">
-              <div className="label-row" style={{ marginBottom: '15px' }}>
-                <span>Do you have an established team?</span>
+              <div className="label-row" style={{ marginBottom: '20px', textAlign: 'center' }}>
+                <span>How do you intend to navigate the Arena?</span>
               </div>
-              <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
+              <div className="dual-button-row" style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
                 <button
-                  className={`neon - shade - btn next - glow ${hasTeam === false ? 'btn-locked' : ''} `}
-                  style={{ marginTop: 0 }}
-                  onClick={() => navigate('/register')}
+                  className="liquid-btn animated-btn"
+                  style={{ marginTop: 0, flex: 1, padding: '15px' }}
+                  onClick={() => navigate('/Indiregi')}
                 >
-                  YES
+                  JOIN TEAM
                 </button>
                 <button
-                  className={`neon - shade - btn next - glow ${hasTeam === true ? 'btn-locked' : ''} `}
-                  style={{ marginTop: 0, background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
-                  onClick={() => setHasTeam(false)}
+                  className="liquid-btn animated-btn"
+                  style={{ marginTop: 0, flex: 1, padding: '15px' }}
+                  onClick={() => navigate('/create-team')}
                 >
-                  NO
+                  CREATE TEAM
                 </button>
               </div>
             </div>
           </div>
-
-          {/* PHASE 02: ROLE DESIGNATION - Only appears if "NO" is chosen */}
-          {hasTeam === false && (
-            <div className="step-block animate-in" style={{ marginTop: '25px' }}>
-              <span className="label-detail">PHASE 02: ROLE DESIGNATION</span>
-              <div className="input-group">
-                <div className="label-row" style={{ marginBottom: '15px' }}>
-                  <span>How do you intend to navigate the Arena?</span>
-                </div>
-                <div className="dual-button-row" style={{ display: 'flex', gap: '10px' }}>
-                  <button
-                    className="neon-shade-btn next-glow"
-                    style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate('/Indiregi')}
-                  >
-                    JOIN TEAM
-                  </button>
-                  <button
-                    className="neon-shade-btn next-glow"
-                    style={{ marginTop: 0, flex: 1 }}
-                    onClick={() => navigate('/create-team')}
-                  >
-                    CREATE TEAM
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Footer - No box around Terms, Sign In removed */}
+        {/* Footer */}
         <footer className="footer-links-clean">
-          <a href="/terms" className="terms-link">Terms & Conditions</a>
+          <a 
+            href="https://codehustle11.upeshypervision.in/#terms-conditions" 
+            className="terms-link" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            Terms & Conditions
+          </a>
           <p className="protocol-text">SECURE ENTRY PROTOCOL ACTIVE</p>
         </footer>
       </div>
