@@ -43,13 +43,13 @@ const Indi_SentRequest = ({ teams, onViewTeam, onChat, scrollToTop }) => {
                         background:
                           team.requestStatus === "Accepted"
                             ? "rgba(40, 167, 69, 0.2)"
-                            : team.requestStatus === "Declined"
+                            : team.requestStatus === "Rejected"
                               ? "rgba(220, 53, 69, 0.2)"
                               : "rgba(255, 193, 7, 0.1)",
                         color:
                           team.requestStatus === "Accepted"
                             ? "#28a745"
-                            : team.requestStatus === "Declined"
+                            : team.requestStatus === "Rejected"
                               ? "#dc3545"
                               : "#ffc107",
                       }}
@@ -58,34 +58,36 @@ const Indi_SentRequest = ({ teams, onViewTeam, onChat, scrollToTop }) => {
                     </span>
                   </td>
                   <td style={{ padding: "15px", width: "18%" }} data-label="Chat">
-                    <button
-                      className="edit-btn chat-btn-mobile"
-                      onClick={() => {
-                        onChat(team);
-                      }}
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        color: "#fff",
-                        border: "none",
-                        padding: "8px 16px",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        fontSize: "0.95rem",
-                        fontWeight: "500",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        boxShadow:
-                          "0 2px 5px rgba(102, 126, 234, 0.4)",
-                        width: "100%",
-                        boxSizing: "border-box",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      <span>💬</span> Chat
-                    </button>
+                    {team.requestStatus !== "Rejected" && (
+                      <button
+                        className="edit-btn chat-btn-mobile"
+                        onClick={() => {
+                          onChat(team);
+                        }}
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          color: "#fff",
+                          border: "none",
+                          padding: "8px 16px",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          fontSize: "0.95rem",
+                          fontWeight: "500",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
+                          boxShadow:
+                            "0 2px 5px rgba(102, 126, 234, 0.4)",
+                          width: "100%",
+                          boxSizing: "border-box",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        <span>💬</span> Chat
+                      </button>
+                    )}
                   </td>
                   <td style={{ padding: "15px", width: "20%" }} data-label="Action">
                     <button

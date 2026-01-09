@@ -36,6 +36,7 @@ def get_team_dashboard_data():
 
     # Map to frontend structure expected by Incomp_Page.jsx
     dashboard_data = {
+        "teamId": team.get("team_id"),  # For socket room joining
         "teamName": team.get("team_name", ""),
         "teamVision": team.get("team_bio", ""),
         "leader": {
@@ -44,17 +45,21 @@ def get_team_dashboard_data():
             "university": leader_data.get("college_name", ""),
             "sapId": leader_data.get("sapid", ""),
             "email": leader_data.get("email", ""),
-            "phone": leader_data.get("phone", ""),
-            # Add other fields if needed
+            # Removed: phone for privacy
         },
         "members": [
             {
                 "id": idx + 1, # Simple ID generation
+                "individual_id": m.get("individual_id", ""),  # Send individual_id if available
                 "name": m.get("full_name", ""),
                 "about": m.get("bio", ""),
                 "university": m.get("college_name", ""),
                 "email": m.get("email", ""),
-                "phone": m.get("phone", "")
+                # Removed: phone for privacy
+                "joinedViaRequest": m.get("joinedViaRequest", False),  # Include the flag
+                "full_name": m.get("full_name", ""),  # Also include for table display
+                "college_name": m.get("college_name", ""),
+                "bio": m.get("bio", "")
             }
             for idx, m in enumerate(members_data)
         ],
@@ -64,6 +69,8 @@ def get_team_dashboard_data():
     }
     
     return jsonify(sanitize_output_data(dashboard_data)), 200
+
+from socketio_instance import socketio
 
 def delete_team_member():
     """
@@ -87,20 +94,69 @@ def delete_team_member():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
     
-    # Get member email from request body
+    # Get member ID/email and reason from request body
     data = request.json or {}
-    member_email = data.get("email")
+    individual_id = data.get("individual_id")
+    member_email = data.get("email") # Fallback for original members
+    reason = data.get("reason", "").strip()
     
-    if not member_email:
-        return jsonify({"error": "Member email required"}), 400
+    if not individual_id and not member_email:
+        return jsonify({"error": "Member ID or Email required"}), 400
+
+    if not reason or len(reason.split()) < 15:
+        return jsonify({"error": "Reason must be at least 15 words"}), 400
     
-    # Remove member from the members array
-    result = db.create_team.update_one(
-        {"team_id": team_id},
-        {"$pull": {"members": {"email": member_email}}}
-    )
+    # Get team name for the reason
+    team_data = db.create_team.find_one({"team_id": team_id}, {"team_name": 1})
+    team_name = team_data.get("team_name", "Team") if team_data else "Team"
+
+    # CASE 1: Deleting by Individual ID (Joined via Request)
+    if individual_id:
+        # 1. Remove member from the team's members array
+        result = db.create_team.update_one(
+            {"team_id": team_id},
+            {"$pull": {"members": {"individual_id": individual_id}}}
+        )
+        
+        if result.modified_count == 0:
+            # Try fallback to email if ID failed? Or just return error
+            return jsonify({"error": "Member not found or already deleted"}), 404
+
+        # 2. Update the individual's record
+        individual = db.individuals.find_one({"individual_id": individual_id})
+        
+        if individual:
+            formatted_reason = f"{team_name}: {reason}"
+            db.individuals.update_one(
+                {"individual_id": individual_id},
+                {
+                    "$unset": {"accepted": ""},     # Remove accepted status
+                    "$pull": {"requested": team_id}, # Remove team from requested list
+                    "$set": {"reason": formatted_reason} # Store removal reason
+                }
+            )
+
+            # 3. Emit Socket Event for Real-time Update
+            socketio.emit(
+                'member_removed', 
+                {
+                    "reason": formatted_reason,
+                    "teamName": team_name
+                }, 
+                room=f'individual_{individual_id}'
+            )
+
+    # CASE 2: Deleting by Email (Original Members / Fallback)
+    elif member_email:
+        # 1. Remove member from the team's members array
+        result = db.create_team.update_one(
+            {"team_id": team_id},
+            {"$pull": {"members": {"email": member_email}}}
+        )
+        
+        if result.modified_count == 0:
+            return jsonify({"error": "Member not found or already deleted"}), 404
+            
+        # Note: Original members don't have separate 'individuals' records to update
     
-    if result.modified_count == 0:
-        return jsonify({"error": "Member not found or already deleted"}), 404
-    
-    return jsonify({"success": True, "message": "Member deleted successfully"}), 200
+    return jsonify({"success": True, "message": "Member removed successfully"}), 200

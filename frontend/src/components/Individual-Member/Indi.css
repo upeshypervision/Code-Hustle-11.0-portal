@@ -675,6 +675,7 @@
       display: block;
       margin-bottom: 8px;
     }
+
     .indi-table tbody tr td:nth-child(5):before {
       content: "Chat: ";
       font-weight: bold;
@@ -682,6 +683,7 @@
       display: block;
       margin-bottom: 8px;
     }
+
     .indi-table tbody tr td:nth-child(6):before {
       content: "Action: ";
       font-weight: bold;
@@ -1547,7 +1549,8 @@
 
 /* Table Container - No longer scrollable, page scrolls instead */
 .indi-table-container {
-  overflow-x: auto;
+  overflow-x: hidden;
+  /* Prevent horizontal scrollbar on desktop */
   overflow-y: visible;
   border-radius: 8px;
   margin-top: 20px;

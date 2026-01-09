@@ -65,6 +65,10 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  flex: 1;
+  min-width: 0;
+  /* Critical for text wrapping in flex container */
+  padding-right: 15px;
 }
 
 .ppt-team-header {
@@ -74,6 +78,9 @@
   color: #e2e8f0;
   margin: 0;
   letter-spacing: 0.2px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Actions (Right Side) */
@@ -251,11 +258,9 @@
   border-radius: 4px;
   padding: 40px 20px;
   text-align: center;
-  background: linear-gradient(
-    145deg,
-    rgba(30, 30, 30, 0.6) 0%,
-    rgba(10, 10, 10, 0.8) 100%
-  );
+  background: linear-gradient(145deg,
+      rgba(30, 30, 30, 0.6) 0%,
+      rgba(10, 10, 10, 0.8) 100%);
   backdrop-filter: blur(10px);
   transition: all 0.4s ease;
   cursor: pointer;
@@ -333,6 +338,109 @@
   color: #cbd5e1;
 }
 
+/* --- NEW: Details Modal Styles --- */
+.details-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.details-modal-content {
+  background-color: #1e293b;
+  /* Darker background */
+  border: 1px solid #38bdf8;
+  /* Neon blue border */
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+  position: relative;
+}
+
+.details-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 10px;
+}
+
+.details-modal-header h3 {
+  color: #fff;
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-modal-btn:hover {
+  color: #f8fafc;
+}
+
+.details-modal-body {
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.member-section {
+  margin-bottom: 20px;
+}
+
+.member-section h4 {
+  color: #38bdf8;
+  /* Neon blue for headers */
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 5px;
+}
+
+.member-details {
+  background-color: #0f172a;
+  /* Darker card background for members */
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.member-details p {
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.member-details strong {
+  color: #e2e8f0;
+  /* Slightly lighter for labels */
+}
+
+.details-modal-footer {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #334155;
+  padding-top: 15px;
+}
+
+/* ... (existing animations and mobile responsiveness) ... */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -356,6 +464,7 @@
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0);
@@ -393,5 +502,11 @@
   .upload-dropbox {
     padding: 30px 15px;
     min-height: 250px;
+  }
+
+  /* Mobile adjustments for details modal */
+  .details-modal-content {
+    width: 95%;
+    padding: 15px;
   }
 }

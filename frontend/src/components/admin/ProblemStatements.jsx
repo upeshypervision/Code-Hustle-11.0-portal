@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import Modal from "../../components/Modal";
-import socket from "../../socket"; // Added socket import
+import socket from "../../socket";
+import "./ProblemStatements.css"; // Import the new CSS
 
 export default function ProblemStatements() {
   const [selectedPs, setSelectedPs] = useState(null);
   const [psMessage, setPsMessage] = useState({ type: "", text: "" });
 
-  // No demo data — starts empty, to be filled from backend
   const [problemStatements, setProblemStatements] = useState([]);
 
   const [newPs, setNewPs] = useState({
@@ -20,7 +20,7 @@ export default function ProblemStatements() {
   const fetchProblemStatements = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/getallproblem-statements",
+        "http://localhost:5000/api/admin/getallproblem-statements",
         {
           credentials: "include",
         }
@@ -56,30 +56,17 @@ export default function ProblemStatements() {
     fetchProblemStatements();
   }, []);
 
-  // Socket Listener for Real-time Updates
+  // Socket Listeners
   useEffect(() => {
-    const handlePsSelected = () => {
-      fetchProblemStatements();
-    };
-
+    const handlePsSelected = () => fetchProblemStatements();
     socket.on("ps_selected", handlePsSelected);
-
-    return () => {
-      socket.off("ps_selected", handlePsSelected);
-    };
+    return () => socket.off("ps_selected", handlePsSelected);
   }, []);
 
-  // Socket Listener for Visibility Changes
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      fetchProblemStatements();
-    };
-
+    const handleVisibilityChange = () => fetchProblemStatements();
     socket.on("ps_visibility_changed", handleVisibilityChange);
-
-    return () => {
-      socket.off("ps_visibility_changed", handleVisibilityChange);
-    };
+    return () => socket.off("ps_visibility_changed", handleVisibilityChange);
   }, []);
 
   const handleAddPs = async (e) => {
@@ -95,7 +82,7 @@ export default function ProblemStatements() {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/createproblem-statements",
+        "http://localhost:5000/api/admin/createproblem-statements",
         {
           method: "POST",
           credentials: "include",
@@ -123,7 +110,6 @@ export default function ProblemStatements() {
         text: `Problem Statement created successfully (ID: ${data.problem_statement_id})`,
       });
 
-      // OPTIONAL: Clear form
       setNewPs({
         title: "",
         track: "",
@@ -132,9 +118,7 @@ export default function ProblemStatements() {
         maxTeams: "",
       });
 
-      // Refresh list to show new item
       fetchProblemStatements();
-
     } catch (err) {
       setPsMessage({
         type: "error",
@@ -144,66 +128,41 @@ export default function ProblemStatements() {
   };
 
   const togglePsVisibility = async (psId) => {
-    console.log("Toggle visibility called for:", psId);
-
-    // Optimistically update the UI
     setProblemStatements((prev) =>
       prev.map((ps) => (ps.id === psId ? { ...ps, visible: !ps.visible } : ps))
     );
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${psId}/toggle-visibility`,
+        `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
         {
           method: "POST",
           credentials: "include",
         }
       );
 
-      const data = await res.json();
-      console.log("Toggle response:", data);
-
       if (!res.ok) {
-        console.error("Toggle failed:", data);
-        // Revert on error
-        setProblemStatements((prev) =>
-          prev.map((ps) =>
-            ps.id === psId ? { ...ps, visible: !ps.visible } : ps
-          )
-        );
-        setPsMessage({
-          type: "error",
-          text: data.error || "Failed to toggle visibility",
-        });
-        setTimeout(() => setPsMessage({ type: "", text: "" }), 3000);
-        return;
+        throw new Error("Failed to toggle visibility");
       }
-
-      // Refresh PS list from backend to ensure consistency
       fetchProblemStatements();
     } catch (err) {
-      console.error("Failed to toggle visibility", err);
+      console.error(err);
       // Revert on error
       setProblemStatements((prev) =>
-        prev.map((ps) =>
-          ps.id === psId ? { ...ps, visible: !ps.visible } : ps
-        )
+        prev.map((ps) => (ps.id === psId ? { ...ps, visible: !ps.visible } : ps))
       );
       setPsMessage({
         type: "error",
         text: "Network error: Failed to toggle visibility",
       });
-      setTimeout(() => setPsMessage({ type: "", text: "" }), 3000);
     }
   };
 
   const handleViewTeams = async (ps) => {
     setSelectedPs(ps);
-
-    // Fetch teams for this PS
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${ps.id}/teams`,
+        `http://localhost:5000/api/admin/problem-statement/${ps.id}/teams`,
         { credentials: "include" }
       );
       const data = await res.json();
@@ -218,194 +177,159 @@ export default function ProblemStatements() {
 
   const handleCloseModal = () => setSelectedPs(null);
 
+  // --- Render ---
   return (
-    <div className="admin-section">
-      <div className="admin-section-header">
-        <h2 className="admin-section-title">Problem Statements</h2>
-      </div>
+    <div className="admin-ps-container">
+      <header className="ps-header">
+        <h2 className="ps-title">Problem Statements</h2>
+        <p className="ps-subtitle">
+          Manage, create, and track problem statements for the hackathon.
+        </p>
+      </header>
 
       {psMessage.text && (
-        <div
-          className={`message-box ${psMessage.type}`}
-          style={{ marginBottom: "16px" }}
-        >
+        <div className={`message-box ${psMessage.type}`} style={{ marginBottom: "20px" }}>
           {psMessage.text}
         </div>
       )}
 
-      <div className="panel">
-        <div className="panel-inner" style={{ overflowX: "auto", maxWidth: "100%" }}>
-          {problemStatements.length === 0 ? (
-            <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>
-              No problem statements created yet.
-            </p>
-          ) : (
-            <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%" }}>
-              <table className="table" style={{ tableLayout: "fixed", width: "100%", minWidth: "800px" }}>
-                <thead>
-                  <tr>
-                    <th style={{ width: "8%" }}>Visible</th>
-                    <th style={{ width: "8%" }}>PS ID</th>
-                    <th style={{ width: "15%" }}>Title</th>
-                    <th style={{ width: "12%" }}>Track</th>
-                    <th style={{ width: "25%" }}>Description</th>
-                    <th style={{ width: "10%" }}>Difficulty</th>
-                    <th style={{ width: "10%" }}>Max Teams</th>
-                    <th style={{ width: "12%" }}>Selections</th>
-                  </tr>
-                </thead>
-              <tbody>
-                {problemStatements.map((ps) => (
-                  <tr key={ps.id}>
-                    <td>
-                      <label
-                        className="toggle-label"
-                        style={{ cursor: "pointer", margin: 0 }}
-                      >
-                        <div className="toggle-switch">
-                          <input
-                            type="checkbox"
-                            checked={ps.visible || false}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              togglePsVisibility(ps.id);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          <span className="toggle-slider"></span>
-                        </div>
-                      </label>
-                    </td>
-
-                    <td>
-                      <strong>{ps.id}</strong>
-                    </td>
-                    <td style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{ps.title}</td>
-                    <td style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{ps.track || "-"}</td>
-                    <td style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: "200px" }} title={ps.description}>{ps.description}</td>
-                    <td>{ps.difficulty}</td>
-                    <td>{ps.maxTeams}</td>
-                    <td>
-                      <button
-                        className="chip chip-info"
-                        onClick={() => handleViewTeams(ps)}
-                      >
-                        {ps.selections || 0} teams
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div style={{ marginTop: "24px" }}>
-        <h3 style={{ fontSize: "0.95rem", marginBottom: "12px" }}>
-          Add New Problem Statement
-        </h3>
-
-        <div className="panel">
-          <div className="panel-inner">
-            <form onSubmit={handleAddPs} className="form">
-              <div className="form-row">
-                <label className="form-label">Title</label>
-                <input
-                  className="form-input"
-                  value={newPs.title}
-                  onChange={(e) =>
-                    setNewPs({ ...newPs, title: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="form-row">
-                <label className="form-label">Track</label>
-                <input
-                  className="form-input"
-                  value={newPs.track}
-                  onChange={(e) =>
-                    setNewPs({ ...newPs, track: e.target.value })
-                  }
-                />
-              </div>
-              <div className="form-row">
-                <label className="form-label">Description</label>
-                <input
-                  className="form-input"
-                  value={newPs.description}
-                  onChange={(e) =>
-                    setNewPs({ ...newPs, description: e.target.value })
-                  }
-                />
-              </div>
-              <div className="form-row">
-                <label className="form-label">Difficulty</label>
-                <select
-                  className="form-input"
-                  value={newPs.difficulty}
-                  onChange={(e) =>
-                    setNewPs({ ...newPs, difficulty: e.target.value })
-                  }
-                >
-                  <option>Easy</option>
-                  <option>Medium</option>
-                  <option>Hard</option>
-                </select>
-              </div>
-
-              <div className="form-row">
-                <label className="form-label">Max Teams</label>
-                <input
-                  className="form-input"
-                  type="number"
-                  min="1"
-                  value={newPs.maxTeams}
-                  onChange={(e) =>
-                    setNewPs({ ...newPs, maxTeams: e.target.value })
-                  }
-                />
-              </div>
-
-              {psMessage.text && (
-                <div className={`message-box ${psMessage.type}`}>
-                  {psMessage.text}
-                </div>
-              )}
-
-              <button type="submit" className="button-primary">
-                Add Problem Statement
-              </button>
-            </form>
+      {/* Grid Layout for Problem Statements */}
+      <div className="ps-grid">
+        {problemStatements.length === 0 ? (
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#64748b", padding: "40px" }}>
+            No problem statements created yet. Get started below!
           </div>
-        </div>
+        ) : (
+          problemStatements.map((ps) => (
+            <div className="ps-card" key={ps.id}>
+              {/* Card Header: ID Badge & Visibility Toggle */}
+              <div className="ps-card-header">
+                <span className="ps-id-badge">ID: {ps.id}</span>
+                <label className="ps-toggle" title="Toggle Visibility">
+                  <input
+                    type="checkbox"
+                    checked={ps.visible || false}
+                    onChange={() => togglePsVisibility(ps.id)}
+                  />
+                  <span className="ps-slider"></span>
+                </label>
+              </div>
+
+              {/* Title & Description */}
+              <h3 className="ps-card-title">{ps.title}</h3>
+              <p className="ps-card-desc">{ps.description}</p>
+
+              {/* Chips */}
+              <div className="ps-meta">
+                <span className={`ps-chip difficulty-${ps.difficulty}`}>
+                  {ps.difficulty}
+                </span>
+                {ps.track && <span className="ps-chip track">{ps.track}</span>}
+              </div>
+
+              {/* Footer */}
+              <div className="ps-card-footer">
+                <div className="ps-stat">
+                  Max: <strong>{ps.maxTeams}</strong>
+                </div>
+                <button
+                  className="btn-view-teams"
+                  onClick={() => handleViewTeams(ps)}
+                >
+                  {ps.selections || 0} teams selected
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
+      {/* Add New Section */}
+      <div className="ps-form-section">
+        <h3 className="ps-form-title">Add New Problem Statement</h3>
+        <form onSubmit={handleAddPs} className="ps-form-grid">
+          <div className="ps-input-group full-width">
+            <label className="ps-label">Title</label>
+            <input
+              className="ps-input"
+              value={newPs.title}
+              onChange={(e) => setNewPs({ ...newPs, title: e.target.value })}
+              placeholder="e.g. AI-Driven Healthcare Assistant"
+            />
+          </div>
+
+          <div className="ps-input-group">
+            <label className="ps-label">Track</label>
+            <input
+              className="ps-input"
+              value={newPs.track}
+              onChange={(e) => setNewPs({ ...newPs, track: e.target.value })}
+              placeholder="e.g. Healthcare"
+            />
+          </div>
+
+          <div className="ps-input-group">
+            <label className="ps-label">Difficulty</label>
+            <select
+              className="ps-input"
+              value={newPs.difficulty}
+              onChange={(e) => setNewPs({ ...newPs, difficulty: e.target.value })}
+            >
+              <option>Easy</option>
+              <option>Medium</option>
+              <option>Hard</option>
+            </select>
+          </div>
+
+          <div className="ps-input-group full-width">
+            <label className="ps-label">Description</label>
+            <textarea
+              className="ps-input"
+              value={newPs.description}
+              onChange={(e) => setNewPs({ ...newPs, description: e.target.value })}
+              placeholder="Detailed description of the problem..."
+              rows={4}
+              style={{ resize: "vertical" }}
+            />
+          </div>
+
+          <div className="ps-input-group">
+            <label className="ps-label">Max Teams</label>
+            <input
+              className="ps-input"
+              type="number"
+              min="1"
+              value={newPs.maxTeams}
+              onChange={(e) => setNewPs({ ...newPs, maxTeams: e.target.value })}
+              placeholder="e.g. 10"
+            />
+          </div>
+
+          <div className="ps-input-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button type="submit" className="btn-add-ps">
+              + Create Problem Statement
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Teams Modal */}
       <Modal
         isOpen={!!selectedPs}
         onClose={handleCloseModal}
-        title={selectedPs ? `Teams for ${selectedPs.id}` : ""}
+        title={selectedPs ? `Teams for ${selectedPs.title}` : ""}
       >
         {selectedPs && selectedPs.teamsList ? (
           <div>
-            <p
-              style={{
-                fontSize: "0.9rem",
-                color: "#9ca3af",
-                marginBottom: "16px",
-              }}
-            >
-              {selectedPs.teamsList.length} team(s) selected this problem
-              statement
+            <p style={{ fontSize: "0.9rem", color: "#9ca3af", marginBottom: "16px" }}>
+              {selectedPs.teamsList.length} team(s) selected this problem statement
             </p>
             {selectedPs.teamsList.length === 0 ? (
               <p style={{ textAlign: "center", color: "#6b7280" }}>
-                No teams yet
+                No teams yet selected this problem.
               </p>
             ) : (
-              <table className="table">
+              <table className="table" style={{ width: "100%" }}>
                 <thead>
                   <tr>
                     <th>Team ID</th>
@@ -416,9 +340,7 @@ export default function ProblemStatements() {
                 <tbody>
                   {selectedPs.teamsList.map((team, idx) => (
                     <tr key={idx}>
-                      <td>
-                        <strong>{team.team_id}</strong>
-                      </td>
+                      <td><strong>{team.team_id}</strong></td>
                       <td>{team.team_name}</td>
                       <td>{new Date(team.selected_at).toLocaleString()}</td>
                     </tr>
@@ -428,94 +350,9 @@ export default function ProblemStatements() {
             )}
           </div>
         ) : (
-          <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>
-            Loading teams...
-          </p>
+          <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>Loading teams...</p>
         )}
       </Modal>
-
-      <style>{`
-        .admin-section .panel-inner {
-          overflow-x: auto;
-          max-width: 100%;
-        }
-        
-        .admin-section .table {
-          table-layout: fixed;
-          width: 100%;
-          min-width: 800px;
-        }
-        
-        .admin-section .table th:nth-child(1),
-        .admin-section .table td:nth-child(1) {
-          width: 8%;
-        }
-        
-        .admin-section .table th:nth-child(2),
-        .admin-section .table td:nth-child(2) {
-          width: 8%;
-        }
-        
-        .admin-section .table th:nth-child(3),
-        .admin-section .table td:nth-child(3) {
-          width: 15%;
-        }
-        
-        .admin-section .table th:nth-child(4),
-        .admin-section .table td:nth-child(4) {
-          width: 12%;
-        }
-        
-        .admin-section .table th:nth-child(5),
-        .admin-section .table td:nth-child(5) {
-          width: 25%;
-          max-width: 25%;
-        }
-        
-        .admin-section .table th:nth-child(6),
-        .admin-section .table td:nth-child(6) {
-          width: 10%;
-        }
-        
-        .admin-section .table th:nth-child(7),
-        .admin-section .table td:nth-child(7) {
-          width: 10%;
-        }
-        
-        .admin-section .table th:nth-child(8),
-        .admin-section .table td:nth-child(8) {
-          width: 12%;
-        }
-        
-        @media (max-width: 768px) {
-          .admin-section .panel-inner {
-            padding: 12px !important;
-          }
-          
-          .admin-section .table {
-            font-size: 0.7rem;
-            min-width: 700px;
-          }
-          
-          .admin-section .table th,
-          .admin-section .table td {
-            padding: 6px 4px;
-            font-size: 0.7rem;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .admin-section .table {
-            min-width: 600px;
-          }
-          
-          .admin-section .table th,
-          .admin-section .table td {
-            padding: 4px 2px;
-            font-size: 0.65rem;
-          }
-        }
-      `}</style>
     </div>
   );
 }

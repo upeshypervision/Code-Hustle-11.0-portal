@@ -17,7 +17,7 @@ export default function RoundManagement() {
 
   const fetchRoundStatus = async () => {
     try {
-      const res = await fetch('http://localhost:5001/api/round-status', {
+      const res = await fetch('http://localhost:5000/api/round-status', {
         credentials: 'include'
       });
       const data = await res.json();
@@ -37,7 +37,7 @@ export default function RoundManagement() {
 
   const updateRoundStatus = async (roundType, state) => {
     try {
-      const res = await fetch('http://localhost:5001/api/admin/round-status', {
+      const res = await fetch('http://localhost:5000/api/admin/round-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -69,7 +69,7 @@ export default function RoundManagement() {
       // Trigger distribution
       try {
         setNotification({ type: 'info', message: 'Distributing submissions...' });
-        const res = await fetch('http://localhost:5001/api/admin/distribute-submissions', {
+        const res = await fetch('http://localhost:5000/api/admin/distribute-submissions', {
           method: 'POST',
           credentials: 'include'
         });

@@ -41,7 +41,7 @@ export default function StudentLogin() {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await fetch('http://localhost:5001/api/student-login', {
+      const response = await fetch('http://localhost:5000/api/student-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -95,7 +95,7 @@ export default function StudentLogin() {
                 <input
                   className="glow-input"
                   name="teamId"
-                  placeholder="e.g., CH-TEAM-001"
+                  placeholder="e.g., CodeHustleXXX"
                   value={formData.teamId}
                   onChange={handleChange}
                 />

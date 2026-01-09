@@ -7,7 +7,12 @@ import './Indi_Regi.css';
 const Indi_Regi = () => {
     const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [valErrors, setValErrors] = useState({});
+
+    // --- NEW STATE FOR TERMS AGREEMENT ---
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
     const [formData, setFormData] = useState({
         fullName: '',
         bio: '',
@@ -18,7 +23,7 @@ const Indi_Regi = () => {
         hypervisionId: ''
     });
 
-    const API_BASE = "http://localhost:5001";
+    const API_BASE = "http://localhost:5000";
 
     const validateField = (name, value, uType) => {
         if (!value.trim() && name !== 'hypervisionId') return "Required Field";
@@ -51,6 +56,9 @@ const Indi_Regi = () => {
         if (!formData.email.trim()) return false;
         if (!formData.phone.trim()) return false;
 
+        // CHECKBOX VALIDATION
+        if (!agreedToTerms) return false;
+
         if (uType === 'upes') {
             if (!formData.sapid.trim()) return false;
             if (validateField('sapid', formData.sapid, uType)) return false;
@@ -70,10 +78,14 @@ const Indi_Regi = () => {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting) return;
+
         if (!isFormValid()) {
             console.log("Form is invalid according to current rules");
             return;
         }
+
+        setIsSubmitting(true);
 
         try {
             const payload = {
@@ -113,11 +125,24 @@ const Indi_Regi = () => {
 
                 setIsSubmitted(true);
             } else {
-                alert(result.error || `Registration failed. Server responded with status: ${response.status}`);
+                const errorMsg = result.error || `Registration failed. Server responded with status: ${response.status}`;
+
+                // Map backend errors to field errors
+                if (errorMsg.toLowerCase().includes("phone")) {
+                    setValErrors(prev => ({ ...prev, phone: errorMsg }));
+                } else if (errorMsg.toLowerCase().includes("sap id")) {
+                    setValErrors(prev => ({ ...prev, sapid: errorMsg }));
+                }
+
+                alert(errorMsg);
             }
         } catch (error) {
             console.error('Error joining individually:', error);
             alert('An unexpected error occurred during joining. Please try again.');
+        } finally {
+            if (!isSubmitted) {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -228,16 +253,16 @@ const Indi_Regi = () => {
                                 <div className={`glow-input-container animated-field ${valErrors.hypervisionId ? 'error-border' : ''}`}>
                                     <input
                                         className="glow-input"
-                                        placeholder="Enter your Hypervision ID (if applicable)..."
+                                        placeholder="HYPEXXXX"
                                         value={formData.hypervisionId}
-                                        maxLength={20}
+                                        maxLength={8}
                                         onChange={(e) => updateField('hypervisionId', e.target.value)}
                                     />
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                                     {formData.hypervisionId && valErrors.hypervisionId ? <p className="error-message-inline" style={{ margin: 0 }}>{valErrors.hypervisionId}</p> : <span></span>}
-                                    <span style={{ fontSize: '0.7rem', color: formData.hypervisionId.length >= 20 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
-                                        {formData.hypervisionId.length}/20
+                                    <span style={{ fontSize: '0.7rem', color: formData.hypervisionId.length >= 8 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}>
+                                        {formData.hypervisionId.length}/8
                                     </span>
                                 </div>
                             </div>
@@ -266,14 +291,28 @@ const Indi_Regi = () => {
                                 {(valErrors.email || valErrors.phone) && <p className="error-message-inline">{valErrors.email || valErrors.phone}</p>}
                             </div>
 
+                            {/* --- TERMS CHECKBOX--- */}
+                            <div className="input-group" style={{ marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <input
+                                    type="checkbox"
+                                    id="agree-indi"
+                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                    checked={agreedToTerms}
+                                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                />
+                                <label htmlFor="agree-indi" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
+                                    I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{ color: '#38bdf8', textDecoration: 'underline' }}>TERMS AND CONDITIONS</a>.
+                                </label>
+                            </div>
+
                             <div className="forge-btn-group" style={{ marginTop: '30px' }}>
                                 <button
-                                    className={`liquid-btn animated-btn ${!isFormValid() ? 'btn-locked' : ''}`}
+                                    className={`liquid-btn animated-btn ${!isFormValid() || isSubmitting ? 'btn-locked' : ''}`}
                                     style={{ width: '100%', padding: '18px' }}
                                     onClick={handleSubmit}
-                                    disabled={!isFormValid()}
+                                    disabled={!isFormValid() || isSubmitting}
                                 >
-                                    JOIN & CONNECT ❯
+                                    {isSubmitting ? "JOINING..." : "JOIN & CONNECT ❯"}
                                 </button>
                             </div>
                         </div>
