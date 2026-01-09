@@ -9,6 +9,7 @@ export default function GlobalNavbar({
   onMenuItemClick,
   onToggleSidebar,
   showContactUs = false,
+  logoutPath,
 }) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -23,8 +24,10 @@ export default function GlobalNavbar({
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Navigate to appropriate login page based on user type
-      if (isEvaluator) {
+      // Navigate to appropriate login page based on user type or custom path
+      if (logoutPath) {
+        navigate(logoutPath);
+      } else if (isEvaluator) {
         navigate("/evaluator-login");
       } else if (isAdmin) {
         navigate("/admin-login");
@@ -96,8 +99,8 @@ export default function GlobalNavbar({
               <button
                 className="nav-logout"
                 onClick={() =>
-                  (window.location.href =
-                    "https://codehustle11.upeshypervision.in/#contact")
+                (window.location.href =
+                  "https://codehustle11.upeshypervision.in/#contact")
                 }
               >
                 Contact us
@@ -125,8 +128,8 @@ export default function GlobalNavbar({
                 {isEvaluator
                   ? "Evaluator Menu"
                   : isAdmin
-                  ? "Admin Menu"
-                  : "Navigation"}
+                    ? "Admin Menu"
+                    : "Navigation"}
               </h3>
               <button
                 className="mobile-menu-close"
@@ -140,9 +143,8 @@ export default function GlobalNavbar({
               {menuItems.map((item, index) => (
                 <li key={item.id || index}>
                   <button
-                    className={`mobile-menu-item ${
-                      item.active ? "active" : ""
-                    }`}
+                    className={`mobile-menu-item ${item.active ? "active" : ""
+                      }`}
                     onClick={() => handleMenuClick(item)}
                   >
                     {item.label || item.name}

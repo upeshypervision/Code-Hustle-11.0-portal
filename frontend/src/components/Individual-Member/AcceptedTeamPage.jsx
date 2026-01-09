@@ -205,6 +205,7 @@ const AcceptedTeamPage = () => {
           }
         }}
         showContactUs={true}
+        logoutPath="/individual-login"
       />
 
       <div className="admin-content dashboard-container">

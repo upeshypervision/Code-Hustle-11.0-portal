@@ -228,6 +228,7 @@ const Indi_Dashboard = () => {
           }
         }}
         showContactUs={true}
+        logoutPath="/individual-login"
       />
 
       <div className="admin-content dashboard-container">

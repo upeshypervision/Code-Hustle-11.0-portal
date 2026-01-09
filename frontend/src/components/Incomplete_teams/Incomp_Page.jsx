@@ -245,6 +245,7 @@ const Incomp_Page = () => {
     <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
       <GlobalNavbar
         userInfo={null}
+        logoutPath="/team-login"
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
           {
