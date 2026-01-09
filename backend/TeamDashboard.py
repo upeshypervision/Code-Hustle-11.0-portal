@@ -45,8 +45,7 @@ def get_team_dashboard_data():
             "university": leader_data.get("college_name", ""),
             "sapId": leader_data.get("sapid", ""),
             "email": leader_data.get("email", ""),
-            "phone": leader_data.get("phone", ""),
-            # Add other fields if needed
+            # Removed: phone for privacy
         },
         "members": [
             {
@@ -55,7 +54,7 @@ def get_team_dashboard_data():
                 "about": m.get("bio", ""),
                 "university": m.get("college_name", ""),
                 "email": m.get("email", ""),
-                "phone": m.get("phone", ""),
+                # Removed: phone for privacy
                 "joinedViaRequest": m.get("joinedViaRequest", False),  # Include the flag
                 "full_name": m.get("full_name", ""),  # Also include for table display
                 "college_name": m.get("college_name", ""),

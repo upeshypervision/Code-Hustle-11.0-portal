@@ -123,11 +123,13 @@ def get_sent_requests():
                 "leaderName": leader.get("full_name", ""),
                 "leaderUniversity": leader.get("college_name", ""),
                 "leaderSkills": leader.get("bio", ""),
+                # Removed: leaderEmail, leaderPhone for privacy (pending requests)
                 "members": [
                     {
                         "name": member.get("full_name", ""),
                         "university": member.get("college_name", ""),
                         "skills": member.get("bio", "")
+                        # Removed: email, phone for privacy (pending requests)
                     }
                     for member in members
                 ],
@@ -183,14 +185,14 @@ def get_accepted_team():
         "leaderUniversity": leader.get("college_name", ""),
         "leaderSkills": leader.get("bio", ""),
         "leaderEmail": leader.get("email", ""),
-        "leaderPhone": leader.get("phone", ""),
+        # Removed: leaderPhone for privacy
         "members": [
             {
                 "name": member.get("full_name", ""),
                 "university": member.get("college_name", ""),
                 "skills": member.get("bio", ""),
-                "email": member.get("email", ""),
-                "phone": member.get("phone", "")
+                "email": member.get("email", "")
+                # Removed: phone for privacy
             }
             for member in members
         ],

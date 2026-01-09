@@ -42,9 +42,7 @@ def get_join_requests():
                 "about": individual.get("about", ""),
                 "skills": individual.get("about", ""),
                 "university": individual.get("college_name", ""),
-                "email": individual.get("email", ""),
-                "phone": individual.get("phone", ""),
-                "sapid": individual.get("sapid", ""),
+                # Removed: email, phone, sapid for privacy
                 "isHypervision": bool(individual.get("hypervision_id"))
             }
             requests_data.append(sanitize_output_data(request_data))

@@ -7,6 +7,7 @@ import "./Incomp_Page.css";
 import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
 import { sanitizeText } from "../../utils/sanitizer";
 import socket from "../../socket";
+import ChatBox from "../Individual-Member/ChatBox";
 
 const Incomp_Page = () => {
   const navigate = useNavigate();
@@ -15,13 +16,13 @@ const Incomp_Page = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [chatTarget, setChatTarget] = useState(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [isChatExpanded, setIsChatExpanded] = useState(false);
+
   const API_BASE = "http://localhost:5000";
 
   const [activeView, setActiveView] = useState("details");
 
   const initialTeamData = {
+    teamId: "",
     teamName: "Loading...",
     teamVision: "",
     leader: {
@@ -109,27 +110,9 @@ const Incomp_Page = () => {
     fetchJoinRequests();
   }, [navigate]);
 
-  // Chat Logic (Dummy Data)
-  const dummyChatHistory = [
-    { id: 1, sender: "them", text: "Hii!" },
-    { id: 2, sender: "me", text: "Hey!" }
-  ];
-
   const handleChatOpen = (target) => {
     setChatTarget(target);
     if (selectedRequest) closeRequestModal();
-  };
-
-  const closeChatModal = () => {
-    setChatTarget(null);
-    setChatMessage("");
-    setIsChatExpanded(false);
-  };
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-    setChatMessage("");
   };
 
   const handleDeleteMember = async (member) => {
@@ -240,42 +223,58 @@ const Incomp_Page = () => {
         userInfo={null}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
-          { id: "details", label: "Team Details", name: "Team Details", active: activeView === "details" },
-          { id: "requests", label: "Requests", name: "Requested Individuals", active: activeView === "requests" },
+          {
+            id: "profile",
+            label: "Team Info",
+            name: "Team Info",
+            active: showProfile,
+          },
+          {
+            id: "details",
+            label: "Team Details",
+            name: "Team Details",
+            active: activeView === "details" && !showProfile
+          },
+          {
+            id: "requests",
+            label: "Requests",
+            name: "Requested Individuals",
+            active: activeView === "requests" && !showProfile
+          },
         ]}
-        onMenuItemClick={(item) => setActiveView(item.id)}
+        onMenuItemClick={(item) => {
+          if (item.id === "profile") {
+            setShowProfile(!showProfile);
+          } else {
+            setActiveView(item.id);
+            setShowProfile(false);
+          }
+        }}
         showContactUs={true}
       />
 
       <div className="admin-content dashboard-container">
         <div className="teamup-layout">
-          {/* LEFT SIDEBAR - TEAM LEADER DETAILS */}
+          {/* LEFT SIDEBAR - TEAM DETAILS */}
           <div className={`member-details-sidebar profile-sidebar-wrapper ${showProfile ? "mobile-visible" : ""}`}>
             <div className="neural-node node-materialize animate-enter delay-1 profile-node">
-              <span className="label-detail teamup-label">TEAM LEADER</span>
-              <div className="sidebar-profile-container">
-                <div>
-                  <h3 className="user-profile-header">
-                    {sanitizeText(teamData.leader.name, 100) || "Loading..."}
+              <span className="label-detail teamup-label">TEAM DETAILS</span>
+              <div className="sidebar-profile-container" style={{ display: "block" }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <h3 className="user-profile-header" style={{ fontSize: "1.8rem", color: "#60a5fa" }}>
+                    {sanitizeText(teamData.teamName, 100) || "Loading..."}
                   </h3>
-                  <p className="user-profile-sub">
-                    {sanitizeText(teamData.leader.university, 200)} • {sanitizeText(teamData.leader.sapId, 50)}
+                  <p className="user-profile-sub" style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "4px" }}>
+                    ID: {sanitizeText(teamData.teamId, 50)}
                   </p>
                 </div>
-                <div>
-                  <div className="user-profile-info-row">
-                    Email: {sanitizeText(teamData.leader.email, 100)}
-                  </div>
-                  <div className="user-profile-info-row">
-                    Phone: {sanitizeText(teamData.leader.phone, 20)}
-                  </div>
-                </div>
-                <div className="user-skills-box">
-                  <strong className="skills-label-sidebar" style={{ color: "#aaa", fontSize: "1rem", display: "block", marginBottom: "10px" }}>
-                    LEADER SKILLS
+
+                <div className="user-skills-box" style={{ background: "rgba(255, 255, 255, 0.03)", padding: "15px", borderRadius: "8px" }}>
+                  <strong className="skills-label-sidebar" style={{ color: "#aaa", fontSize: "0.9rem", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>
+                    TEAM VISION
                   </strong>
-                  <p className="skills-text-sidebar" style={{ fontStyle: "italic", margin: 0, fontSize: "1.05rem", wordWrap: "break-word", whiteSpace: "normal" }}>
-                    {sanitizeText(teamData.leader.details, 500) || "No details provided"}
+                  <p className="skills-text-sidebar" style={{ fontStyle: "italic", margin: 0, fontSize: "1rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                    {sanitizeText(teamData.teamVision, 500) || "No vision provided"}
                   </p>
                 </div>
               </div>
@@ -312,16 +311,32 @@ const Incomp_Page = () => {
             {activeView === "details" && (
               <div className="neural-node node-materialize animate-enter">
                 {/* Team Name & Vision Header */}
-                <div className="team-header-wrapper">
-                  <span className="label-detail teamup-label">YOUR TEAM</span>
-                  <div style={{ marginTop: "16px" }}>
-                    <h1 className="team-header-main">
-                      {sanitizeText(teamData.teamName, 100)}
-                    </h1>
-                    <div className="vision-container">
-                      <strong className="vision-label">Team Vision</strong>
-                      <p className="team-vision">{sanitizeText(teamData.teamVision, 500)}</p>
+                {/* TEAM LEADER SECTION IN MAIN AREA */}
+                <div className="team-header-wrapper" style={{ background: "rgba(96, 165, 250, 0.05)", padding: "24px", borderRadius: "12px", border: "1px solid rgba(96, 165, 250, 0.1)", marginBottom: "30px" }}>
+                  <span className="label-detail teamup-label" style={{ marginBottom: "15px" }}>TEAM LEADER</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "20px" }}>
+                    <div>
+                      <h1 className="team-header-main" style={{ margin: 0, fontSize: "1.8rem" }}>
+                        {sanitizeText(teamData.leader.name, 100)}
+                      </h1>
+                      <p style={{ color: "#94a3b8", margin: "4px 0 0 0", fontSize: "1rem" }}>
+                        {sanitizeText(teamData.leader.university, 200)} • {sanitizeText(teamData.leader.sapId, 50)}
+                      </p>
                     </div>
+                    <div style={{ textAlign: "right", minWidth: "200px" }}>
+                      <div style={{ color: "#cbd5e1", fontSize: "0.9rem", marginBottom: "4px" }}>
+                        <span style={{ color: "#60a5fa" }}>Email:</span> {sanitizeText(teamData.leader.email, 100)}
+                      </div>
+                      <div style={{ color: "#cbd5e1", fontSize: "0.9rem" }}>
+                        <span style={{ color: "#60a5fa" }}>Phone:</span> {sanitizeText(teamData.leader.phone, 20)}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "20px", paddingTop: "15px", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <strong style={{ display: "block", color: "#aaa", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>LEADER BIO / SKILLS</strong>
+                    <p style={{ color: "#ddd", margin: 0, fontStyle: "italic", fontSize: "0.95rem", lineHeight: "1.5" }}>
+                      {sanitizeText(teamData.leader.details, 500) || "No details provided"}
+                    </p>
                   </div>
                 </div>
 
@@ -503,25 +518,10 @@ const Incomp_Page = () => {
       )}
 
       {chatTarget && (
-        <div className="modal-overlay chat-overlay" onClick={closeChatModal}>
-          <div className={`modal-content chat-modal-card ${isChatExpanded ? "expanded" : ""}`} onClick={(e) => e.stopPropagation()}>
-            <div className="chat-header">
-              <h3>Chat with {sanitizeText(chatTarget.name, 50)}</h3>
-              <button className="chat-close" onClick={closeChatModal}>&times;</button>
-            </div>
-            <div className="chat-body">
-              {dummyChatHistory.map(msg => (
-                <div key={msg.id} className={`chat-message ${msg.sender === 'me' ? 'sent' : 'received'}`}>
-                  <div className="message-bubble">{msg.text}</div>
-                </div>
-              ))}
-            </div>
-            <form className="chat-footer" onSubmit={handleSendMessage}>
-              <input type="text" className="chat-input" value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} placeholder="Type a message..." />
-              <button type="submit" className="chat-send-btn">Send</button>
-            </form>
-          </div>
-        </div>
+        <ChatBox
+          team={chatTarget} // ChatBox now accepts 'team' prop as a generic target
+          onClose={() => setChatTarget(null)}
+        />
       )}
 
     </div>
