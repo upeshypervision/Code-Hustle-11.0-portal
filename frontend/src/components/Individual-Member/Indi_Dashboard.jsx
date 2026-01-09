@@ -365,56 +365,71 @@ const Indi_Dashboard = () => {
                 {activeView === "available" ? (
                   acceptedTeam ? (
                     // Congratulations Banner when accepted
-                    <div className="neural-node node-materialize animate-enter" style={{
-                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                    <div className="neural-node node-materialize animate-enter congrats-banner" style={{
+                      background: "linear-gradient(135deg, rgba(148, 163, 184, 0.25) 0%, #2563eb 100%)",
                       padding: "60px 40px",
                       borderRadius: "16px",
                       textAlign: "center",
-                      boxShadow: "0 20px 60px rgba(16, 185, 129, 0.4)",
-                      border: "2px solid rgba(255, 255, 255, 0.2)"
+                      boxShadow: "0 20px 60px rgba(37, 99, 235, 0.4)",
+                      border: "2px solid rgba(255, 255, 255, 0.2)",
+                      margin: "0 auto",
+                      maxWidth: "100%",
+                      boxSizing: "border-box"
                     }}>
-                      <div style={{ fontSize: "4rem", marginBottom: "20px" }}>🎉</div>
-                      <h1 style={{
+                      <h1 className="congrats-title" style={{
                         color: "#fff",
                         fontSize: "2.5rem",
                         marginBottom: "15px",
                         fontWeight: "800",
-                        textShadow: "0 2px 10px rgba(0,0,0,0.2)"
+                        textShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                        whiteSpace: "nowrap",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "12px"
                       }}>
-                        Congratulations!
+                        <span>Congratulations!</span>
+                        <span>🎉</span>
                       </h1>
-                      <p style={{
+                      <p className="congrats-subtitle" style={{
                         color: "#fff",
                         fontSize: "1.5rem",
                         marginBottom: "10px",
-                        fontWeight: "600"
+                        fontWeight: "600",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word"
                       }}>
                         You've been accepted by
                       </p>
-                      <h2 style={{
+                      <h2 className="congrats-team-name" style={{
                         color: "#fff",
                         fontSize: "2rem",
                         marginBottom: "10px",
                         fontWeight: "700",
-                        textShadow: "0 2px 10px rgba(0,0,0,0.2)"
+                        textShadow: "0 2px 10px rgba(0,0,0,0.2)",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word"
                       }}>
                         {acceptedTeam.teamName}
                       </h2>
-                      <p style={{
+                      <p className="congrats-team-id" style={{
                         color: "rgba(255,255,255,0.95)",
                         fontSize: "1.2rem",
                         marginBottom: "40px",
-                        fontWeight: "500"
+                        fontWeight: "500",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word"
                       }}>
                         Team ID: {acceptedTeam.teamId}
                       </p>
                       <button
+                        className="congrats-button"
                         onClick={() => navigate("/accepted-team", {
                           state: { team: acceptedTeam, userDetails }
                         })}
                         style={{
                           background: "#fff",
-                          color: "#059669",
+                          color: "#2563eb",
                           border: "none",
                           padding: "16px 40px",
                           borderRadius: "10px",
@@ -424,7 +439,9 @@ const Indi_Dashboard = () => {
                           boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
                           transition: "all 0.3s ease",
                           textTransform: "uppercase",
-                          letterSpacing: "1px"
+                          letterSpacing: "1px",
+                          width: "auto",
+                          maxWidth: "100%"
                         }}
                         onMouseEnter={(e) => {
                           e.target.style.transform = "translateY(-3px)";
