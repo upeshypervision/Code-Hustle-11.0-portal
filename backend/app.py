@@ -93,8 +93,10 @@ def register_individual():
 def create_team():
     return create_team_route()
 
-@app.route("/api/team-login", methods=["POST"])
+@app.route("/api/team-login",  methods=["POST", "OPTIONS"])
 def team_login():
+    if request.method == "OPTIONS":
+        return "", 200   # ✅ allow preflight
     return team_login_route()
 
 @app.route("/api/check-team-name", methods=["POST"])
