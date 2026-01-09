@@ -6,12 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/GlobalNavbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/GlobalNavbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/Selected_team.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StudentLogin.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StudentLogin.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/submit_ppt.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/submit_ppt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ManualPPT.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ManualPPT.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ProblemStatements.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

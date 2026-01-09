@@ -1,4 +1,3 @@
-# backend/submit_ppt.py
 from flask import request, jsonify
 import jwt
 from config import JWT_SECRET, JWT_ALGORITHM

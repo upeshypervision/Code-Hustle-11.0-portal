@@ -36,6 +36,12 @@ def register_individual_route():
     university_type = data["universityType"].strip().lower()
     email = data["email"].strip().lower()
     phone = data["phone"].strip()
+
+    # ----------------------------
+    # DUPLICATE CHECKS
+    # ----------------------------
+    if db.individuals.find_one({"phone": phone}):
+        return jsonify({"error": "Phone number already registered"}), 400
     
     # Handle optional hypervisionId
     hypervision_id = data.get("hypervisionId", "").strip()
@@ -61,6 +67,10 @@ def register_individual_route():
         sapid = str(data.get("sapid", "")).strip()
         if not sapid:
             return jsonify({"error": "sapid is required for UPES students"}), 400
+            
+        if db.individuals.find_one({"sapid": sapid}):
+            return jsonify({"error": "SAP ID already registered"}), 400
+
         college_name = "UPES"  # Store "UPES" as college name
     else:
         college_name = str(data.get("collegeName", "")).strip()

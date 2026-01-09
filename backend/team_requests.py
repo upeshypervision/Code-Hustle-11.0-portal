@@ -103,6 +103,7 @@ def accept_join_request():
     
     # Prepare member data to add to team
     member_data = {
+        "individual_id": individual_id,
         "full_name": individual.get("full_name", ""),
         "bio": individual.get("about", ""),
         "email": individual.get("email", ""),

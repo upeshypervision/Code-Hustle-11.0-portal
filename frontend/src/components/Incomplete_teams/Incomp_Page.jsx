@@ -146,7 +146,8 @@ const Incomp_Page = () => {
         },
         credentials: "include",
         body: JSON.stringify({
-          email: memberToDelete.email,
+          individual_id: memberToDelete.individual_id,
+          email: !memberToDelete.individual_id ? memberToDelete.email : undefined, // Fallback for original members
           reason: deleteReason
         }),
       });
