@@ -44,6 +44,38 @@
   justify-content: space-between;
   align-items: center;
   transition: 0.2s ease;
+  flex-wrap: nowrap;
+  gap: 15px;
+  min-width: 0;
+}
+
+.submission-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.btn-view {
+  flex-shrink: 0;
+}
+
+/* Right section for badge and button */
+.submission-right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Hide mobile badge on desktop */
+.badge-via-mobile {
+  display: none;
+}
+
+/* Show desktop badge, hide on mobile */
+.badge-via-desktop {
+  display: inline-block;
 }
 
 .submission-row:hover {
@@ -62,12 +94,25 @@
   font-weight: 600;
   color: #e2e8f0;
   margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .team-id {
   font-size: 12px;
   color: #94a3b8;
   margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 /* --- Badges --- */
@@ -110,10 +155,17 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: fit-content;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
 }
 
 .btn-view:hover {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 /* --- Modal --- */
@@ -153,6 +205,18 @@
   font-size: 13px;
   padding: 8px 0;
   border-bottom: 1px solid #1e293b;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.detail-row strong {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  text-align: right;
+  flex: 1;
+  min-width: 150px;
 }
 
 .detail-row span {
@@ -235,19 +299,70 @@
 }
 
 .btn-cancel {
-  background: transparent;
-  border: 1px solid #334155;
-  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  color: #cbd5e1;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 12px;
   cursor: pointer;
   transition: 0.2s ease;
+  font-weight: 600;
 }
 
 .btn-cancel:hover {
-  border-color: #475569;
-  color: #cbd5e1;
+  background: rgba(148, 163, 184, 0.2);
+  border-color: #94a3b8;
+  color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.btn-approve {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.btn-approve:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+.btn-approve:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-reject {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-reject:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.btn-reject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* --- Misc --- */
@@ -272,5 +387,140 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Mobile styles to match desktop layout */
+@media (max-width: 768px) {
+  .submission-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    padding: 12px 14px !important;
+  }
+  
+  .submission-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 120px) !important;
+    overflow: hidden !important;
+  }
+  
+  /* Hide desktop badge on mobile */
+  .badge-via-desktop {
+    display: none !important;
+  }
+  
+  /* Show mobile badge */
+  .badge-via-mobile {
+    display: inline-block !important;
+  }
+  
+  /* Right section - badge and button stacked */
+  .submission-right-section {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+    min-width: 100px !important;
+  }
+  
+  .submission-right-section .badge-via {
+    margin-bottom: 0 !important;
+  }
+  
+  .submission-right-section .btn-view {
+    width: 100% !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    padding: 8px 12px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  /* Buttons container - stack vertically on right (for Hackerrank) */
+  .submission-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    align-items: flex-end !important;
+    flex-shrink: 0 !important;
+    justify-content: flex-start !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+  }
+  
+  /* Override inline styles for mobile */
+  .submission-actions[style] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+  }
+  
+  /* Button sizes for mobile */
+  .submission-actions .btn-approve,
+  .submission-actions .btn-reject,
+  .submission-actions .btn-view {
+    padding: 8px 12px !important;
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+  
+  .team-name {
+    font-size: 14px !important;
+  }
+  
+  .team-id {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .submission-row {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
+  
+  .submission-info {
+    max-width: calc(100% - 110px) !important;
+  }
+  
+  .submission-right-section {
+    min-width: 90px !important;
+    gap: 6px !important;
+  }
+  
+  .submission-right-section .btn-view {
+    min-width: 90px !important;
+    padding: 6px 10px !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .submission-actions {
+    gap: 4px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+  
+  .submission-actions .btn-approve,
+  .submission-actions .btn-reject,
+  .submission-actions .btn-view {
+    padding: 6px 10px !important;
+    font-size: 0.65rem !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+  
+  .team-name {
+    font-size: 13px !important;
   }
 }

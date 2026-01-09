@@ -3,7 +3,6 @@ import Modal from "../../components/Modal";
 import socket from "../../socket"; // Added socket import
 
 export default function ProblemStatements() {
-  const [psVisible, setPsVisible] = useState(false);
   const [selectedPs, setSelectedPs] = useState(null);
   const [psMessage, setPsMessage] = useState({ type: "", text: "" });
 
@@ -223,20 +222,6 @@ export default function ProblemStatements() {
     <div className="admin-section">
       <div className="admin-section-header">
         <h2 className="admin-section-title">Problem Statements</h2>
-
-        <label className="toggle-label">
-          <span style={{ fontSize: "0.85rem", marginRight: "8px" }}>
-            Global PS Visibility
-          </span>
-          <div className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={psVisible}
-              onChange={(e) => setPsVisible(e.target.checked)}
-            />
-            <span className="toggle-slider"></span>
-          </div>
-        </label>
       </div>
 
       {psMessage.text && (
@@ -249,25 +234,26 @@ export default function ProblemStatements() {
       )}
 
       <div className="panel">
-        <div className="panel-inner">
+        <div className="panel-inner" style={{ overflowX: "auto", maxWidth: "100%" }}>
           {problemStatements.length === 0 ? (
             <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>
               No problem statements created yet.
             </p>
           ) : (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Visible</th>
-                  <th>PS ID</th>
-                  <th>Title</th>
-                  <th>Track</th>
-                  <th>Description</th>
-                  <th>Difficulty</th>
-                  <th>Max Teams</th>
-                  <th>Selections</th>
-                </tr>
-              </thead>
+            <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%" }}>
+              <table className="table" style={{ tableLayout: "fixed", width: "100%", minWidth: "800px" }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: "8%" }}>Visible</th>
+                    <th style={{ width: "8%" }}>PS ID</th>
+                    <th style={{ width: "15%" }}>Title</th>
+                    <th style={{ width: "12%" }}>Track</th>
+                    <th style={{ width: "25%" }}>Description</th>
+                    <th style={{ width: "10%" }}>Difficulty</th>
+                    <th style={{ width: "10%" }}>Max Teams</th>
+                    <th style={{ width: "12%" }}>Selections</th>
+                  </tr>
+                </thead>
               <tbody>
                 {problemStatements.map((ps) => (
                   <tr key={ps.id}>
@@ -294,9 +280,9 @@ export default function ProblemStatements() {
                     <td>
                       <strong>{ps.id}</strong>
                     </td>
-                    <td>{ps.title}</td>
-                    <td>{ps.track || "-"}</td>
-                    <td>{ps.description}</td>
+                    <td style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{ps.title}</td>
+                    <td style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{ps.track || "-"}</td>
+                    <td style={{ overflow: "hidden", textOverflow: "ellipsis", maxWidth: "200px" }} title={ps.description}>{ps.description}</td>
                     <td>{ps.difficulty}</td>
                     <td>{ps.maxTeams}</td>
                     <td>
@@ -311,6 +297,7 @@ export default function ProblemStatements() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
@@ -446,6 +433,89 @@ export default function ProblemStatements() {
           </p>
         )}
       </Modal>
+
+      <style>{`
+        .admin-section .panel-inner {
+          overflow-x: auto;
+          max-width: 100%;
+        }
+        
+        .admin-section .table {
+          table-layout: fixed;
+          width: 100%;
+          min-width: 800px;
+        }
+        
+        .admin-section .table th:nth-child(1),
+        .admin-section .table td:nth-child(1) {
+          width: 8%;
+        }
+        
+        .admin-section .table th:nth-child(2),
+        .admin-section .table td:nth-child(2) {
+          width: 8%;
+        }
+        
+        .admin-section .table th:nth-child(3),
+        .admin-section .table td:nth-child(3) {
+          width: 15%;
+        }
+        
+        .admin-section .table th:nth-child(4),
+        .admin-section .table td:nth-child(4) {
+          width: 12%;
+        }
+        
+        .admin-section .table th:nth-child(5),
+        .admin-section .table td:nth-child(5) {
+          width: 25%;
+          max-width: 25%;
+        }
+        
+        .admin-section .table th:nth-child(6),
+        .admin-section .table td:nth-child(6) {
+          width: 10%;
+        }
+        
+        .admin-section .table th:nth-child(7),
+        .admin-section .table td:nth-child(7) {
+          width: 10%;
+        }
+        
+        .admin-section .table th:nth-child(8),
+        .admin-section .table td:nth-child(8) {
+          width: 12%;
+        }
+        
+        @media (max-width: 768px) {
+          .admin-section .panel-inner {
+            padding: 12px !important;
+          }
+          
+          .admin-section .table {
+            font-size: 0.7rem;
+            min-width: 700px;
+          }
+          
+          .admin-section .table th,
+          .admin-section .table td {
+            padding: 6px 4px;
+            font-size: 0.7rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .admin-section .table {
+            min-width: 600px;
+          }
+          
+          .admin-section .table th,
+          .admin-section .table td {
+            padding: 4px 2px;
+            font-size: 0.65rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

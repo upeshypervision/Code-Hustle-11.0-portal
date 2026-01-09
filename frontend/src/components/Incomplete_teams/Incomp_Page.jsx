@@ -1,116 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GlobalNavbar from "../GlobalNavbar";
-import "../../styles/global.css"; // Ensure global styles are available
-
+import "../../styles/global.css";
+import "../Individual-Member/Indi.css";
 import "./Incomp_Page.css";
+import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
+import { sanitizeText } from "../../utils/sanitizer";
+import socket from "../../socket";
+import ChatBox from "../Individual-Member/ChatBox";
 
 const Incomp_Page = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [selectedRequest, setSelectedRequest] = React.useState(null);
-  const [selectedMember, setSelectedMember] = React.useState(null);
-  const [showProfile, setShowProfile] = React.useState(false); // Add showProfile state
-  const [chatTarget, setChatTarget] = React.useState(null);
-  const [chatMessage, setChatMessage] = React.useState("");
-  const [isChatExpanded, setIsChatExpanded] = React.useState(false);
-  const API_BASE = "http://localhost:5000"; // Define API Base
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [chatTarget, setChatTarget] = useState(null);
 
-  React.useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/team-details`, {
-          credentials: "include" // Important: send cookies
-        });
+  const [memberToDelete, setMemberToDelete] = useState(null);
+  const [deleteReason, setDeleteReason] = useState("");
 
-        if (response.status === 401) {
-          console.log("Unauthorized, redirecting to login");
-          navigate('/team-login');
-          return;
-        }
+  const API_BASE = "http://localhost:5000";
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch team data");
-        }
-        const data = await response.json();
-        setTeamData(prev => ({
-          ...prev,
-          ...data // Merge fetched data
-        }));
-      } catch (error) {
-        console.error("Error loading team data:", error);
-      }
-    };
+  const [activeView, setActiveView] = useState("details");
 
-    fetchTeamData();
-  }, [navigate]);
-
-  // Delete Confirmation State
-  const [memberToDelete, setMemberToDelete] = React.useState(null);
-  const [deleteReason, setDeleteReason] = React.useState("");
-
-  // Dummy Chat History
-  // BACKEND INTEGRATION:
-  // 1. DELETE this dummyChatHistory array.
-  // 2. Fetch chat history from the backend using an API endpoint (e.g., GET /api/chat/:userId).
-  // 3. This should be done inside a useEffect when 'chatTarget' changes.
-  const dummyChatHistory = [
-    { id: 1, sender: "them", text: "Hii!" },
-    {
-      id: 2,
-      sender: "me",
-      text: "Hey! Thanks for reaching out. What's your tech stack?",
-    },
-    { id: 3, sender: "them", text: "I work with React, Node.js, and MongoDB." },
-    { id: 4, sender: "me", text: "That sounds perfect for our project!" },
-  ];
-
-  const handleChatOpen = (target) => {
-    setChatTarget(target);
-    if (selectedRequest) closeRequestModal();
-
-    // BACKEND INTEGRATION:
-    // 1. When chat opens, initiate a WebSocket room or fetch previous messages for 'target.id'.
-    // 2. Example: socket.emit('join_room', { roomId: generatedRoomId(currentUser.id, target.id) });
-    // 3. Example: fetch(`/api/messages/${target.id}`).then(res => setMessages(res.data));
-  };
-
-  const closeChatModal = () => {
-    setChatTarget(null);
-    setChatMessage("");
-    setIsChatExpanded(false);
-  };
-
-  const toggleChatExpand = () => {
-    setIsChatExpanded(!isChatExpanded);
-  };
-
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-
-    // BACKEND INTEGRATION:
-    // 1. Emit the message via WebSocket for real-time delivery.
-    //    Example: socket.emit('send_message', { to: chatTarget.id, message: chatMessage });
-    // 2. Optimistically update the UI (append message to local state).
-    // 3. Alternatively, make a POST request to save the message:
-    //    fetch('/api/messages/send', { method: 'POST', body: ... })
-
-    // console.log(`Sending message to ${chatTarget.name}: ${chatMessage}`);
-    setChatMessage("");
-  };
-
-  // Dummy Data Initial State
-  // BACKEND INTEGRATION:
-  // 1. DELETE this initialTeamData object.
-  // 2. Create a useEffect hook to fetch team data when the component mounts.
-  //    useEffect(() => {
-  //        fetch('/api/team/my-team')
-  //            .then(res => res.json())
-  //            .then(data => setTeamData(data));
-  //    }, []);
-  // Initial empty state matching structure
   const initialTeamData = {
+    teamId: "",
     teamName: "Loading...",
     teamVision: "",
     leader: {
@@ -127,60 +42,85 @@ const Incomp_Page = () => {
     joinRequests: [],
   };
 
-  const [teamData, setTeamData] = React.useState(initialTeamData);
+  const [teamData, setTeamData] = useState(initialTeamData);
   const totalCount =
     1 +
     (teamData.members ? teamData.members.length : 0) +
     (teamData.joinedMembers ? teamData.joinedMembers.length : 0);
 
-  const handleDeleteMember = async (member) => {
-    try {
-      const response = await fetch(`${API_BASE}/api/team-member/delete`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email: member.email
-        })
-      });
+  // Socket listener for new join requests
+  useEffect(() => {
+    if (!teamData.teamId) return;
 
-      const data = await response.json();
+    // Join team room
+    socket.emit("join_room", { room: `team_${teamData.teamId}` });
+    console.log(`Joined room: team_${teamData.teamId}`);
 
-      if (response.ok) {
-        // Remove from local state after successful deletion
-        setTeamData((prev) => ({
-          ...prev,
-          members: prev.members.filter((m) => m.email !== member.email),
-          joinedMembers: prev.joinedMembers.filter((m) => m.email !== member.email),
-        }));
-        alert('Member deleted successfully');
-      } else {
-        alert(data.error || 'Failed to delete member');
+    // Listen for new join requests
+    const handleNewRequest = (data) => {
+      console.log("New join request received!", data);
+      alert(`📩 New join request from ${data.individualName}!`);
+      // Refresh to show new request
+      window.location.reload();
+    };
+
+    socket.on("new_join_request", handleNewRequest);
+
+    return () => {
+      socket.off("new_join_request", handleNewRequest);
+    };
+  }, [teamData.teamId]);
+
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/team-details`, {
+          credentials: "include"
+        });
+
+        if (response.status === 401) {
+          navigate('/team-login');
+          return;
+        }
+
+        if (!response.ok) throw new Error("Failed to fetch team data");
+
+        const data = await response.json();
+        setTeamData(prev => ({ ...prev, ...data }));
+      } catch (error) {
+        console.error("Error loading team data:", error);
       }
-    } catch (error) {
-      console.error('Error deleting member:', error);
-      alert('Failed to delete member');
-    }
+    };
+
+    const fetchJoinRequests = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/team/join-requests`, {
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setTeamData(prev => ({ ...prev, joinRequests: data.requests }));
+          }
+        }
+      } catch (error) {
+        console.error("Error loading join requests:", error);
+      }
+    };
+
+    fetchTeamData();
+    fetchJoinRequests();
+  }, [navigate]);
+
+  const handleChatOpen = (target) => {
+    setChatTarget(target);
+    if (selectedRequest) closeRequestModal();
   };
 
-  const handleJoinedMemberDeleteClick = (member) => {
+  const handleDeleteClick = (member) => {
     setMemberToDelete(member);
     setDeleteReason("");
-  };
-
-  const confirmDeleteMember = () => {
-    if (memberToDelete) {
-      // Log reason (for backend later)
-      console.log(
-        `Deleting member ${memberToDelete.name} for reason: ${deleteReason}`
-      );
-
-      handleDeleteMember(memberToDelete.id);
-      setMemberToDelete(null);
-      setDeleteReason("");
-    }
   };
 
   const cancelDeleteMember = () => {
@@ -188,167 +128,182 @@ const Incomp_Page = () => {
     setDeleteReason("");
   };
 
-  const handleViewMember = (member) => {
-    setSelectedMember(member);
+  const confirmDeleteMember = async () => {
+    if (!memberToDelete) return;
+
+    // Word count validation (min 15 words)
+    const wordCount = deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length;
+    if (wordCount < 15) {
+      alert("Please provide a reason of at least 15 words.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/team-member/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: memberToDelete.email,
+          reason: deleteReason
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Member removed successfully.");
+        window.location.reload();
+      } else {
+        alert(result.error || "Failed to remove member");
+      }
+    } catch (error) {
+      console.error("Error removing member:", error);
+      alert("Failed to remove member");
+    }
   };
 
-  const closeMemberModal = () => {
-    setSelectedMember(null);
-  };
+  const handleAcceptRequest = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team/accept-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ individual_id: id })
+      });
 
-  const handleViewRequest = (request) => {
-    setSelectedRequest(request);
-  };
+      const data = await response.json();
 
-  const closeRequestModal = () => {
-    setSelectedRequest(null);
-  };
+      if (response.ok) {
+        // Emit socket event to notify individual
+        socket.emit("request_accepted", {
+          individualId: id,
+          teamName: teamData.teamName
+        });
 
-  const handleAcceptRequest = (id) => {
-    // BACKEND INTEGRATION:
-    // 1. Make a POST request to accept the join request.
-    //    fetch(`/api/team/requests/${id}/accept`, { method: 'POST' })
-    //        .then(res => res.json())
-    //        .then(newMember => updateStateWithNewMember(newMember));
-
-    const requestToAccept = teamData.joinRequests.find((req) => req.id === id);
-    if (requestToAccept) {
-      // Add to joinedMembers and remove from requests
-      // Ensure we include all fields needed for a member
-      setTeamData((prev) => ({
-        ...prev,
-        joinedMembers: [
-          ...prev.joinedMembers,
-          { ...requestToAccept, id: Date.now() },
-        ], // distinct ID
-        joinRequests: prev.joinRequests.filter((req) => req.id !== id),
-      }));
+        // Remove from joinRequests and refresh team data
+        setTeamData((prev) => ({
+          ...prev,
+          joinRequests: prev.joinRequests.filter((req) => req.id !== id),
+        }));
+        alert('Request accepted successfully! Member added to team.');
+        // Refresh team data to get updated member count
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to accept request');
+      }
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      alert('Failed to accept request');
     }
     closeRequestModal();
   };
 
-  const handleRejectRequest = (id) => {
-    // BACKEND INTEGRATION:
-    // 1. Make a POST/DELETE request to reject the join request.
-    //    fetch(`/api/team/requests/${id}/reject`, { method: 'POST' });
+  const handleRejectRequest = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team/reject-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ individual_id: id })
+      });
 
-    setTeamData((prev) => ({
-      ...prev,
-      joinRequests: prev.joinRequests.filter((req) => req.id !== id),
-    }));
+      const data = await response.json();
+
+      if (response.ok) {
+        // Emit socket event to notify individual
+        socket.emit("request_rejected", {
+          individualId: id,
+          teamName: teamData.teamName
+        });
+
+        setTeamData((prev) => ({
+          ...prev,
+          joinRequests: prev.joinRequests.filter((req) => req.id !== id),
+        }));
+        alert('Request rejected successfully');
+      } else {
+        alert(data.error || 'Failed to reject request');
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      alert('Failed to reject request');
+    }
     closeRequestModal();
   };
 
-  const menuItems = [
-    { id: "dashboard", label: "Dashboard", active: false },
-    { id: "team", label: "My Team", active: true },
-    { id: "settings", label: "Settings", active: false },
-  ];
+  const handleViewRequest = (request) => setSelectedRequest(request);
+  const closeRequestModal = () => setSelectedRequest(null);
+
+  const handleViewMember = (member) => setSelectedMember(member);
+  const closeMemberModal = () => setSelectedMember(null);
+
 
   return (
-    <div
-      className="dashboard-page team-up-page"
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
-      {/* Navbar with transparent background to match page background */}
+    <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
       <GlobalNavbar
         userInfo={null}
+        logoutPath="/team-login"
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         menuItems={[
           {
             id: "profile",
-            label: "Profile",
-            name: "Profile",
+            label: "Team Info",
+            name: "Team Info",
+            active: showProfile,
+          },
+          {
+            id: "details",
+            label: "Team Details",
+            name: "Team Details",
+            active: activeView === "details" && !showProfile
+          },
+          {
+            id: "requests",
+            label: "Requests",
+            name: "Requested Individuals",
+            active: activeView === "requests" && !showProfile
           },
         ]}
         onMenuItemClick={(item) => {
           if (item.id === "profile") {
             setShowProfile(!showProfile);
+          } else {
+            setActiveView(item.id);
+            setShowProfile(false);
           }
         }}
         showContactUs={true}
       />
 
-      <main className="team-up-main">
-        <div className="team-page-layout">
-          {/* Left Sidebar */}
-          <aside
-            className={`team-sidebar member-details-sidebar ${showProfile ? "mobile-visible" : ""
-              }`}
-          >
-            <div className="neural-node">
-              <span className="label-detail teamup-label">TEAM LEADER</span>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "28px",
-                  marginTop: "16px",
-                  color: "#ddd",
-                  textAlign: "left",
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      color: "#fff",
-                      marginBottom: "10px",
-                      fontSize: "1.5rem",
-                      textAlign: "left",
-                    }}
-                  >
-                    {teamData.leader.name}
+      <div className="admin-content dashboard-container">
+        <div className="teamup-layout">
+          {/* LEFT SIDEBAR - TEAM DETAILS */}
+          <div className={`member-details-sidebar profile-sidebar-wrapper ${showProfile ? "mobile-visible" : ""}`}>
+            <div className="neural-node node-materialize animate-enter delay-1 profile-node">
+              <span className="label-detail teamup-label">TEAM DETAILS</span>
+              <div className="sidebar-profile-container" style={{ display: "block" }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <h3 className="user-profile-header" style={{ fontSize: "1.8rem", color: "#60a5fa" }}>
+                    {sanitizeText(teamData.teamName, 100) || "Loading..."}
                   </h3>
-                  <p
-                    style={{
-                      fontSize: "1.1rem",
-                      color: "#aaa",
-                      textAlign: "left",
-                    }}
-                  >
-                    {teamData.leader.university || "Unknown University"} •{" "}
-                    {teamData.leader.sapId || "N/A"}
+                  <p className="user-profile-sub" style={{ color: "#94a3b8", fontSize: "0.9rem", marginTop: "4px" }}>
+                    ID: {sanitizeText(teamData.teamId, 50)}
                   </p>
                 </div>
-                <div>
-                  <div style={{ fontSize: "1.05rem", marginBottom: "12px" }}>
-                    Email: {teamData.leader.email}
-                  </div>
-                  <div style={{ fontSize: "1.05rem", marginBottom: "12px" }}>
-                    Phone: {teamData.leader.phone}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    padding: "24px",
-                    borderRadius: "12px",
-                    marginTop: "12px",
-                  }}
-                >
-                  <strong
-                    style={{
-                      color: "#aaa",
-                      fontSize: "1rem",
-                      display: "block",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    SKILLS
+
+                <div className="user-skills-box" style={{ background: "rgba(255, 255, 255, 0.03)", padding: "15px", borderRadius: "8px" }}>
+                  <strong className="skills-label-sidebar" style={{ color: "#aaa", fontSize: "0.9rem", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>
+                    TEAM VISION
                   </strong>
-                  <p
-                    className="team-vision"
-                    style={{
-                      margin: 0,
-                      fontSize: "1.05rem",
-                    }}
-                  >
-                    {teamData.leader.details}
+                  <p className="skills-text-sidebar" style={{ fontStyle: "italic", margin: 0, fontSize: "1rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                    {sanitizeText(teamData.teamVision, 500) || "No vision provided"}
                   </p>
                 </div>
               </div>
             </div>
-            {/* Close button for mobile */}
             <button
               className="mobile-profile-close"
               onClick={() => setShowProfile(false)}
@@ -356,228 +311,213 @@ const Incomp_Page = () => {
             >
               ×
             </button>
-          </aside>
+          </div>
 
-          {/* Right Content */}
           <div className="teamup-separator"></div>
-          <div className="team-content" style={{ flex: 1 }}>
-            {/* Team Name Section */}
-            <div
-              className="team-section neural-node"
-              style={{
-                padding: "0",
-                background: "transparent",
-                border: "none",
-                boxShadow: "none",
-              }}
-            >
-              <div className="neural-node">
-                <span className="label-detail teamup-label">YOUR TEAM</span>
-                <div style={{ marginTop: "16px", color: "#ddd" }}>
-                  <h1
-                    className="team-name"
-                    style={{
-                      fontSize: "1.8rem",
-                      marginBottom: "20px",
-                      color: "#fff",
-                    }}
-                  >
-                    {teamData.teamName}
-                  </h1>
-                  <div className="glass-data-container">
-                    <strong
-                      style={{
-                        color: "#aaa",
-                        fontSize: "0.9rem",
-                        display: "block",
-                        marginBottom: "8px",
-                        textTransform: "uppercase",
-                        letterSpacing: "1px",
-                      }}
-                    >
-                      Team Vision
-                    </strong>
-                    <p className="team-vision">{teamData.teamVision}</p>
-                  </div>
-                </div>
-              </div>
+
+          {/* MAIN CONTENT AREA */}
+          <div className="teams-content-section">
+            {/* Navigation Tabs */}
+            <div className="tab-nav-container">
+              <button
+                onClick={() => setActiveView("details")}
+                className={`tab-nav-btn ${activeView === "details" ? "active" : ""}`}
+              >
+                Team Details
+              </button>
+              <button
+                onClick={() => setActiveView("requests")}
+                className={`tab-nav-btn ${activeView === "requests" ? "active" : ""}`}
+              >
+                Requested Individuals {teamData.joinRequests.length > 0 && `(${teamData.joinRequests.length})`}
+              </button>
             </div>
 
-            {/* Members Section */}
-            {/* Members Section */}
-            <div className="team-section neural-node">
-              <span
-                className="label-detail teamup-label"
-                style={{
-                  marginBottom: "20px",
-                  fontWeight: totalCount >= 5 ? "800" : "600",
-                }}
-              >
-                TEAM MEMBERS {totalCount}/5
-              </span>
-              <div className="members-list">
-                {teamData.members.map((member) => (
-                  <div key={member.id} className="member-item">
-                    <span className="member-name">{member.name}</span>
-                    <div className="member-actions">
-                      <button
-                        className="member-view-btn"
-                        onClick={() => handleViewMember(member)}
-                      >
-                        View Detail
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteMember(member)}
-                        aria-label={`Delete ${member.name}`}
-                      >
-                        Delete
-                      </button>
+            {activeView === "details" && (
+              <div className="neural-node node-materialize animate-enter">
+                {/* Team Name & Vision Header */}
+                {/* TEAM LEADER SECTION IN MAIN AREA */}
+                <div className="team-header-wrapper" style={{ background: "rgba(96, 165, 250, 0.05)", padding: "24px", borderRadius: "12px", border: "1px solid rgba(96, 165, 250, 0.1)", marginBottom: "30px" }}>
+                  <span className="label-detail teamup-label" style={{ marginBottom: "15px" }}>TEAM LEADER</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "20px" }}>
+                    <div>
+                      <h1 className="team-header-main" style={{ margin: 0, fontSize: "1.8rem" }}>
+                        {sanitizeText(teamData.leader.name, 100)}
+                      </h1>
+                      <p style={{ color: "#94a3b8", margin: "4px 0 0 0", fontSize: "1rem" }}>
+                        {sanitizeText(teamData.leader.university, 200)} • {sanitizeText(teamData.leader.sapId, 50)}
+                      </p>
+                    </div>
+                    <div style={{ textAlign: "right", minWidth: "200px" }}>
+                      <div style={{ color: "#cbd5e1", fontSize: "0.9rem", marginBottom: "4px" }}>
+                        <span style={{ color: "#60a5fa" }}>Email:</span> {sanitizeText(teamData.leader.email, 100)}
+                      </div>
+                      <div style={{ color: "#cbd5e1", fontSize: "0.9rem" }}>
+                        <span style={{ color: "#60a5fa" }}>Phone:</span> {sanitizeText(teamData.leader.phone, 20)}
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div style={{ marginTop: "20px", paddingTop: "15px", borderTop: "1px solid rgba(255, 255, 255, 0.05)" }}>
+                    <strong style={{ display: "block", color: "#aaa", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" }}>LEADER BIO / SKILLS</strong>
+                    <p style={{ color: "#ddd", margin: 0, fontStyle: "italic", fontSize: "0.95rem", lineHeight: "1.5" }}>
+                      {sanitizeText(teamData.leader.details, 500) || "No details provided"}
+                    </p>
+                  </div>
+                </div>
 
-              {/* Joined Members Section */}
-              {teamData.joinedMembers && teamData.joinedMembers.length > 0 && (
-                <div className="team-section">
-                  <h2 className="section-title">Joined Members</h2>
-                  <div className="members-list">
-                    {teamData.joinedMembers.map((member) => (
-                      <div key={member.id} className="member-item">
-                        <span className="member-name">{member.name}</span>
+                {/* Original Team Members List */}
+                <span className="label-detail teamup-label members-list-label">
+                  TEAM MEMBERS ({totalCount}/5)
+                </span>
+                <div className="members-list">
+                  {teamData.members
+                    .concat(teamData.joinedMembers)
+                    .filter(member => !member.joinedViaRequest)
+                    .map((member) => (
+                      <div key={member.id} className="member-list-item">
+                        <span className="member-name">
+                          {sanitizeText(member.name, 100)}
+                        </span>
                         <div className="member-actions">
                           <button
-                            className="member-chat-btn"
-                            onClick={() => handleChatOpen(member)}
-                          >
-                            Chat
-                          </button>
-                          <button
-                            className="member-view-btn"
                             onClick={() => handleViewMember(member)}
+                            className="member-btn-view"
                           >
-                            View Detail
+                            View
                           </button>
                           <button
-                            className="delete-btn"
-                            onClick={() =>
-                              handleJoinedMemberDeleteClick(member)
-                            }
-                            aria-label={`Delete ${member.name}`}
+                            onClick={() => handleDeleteMember(member)}
+                            className="member-btn-remove"
                           >
-                            Delete
+                            Remove
                           </button>
                         </div>
                       </div>
                     ))}
-                  </div>
                 </div>
-              )}
 
-              {/* Requests Section */}
-              <div className="team-section requests-section">
-                <h2 className="section-title request-title">Requests</h2>
-                <div className="requests-grid">
-                  {teamData.joinRequests && teamData.joinRequests.length > 0 ? (
-                    teamData.joinRequests.map((request) => (
-                      <div key={request.id} className="request-card">
-                        <div className="request-info">
-                          <div className="request-avatar">
-                            {request.name.charAt(0)}
-                          </div>
-                          <span className="request-name">{request.name}</span>
-                        </div>
-                        <div className="request-actions">
-                          <button
-                            className="action-btn view-btn"
-                            onClick={() => handleViewRequest(request)}
-                          >
-                            View Detail
-                          </button>
-                          <button
-                            className="action-btn chat-btn"
-                            onClick={() => handleChatOpen(request)}
-                          >
-                            Chat
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="no-requests">No pending requests.</p>
-                  )}
-                </div>
+                {/* Accepted Team Members Section */}
+                {teamData.members.filter(m => m.joinedViaRequest).length > 0 && (
+                  <>
+                    <span className="label-detail teamup-label members-list-label" style={{ marginTop: "40px" }}>
+                      ACCEPTED TEAM MEMBERS ({teamData.members.filter(m => m.joinedViaRequest).length})
+                    </span>
+                    <div className="indi-table-container" style={{ marginTop: "20px" }}>
+                      <table className="indi-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>University</th>
+                            <th>Skills</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {teamData.members
+                            .filter(m => m.joinedViaRequest)
+                            .map((member, idx) => (
+                              <tr key={idx}>
+                                <td>{sanitizeText(member.full_name || member.name, 100)}</td>
+                                <td>{sanitizeText(member.college_name || member.university, 150)}</td>
+                                <td>{sanitizeText(member.bio || member.details, 200)}</td>
+                                <td>
+                                  <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                    <button
+                                      onClick={() => handleViewMember(member)}
+                                      className="indi-btn-view"
+                                      style={{ width: "auto" }}
+                                    >
+                                      View
+                                    </button>
+                                    <button
+                                      onClick={() => handleChatOpen(member)}
+                                      className="edit-btn"
+                                      style={{
+                                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                        color: "#fff",
+                                        border: "none",
+                                        padding: "8px 16px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        fontSize: "0.95rem",
+                                        fontWeight: "500",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: "6px",
+                                        boxShadow: "0 2px 5px rgba(102, 126, 234, 0.4)",
+                                        whiteSpace: "nowrap"
+                                      }}
+                                    >
+                                      <span>💬</span> Chat
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteClick(member)}
+                                      className="indi-btn-remove"
+                                      style={{ padding: "6px 12px", fontSize: "0.9rem" }}
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+
                 {totalCount >= 3 && (
-                  <div
-                    style={{
-                      marginTop: "60px",
-                      display: "flex",
-                      justifyContent: "center",
-                      width: "100%",
-                    }}
-                  >
+                  <div className="register-btn-container">
                     <button
-                      className="member-view-btn"
                       onClick={() => navigate("/register")}
-                      style={{
-                        padding: "12px 32px",
-                        fontSize: "1rem",
-                      }}
+                      className="neon-shade-btn next-glow register-team-btn"
                     >
-                      Register Now
+                      Register Team In Hackathon
                     </button>
                   </div>
                 )}
+
               </div>
-            </div>
+            )}
+
+            {activeView === "requests" && (
+              <RequestedIndividual
+                requests={teamData.joinRequests}
+                onAccept={handleAcceptRequest}
+                onReject={handleRejectRequest}
+                onChat={handleChatOpen}
+                onView={handleViewRequest}
+              />
+            )}
+
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Member Details Modal */}
       {selectedMember && (
         <div className="modal-overlay" onClick={closeMemberModal}>
-          <div
-            className="modal-content member-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="modal-close" onClick={closeMemberModal}>
-              &times;
-            </button>
+          <div className="modal-content member-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeMemberModal}>&times;</button>
             <h2 className="member-card-title">Member Details</h2>
-            {selectedMember.isHypervision && (
-              <div
-                className="hypervision-badge"
-                style={{ marginBottom: "15px" }}
-              >
-                Hypervision Member
-              </div>
-            )}
             <div className="member-card-body">
               <div className="member-detail-row">
                 <span className="detail-label">Name:</span>
-                <span className="detail-value name-value">
-                  {selectedMember.name}
-                </span>
-              </div>
-              <div className="member-detail-row">
-                <span className="detail-label">About:</span>
-                <span className="detail-value">{selectedMember.about}</span>
+                <span className="detail-value">{sanitizeText(selectedMember.name, 100)}</span>
               </div>
               <div className="member-detail-row">
                 <span className="detail-label">University:</span>
-                <span className="detail-value">
-                  {selectedMember.university}
-                </span>
+                <span className="detail-value">{sanitizeText(selectedMember.university, 200)}</span>
               </div>
               <div className="member-detail-row">
                 <span className="detail-label">Email:</span>
-                <span className="detail-value">{selectedMember.email}</span>
+                <span className="detail-value">{sanitizeText(selectedMember.email, 100)}</span>
               </div>
               <div className="member-detail-row">
-                <span className="detail-label">Phone:</span>
-                <span className="detail-value">{selectedMember.phone}</span>
+                <span className="detail-label">Skills:</span>
+                <span className="detail-value">{sanitizeText(selectedMember.skills || selectedMember.about, 500) || "N/A"}</span>
               </div>
             </div>
           </div>
@@ -587,211 +527,40 @@ const Incomp_Page = () => {
       {/* Request Details Modal */}
       {selectedRequest && (
         <div className="modal-overlay" onClick={closeRequestModal}>
-          <div
-            className="modal-content request-modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="modal-close" onClick={closeRequestModal}>
-              &times;
-            </button>
-            <h2 className="request-modal-name">{selectedRequest.name}</h2>
-
-            {selectedRequest.isHypervision && (
-              <div className="hypervision-badge">Hypervision Member</div>
-            )}
-
+          <div className="modal-content request-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={closeRequestModal}>&times;</button>
+            <h2 className="request-modal-name">{sanitizeText(selectedRequest.name, 100)}</h2>
             <div className="request-modal-body">
-              <div className="request-about-container">
-                <p className="request-about">{selectedRequest.about}</p>
-              </div>
-
-              <div className="request-contact-details">
-                <div className="request-detail-item">
-                  <span className="request-label">Email:</span>
-                  <span className="request-value">{selectedRequest.email}</span>
-                </div>
-                <div className="request-detail-item">
-                  <span className="request-label">University:</span>
-                  <span className="request-value">
-                    {selectedRequest.university}
-                  </span>
-                </div>
-              </div>
-
+              <p className="request-about">{sanitizeText(selectedRequest.about, 500) || "No details provided."}</p>
               <div className="request-modal-actions">
-                <button
-                  className="modal-action-btn accept-btn"
-                  onClick={() => handleAcceptRequest(selectedRequest.id)}
-                >
-                  Accept
-                </button>
-                <button
-                  className="modal-action-btn reject-btn"
-                  onClick={() => handleRejectRequest(selectedRequest.id)}
-                >
-                  Reject
-                </button>
-                <button
-                  className="modal-action-btn chat-btn-modal"
-                  onClick={() => handleChatOpen(selectedRequest)}
-                >
-                  Chat
-                </button>
+                <button className="modal-action-btn accept-btn" onClick={() => handleAcceptRequest(selectedRequest.id)}>Accept</button>
+                <button className="modal-action-btn reject-btn" onClick={() => handleRejectRequest(selectedRequest.id)}>Reject</button>
+                <button className="modal-action-btn chat-btn-modal" onClick={() => handleChatOpen(selectedRequest)}>Chat</button>
               </div>
             </div>
           </div>
         </div>
       )}
-      {/* Chat Modal */}
+
       {chatTarget && (
-        <div className="modal-overlay chat-overlay" onClick={closeChatModal}>
-          <div
-            className={`modal-content chat-modal-card ${isChatExpanded ? "expanded" : ""
-              }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="chat-header">
-              <div className="chat-header-info">
-                <div className="chat-avatar">{chatTarget.name.charAt(0)}</div>
-                <div className="chat-name-status">
-                  <h3>{chatTarget.name}</h3>
-                  <span className="chat-status">Online</span>
-                </div>
-              </div>
-              <div
-                style={{ display: "flex", gap: "8px", alignItems: "center" }}
-              >
-                <button
-                  className="chat-expand-btn"
-                  onClick={toggleChatExpand}
-                  title={isChatExpanded ? "Collapse" : "Expand"}
-                  aria-label={isChatExpanded ? "Collapse Chat" : "Expand Chat"}
-                >
-                  {isChatExpanded ? (
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="4 14 10 14 10 20"></polyline>
-                      <polyline points="20 10 14 10 14 4"></polyline>
-                      <line x1="14" y1="10" x2="21" y2="3"></line>
-                      <line x1="3" y1="21" x2="10" y2="14"></line>
-                    </svg>
-                  ) : (
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="15 3 21 3 21 9"></polyline>
-                      <polyline points="9 21 3 21 3 15"></polyline>
-                      <line x1="21" y1="3" x2="14" y2="10"></line>
-                      <line x1="3" y1="21" x2="10" y2="14"></line>
-                    </svg>
-                  )}
-                </button>
-                <button className="chat-close" onClick={closeChatModal}>
-                  &times;
-                </button>
-              </div>
-            </div>
-
-            <div className="chat-body">
-              {dummyChatHistory.map((msg) => {
-                const isMe = msg.sender === "me";
-                const senderName = isMe ? "You" : chatTarget.name;
-                return (
-                  <div
-                    key={msg.id}
-                    className={`chat-message ${isMe ? "sent" : "received"}`}
-                  >
-                    <span className="chat-msg-label">{senderName}</span>
-                    <div className="message-bubble">{msg.text}</div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <form className="chat-footer" onSubmit={handleSendMessage}>
-              <input
-                type="text"
-                className="chat-input"
-                placeholder="Type a message..."
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-              />
-              <button type="submit" className="chat-send-btn">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-              </button>
-            </form>
-          </div>
-        </div>
+        <ChatBox
+          team={chatTarget} // ChatBox now accepts 'team' prop as a generic target
+          onClose={() => setChatTarget(null)}
+        />
       )}
+
       {/* Delete Confirmation Modal */}
       {memberToDelete && (
         <div className="modal-overlay" onClick={cancelDeleteMember}>
-          <div
-            className="modal-content request-modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2
-              className="member-card-title"
-              style={{
-                color: "#ef4444",
-                textShadow: "0 0 15px rgba(239, 68, 68, 0.4)",
-              }}
-            >
-              Remove Member
-            </h2>
+          <div className="modal-content request-modal-card" onClick={(e) => e.stopPropagation()}>
+            <h2 className="member-card-title" style={{ color: "#ef4444", textShadow: "0 0 15px rgba(239, 68, 68, 0.4)" }}>Remove Member</h2>
             <div className="member-card-body" style={{ gap: "20px" }}>
-              <p
-                style={{
-                  color: "#cbd5e1",
-                  fontSize: "1rem",
-                  textAlign: "center",
-                  marginBottom: "0",
-                }}
-              >
-                Are you sure you want to remove{" "}
-                <span style={{ color: "#fff", fontWeight: "bold" }}>
-                  {memberToDelete.name}
-                </span>
-                ?
+              <p style={{ color: "#cbd5e1", fontSize: "1rem", textAlign: "center", marginBottom: "0" }}>
+                Are you sure you want to remove <span style={{ color: "#fff", fontWeight: "bold" }}>{memberToDelete.name}</span>?
               </p>
 
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-              >
-                <label
-                  style={{
-                    color: "#94a3b8",
-                    fontSize: "0.9rem",
-                    fontFamily: "'Space Mono', monospace",
-                  }}
-                >
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ color: "#94a3b8", fontSize: "0.9rem", fontFamily: "'Space Mono', monospace" }}>
                   Reason for removal (required, min 15 words):
                 </label>
                 <textarea
@@ -807,31 +576,16 @@ const Incomp_Page = () => {
                     padding: "12px",
                     color: "#fff",
                     fontFamily: "inherit",
-                    resize: "vertical",
+                    resize: "vertical"
                   }}
                 />
-                <div
-                  style={{
-                    textAlign: "right",
-                    fontSize: "0.8rem",
-                    color:
-                      deleteReason
-                        .trim()
-                        .split(/\s+/)
-                        .filter((w) => w.length > 0).length < 15
-                        ? "#f87171"
-                        : "#4ade80",
-                    fontFamily: "'Space Mono', monospace",
-                  }}
-                >
-                  Word count:{" "}
-                  {
-                    deleteReason
-                      .trim()
-                      .split(/\s+/)
-                      .filter((w) => w.length > 0).length
-                  }
-                  /15
+                <div style={{
+                  textAlign: "right",
+                  fontSize: "0.8rem",
+                  color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15 ? "#f87171" : "#4ade80",
+                  fontFamily: "'Space Mono', monospace"
+                }}>
+                  Word count: {deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length}/15
                 </div>
               </div>
 
@@ -839,46 +593,19 @@ const Incomp_Page = () => {
                 <button
                   className="modal-action-btn"
                   onClick={cancelDeleteMember}
-                  style={{
-                    background: "rgba(148, 163, 184, 0.2)",
-                    color: "#e2e8f0",
-                    border: "1px solid rgba(148, 163, 184, 0.3)",
-                  }}
+                  style={{ background: "rgba(148, 163, 184, 0.2)", color: "#e2e8f0", border: "1px solid rgba(148, 163, 184, 0.3)" }}
                 >
                   Cancel
                 </button>
                 <button
                   className="modal-action-btn"
                   onClick={confirmDeleteMember}
-                  disabled={
-                    deleteReason
-                      .trim()
-                      .split(/\s+/)
-                      .filter((w) => w.length > 0).length < 15
-                  }
+                  disabled={deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15}
                   style={{
-                    background:
-                      deleteReason
-                        .trim()
-                        .split(/\s+/)
-                        .filter((w) => w.length > 0).length >= 15
-                        ? "rgba(239, 68, 68, 0.2)"
-                        : "rgba(239, 68, 68, 0.1)",
-                    color:
-                      deleteReason
-                        .trim()
-                        .split(/\s+/)
-                        .filter((w) => w.length > 0).length >= 15
-                        ? "#ef4444"
-                        : "rgba(239, 68, 68, 0.5)",
+                    background: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)",
+                    color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "#ef4444" : "rgba(239, 68, 68, 0.5)",
                     border: "1px solid rgba(239, 68, 68, 0.3)",
-                    cursor:
-                      deleteReason
-                        .trim()
-                        .split(/\s+/)
-                        .filter((w) => w.length > 0).length >= 15
-                        ? "pointer"
-                        : "not-allowed",
+                    cursor: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "pointer" : "not-allowed"
                   }}
                 >
                   Remove Member
@@ -888,6 +615,7 @@ const Incomp_Page = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

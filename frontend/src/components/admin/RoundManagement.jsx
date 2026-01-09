@@ -117,12 +117,6 @@ export default function RoundManagement() {
     <div className="admin-section">
       <div className="admin-section-header">
         <h2 className="admin-section-title">Round Management</h2>
-        <p
-          className="admin-section-subtitle"
-          style={{ color: "var(--text-muted)", marginTop: "5px" }}
-        >
-          Control access to specific round activities for participants.
-        </p>
 
         {notification && (
           <div style={{
@@ -189,24 +183,23 @@ export default function RoundManagement() {
         </h3>
         <div className="panel">
           <div className="panel-inner" style={{ padding: "0" }}>
-            <table className="table" style={{ margin: "0" }}>
+            <table className="table" style={{ margin: "0", tableLayout: "fixed", width: "100%" }}>
               <thead>
                 <tr>
-                  <th style={{ paddingLeft: "20px" }}>Activity</th>
-                  <th>Round</th>
-                  <th>Status</th>
-                  <th>Target Audience</th>
+                  <th style={{ paddingLeft: "20px", width: "50%" }}>Activity</th>
+                  <th style={{ width: "25%" }}>Round</th>
+                  <th style={{ width: "25%" }}>Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
+                  <td style={{ paddingLeft: "20px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis" }}>
                     Hackerrank Submission
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span className="badge-round r1">Round 1</span>
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span
                       className={`status-pill ${hackerrankSubmissionState === "live" ? "pass" : "pending"
                         }`}
@@ -214,16 +207,15 @@ export default function RoundManagement() {
                       {hackerrankSubmissionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>All Registered Teams</td>
                 </tr>
                 <tr>
-                  <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
+                  <td style={{ paddingLeft: "20px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis" }}>
                     PS Selection
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span className="badge-round r2">Round 2</span>
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span
                       className={`status-pill ${psSelectionState === "live" ? "pass" : "pending"
                         }`}
@@ -231,16 +223,15 @@ export default function RoundManagement() {
                       {psSelectionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>Qualified Teams</td>
                 </tr>
                 <tr>
-                  <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
+                  <td style={{ paddingLeft: "20px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis" }}>
                     PPT Upload
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span className="badge-round r2">Round 2</span>
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span
                       className={`status-pill ${pptUploadState === "live" ? "pass" : "pending"
                         }`}
@@ -248,16 +239,15 @@ export default function RoundManagement() {
                       {pptUploadState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>Qualified Teams</td>
                 </tr>
                 <tr>
-                  <td style={{ paddingLeft: "20px", fontWeight: "500" }}>
+                  <td style={{ paddingLeft: "20px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis" }}>
                     GitHub Submission
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span className="badge-round r3">Round 3</span>
                   </td>
-                  <td>
+                  <td style={{ overflow: "visible" }}>
                     <span
                       className={`status-pill ${githubSubmissionState === "live" ? "pass" : "pending"
                         }`}
@@ -265,7 +255,6 @@ export default function RoundManagement() {
                       {githubSubmissionState === "live" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>Qualified Teams Only</td>
                 </tr>
               </tbody>
             </table>
@@ -279,6 +268,8 @@ export default function RoundManagement() {
                     padding: 4px 8px;
                     border-radius: 4px;
                     font-weight: 700;
+                    white-space: nowrap;
+                    display: inline-block;
                 }
                 .r1 { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
                 .r2 { background: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
@@ -292,9 +283,52 @@ export default function RoundManagement() {
                    font-weight: 600;
                    text-transform: uppercase;
                    letter-spacing: 0.5px;
+                   white-space: nowrap;
+                   display: inline-block;
+                   min-width: fit-content;
                 }
                 .status-pill.pass { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
                 .status-pill.pending { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+                /* Mobile fixes for status column */
+                @media (max-width: 768px) {
+                  .table th:nth-child(3),
+                  .table td:nth-child(3) {
+                    width: 35% !important;
+                    min-width: 100px !important;
+                    overflow: visible !important;
+                  }
+                  
+                  .table td:nth-child(3) {
+                    overflow: visible !important;
+                    text-overflow: clip !important;
+                  }
+
+                  .status-pill {
+                    font-size: 10px;
+                    padding: 5px 12px;
+                    white-space: nowrap;
+                    overflow: visible;
+                    width: auto;
+                    min-width: 80px;
+                  }
+
+                  .badge-round {
+                    font-size: 10px;
+                    padding: 4px 8px;
+                    white-space: nowrap;
+                  }
+
+                  .table th:nth-child(1),
+                  .table td:nth-child(1) {
+                    width: 40% !important;
+                  }
+
+                  .table th:nth-child(2),
+                  .table td:nth-child(2) {
+                    width: 25% !important;
+                  }
+                }
             `}</style>
     </div>
   );
