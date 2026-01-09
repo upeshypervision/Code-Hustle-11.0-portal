@@ -17,6 +17,9 @@ const Incomp_Page = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [chatTarget, setChatTarget] = useState(null);
 
+  const [memberToDelete, setMemberToDelete] = useState(null);
+  const [deleteReason, setDeleteReason] = useState("");
+
   const API_BASE = "http://localhost:5000";
 
   const [activeView, setActiveView] = useState("details");
@@ -115,29 +118,50 @@ const Incomp_Page = () => {
     if (selectedRequest) closeRequestModal();
   };
 
-  const handleDeleteMember = async (member) => {
+  const handleDeleteClick = (member) => {
+    setMemberToDelete(member);
+    setDeleteReason("");
+  };
+
+  const cancelDeleteMember = () => {
+    setMemberToDelete(null);
+    setDeleteReason("");
+  };
+
+  const confirmDeleteMember = async () => {
+    if (!memberToDelete) return;
+
+    // Word count validation (min 15 words)
+    const wordCount = deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length;
+    if (wordCount < 15) {
+      alert("Please provide a reason of at least 15 words.");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_BASE}/api/team-member/delete`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: member.email })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: memberToDelete.email,
+          reason: deleteReason
+        }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
+
       if (response.ok) {
-        setTeamData((prev) => ({
-          ...prev,
-          members: prev.members.filter((m) => m.email !== member.email),
-          joinedMembers: prev.joinedMembers.filter((m) => m.email !== member.email),
-        }));
-        alert('Member deleted successfully');
+        alert("Member removed successfully.");
+        window.location.reload();
       } else {
-        alert(data.error || 'Failed to delete member');
+        alert(result.error || "Failed to remove member");
       }
     } catch (error) {
-      console.error('Error deleting member:', error);
-      alert('Failed to delete member');
+      console.error("Error removing member:", error);
+      alert("Failed to remove member");
     }
   };
 
@@ -427,8 +451,8 @@ const Incomp_Page = () => {
                                       <span>💬</span> Chat
                                     </button>
                                     <button
-                                      onClick={() => console.log("Remove member:", member)}
-                                      className="member-btn-remove"
+                                      onClick={() => handleDeleteClick(member)}
+                                      className="indi-btn-remove"
                                       style={{ padding: "6px 12px", fontSize: "0.9rem" }}
                                     >
                                       Remove
@@ -522,6 +546,73 @@ const Incomp_Page = () => {
           team={chatTarget} // ChatBox now accepts 'team' prop as a generic target
           onClose={() => setChatTarget(null)}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {memberToDelete && (
+        <div className="modal-overlay" onClick={cancelDeleteMember}>
+          <div className="modal-content request-modal-card" onClick={(e) => e.stopPropagation()}>
+            <h2 className="member-card-title" style={{ color: "#ef4444", textShadow: "0 0 15px rgba(239, 68, 68, 0.4)" }}>Remove Member</h2>
+            <div className="member-card-body" style={{ gap: "20px" }}>
+              <p style={{ color: "#cbd5e1", fontSize: "1rem", textAlign: "center", marginBottom: "0" }}>
+                Are you sure you want to remove <span style={{ color: "#fff", fontWeight: "bold" }}>{memberToDelete.name}</span>?
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <label style={{ color: "#94a3b8", fontSize: "0.9rem", fontFamily: "'Space Mono', monospace" }}>
+                  Reason for removal (required, min 15 words):
+                </label>
+                <textarea
+                  value={deleteReason}
+                  onChange={(e) => setDeleteReason(e.target.value)}
+                  placeholder="Please explain why you are removing this member..."
+                  style={{
+                    width: "100%",
+                    minHeight: "100px",
+                    background: "rgba(15, 23, 42, 0.6)",
+                    border: "1px solid rgba(148, 163, 184, 0.2)",
+                    borderRadius: "8px",
+                    padding: "12px",
+                    color: "#fff",
+                    fontFamily: "inherit",
+                    resize: "vertical"
+                  }}
+                />
+                <div style={{
+                  textAlign: "right",
+                  fontSize: "0.8rem",
+                  color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15 ? "#f87171" : "#4ade80",
+                  fontFamily: "'Space Mono', monospace"
+                }}>
+                  Word count: {deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length}/15
+                </div>
+              </div>
+
+              <div className="request-modal-actions">
+                <button
+                  className="modal-action-btn"
+                  onClick={cancelDeleteMember}
+                  style={{ background: "rgba(148, 163, 184, 0.2)", color: "#e2e8f0", border: "1px solid rgba(148, 163, 184, 0.3)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="modal-action-btn"
+                  onClick={confirmDeleteMember}
+                  disabled={deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length < 15}
+                  style={{
+                    background: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)",
+                    color: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "#ef4444" : "rgba(239, 68, 68, 0.5)",
+                    border: "1px solid rgba(239, 68, 68, 0.3)",
+                    cursor: deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length >= 15 ? "pointer" : "not-allowed"
+                  }}
+                >
+                  Remove Member
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
     </div>

@@ -662,6 +662,7 @@
       display: block;
       margin-bottom: 8px;
     }
+
     .indi-table tbody tr td:nth-child(5):before {
       content: "Chat: ";
       font-weight: bold;
@@ -669,6 +670,7 @@
       display: block;
       margin-bottom: 8px;
     }
+
     .indi-table tbody tr td:nth-child(6):before {
       content: "Action: ";
       font-weight: bold;

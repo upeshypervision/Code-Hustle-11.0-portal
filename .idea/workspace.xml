@@ -6,12 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Indidashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Indidashboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/TeamDashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/TeamDashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/individual_requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/individual_requests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/team_requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/team_requests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/AcceptedTeamPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

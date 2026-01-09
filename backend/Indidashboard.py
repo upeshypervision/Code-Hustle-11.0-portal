@@ -47,6 +47,7 @@ def get_individual_dashboard_data():
         "isUPESHypervision": individual.get("hypervision_id") if individual.get("hypervision_id") else None,
         "role": individual.get("role", "individual"),
         "accepted": individual.get("accepted"),  # CRITICAL: Include accepted team ID
+        "reason": individual.get("reason", ""),  # Include removal/rejection reason
         "id": individual.get("individual_id")  # For socket room joining
     }
     
