@@ -21,7 +21,7 @@ from user_access import (
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_info import fetch_teamsnosubmission, view_githubsubmission_route
 from Indidashboard import get_individual_dashboard_data, get_available_teams
-from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route
+from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route, view_details_route
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
 from hackerrank_submission import (
@@ -282,6 +282,10 @@ def get_teams_without_ppt():
 @app.route('/api/admin/teams-with-ppt', methods=['GET'])
 def get_teams_with_ppt():
     return get_teams_with_ppt_route()
+
+@app.route('/api/admin/team-details', methods=['GET'])
+def get_team_details():
+    return view_details_route()
 
 # --- PS Selections Routes ---
 @app.route('/api/admin/problem-statement/<ps_id>/teams', methods=['GET'])
