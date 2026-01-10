@@ -7,16 +7,16 @@ export default function GlobalNavbar({
   isEvaluator = false,
   menuItems = [],
   onMenuItemClick,
-  onToggleSidebar,
+  onToggleSidebar, // ✅ This will now trigger the sidebar
   showContactUs = false,
   logoutPath,
+  toggleMobileMenu, // ✅ Added to match AdminPanel state
 }) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
-      // Call the logout endpoint to clear all auth cookies
       await fetch("http://localhost:5000/api/logout", {
         method: "POST",
         credentials: "include",
@@ -24,7 +24,6 @@ export default function GlobalNavbar({
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // Navigate to appropriate login page based on user type or custom path
       if (logoutPath) {
         navigate(logoutPath);
       } else if (isEvaluator) {
@@ -45,12 +44,12 @@ export default function GlobalNavbar({
   };
 
   const handleHamburgerClick = () => {
-    // On mobile, prioritize mobile menu if menuItems exist
-    // Otherwise, toggle sidebar if provided
-    if (menuItems.length > 0) {
+    // ✅ MODIFIED: If it's admin, trigger the sidebar toggle instead of the old menu list
+    if (isAdmin && (toggleMobileMenu || onToggleSidebar)) {
+      if (toggleMobileMenu) toggleMobileMenu();
+      if (onToggleSidebar) onToggleSidebar();
+    } else if (menuItems.length > 0) {
       setIsMobileMenuOpen(!isMobileMenuOpen);
-    } else if (onToggleSidebar) {
-      onToggleSidebar();
     }
   };
 
@@ -62,6 +61,21 @@ export default function GlobalNavbar({
 
   return (
     <>
+      {/* ✅ Added Sync Styles to prevent the hamburger "gap" below 1024px */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .hamburger-menu {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+          .top-nav-inner {
+            display: flex !important;
+            justify-content: space-between !important;
+          }
+        }
+      `}</style>
+
       <header className="top-nav">
         <div className="top-nav-inner">
           <div className="logo-container">
@@ -113,8 +127,8 @@ export default function GlobalNavbar({
         </div>
       </header>
 
-      {/* Mobile Menu Overlay - Show if menuItems exist OR if we need to show sidebar items */}
-      {isMobileMenuOpen && menuItems.length > 0 && (
+      {/* Mobile Menu Overlay - Only show for non-admin or if specifically needed */}
+      {!isAdmin && isMobileMenuOpen && menuItems.length > 0 && (
         <div
           className="mobile-menu-overlay"
           onClick={() => setIsMobileMenuOpen(false)}
