@@ -6,6 +6,7 @@ import "../Individual-Member/Indi.css";
 import "./Incomp_Page.css";
 import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
 import { sanitizeText } from "../../utils/sanitizer";
+import NotificationBadge from "../NotificationBadge";
 import socket from "../../socket";
 import ChatBox from "../Individual-Member/ChatBox";
 
@@ -16,6 +17,13 @@ const Incomp_Page = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
   const [chatTarget, setChatTarget] = useState(null);
+
+  // Notification State
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+  };
 
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [deleteReason, setDeleteReason] = useState("");
@@ -59,7 +67,7 @@ const Incomp_Page = () => {
     // Listen for new join requests
     const handleNewRequest = (data) => {
       console.log("New join request received!", data);
-      alert(`📩 New join request from ${data.individualName}!`);
+      showNotification(`📩 New join request from ${data.individualName}!`, 'info');
       // Refresh to show new request
       window.location.reload();
     };
@@ -119,15 +127,9 @@ const Incomp_Page = () => {
   };
 
   const handleDeleteClick = (member) => {
-    // For original members (no individual_id), delete directly with confirmation
+    // For original members (no individual_id), delete directly (no confirmation for small things)
     if (!member.individual_id) {
-      const confirmed = window.confirm(
-        `Are you sure you want to remove ${member.name} from the team?\n\nThis action cannot be undone.`
-      );
-
-      if (confirmed) {
-        deleteOriginalMember(member);
-      }
+      deleteOriginalMember(member);
     } else {
       // For accepted members (have individual_id), show reason modal
       setMemberToDelete(member);
@@ -152,14 +154,14 @@ const Incomp_Page = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Member removed successfully.");
-        window.location.reload();
+        showNotification("Member removed successfully.", 'success');
+        setTimeout(() => window.location.reload(), 1000);
       } else {
-        alert(result.error || "Failed to remove member");
+        showNotification(result.error || "Failed to remove member", 'error');
       }
     } catch (error) {
       console.error("Error removing member:", error);
-      alert("Failed to remove member");
+      showNotification("Failed to remove member", 'error');
     }
   };
 
@@ -174,7 +176,7 @@ const Incomp_Page = () => {
     // Word count validation (min 15 words)
     const wordCount = deleteReason.trim().split(/\s+/).filter(w => w.length > 0).length;
     if (wordCount < 15) {
-      alert("Please provide a reason of at least 15 words.");
+      showNotification("Please provide a reason of at least 15 words.", 'error');
       return;
     }
 
@@ -194,14 +196,14 @@ const Incomp_Page = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Member removed successfully.");
-        window.location.reload();
+        showNotification("Member removed successfully.", 'success');
+        setTimeout(() => window.location.reload(), 1000);
       } else {
-        alert(result.error || "Failed to remove member");
+        showNotification(result.error || "Failed to remove member", 'error');
       }
     } catch (error) {
       console.error("Error removing member:", error);
-      alert("Failed to remove member");
+      showNotification("Failed to remove member", 'error');
     }
   };
 
@@ -228,15 +230,15 @@ const Incomp_Page = () => {
           ...prev,
           joinRequests: prev.joinRequests.filter((req) => req.id !== id),
         }));
-        alert('Request accepted successfully! Member added to team.');
+        showNotification('Request accepted successfully! Member added to team.', 'success');
         // Refresh team data to get updated member count
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 1500);
       } else {
-        alert(data.error || 'Failed to accept request');
+        showNotification(data.error || 'Failed to accept request', 'error');
       }
     } catch (error) {
       console.error('Error accepting request:', error);
-      alert('Failed to accept request');
+      showNotification('Failed to accept request', 'error');
     }
     closeRequestModal();
   };
@@ -263,13 +265,13 @@ const Incomp_Page = () => {
           ...prev,
           joinRequests: prev.joinRequests.filter((req) => req.id !== id),
         }));
-        alert('Request rejected successfully');
+        showNotification('Request rejected successfully', 'success');
       } else {
-        alert(data.error || 'Failed to reject request');
+        showNotification(data.error || 'Failed to reject request', 'error');
       }
     } catch (error) {
       console.error('Error rejecting request:', error);
-      alert('Failed to reject request');
+      showNotification('Failed to reject request', 'error');
     }
     closeRequestModal();
   };
@@ -640,6 +642,16 @@ const Incomp_Page = () => {
         </div>
       )}
 
+
+
+      {/* Notification Badge */}
+      {notification && (
+        <NotificationBadge
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 };

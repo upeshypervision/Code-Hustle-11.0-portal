@@ -11,6 +11,7 @@ import Indi_AvailableTeams from "./Indi_AvailableTeams";
 import Indi_TeamDetails from "./Indi_TeamDetails";
 import { sanitizeText } from "../../utils/sanitizer";
 import socket from "../../socket";
+import NotificationBadge from "../NotificationBadge";
 
 const Indi_Dashboard = () => {
   const navigate = useNavigate();
@@ -34,6 +35,13 @@ const Indi_Dashboard = () => {
   const [acceptedTeam, setAcceptedTeam] = useState(null); // Accepted team data
   const [rejectedTeamIds, setRejectedTeamIds] = useState([]);
 
+  // Notification State
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+  };
+
   // Socket listeners for real-time updates
   useEffect(() => {
     if (!userDetails?.id) return;
@@ -43,19 +51,20 @@ const Indi_Dashboard = () => {
     console.log(`Joined room: individual_${userDetails.id}`);
 
     // Listen for request accepted
+    // Listen for request accepted
     const handleRequestAccepted = (data) => {
       console.log("Request accepted!", data);
-      alert(`🎉 Congratulations! You have been accepted by ${data.teamName}!`);
+      showNotification(`🎉 Congratulations! You have been accepted by ${data.teamName}!`, 'success');
       // Refresh to show accepted team
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 2000);
     };
 
     // Listen for request rejected
     const handleRequestRejected = (data) => {
       console.log("Request rejected", data);
-      alert(`Your request to ${data.teamName} was declined.`);
+      showNotification(`Your request to ${data.teamName} was declined.`, 'error');
       // Refresh to update status
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 2000);
     };
 
     socket.on("request_accepted", handleRequestAccepted);
@@ -496,22 +505,21 @@ const Indi_Dashboard = () => {
                     const data = await response.json();
 
                     if (response.ok) {
-                      // Emit socket event to notify team
                       socket.emit("new_join_request", {
                         teamId: team.teamId,
                         individualName: userDetails.fullName
                       });
 
-                      alert(`Request sent to ${team.teamName}!`);
+                      showNotification(`Request sent to ${team.teamName}!`, 'success');
                       setSelectedTeam(null);
                       // Refresh teams to update request status
-                      window.location.reload();
+                      setTimeout(() => window.location.reload(), 1500);
                     } else {
-                      alert(data.error || "Failed to send request");
+                      showNotification(data.error || "Failed to send request", 'error');
                     }
                   } catch (error) {
                     console.error("Error sending request:", error);
-                    alert("Failed to send request");
+                    showNotification("Failed to send request", 'error');
                   }
                 }}
               />
@@ -537,6 +545,15 @@ const Indi_Dashboard = () => {
             setShowChat(false);
             setChatTeam(null);
           }}
+        />
+      )}
+
+      {/* Notification Badge */}
+      {notification && (
+        <NotificationBadge
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
       )}
     </div>
