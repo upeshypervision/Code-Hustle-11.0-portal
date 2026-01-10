@@ -78,23 +78,43 @@ const AcceptedTeamPage = () => {
     fetchData();
   }, []); // Run only once on mount
 
-  // Socket.IO Listener for Real-time Removal Updates
+  // Socket.IO Listener for Real-time Updates (removal, new members, etc.)
   useEffect(() => {
     if (userDetails?.id) {
       const roomName = `individual_${userDetails.id}`;
       socket.emit("join_room", { room: roomName });
       console.log(`Joined socket room: ${roomName}`);
 
+      // Handle member removal
       const handleMemberRemoved = (data) => {
         console.log("Real-time update: Member removed", data);
         setTeam(null);
         setRejectionReason(data.reason);
       };
 
+      // Handle team updates (new members, etc.)
+      const handleTeamUpdated = async (data) => {
+        console.log("Real-time update: Team changed", data);
+        // Refresh team data
+        try {
+          const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
+            credentials: "include"
+          });
+          const teamData = await teamResponse.json();
+          if (teamData.success && teamData.team) {
+            setTeam(teamData.team);
+          }
+        } catch (error) {
+          console.error("Error refreshing team data:", error);
+        }
+      };
+
       socket.on("member_removed", handleMemberRemoved);
+      socket.on("team_updated", handleTeamUpdated);
 
       return () => {
         socket.off("member_removed", handleMemberRemoved);
+        socket.off("team_updated", handleTeamUpdated);
       };
     }
   }, [userDetails]);
@@ -605,6 +625,7 @@ const AcceptedTeamPage = () => {
         <ChatBox
           team={team}
           userDetails={userDetails}
+          userType="individual"
           onClose={() => setShowChat(false)}
         />
       )}

@@ -140,6 +140,25 @@ def accept_join_request():
         {"$pull": {"requests": individual_id}}
     )
     
+    # Emit Socket.IO event to notify all team members about the update
+    from socketio_instance import socketio
+    
+    # Get all team members (including the newly accepted one)
+    updated_team = db.create_team.find_one({"team_id": team_id})
+    all_members = updated_team.get("members", [])
+    
+    # Notify each member who joined via request
+    for member in all_members:
+        if member.get("individual_id"):
+            socketio.emit(
+                "team_updated",
+                {
+                    "teamId": team_id,
+                    "message": f"New member {individual.get('full_name', 'Someone')} joined the team!"
+                },
+                room=f"individual_{member.get('individual_id')}"
+            )
+    
     return jsonify({"success": True, "message": "Request accepted successfully"}), 200
 
 

@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/socket_events.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/socket_events.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Incomplete_teams/Incomp_Page.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/ChatBox.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Individual-Member/Indi_Dashboard.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
