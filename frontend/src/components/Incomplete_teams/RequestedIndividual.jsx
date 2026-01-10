@@ -49,7 +49,7 @@ const RequestedIndividual = ({ requests, onAccept, onReject, onChat, onView }) =
                                     <td data-label="University" style={{ color: "#cbd5e1" }}>
                                         {sanitizeText(req.university, 50)}
                                     </td>
-                                    <td className="indi-td-bio" data-label="Skills">
+                                    <td className="indi-td-skills" data-label="Skills">
                                         {sanitizeText(req.about || req.skills, 60)}
                                     </td>
                                     <td data-label="Actions">

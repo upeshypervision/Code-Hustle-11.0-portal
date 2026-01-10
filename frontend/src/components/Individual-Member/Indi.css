@@ -630,6 +630,14 @@
     margin-bottom: 8px;
   }
 
+  .indi-table td.indi-td-skills:before {
+    content: "Skills: ";
+    font-weight: bold;
+    color: #38bdf8;
+    display: block;
+    margin-bottom: 8px;
+  }
+
   .indi-table td.indi-td-members:before {
     content: "Members: ";
     font-weight: bold;
@@ -730,7 +738,8 @@
   }
 
   /* Ensure bio/vision text is readable */
-  .indi-table td.indi-td-bio {
+  .indi-table td.indi-td-bio,
+  .indi-table td.indi-td-skills {
     line-height: 1.6;
     padding-bottom: 16px !important;
   }
@@ -954,11 +963,11 @@
       font-size: 1.3rem !important;
       gap: 8px !important;
     }
-    
+
     .congrats-title span:first-child {
       font-size: 1.5rem !important;
     }
-    
+
     .congrats-banner {
       max-width: 95% !important;
       width: 95% !important;
