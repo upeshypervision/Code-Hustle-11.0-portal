@@ -103,8 +103,14 @@ def delete_team_member():
     if not individual_id and not member_email:
         return jsonify({"error": "Member ID or Email required"}), 400
 
-    if not reason or len(reason.split()) < 15:
-        return jsonify({"error": "Reason must be at least 15 words"}), 400
+    # Only require 15-word reason for members who joined via request (have individual_id)
+    if individual_id:
+        if not reason or len(reason.split()) < 15:
+            return jsonify({"error": "Reason must be at least 15 words"}), 400
+    else:
+        # For original members, reason is optional (will use default if not provided)
+        if not reason:
+            reason = "Original team member removed by team leader"
     
     # Get team name for the reason
     team_data = db.create_team.find_one({"team_id": team_id}, {"team_name": 1})

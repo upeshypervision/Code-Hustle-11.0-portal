@@ -23,16 +23,17 @@ const AcceptedTeamPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // If we already have data from navigation state, skip fetching
-      if (stateTeam && stateUserDetails) {
-        console.log("Using state data, skipping fetch");
-        return;
-      }
+      // ALWAYS fetch fresh data from database on mount
+      // This ensures the page works correctly even if:
+      // - Socket.IO is disconnected
+      // - Page is refreshed
+      // - User navigates directly to this page
+      // - Member was removed while user was away
 
       try {
         setLoading(true);
 
-        // Fetch individual data to get the accepted team ID
+        // Fetch individual data to check status and get accepted team ID
         const individualResponse = await fetch("http://localhost:5000/api/individual-dashboard", {
           credentials: "include"
         });
@@ -46,37 +47,48 @@ const AcceptedTeamPage = () => {
 
         setUserDetails(individualData.data);
 
-        if (individualData.data.reason) {
-          setRejectionReason(individualData.data.reason);
-        }
-
-        // Get the accepted team ID from individual data
+        // PRIORITY 1: Check if user has an accepted team
         const acceptedTeamId = individualData.data.accepted;
 
-        if (!acceptedTeamId) {
+        if (acceptedTeamId) {
+          // User has an accepted team - fetch and display it (ignore any reason)
+          console.log("User has accepted team:", acceptedTeamId);
+
+          const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
+            credentials: "include"
+          });
+          const teamData = await teamResponse.json();
+
+          if (teamData.success && teamData.team) {
+            setTeam(teamData.team);
+            setRejectionReason(null); // Clear any old reason
+          } else {
+            // Team not found or error
+            setTeam(null);
+          }
+        } else {
+          // PRIORITY 2: No accepted team - check if there's a removal reason
           console.log("No accepted team found");
-          setLoading(false);
-          return;
-        }
+          setTeam(null);
 
-        // Fetch the accepted team details
-        const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
-          credentials: "include"
-        });
-        const teamData = await teamResponse.json();
-
-        if (teamData.success && teamData.team) {
-          setTeam(teamData.team);
+          if (individualData.data.reason) {
+            // User was removed from a team
+            setRejectionReason(individualData.data.reason);
+          } else {
+            // User has never been accepted
+            setRejectionReason(null);
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setTeam(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []); // Run only once on mount
+  }, []); // Run on mount (and only on mount)
 
   // Socket.IO Listener for Real-time Updates (removal, new members, etc.)
   useEffect(() => {

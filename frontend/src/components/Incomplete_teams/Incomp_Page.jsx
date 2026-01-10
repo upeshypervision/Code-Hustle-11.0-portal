@@ -119,8 +119,48 @@ const Incomp_Page = () => {
   };
 
   const handleDeleteClick = (member) => {
-    setMemberToDelete(member);
-    setDeleteReason("");
+    // For original members (no individual_id), delete directly with confirmation
+    if (!member.individual_id) {
+      const confirmed = window.confirm(
+        `Are you sure you want to remove ${member.name} from the team?\n\nThis action cannot be undone.`
+      );
+
+      if (confirmed) {
+        deleteOriginalMember(member);
+      }
+    } else {
+      // For accepted members (have individual_id), show reason modal
+      setMemberToDelete(member);
+      setDeleteReason("");
+    }
+  };
+
+  const deleteOriginalMember = async (member) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/team-member/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: member.email,
+          reason: "Original team member removed by team leader" // Default reason for backend
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Member removed successfully.");
+        window.location.reload();
+      } else {
+        alert(result.error || "Failed to remove member");
+      }
+    } catch (error) {
+      console.error("Error removing member:", error);
+      alert("Failed to remove member");
+    }
   };
 
   const cancelDeleteMember = () => {
@@ -147,7 +187,6 @@ const Incomp_Page = () => {
         credentials: "include",
         body: JSON.stringify({
           individual_id: memberToDelete.individual_id,
-          email: !memberToDelete.individual_id ? memberToDelete.email : undefined, // Fallback for original members
           reason: deleteReason
         }),
       });
@@ -387,7 +426,7 @@ const Incomp_Page = () => {
                             View
                           </button>
                           <button
-                            onClick={() => handleDeleteMember(member)}
+                            onClick={() => handleDeleteClick(member)}
                             className="member-btn-remove"
                           >
                             Remove
