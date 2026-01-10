@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children, role = "admin" }) {
+export default function ProtectedRoute({ children, role = "admin", redirectTo }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const endpoint =
-        role === "student"
-          ? "http://localhost:5000/api/check-student-auth"
-          : role === "evaluator"
-            ? "http://localhost:5000/api/check-evaluator-auth"
-            : "http://localhost:5000/api/check-auth";
+      let endpoint;
+      if (role === "student") endpoint = "http://localhost:5000/api/check-student-auth";
+      else if (role === "evaluator") endpoint = "http://localhost:5000/api/check-evaluator-auth";
+      else if (role === "individual") endpoint = "http://localhost:5000/api/check-individual-auth";
+      else if (role === "team") endpoint = "http://localhost:5000/api/check-team-auth";
+      else endpoint = "http://localhost:5000/api/check-auth";
 
       try {
         const res = await fetch(endpoint, {
@@ -36,17 +36,24 @@ export default function ProtectedRoute({ children, role = "admin" }) {
           ? "Authenticating Session..."
           : role === "evaluator"
             ? "Verifying Evaluator..."
-            : "Verifying Access..."}
+            : role === "individual"
+              ? "Verifying Individual Access..."
+              : role === "team"
+                ? "Verifying Team Access..."
+                : "Verifying Access..."}
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    const redirectPath =
-      role === "student" ? "/userlogin" :
-        role === "evaluator" ? "/evaluator-login" :
-          "/admin-login";
-    return <Navigate to={redirectPath} replace />;
+    let defaultRedirect;
+    if (role === "student") defaultRedirect = "/userlogin";
+    else if (role === "evaluator") defaultRedirect = "/evaluator-login";
+    else if (role === "individual") defaultRedirect = "/individual-login";
+    else if (role === "team") defaultRedirect = "/team-login";
+    else defaultRedirect = "/admin-login";
+
+    return <Navigate to={redirectTo || defaultRedirect} replace />;
   }
 
   return children;

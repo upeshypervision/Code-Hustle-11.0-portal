@@ -87,7 +87,10 @@ const Incomp_Page = () => {
         });
 
         if (response.status === 401) {
-          navigate('/team-login');
+          const errData = await response.json();
+          console.error("Team Auth Error:", errData);
+          showNotification(`Authentication Failed: ${errData.error || "Unknown Error"}`, 'error');
+          // navigate('/team-login'); // Disabled for debugging
           return;
         }
 
@@ -97,6 +100,7 @@ const Incomp_Page = () => {
         setTeamData(prev => ({ ...prev, ...data }));
       } catch (error) {
         console.error("Error loading team data:", error);
+        showNotification(`Error: ${error.message}`, 'error');
       }
     };
 

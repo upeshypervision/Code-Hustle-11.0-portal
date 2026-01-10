@@ -31,13 +31,24 @@ function App() {
         <Route path="/create-team" element={<Team_Regi />} />
         <Route
           path="/indimember"
-          element={<Indi_Dashboard />}
+          element={
+            <ProtectedRoute role="individual" redirectTo="/individual-login">
+              <Indi_Dashboard />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/accepted-team"
           element={<AcceptedTeamPage />}
         />
-        <Route path="/team-up" element={<Incomp_Page />} />
+        <Route
+          path="/team-up"
+          element={
+            <ProtectedRoute role="team" redirectTo="/team-login">
+              <Incomp_Page />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/Indiregi" element={<Indi_Regi />} />
         <Route path="/individual-login" element={<Indi_Login />} />
         <Route path="/team-login" element={<TeamLogin />} />

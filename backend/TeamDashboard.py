@@ -22,14 +22,17 @@ def get_team_dashboard_data():
             return jsonify({"error": "Invalid token payload"}), 401
             
     except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Session expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid token"}), 401
+        print("DEBUG: Token expired")
+        return jsonify({"error": "Session expired (Backend)"}), 401
+    except jwt.InvalidTokenError as e:
+        print(f"DEBUG: Invalid token: {str(e)}")
+        return jsonify({"error": f"Invalid token: {str(e)}"}), 401
     
     team = db.create_team.find_one({"team_id": team_id})
+    print(f"DEBUG: Team found: {team is not None} for ID: {team_id}")
     
     if not team:
-        return jsonify({"error": "Team not found"}), 404
+        return jsonify({"error": f"Team not found for ID: {team_id}"}), 404
 
     leader_data = team.get("leader", {})
     members_data = team.get("members", [])

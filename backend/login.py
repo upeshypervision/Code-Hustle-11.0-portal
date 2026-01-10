@@ -274,3 +274,25 @@ def team_login_route():
     )
     return response
 
+
+def check_individual_auth_route():
+    token = request.cookies.get('individual_auth')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return jsonify({"authenticated": True, "individual_id": payload["individual_id"]})
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return jsonify({"authenticated": False}), 401
+
+def check_team_auth_route():
+    token = request.cookies.get('team_auth')
+    if not token:
+        return jsonify({"authenticated": False}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return jsonify({"authenticated": True, "team_id": payload["team_id"]})
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return jsonify({"authenticated": False}), 401
