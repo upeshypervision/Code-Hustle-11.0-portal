@@ -103,3 +103,44 @@ input {
     margin-top: 8px;
   }
 }
+
+/* --- ✅ ADDED TO SYNC SIDEBAR & HAMBURGER BREAKPOINTS --- */
+
+@media (max-width: 1024px) {
+  /* Force Hamburger to show as soon as sidebar hides */
+  .hamburger-menu {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Adjust Admin Content Layout */
+  .admin-layout {
+    display: block !important;
+  }
+
+  .admin-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 20px !important;
+  }
+
+  /* Force Navbar layout for mobile */
+  .top-nav-inner {
+    padding: 0 15px !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Ensure Hamburger is hidden on Desktop */
+  .hamburger-menu {
+    display: none !important;
+  }
+
+  /* Ensure Sidebar is forced visible on Desktop */
+  .admin-sidebar-v2 {
+    left: 0 !important;
+    position: relative !important;
+    display: flex !important;
+  }
+}
