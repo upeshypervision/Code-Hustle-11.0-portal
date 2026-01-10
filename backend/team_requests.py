@@ -130,6 +130,9 @@ def accept_join_request():
             "$set": {
                 "accepted": team_id,
                 "requested": [team_id]  # Keep only the accepted team in requested
+            },
+            "$unset": {
+                "reason": ""  # Clear any old removal reason from previous team
             }
         }
     )
