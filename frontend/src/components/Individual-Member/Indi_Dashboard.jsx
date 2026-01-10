@@ -532,6 +532,7 @@ const Indi_Dashboard = () => {
         <ChatBox
           team={chatTeam}
           userDetails={userDetails}
+          userType="individual"
           onClose={() => {
             setShowChat(false);
             setChatTeam(null);

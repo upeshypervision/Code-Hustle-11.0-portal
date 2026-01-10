@@ -45,6 +45,7 @@ from ppt_review import get_evaluated_submissions_route, update_ppt_approval_rout
 from individual_registration import register_individual_route
 from createteam_registration import create_team_route
 from TeamDashboard import get_team_dashboard_data, delete_team_member
+from chat_service import send_message, get_chat_history, get_conversations, mark_as_read
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -371,6 +372,34 @@ def team_reject_request():
     if request.method == "OPTIONS":
         return "", 200
     return reject_join_request()
+
+# ----------------------------
+# CHAT ROUTES
+# ----------------------------
+
+@app.route('/api/chat/send', methods=['POST', 'OPTIONS'])
+def chat_send():
+    if request.method == "OPTIONS":
+        return "", 200
+    return send_message()
+
+@app.route('/api/chat/history/<conversation_id>', methods=['GET', 'OPTIONS'])
+def chat_history(conversation_id):
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_chat_history(conversation_id)
+
+@app.route('/api/chat/conversations', methods=['GET', 'OPTIONS'])
+def chat_conversations():
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_conversations()
+
+@app.route('/api/chat/mark-read', methods=['POST', 'OPTIONS'])
+def chat_mark_read():
+    if request.method == "OPTIONS":
+        return "", 200
+    return mark_as_read()
 
 if __name__ == "__main__":
     socketio.run(app, host="127.0.0.1", port=5000, debug=True)

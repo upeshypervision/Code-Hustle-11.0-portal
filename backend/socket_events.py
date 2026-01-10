@@ -37,3 +37,30 @@ def handle_request_rejected(data):
     if individual_id:
         emit('request_rejected', data, room=f'individual_{individual_id}', include_self=False)
         print(f"Rejection broadcasted to individual_{individual_id}")
+
+# ===== CHAT SOCKET EVENTS =====
+
+@socketio.on('join_chat_room')
+def handle_join_chat_room(data):
+    """Join a specific chat conversation room"""
+    conversation_id = data.get('conversation_id')
+    if conversation_id and conversation_id.startswith('CONV_'):
+        room = f'chat_{conversation_id}'
+        join_room(room)
+        print(f"Client joined chat room: {room}")
+        emit('chat_room_joined', {'conversation_id': conversation_id})
+
+@socketio.on('typing_indicator')
+def handle_typing(data):
+    """Broadcast typing indicator to conversation room"""
+    conversation_id = data.get('conversation_id')
+    sender_type = data.get('sender_type')
+    is_typing = data.get('is_typing', False)
+    
+    if conversation_id and conversation_id.startswith('CONV_'):
+        emit('user_typing', {
+            'conversation_id': conversation_id,
+            'sender_type': sender_type,
+            'is_typing': is_typing
+        }, room=f'chat_{conversation_id}', include_self=False)
+

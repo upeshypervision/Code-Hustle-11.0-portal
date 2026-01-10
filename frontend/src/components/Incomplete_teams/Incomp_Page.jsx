@@ -527,7 +527,9 @@ const Incomp_Page = () => {
 
       {chatTarget && (
         <ChatBox
-          team={chatTarget} // ChatBox now accepts 'team' prop as a generic target
+          team={chatTarget}
+          userDetails={teamData}
+          userType="team"
           onClose={() => setChatTarget(null)}
         />
       )}
