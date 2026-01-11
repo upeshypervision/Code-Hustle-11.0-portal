@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import socket from "../../socket";
+import strangerThingsBg from "../../assets/StrangerThings-bg.png";
 
 export default function SubmissionPortal({ onUpload, isSubmitted }) {
   // --- STATE & LOGIC: STRICTLY INTACT ---
@@ -177,24 +178,22 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
           left: 0,
           width: "100vw",
           height: "100vh",
-          backgroundImage: `url('https://platform.vox.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/22977484/Nissan.jpg?quality=90&strip=all&crop=0.095000000000006%2C0%2C99.81%2C100&w=2400')`,
+          backgroundImage: `url(${strangerThingsBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          filter: "grayscale(20%) brightness(30%) contrast(70%)",
-          zIndex: -2,
+          opacity: "1",
+          zIndex: 0,
+          pointerEvents: "none",
         }}
       />
       <div
         style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          background:
-            "radial-gradient(circle at center, transparent 0%, rgba(28, 25, 25, 0.4) 50%, rgba(0, 0, 0, 0.9) 100%)",
-          zIndex: -1,
+          inset: 0,
+          background: "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
+          zIndex: 1,
+          pointerEvents: "none",
         }}
       />
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import socket from "../../socket";
+import strangerThingsBg from "../../assets/StrangerThings-bg.png";
 
 export default function PSGallery() {
   // --- STATE ---
@@ -203,13 +204,14 @@ export default function PSGallery() {
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
+        alignItems: "center",
         width: "100%",
-        padding: "20px",
+        padding: "0",
         boxSizing: "border-box",
         position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
+        height: "calc(100vh - 70px)",
       }}
     >
       {/* --- FIXED BACKGROUND --- */}
@@ -220,7 +222,7 @@ export default function PSGallery() {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
+          backgroundImage: `url(${strangerThingsBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -241,10 +243,11 @@ export default function PSGallery() {
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
+        className="ps-container-main"
         style={{
           animation: "fadeIn 0.5s ease-out",
           width: "100%",
-          maxWidth: "900px",
+          maxWidth: "500px",
           position: "relative",
           zIndex: 2,
         }}
@@ -777,6 +780,14 @@ export default function PSGallery() {
               .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
               .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
               .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
+              .ps-container-main {
+                  transform: translateX(-100px);
+              }
+              @media (max-width: 768px) {
+                  .ps-container-main {
+                      transform: translateX(0);
+                  }
+              }
               @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `,
           }}

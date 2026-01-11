@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import socket from '../../socket';
+import strangerThingsBg from '../../assets/StrangerThings-bg.png';
 
 export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess }) {
     // --- STATE & REFS ---
@@ -203,33 +204,37 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
         <div style={{
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             width: '100%',
             padding: '0',
             boxSizing: 'border-box',
             position: 'relative',
+            height: 'calc(100vh - 70px)',
         }}>
 
             {/* --- BACKGROUNDS --- */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
+                backgroundImage: `url(${strangerThingsBg})`,
                 backgroundSize: 'cover', backgroundPosition: 'center',
-                filter: 'grayscale(0%) brightness(40%) contrast(70%)',
-                zIndex: -2,
+                backgroundRepeat: 'no-repeat',
+                opacity: '1',
+                zIndex: 0,
+                pointerEvents: 'none',
             }} />
 
             <div style={{
                 position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                background: 'radial-gradient(circle at center, transparent 0%, rgba(35, 33, 33, 0) 50%, rgba(59, 53, 53, 0) 100%)',
-                zIndex: -1,
+                background: 'radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)',
+                zIndex: 1,
+                pointerEvents: 'none',
             }} />
 
             {/* --- RENDERING LOGIC --- */}
 
             {checkingRound || checkingStatus ? (
                 /* 1. Loading State */
-                <div style={{
+                <div className="ppt-container-main" style={{
                     textAlign: 'center',
                     padding: '60px 20px',
                     color: 'rgba(255,255,255,0.6)',
@@ -240,7 +245,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 </div>
             ) : (hackerrankStatus && hackerrankStatus !== 'approved' && !hasUserSubmitted) ? (
                 /* 2. Not Allowed (Round 1 Not Approved) */
-                <div style={{
+                <div className="ppt-container-main" style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -283,7 +288,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 </div>
             ) : (!roundActive && !hasUserSubmitted) ? (
                 /* 3. Round Closed UI */
-                <div style={{
+                <div className="ppt-container-main" style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -328,7 +333,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 /* 3. Main Content Card
                    Shows if Round is Active OR if User has Submitted (bypassing the lock).
                 */
-                <div style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '900px', position: 'relative' }}>
+                <div className="ppt-container-main" style={{ animation: 'fadeIn 0.5s ease-out', width: '100%', maxWidth: '500px', position: 'relative' }}>
 
                     {selectedPS && (
                         <div style={{
@@ -565,8 +570,25 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     
                     .upload-icon-wrapper { animation: float 3s infinite ease-in-out; }
                     
+                    .ppt-container-main {
+                        transform: translateX(-200px) !important;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .ppt-container-main {
+                            transform: translateX(0) !important;
+                        }
+                    }
+                    
                     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes fadeIn { from { opacity: 0; transform: translateX(-200px) translateY(10px); } to { opacity: 1; transform: translateX(-200px) translateY(0); } }
+                    
+                    @media (max-width: 768px) {
+                        .ppt-container-main {
+                            transform: translateX(0) !important;
+                        }
+                        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                    }
                 `}} />
                 </div>
             )}

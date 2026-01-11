@@ -13,9 +13,9 @@
   --radius-lg: 12px;
   --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
   --transition-fast: 150ms ease-out;
-  --font-sans: "Rajdhani", system-ui, -apple-system, BlinkMacSystemFont,
+  --font-sans: "Eater", "Rajdhani", system-ui, -apple-system, BlinkMacSystemFont,
     "SF Pro Text", "Segoe UI", sans-serif;
-  --font-display: "Orbitron", sans-serif;
+  --font-display: "Eater", "Orbitron", sans-serif;
 }
 
 *,
