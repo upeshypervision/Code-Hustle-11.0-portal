@@ -9,6 +9,7 @@ import ViewSubmissions from "../components/admin/ViewSubmissions";
 import ManualPPT from "../components/admin/ManualPPT";
 import Manualgithub from "../components/admin/Manualgithub";
 import ViewCreateTeams from "../components/admin/ViewCreateTeams";
+import ViewIndividuals from "../components/admin/ViewIndividuals";
 
 /* ✅ ORIGINAL IMPORTS KEPT STRICTLY INTACT */
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
@@ -51,6 +52,7 @@ export default function AdminPanel() {
     { id: "view-hackerrank", label: "View Hackerrank", active: activeSection === "view-hackerrank" },
     { id: "selected-teams", label: "Selected Teams", active: activeSection === "selected-teams" },
     { id: "view-create-teams", label: "View Create Teams", active: activeSection === "view-create-teams" },
+    { id: "view-individuals", label: "View Individuals", active: activeSection === "view-individuals" },
     { id: "add-participant", label: "Add Participant", active: activeSection === "add-participant" },
   ];
 
@@ -74,6 +76,7 @@ export default function AdminPanel() {
       case "review-ppts": return <ReviewEvaluatedPPTs />;
       case "selected-teams": return <SelectedTeam />;
       case "view-create-teams": return <ViewCreateTeams />;
+      case "view-individuals": return <ViewIndividuals />;
       default: return null;
     }
   };
