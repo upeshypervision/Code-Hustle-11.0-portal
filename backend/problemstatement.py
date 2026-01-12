@@ -110,6 +110,16 @@ def get_all_problem_statements_route():
 # STUDENT: GET VISIBLE PROBLEM STATEMENTS
 # =========================
 def get_all_visible_problem_statements_route():
+    # Check if PS selection round is active
+    round_status = db.counters.find_one({"_id": "round_status"})
+    
+    # If round status doesn't exist or ps_selection is not live, return empty list
+    if not round_status or round_status.get("ps_selection") != "live":
+        return jsonify({
+            "success": True,
+            "problem_statements": []
+        }), 200
+
     ps_list = []
 
     cursor = db.problem_statements.find(

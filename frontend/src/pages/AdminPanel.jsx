@@ -8,6 +8,7 @@ import ViewTeams from "../components/admin/ViewTeams";
 import ViewSubmissions from "../components/admin/ViewSubmissions";
 import ManualPPT from "../components/admin/ManualPPT";
 import Manualgithub from "../components/admin/Manualgithub";
+import ViewCreateTeams from "../components/admin/ViewCreateTeams";
 
 /* ✅ ORIGINAL IMPORTS KEPT STRICTLY INTACT */
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
@@ -19,7 +20,7 @@ import ReviewEvaluatedPPTs from "../components/admin/ReviewEvaluatedPPTs";
 export default function AdminPanel() {
   const [activeSection, setActiveSection] = useState("rounds");
   const [adminInfo, setAdminInfo] = useState({ login_id: "Loading..." });
-  
+
   /* ✅ MOBILE STATE */
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -49,12 +50,13 @@ export default function AdminPanel() {
     { id: "manual-hackerrank", label: "Manual Hackerrank", active: activeSection === "manual-hackerrank" },
     { id: "view-hackerrank", label: "View Hackerrank", active: activeSection === "view-hackerrank" },
     { id: "selected-teams", label: "Selected Teams", active: activeSection === "selected-teams" },
+    { id: "view-create-teams", label: "View Create Teams", active: activeSection === "view-create-teams" },
     { id: "add-participant", label: "Add Participant", active: activeSection === "add-participant" },
   ];
 
   const handleMenuItemClick = (item) => {
     setActiveSection(item.id);
-    setIsMobileMenuOpen(false); 
+    setIsMobileMenuOpen(false);
   };
 
   const renderContent = () => {
@@ -71,6 +73,7 @@ export default function AdminPanel() {
       case "view-hackerrank": return <ViewHackerrank />;
       case "review-ppts": return <ReviewEvaluatedPPTs />;
       case "selected-teams": return <SelectedTeam />;
+      case "view-create-teams": return <ViewCreateTeams />;
       default: return null;
     }
   };
@@ -113,7 +116,7 @@ export default function AdminPanel() {
         isAdmin={true}
         menuItems={adminMenuItems}
         onMenuItemClick={handleMenuItemClick}
-        toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+        toggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
 
       <div className="admin-layout">
@@ -123,14 +126,14 @@ export default function AdminPanel() {
             setActiveSection(id);
             setIsMobileMenuOpen(false);
           }}
-          isMobileOpen={isMobileMenuOpen} 
+          isMobileOpen={isMobileMenuOpen}
         />
 
         <main className="admin-content">{renderContent()}</main>
 
         {isMobileMenuOpen && (
-          <div 
-            className="sidebar-overlay" 
+          <div
+            className="sidebar-overlay"
             onClick={() => setIsMobileMenuOpen(false)}
             style={{
               display: 'block',

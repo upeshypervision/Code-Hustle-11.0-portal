@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { 
-  ChevronDown, 
-  LayoutDashboard, 
-  FileStack, 
-  Github, 
-  Code2, 
-  Users2, 
-  UserPlus, 
-  Target 
+import {
+  ChevronDown,
+  LayoutDashboard,
+  FileStack,
+  Github,
+  Code2,
+  Users2,
+  UserPlus,
+  Target
 } from "lucide-react";
 import "./AdminSidebar.css";
 
@@ -33,7 +33,7 @@ export default function AdminSidebar({ activeSection, setActiveSection, isMobile
       <div className="sidebar-scroll-container">
         {/* CORE OPS */}
         <div className="sidebar-section-label">CORE OPS</div>
-        <button 
+        <button
           className={`nav-item-v2 ${activeSection === "rounds" ? "active-glow" : ""}`}
           onClick={() => setActiveSection("rounds")}
         >
@@ -41,7 +41,7 @@ export default function AdminSidebar({ activeSection, setActiveSection, isMobile
           <span className="label-text">Round Management</span>
         </button>
 
-        <button 
+        <button
           className={`nav-item-v2 ${activeSection === "problem-statements" ? "active-glow" : ""}`}
           onClick={() => setActiveSection("problem-statements")}
         >
@@ -99,12 +99,13 @@ export default function AdminSidebar({ activeSection, setActiveSection, isMobile
           <div className={`dropdown-content ${openMenus.teams ? "expanded" : ""}`}>
             <button className={activeSection === "view-teams" ? "sub-active" : ""} onClick={() => setActiveSection("view-teams")}>View Teams</button>
             <button className={activeSection === "selected-teams" ? "sub-active" : ""} onClick={() => setActiveSection("selected-teams")}>Selected Teams</button>
+            <button className={activeSection === "view-create-teams" ? "sub-active" : ""} onClick={() => setActiveSection("view-create-teams")}>View Create Teams</button>
           </div>
         </div>
 
         {/* USER OPS */}
-        <div className="sidebar-section-label" style={{marginTop: '20px'}}>USER OPS</div>
-        <button 
+        <div className="sidebar-section-label" style={{ marginTop: '20px' }}>USER OPS</div>
+        <button
           className={`nav-item-v2 ${activeSection === "add-participant" ? "active-glow" : ""}`}
           onClick={() => setActiveSection("add-participant")}
         >
