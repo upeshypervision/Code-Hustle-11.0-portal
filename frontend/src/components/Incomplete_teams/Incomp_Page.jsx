@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import GlobalNavbar from "../GlobalNavbar";
+
 import "../../styles/global.css";
 import "../Individual-Member/Indi.css";
 import "./Incomp_Page.css";
+import UserNavbar from "../user_dash/UserNavbar";
 import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
 import { sanitizeText } from "../../utils/sanitizer";
 import NotificationBadge from "../NotificationBadge";
@@ -288,40 +289,14 @@ const Incomp_Page = () => {
 
 
   return (
-    <div className="dashboard-page team-up-page-container" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
-      <GlobalNavbar
-        userInfo={null}
-        logoutPath="/team-login"
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        menuItems={[
-          {
-            id: "profile",
-            label: "Team Info",
-            name: "Team Info",
-            active: showProfile,
-          },
-          {
-            id: "details",
-            label: "Team Details",
-            name: "Team Details",
-            active: activeView === "details" && !showProfile
-          },
-          {
-            id: "requests",
-            label: "Requests",
-            name: "Requested Individuals",
-            active: activeView === "requests" && !showProfile
-          },
-        ]}
-        onMenuItemClick={(item) => {
-          if (item.id === "profile") {
-            setShowProfile(!showProfile);
-          } else {
-            setActiveView(item.id);
-            setShowProfile(false);
-          }
-        }}
-        showContactUs={true}
+    <div className="dashboard-page team-up-page-container" style={{
+      minHeight: "100vh"
+    }}>
+      <UserNavbar
+        teamName={teamData.teamName}
+        activeTab={activeView}
+        setActiveTab={setActiveView}
+        showHamburger={false}
       />
 
       <div className="admin-content dashboard-container">

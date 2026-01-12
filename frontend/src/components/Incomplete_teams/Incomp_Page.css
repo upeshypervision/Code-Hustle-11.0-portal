@@ -6,6 +6,16 @@
   /* Ensure no horizontal scroll is possible at root level */
 }
 
+/* FIX: Override background for Team Up page specifically */
+.team-up-page-container.dashboard-page {
+  background: url('../../assets/Stranger-Things-bg2.jpeg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+  min-height: 100vh;
+}
+
 /* Force hide hamburger menu in this specific page context if prop fails */
 .team-up-page .hamburger-menu {
   display: none !important;
@@ -117,12 +127,13 @@
 }
 
 /* Team Vision Text */
-/* Neural Node Style (Matching Dashboard) */
+/* Neural Node Style (Matching Dashboard but darker like Github) */
 .neural-node {
-  background: rgba(15, 23, 42, 0.3);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%) !important;
+  backdrop-filter: blur(20px);
+  border-radius: 4px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(220, 38, 38, 0.05);
   padding: 24px;
   width: 100%;
 }
@@ -310,9 +321,9 @@
 
 /* Leader Card */
 .leader-card {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
+  background: rgba(30, 30, 30, 0.4);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 4px;
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -463,28 +474,22 @@
 }
 
 .request-card {
-  background: linear-gradient(145deg,
-      rgba(30, 41, 59, 0.7),
-      rgba(15, 23, 42, 0.8));
-  border: 1px solid rgba(96, 165, 250, 0.2);
-  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 4px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 15px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(220, 38, 38, 0.05);
 }
 
 .request-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(96, 165, 250, 0.5);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2),
-    0 4px 6px -2px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(145deg,
-      rgba(30, 41, 59, 0.9),
-      rgba(15, 23, 42, 0.95));
+  border-color: rgba(220, 38, 38, 0.6);
+  box-shadow: 0 35px 60px rgba(0, 0, 0, 0.9), inset 0 0 120px rgba(220, 38, 38, 0.1);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.8) 0%, rgba(10, 10, 10, 0.95) 100%);
 }
 
 .request-info {
@@ -626,16 +631,14 @@
 }
 
 .modal-content.member-card {
-  background: linear-gradient(145deg,
-      rgba(30, 41, 59, 0.95),
-      rgba(15, 23, 42, 0.98));
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 4px;
   padding: 30px;
   width: 90%;
   max-width: 450px;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(220, 38, 38, 0.05);
   animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -730,16 +733,14 @@
 
 /* Request Modal Specifics */
 .request-modal-card {
-  background: linear-gradient(145deg,
-      rgba(30, 41, 59, 0.95),
-      rgba(15, 23, 42, 0.98));
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 4px;
   padding: 30px;
   width: 90%;
   max-width: 450px;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(220, 38, 38, 0.05);
   animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -799,430 +800,189 @@
   margin-bottom: 40px;
 }
 
-.sidebar-profile-container {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  margin-top: 16px;
-  color: #ddd;
+/* --- Restored Button Styles for Team Details & Requested Individuals --- */
+
+/* Base style for all action buttons */
+.indi-btn-accept,
+.indi-btn-reject,
+.indi-btn-remove,
+.indi-btn-chat,
+.indi-btn-view,
+.member-btn-view,
+.member-btn-remove,
+.member-chat-btn,
+.modal-action-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  /* Matching new boxy theme */
+  cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
 }
 
-/* Tab Navigation */
+/* Accept / Green Buttons */
+.indi-btn-accept,
+.accept-btn,
+.chat-btn,
+.member-chat-btn {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.indi-btn-accept:hover,
+.accept-btn:hover,
+.chat-btn:hover,
+.member-chat-btn:hover {
+  background: rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Reject / Remove / Red Buttons */
+.indi-btn-reject,
+.indi-btn-remove,
+.member-btn-remove,
+.reject-btn,
+.delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.indi-btn-reject:hover,
+.indi-btn-remove:hover,
+.member-btn-remove:hover,
+.reject-btn:hover,
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Chat / View / Blue Buttons */
+.indi-btn-chat,
+.indi-btn-view,
+.member-btn-view,
+.view-btn,
+.chat-btn-modal {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.indi-btn-chat:hover,
+.indi-btn-view:hover,
+.member-btn-view:hover,
+.view-btn:hover,
+.chat-btn-modal:hover {
+  background: rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Container fix for action buttons */
+.action-buttons-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Tab Navigation Buttons */
 .tab-nav-container {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 12px;
+  gap: 2px;
+  margin-bottom: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: fit-content;
 }
 
 .tab-nav-btn {
-  padding: 10px 20px;
   background: transparent;
   color: #94a3b8;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
   font-family: "Orbitron", sans-serif;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  /* Ensure no forced capitalization */
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.tab-nav-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .tab-nav-btn.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: rgba(220, 38, 38, 0.2);
+  /* Red tint matched to theme */
   color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
 }
 
-/* Team Header Section */
-.team-header-wrapper {
-  margin-bottom: 30px;
-}
-
-.team-header-main {
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 16px;
-}
-
-.vision-container {
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-}
-
-.vision-label {
-  display: block;
-  color: #38bdf8;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-}
-
-/* Members List */
-.members-list-label {
-  margin-bottom: 20px;
-  display: block;
-}
-
+/* Fix for Member List Items alignment */
 .member-list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  gap: 15px;
-  /* Add gap between name and buttons */
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 4px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  transition: background 0.2s;
 }
 
-/* Ensure name breaks properly and doesn't push buttons */
-.member-name {
-  flex: 1;
-  /* Take up available space */
-  min-width: 0;
-  /* Allow shrinking below content size to force wrapping */
-  word-wrap: break-word;
-  word-break: break-word;
-  /* Break long words if needed */
-  overflow-wrap: break-word;
-  margin-right: 10px;
+.member-list-item:hover {
+  background: rgba(30, 30, 30, 0.6);
+  border-color: rgba(220, 38, 38, 0.4);
 }
 
-/* Ensure buttons don't shrink */
 .member-actions {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-shrink: 0;
-  /* Prevent buttons from being squashed */
+  gap: 12px;
 }
 
-.member-btn-view {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: "Orbitron", sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  /* No forced caps */
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.member-btn-view:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
-
-.member-btn-remove {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-  padding: 6px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: "Orbitron", sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  /* No forced caps */
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.member-btn-remove:hover {
-  background: rgba(239, 68, 68, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-  border-color: #ef4444;
-}
-
-.register-btn-container {
-  margin-top: 40px;
-  text-align: center;
-}
-
+/* Register Button (Neon) */
 .register-team-btn {
-  padding: 12px 32px;
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .profile-sidebar-wrapper {
-    width: 100%;
-  }
-
-  .tab-nav-container {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .tab-nav-btn {
-    flex: 1;
-    text-align: center;
-    padding: 10px 5px;
-    /* Reduce padding to ensure fit */
-    font-size: 0.85rem;
-    /* Slight adjustments for smaller screens if needed */
-  }
-}
-
-/* --- Action Buttons Alignment Fix --- */
-
-.action-buttons-container {
-  display: flex !important;
-  gap: 6px !important;
-  justify-content: flex-start !important;
-  padding-left: 0 !important;
-  align-items: center !important;
-  flex-wrap: wrap !important;
-  margin-top: 5px;
   width: 100%;
-}
-
-/* Base styles for buttons to ensure consistency */
-.indi-btn-view,
-.indi-btn-chat,
-.indi-btn-remove,
-.indi-btn-accept {
-  padding: 0 !important;
-  border-radius: 6px !important;
-  cursor: pointer;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important;
+  padding: 15px;
+  margin-top: 30px;
+  background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%);
+  color: #fff;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
   border: none;
-  transition: all 0.2s ease;
-  white-space: nowrap !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 4px !important;
-  font-family: "Orbitron", sans-serif !important;
-  text-transform: none !important;
-  /* No forced caps */
-  letter-spacing: 0.5px !important;
-  height: 30px !important;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
 }
 
-/* Specific sizing for 2-row layout */
-.indi-btn-view,
-.indi-btn-chat,
-.indi-btn-accept {
-  flex: 1 1 calc(50% - 3px) !important;
-  min-width: 0 !important;
-}
-
-.indi-btn-remove {
-  flex: 1 1 100% !important;
-  width: 100% !important;
-}
-
-/* View Button - Blue */
-.indi-btn-view {
-  background: #3b82f6 !important;
-  color: white !important;
-  background: #3b82f6 !important;
-  color: white !important;
-}
-
-.indi-btn-view:hover {
-  background: #2563eb !important;
+.register-team-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
 }
 
-/* Chat Button - Gradient */
-.indi-btn-chat {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  color: white !important;
-}
-
-.indi-btn-chat:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-/* Accept Button - Green */
-.indi-btn-accept {
-  background: rgba(34, 197, 94, 0.1) !important;
-  color: #22c55e !important;
-  border: 1px solid rgba(34, 197, 94, 0.3) !important;
-}
-
-.indi-btn-accept:hover {
-  background: rgba(34, 197, 94, 0.2) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
-  border-color: #22c55e !important;
-}
-
-/* Remove Button - Red Outline style */
-.indi-btn-remove {
-  background: rgba(239, 68, 68, 0.1) !important;
-  color: #ef4444 !important;
-  border: 1px solid rgba(239, 68, 68, 0.3) !important;
-  padding: 6px 12px !important;
-}
-
-.indi-btn-remove:hover {
-  background: rgba(239, 68, 68, 0.2) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-  border-color: #ef4444 !important;
-}
-
-/* Mobile Responsiveness for Actions */
-@media (max-width: 900px) {
-
-  /* On medium screens, maybe just reduce padding */
-  .indi-btn-view,
-  .indi-btn-chat,
-  .indi-btn-remove,
-  .indi-btn-accept {
-    padding: 6px 12px !important;
-    font-size: 0.8rem !important;
-  }
-}
-
-/* Shift Actions header right */
-.indi-table th:last-child {
-  padding-left: 35px !important;
-  text-align: left !important;
-  /* Ensure it's not centered by default if that's the issue */
-}
-
-@media (max-width: 600px) {
-
-  /* On small screens (mobile), keep them in a row if possible, or wrap */
-  .action-buttons-container {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 6px !important;
-    width: 100% !important;
-    justify-content: flex-start !important;
-  }
-
-  .indi-btn-view,
-  .indi-btn-chat,
-  .indi-btn-accept {
-    width: calc(50% - 3px) !important;
-    min-width: 0 !important;
-    height: 30px !important;
-    min-height: 30px !important;
-    font-size: 0.75rem !important;
-    padding: 0 !important;
-    flex: 0 0 calc(50% - 3px) !important;
-  }
-
-  .indi-btn-remove {
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 30px !important;
-    min-height: 30px !important;
-    font-size: 0.75rem !important;
-    padding: 0 !important;
-    flex: 0 0 100% !important;
-  }
-
-  /* Also fix table overflow if not already handled */
-  .indi-table-container {
-    width: 100%;
-    margin-top: 15px;
-    overflow-x: hidden;
-    /* Prevent scrollbar */
-  }
-
-  /* Make table look decent on mobile */
-  .indi-table {
-    width: 100%;
-    min-width: 0 !important;
-    /* Allow strict fit */
-    table-layout: fixed;
-    /* Force predictable width */
-  }
-}
-
-
-/* Page-specific overrides */
-.team-up-page-container .top-nav {
-  background: #0a0b1e !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(10px);
-}
-
-/* Request Modal Action Buttons - Horizontal Alignment */
-.request-modal-actions {
-  display: flex !important;
-  flex-direction: row !important;
-  gap: 15px !important;
-  justify-content: center !important;
-  align-items: center !important;
-  width: 100% !important;
-  margin-top: 25px !important;
-}
-
-.modal-action-btn {
-  flex: 1 !important;
-  padding: 12px 16px !important;
-  border-radius: 8px !important;
-  font-family: "Orbitron", sans-serif !important;
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  min-width: 100px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* Specific variants referenced in JSX but maybe missing from CSS */
-.accept-btn {
-  background: rgba(34, 197, 94, 0.2) !important;
-  color: #4ade80 !important;
-  border: 1px solid rgba(34, 197, 94, 0.3) !important;
-}
-
-.accept-btn:hover {
-  background: rgba(34, 197, 94, 0.3) !important;
-  box-shadow: 0 0 15px rgba(74, 222, 128, 0.3) !important;
-}
-
-.reject-btn {
-  background: rgba(239, 68, 68, 0.2) !important;
-  color: #ef4444 !important;
-  border: 1px solid rgba(239, 68, 68, 0.3) !important;
-}
-
-.reject-btn:hover {
-  background: rgba(239, 68, 68, 0.3) !important;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3) !important;
-}
-
-.chat-btn-modal {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  color: white !important;
-  border: none !important;
-}
-
-.chat-btn-modal:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+/* Label Fix */
+.label-detail.teamup-label {
+  display: inline-block;
+  width: auto;
+  min-width: 200px;
 }

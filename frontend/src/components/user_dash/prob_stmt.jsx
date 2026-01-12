@@ -200,19 +200,22 @@ export default function PSGallery() {
 
   return (
     <div
-      className="ps-container"
       style={{
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: "center",   // ← ADD
+        alignItems: "flex-start",   // ← ADD
         width: "100%",
-        padding: "0",
+        paddingTop: "70px",
+        paddingBottom: "40px",
         boxSizing: "border-box",
         position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
-        height: "calc(100vh - 70px)",
+        minHeight: "100vh",         // ← change height → minHeight
+        overflowY: "auto",
       }}
+
+
     >
       {/* --- FIXED BACKGROUND --- */}
       <div
@@ -243,15 +246,18 @@ export default function PSGallery() {
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
-        className="ps-container-main"
         style={{
-          animation: "fadeIn 0.5s ease-out",
-          width: "100%",
-          maxWidth: "500px",
           position: "relative",
           zIndex: 2,
+          width: "100%",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "0 30px",
+          boxSizing: "border-box",
         }}
       >
+
+
         {/* LOGIC CHANGE HERE:
             1. Check Loading
             2. Check SelectedPS (Highest Priority UI)
@@ -278,7 +284,9 @@ export default function PSGallery() {
             borderRadius: '8px',
             padding: '40px',
             textAlign: 'center',
-            animation: 'fadeIn 0.5s ease-out'
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '600px',
+            margin: '0 auto'
           }}>
             <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
             <h2 style={{
@@ -366,7 +374,9 @@ export default function PSGallery() {
             backdropFilter: 'blur(10px)',
             border: '2px solid #ef4444',
             borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '800px',
+            margin: '0 auto'
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
             <h2 style={{
@@ -408,7 +418,9 @@ export default function PSGallery() {
             backdropFilter: 'blur(10px)',
             border: '2px solid #ef4444',
             borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '800px',
+            margin: '0 auto'
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
             <h2 style={{
@@ -437,7 +449,12 @@ export default function PSGallery() {
           </div>
         ) : (
           /* --- PRIORITY 3: ACTIVE SELECTION LIST --- */
-          <>
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
             <div
               style={{
                 borderLeft: "8px solid #dc2626",
@@ -446,6 +463,10 @@ export default function PSGallery() {
                 padding: "15px 25px",
                 marginBottom: "40px",
                 boxShadow: "0 10px 40px rgba(183, 99, 80, 0.5)",
+                maxWidth: "80%",
+                width: "100%",
+                margin: "0 auto 40px auto",
+                boxSizing: "border-box"
               }}
             >
               <p
@@ -456,6 +477,7 @@ export default function PSGallery() {
                   letterSpacing: "2px",
                   textTransform: "uppercase",
                   margin: 0,
+                  textAlign: "center"
                 }}
               >
                 <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET LOCK
@@ -463,7 +485,14 @@ export default function PSGallery() {
               </p>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "20px",
+              padding: "0",
+              width: "100%",
+              boxSizing: "border-box"
+            }}>
               {problemStatements.map((ps) => {
                 const count = ps.selections || 0;
                 const target = ps.max_count || 30;
@@ -644,102 +673,105 @@ export default function PSGallery() {
                 );
               })}
             </div>
-          </>
+          </div>
         )}
+      </div>
 
-        {/* --- MODAL UI (Always render, visibility controlled by showModal) --- */}
-        {showModal && (
+      {/* --- MODAL UI (Always render, visibility controlled by showModal) --- */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.95)",
+            padding: "20px",
+          }}
+        >
           <div
             style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 2000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "rgba(0,0,0,0.95)",
-              padding: "20px",
+              width: "100%",
+              maxWidth: "420px",
+              padding: "40px",
+              background: "#0a0a0a",
+              border: "2px solid #dc2626",
+              textAlign: "center",
+              boxShadow: "0 0 50px rgba(220,38,38,0.3)",
             }}
           >
             <div
               style={{
-                width: "100%",
-                maxWidth: "420px",
-                padding: "40px",
-                background: "#0a0a0a",
-                border: "2px solid #dc2626",
-                textAlign: "center",
-                boxShadow: "0 0 50px rgba(220,38,38,0.3)",
+                fontSize: "10px",
+                color: "#dc2626",
+                fontWeight: "900",
+                letterSpacing: "5px",
+                marginBottom: "15px",
               }}
             >
-              <div
+              BELLA CIAO
+            </div>
+            <h2
+              style={{
+                color: "#fff",
+                textTransform: "uppercase",
+                margin: "0 0 20px 0",
+              }}
+            >
+              LOCK TARGET?
+            </h2>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                marginBottom: "30px",
+                fontSize: "14px",
+              }}
+            >
+              Confirming lock for{" "}
+              <strong style={{ color: "#dc2626" }}>
+                {pendingPs?.problem_statement_id}
+              </strong>
+              . Once breached, the vault stays locked.
+            </p>
+            <div style={{ display: "flex", gap: "15px" }}>
+              <button
+                onClick={() => setShowModal(false)}
                 style={{
-                  fontSize: "10px",
-                  color: "#dc2626",
-                  fontWeight: "900",
-                  letterSpacing: "5px",
-                  marginBottom: "15px",
-                }}
-              >
-                BELLA CIAO
-              </div>
-              <h2
-                style={{
+                  flex: 1,
+                  background: "transparent",
                   color: "#fff",
-                  textTransform: "uppercase",
-                  margin: "0 0 20px 0",
+                  border: "1px solid #333",
+                  padding: "15px",
+                  cursor: "pointer",
                 }}
               >
-                LOCK TARGET?
-              </h2>
-              <p
+                ABORT
+              </button>
+              <button
+                onClick={confirmLock}
                 style={{
-                  color: "rgba(255,255,255,0.6)",
-                  marginBottom: "30px",
-                  fontSize: "14px",
+                  flex: 1,
+                  background: "#dc2626",
+                  color: "#fff",
+                  border: "none",
+                  padding: "15px",
+                  fontWeight: "900",
+                  cursor: "pointer",
                 }}
               >
-                Confirming lock for{" "}
-                <strong style={{ color: "#dc2626" }}>
-                  {pendingPs?.problem_statement_id}
-                </strong>
-                . Once breached, the vault stays locked.
-              </p>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <button
-                  onClick={() => setShowModal(false)}
-                  style={{
-                    flex: 1,
-                    background: "transparent",
-                    color: "#fff",
-                    border: "1px solid #333",
-                    padding: "15px",
-                    cursor: "pointer",
-                  }}
-                >
-                  ABORT
-                </button>
-                <button
-                  onClick={confirmLock}
-                  style={{
-                    flex: 1,
-                    background: "#dc2626",
-                    color: "#fff",
-                    border: "none",
-                    padding: "15px",
-                    fontWeight: "900",
-                    cursor: "pointer",
-                  }}
-                >
-                  INITIALIZE
-                </button>
-              </div>
+                INITIALIZE
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )
+      }
 
-        {/* --- NOTIFICATION UI --- */}
-        {notification.show && (
+      {/* --- NOTIFICATION UI --- */}
+      {
+        notification.show && (
           <div
             style={{
               position: "fixed",
@@ -758,15 +790,22 @@ export default function PSGallery() {
               {notification.message}
             </p>
           </div>
-        )}
+        )
+      }
 
-        {/* --- STYLES (Moved outside conditional logic to apply everywhere) --- */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+      {/* --- STYLES (Moved outside conditional logic to apply everywhere) --- */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
               .ps-container::-webkit-scrollbar { display: none; }
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
+              @media (min-width: 993px) {
+                  .ps-container {
+                      padding-left: 0 !important;
+                  }
+              }
+
               @media (max-width: 992px) {
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
@@ -780,19 +819,12 @@ export default function PSGallery() {
               .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
               .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
               .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
-              .ps-container-main {
-                  transform: translateX(-100px);
-              }
-              @media (max-width: 768px) {
-                  .ps-container-main {
-                      transform: translateX(0);
-                  }
-              }
+
               @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `,
-          }}
-        />
-      </div>
-    </div>
+        }}
+      />
+
+    </div >
   );
 }

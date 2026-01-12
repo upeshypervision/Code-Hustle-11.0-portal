@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserNavbar.css';
 
-export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
+export default function UserNavbar({ teamName, activeTab, setActiveTab, showHamburger = true }) {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -46,29 +46,19 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
                 <div className="user-navbar-inner">
                     {/* Left Section - Hamburger & Logo */}
                     <div className="user-navbar-left">
-                        <button
-                            className={`user-navbar-hamburger ${isMenuOpen ? 'menu-open' : ''}`}
-                            onClick={toggleMenu}
-                            aria-label="Toggle menu"
-                        >
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </button>
+                        {showHamburger && (
+                            <button
+                                className={`user-navbar-hamburger ${isMenuOpen ? 'menu-open' : ''}`}
+                                onClick={toggleMenu}
+                                aria-label="Toggle menu"
+                            >
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
+                        )}
                         <div className="user-navbar-logo">
-                            <span className="user-navbar-logo-small">THE</span>
-                            <span className="user-navbar-logo-main">CODEHUSTLE</span>
-                        </div>
-                        {/* Central Emblem */}
-                        <div className="user-navbar-emblem">
-                            <div className="emblem-circle">
-                                <div className="emblem-house"></div>
-                                <div className="emblem-trees">
-                                    <div className="emblem-tree tree-left"></div>
-                                    <div className="emblem-tree tree-right"></div>
-                                </div>
-                                <div className="emblem-number">11</div>
-                            </div>
+                            <span className="user-navbar-logo-main">Code Hustle 11</span>
                         </div>
                     </div>
 
@@ -164,7 +154,7 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
                                 ))}
                             </div>
                             <div className="menu-footer">
-                                <div className="menu-footer-text">DATA_STREAM: ENCRYPTED</div>
+                                <div className="menu-footer-text">On a curiosity voyage</div>
                             </div>
                         </div>
                     </div>

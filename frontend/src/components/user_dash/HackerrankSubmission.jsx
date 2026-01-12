@@ -123,7 +123,7 @@ export default function HackerrankSubmission({ teamName }) {
         if (res.status === 403) {
           setError(
             data.error ||
-              "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed."
+            "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed."
           );
         } else {
           setError(data.error || "Failed to submit link");
@@ -199,7 +199,7 @@ export default function HackerrankSubmission({ teamName }) {
         className="hackerrank-container"
         style={{
           width: "100%",
-          maxWidth: "500px",
+          maxWidth: "800px",
           position: "relative",
           zIndex: 10,
         }}
@@ -207,16 +207,19 @@ export default function HackerrankSubmission({ teamName }) {
         <div
           style={{
             background:
-              "linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)",
-            backdropFilter: "blur(10px)",
+              "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
             borderRadius: "4px",
             border: success
               ? "1px solid #10b981"
-              : "1px solid rgba(34, 197, 94, 0.3)", // Green theme
+              : "1px solid rgba(220, 38, 38, 0.3)", // Red theme
             boxShadow: success
               ? "0 10px 40px rgba(16, 185, 129, 0.1)"
-              : "0 10px 40px rgba(0,0,0,0.8)",
-            padding: "30px",
+              : "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            padding: "40px",
+            minHeight: "50vh",
+            display: "flex",
+            flexDirection: "column",
             animation: "fadeIn 0.6s ease-out",
           }}
         >
@@ -224,9 +227,9 @@ export default function HackerrankSubmission({ teamName }) {
           <div
             style={{
               textAlign: "left",
-              marginBottom: "25px",
+              marginBottom: "15px",
               borderBottom: "1px solid rgba(255,255,255,0.1)",
-              paddingBottom: "15px",
+              paddingBottom: "10px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -237,15 +240,17 @@ export default function HackerrankSubmission({ teamName }) {
             <div>
               <h2
                 style={{
-                  color: "#22c55e", // Green for Hackerrank
+                  color: "#fff", // White text
+                  fontFamily: '"Della Respira", serif',
                   fontSize: "1.5rem",
-                  fontWeight: "900",
+                  fontWeight: "700",
                   letterSpacing: "2px",
                   textTransform: "uppercase",
                   margin: "0 0 5px 0",
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
+                  textShadow: "0 0 15px rgba(220, 38, 38, 0.5)", // Red glow
                 }}
               >
                 <span style={{ fontSize: "1.8rem" }}>🧩</span> HACKERRANK
@@ -254,9 +259,11 @@ export default function HackerrankSubmission({ teamName }) {
               <p
                 style={{
                   color: "rgba(255,255,255,0.5)",
-                  fontSize: "0.8rem",
+                  fontSize: "1rem",
                   letterSpacing: "1px",
                   margin: 0,
+                  fontFamily: '"Rajdhani", sans-serif',
+                  fontWeight: "600"
                 }}
               >
                 SOLVE CHALLENGES & SUBMIT YOUR PROFILE
@@ -310,15 +317,15 @@ export default function HackerrankSubmission({ teamName }) {
                     submissionData?.approval_status === "approved"
                       ? "#22c55e"
                       : submissionData?.approval_status === "rejected"
-                      ? "#ef4444"
-                      : "#eab308",
+                        ? "#ef4444"
+                        : "#eab308",
                 }}
               >
                 {submissionData?.approval_status === "approved"
                   ? "🎉"
                   : submissionData?.approval_status === "rejected"
-                  ? "❌"
-                  : "⏳"}
+                    ? "❌"
+                    : "⏳"}
               </div>
               <div style={{ width: "100%" }}>
                 <h3
@@ -327,8 +334,8 @@ export default function HackerrankSubmission({ teamName }) {
                       submissionData?.approval_status === "approved"
                         ? "#22c55e"
                         : submissionData?.approval_status === "rejected"
-                        ? "#ef4444"
-                        : "#eab308",
+                          ? "#ef4444"
+                          : "#eab308",
                     fontWeight: "900",
                     letterSpacing: "1px",
                     fontSize: "1.5rem", // Larger font
@@ -340,8 +347,8 @@ export default function HackerrankSubmission({ teamName }) {
                   {submissionData?.approval_status === "approved"
                     ? "CONGRATS! YOU ARE SELECTED FOR ROUND 2"
                     : submissionData?.approval_status === "rejected"
-                    ? "SORRY, NOT SELECTED"
-                    : "REVIEW PENDING"}
+                      ? "SORRY, NOT SELECTED"
+                      : "REVIEW PENDING"}
                 </h3>
                 {submissionData?.approval_status === "approved" && (
                   <p
@@ -481,11 +488,12 @@ export default function HackerrankSubmission({ teamName }) {
                     required
                     value={hackerrankLink}
                     onChange={(e) => setHackerrankLink(e.target.value)}
+                    className="hackerrank-input"
                     style={{
                       width: "100%",
                       padding: "15px",
                       background: "rgba(0,0,0,0.3)",
-                      border: "1px solid rgba(34, 197, 94, 0.3)",
+                      border: "1px solid rgba(220, 38, 38, 0.2)", // Red border
                       borderRadius: "2px",
                       color: "#fff",
                       fontSize: "0.9rem",
@@ -494,20 +502,16 @@ export default function HackerrankSubmission({ teamName }) {
                       transition: "all 0.3s ease",
                       boxSizing: "border-box",
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = "#22c55e")}
-                    onBlur={(e) =>
-                      (e.target.style.borderColor = "rgba(34, 197, 94, 0.3)")
-                    }
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
+                  className="hackerrank-submit-btn"
                   style={{
                     padding: "15px 30px",
-                    background: "#22c55e",
                     border: "none",
-                    color: "#000",
+                    color: "#fff",
                     fontWeight: "900",
                     fontSize: "0.9rem",
                     letterSpacing: "1px",
@@ -529,8 +533,8 @@ export default function HackerrankSubmission({ teamName }) {
                 .challenge-link-btn {
                     padding: 10px 20px;
                     background: transparent;
-                    border: 1px solid #22c55e;
-                    color: #22c55e;
+                    border: 1px solid #dc2626;
+                    color: #dc2626;
                     font-weight: 800;
                     font-size: 0.8rem;
                     letter-spacing: 1px;
@@ -540,9 +544,9 @@ export default function HackerrankSubmission({ teamName }) {
                     white-space: nowrap;
                 }
                 .challenge-link-btn:hover {
-                    background: #22c55e;
-                    color: #000;
-                    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+                    background: #dc2626;
+                    color: #fff;
+                    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
                 }
 
                 .form-row {
@@ -556,22 +560,31 @@ export default function HackerrankSubmission({ teamName }) {
                     width: 100%;
                     padding: 15px;
                     background: rgba(0,0,0,0.3);
-                    border: 1px solid rgba(34, 197, 94, 0.3);
+                    border: 1px solid rgba(220, 38, 38, 0.2);
                     border-radius: 2px;
                     color: #fff;
-                    fontSize: 0.9rem;
+                    font-size: 0.9rem;
                     font-family: monospace;
                     outline: none;
                     transition: all 0.3s ease;
                     box-sizing: border-box;
                     height: 50px;
                 }
+
+                .hackerrank-input:focus {
+                    border-color: #dc2626 !important;
+                    background: rgba(220, 38, 38, 0.05) !important;
+                    box-shadow: 0 0 15px rgba(220, 38, 38, 0.2);
+                }
                 
                 .hackerrank-submit-btn {
                     padding: 0 30px;
-                    background: #22c55e;
+                    background: linear-gradient(90deg, #991b1b, #dc2626, #991b1b);
+                    background-size: 200% auto;
+                    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+                    animation: shine-red 3s linear infinite;
                     border: none;
-                    color: #000;
+                    color: #fff;
                     font-weight: 900;
                     font-size: 0.9rem;
                     letter-spacing: 1px;
@@ -583,13 +596,19 @@ export default function HackerrankSubmission({ teamName }) {
                     transition: all 0.3s ease;
                 }
                 .hackerrank-submit-btn:disabled {
+                    background: #222; 
                     opacity: 0.7;
                     cursor: wait;
+                    animation: none;
+                    box-shadow: none;
+                    color: #444;
                 }
                 .hackerrank-submit-btn:hover:not(:disabled) {
-                    background: #4ade80;
-                    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+                    transform: translateY(-2px);
+                    box-shadow: 0 0 35px rgba(220, 38, 38, 0.6);
                 }
+                
+                @keyframes shine-red { to { background-position: 200% center; } }
 
                 .hackerrank-container {
                     transform: translateX(-100px);
@@ -614,6 +633,6 @@ export default function HackerrankSubmission({ teamName }) {
           }}
         />
       </div>
-    </div>
+    </div >
   );
 }

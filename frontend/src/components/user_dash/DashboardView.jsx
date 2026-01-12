@@ -385,49 +385,25 @@ const DashboardView = ({
                     {currentRound && (currentRound.status === 'LIVE' || currentRound.id === 'hackerrank_submission') ? (
                         <div style={{
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
+                            justifyContent: 'center',
+                            width: '100%',
                             marginBottom: '30px'
                         }}>
                             <div style={{
-                                background: '#22c55e',
-                                color: '#000',
-                                padding: '6px 14px',
-                                borderRadius: '3px',
-                                fontSize: '0.8rem',
-                                fontWeight: '900',
-                                letterSpacing: '0.5px',
-                                textTransform: 'uppercase',
-                                boxShadow: '0 0 12px rgba(34, 197, 94, 0.6)',
-                                fontFamily: '"Orbitron", sans-serif'
-                            }}>
-                                R1
-                            </div>
-                            <div style={{
-                                fontSize: '0.9rem',
-                                fontWeight: '800',
+                                fontSize: '0.75rem',
+                                fontWeight: '700',
                                 color: '#22c55e',
-                                letterSpacing: '1.5px',
+                                letterSpacing: '1px',
                                 textTransform: 'uppercase',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                fontFamily: '"Orbitron", sans-serif'
+                                fontFamily: '"Courier New", monospace',
+                                background: 'rgba(34, 197, 94, 0.1)',
+                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                padding: '5px 14px',
+                                borderRadius: '0px',
+                                boxShadow: '0 0 15px rgba(34, 197, 94, 0.2)',
+                                backdropFilter: 'blur(5px)'
                             }}>
-                                HACKERRANK PROTOCOL
-                                <span style={{
-                                    background: '#22c55e',
-                                    color: '#000',
-                                    padding: '3px 8px',
-                                    borderRadius: '3px',
-                                    fontSize: '0.65rem',
-                                    fontWeight: '900',
-                                    boxShadow: '0 0 8px rgba(34, 197, 94, 0.7)',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px'
-                                }}>
-                                    LIVE
-                                </span>
+                                Round 1 is Live
                             </div>
                         </div>
                     ) : currentRound ? (
@@ -470,26 +446,27 @@ const DashboardView = ({
                         margin: '0 0 12px 0',
                         textTransform: 'uppercase',
                         letterSpacing: '2px',
-                        textShadow: '0 0 25px rgba(220, 38, 38, 1), 0 0 50px rgba(220, 38, 38, 0.7), 0 0 75px rgba(220, 38, 38, 0.4)',
-                        fontFamily: '"Orbitron", sans-serif',
+                        textShadow: '0 0 10px rgba(220, 38, 38, 0.6)',
+                        fontFamily: '"Della Respira", serif',
                         fontStyle: 'normal'
                     }}>
                         WELCOME,<br />
                         <span style={{
                             color: '#dc2626',
-                            textShadow: '0 0 30px rgba(220, 38, 38, 1.2), 0 0 60px rgba(220, 38, 38, 0.8)'
+                            textShadow: '0 0 15px rgba(220, 38, 38, 0.7)'
                         }}>{teamInfo?.team_name || teamName}</span>
                     </h1>
 
                     {/* Team ID Display - Exact Match from Image */}
                     {teamInfo?.team_id && (
                         <div style={{
-                            fontSize: '0.9rem',
+                            fontSize: '1.3rem',
                             color: '#fff',
                             marginBottom: '35px',
                             letterSpacing: '0.5px',
                             textTransform: 'uppercase',
-                            fontWeight: '500'
+                            fontWeight: '600',
+                            fontFamily: '"Rajdhani", sans-serif'
                         }}>
                             TEAM ID: <span style={{ color: '#fff', fontWeight: '700' }}>{teamInfo.team_id}</span>
                         </div>
@@ -502,34 +479,35 @@ const DashboardView = ({
                             textAlign: 'left'
                         }}>
                             <div style={{
-                                fontSize: '0.85rem',
+                                fontSize: '1.1rem',
                                 color: '#fff',
                                 letterSpacing: '2.5px',
                                 textTransform: 'uppercase',
                                 marginBottom: '30px',
                                 marginTop: '10px',
-                                fontWeight: '600',
+                                fontWeight: '700',
                                 textAlign: 'center',
                                 position: 'relative',
-                                padding: '18px 0'
+                                padding: '18px 0',
+                                fontFamily: '"Rajdhani", sans-serif'
                             }}>
-                                <div style={{ 
-                                    position: 'absolute', 
-                                    top: '50%', 
-                                    left: '0', 
-                                    right: '0', 
-                                    height: '1px', 
-                                    background: 'rgba(255,255,255,0.25)', 
-                                    zIndex: 0 
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '0',
+                                    right: '0',
+                                    height: '1px',
+                                    background: 'rgba(255,255,255,0.25)',
+                                    zIndex: 0
                                 }}></div>
-                                <span style={{ 
-                                    background: 'rgba(20, 20, 20, 0.3)', 
+                                <span style={{
+                                    background: 'rgba(20, 20, 20, 0.3)',
                                     backdropFilter: 'blur(10px)',
-                                    padding: '0 25px', 
-                                    position: 'relative', 
+                                    padding: '0 25px',
+                                    position: 'relative',
                                     zIndex: 1,
                                     display: 'inline-block',
-                                    fontFamily: '"Orbitron", sans-serif',
+                                    fontFamily: '"Rajdhani", sans-serif',
                                     fontWeight: '700'
                                 }}>TEAM ROSTER</span>
                             </div>
@@ -537,49 +515,49 @@ const DashboardView = ({
                             {/* Leader - Exact Match from Image */}
                             {teamInfo.leader && (
                                 <div className="leader-card">
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ 
-                                                fontSize: '1.15rem', 
-                                                fontWeight: '700', 
-                                                color: '#fff', 
-                                                marginBottom: '8px',
-                                                letterSpacing: '0.5px'
-                                            }}>
-                                                {teamInfo.leader.fullName}
-                                            </div>
-                                            <div style={{ 
-                                                fontSize: '0.7rem', 
-                                                color: '#3b82f6', 
-                                                fontWeight: '900', 
-                                                letterSpacing: '1.5px', 
-                                                marginTop: '8px',
-                                                textTransform: 'uppercase',
-                                                display: 'inline-block',
-                                                padding: '3px 10px',
-                                                background: 'rgba(59, 130, 246, 0.2)',
-                                                border: '1px solid rgba(59, 130, 246, 0.4)',
-                                                borderRadius: '3px'
-                                            }}>
-                                                TEAM LEADER
-                                            </div>
+                                    <div className="leader-info">
+                                        <div style={{
+                                            fontSize: '1.4rem',
+                                            fontWeight: '700',
+                                            color: '#fff',
+                                            marginBottom: '8px',
+                                            letterSpacing: '0.5px',
+                                            fontFamily: '"Rajdhani", sans-serif'
+                                        }}>
+                                            {teamInfo.leader.fullName}
+                                        </div>
+                                        <div style={{
+                                            fontSize: '0.9rem',
+                                            color: '#3b82f6',
+                                            fontWeight: '900',
+                                            letterSpacing: '1.5px',
+                                            marginTop: '8px',
+                                            textTransform: 'uppercase',
+                                            display: 'inline-block',
+                                            padding: '3px 10px',
+                                            background: 'rgba(59, 130, 246, 0.2)',
+                                            border: '1px solid rgba(59, 130, 246, 0.4)',
+                                            borderRadius: '3px',
+                                            fontFamily: '"Rajdhani", sans-serif'
+                                        }}>
+                                            TEAM LEADER
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.85rem' }}>
+                                    <div className="leader-details" style={{ fontSize: '1rem', fontFamily: '"Rajdhani", sans-serif' }}>
                                         <div>
-                                            <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.75rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email:</div>
-                                            <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '400', fontSize: '0.9rem' }}>{teamInfo.leader.email}</div>
+                                            <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email:</div>
+                                            <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.email}</div>
                                         </div>
                                         {teamInfo.leader.sapid && (
                                             <div>
-                                                <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.75rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SAP ID:</div>
-                                                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '400', fontSize: '0.9rem' }}>{teamInfo.leader.sapid}</div>
+                                                <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SAP ID:</div>
+                                                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.sapid}</div>
                                             </div>
                                         )}
                                         {teamInfo.leader.phone && (
                                             <div>
-                                                <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.75rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact:</div>
-                                                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '400', fontSize: '0.9rem' }}>{teamInfo.leader.phone}</div>
+                                                <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact:</div>
+                                                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.phone}</div>
                                             </div>
                                         )}
                                     </div>
@@ -591,34 +569,36 @@ const DashboardView = ({
                                 <div className="team-roster-grid">
                                     {teamInfo.members.map((member, index) => (
                                         <div key={index} className="member-card">
-                                            <div style={{ 
-                                                fontSize: '1rem', 
-                                                fontWeight: '700', 
-                                                color: '#fff', 
+                                            <div style={{
+                                                fontSize: '1.2rem',
+                                                fontWeight: '700',
+                                                color: '#fff',
                                                 marginBottom: '10px',
-                                                letterSpacing: '0.5px'
+                                                letterSpacing: '0.5px',
+                                                fontFamily: '"Rajdhani", sans-serif'
                                             }}>
                                                 {member.fullName}
                                             </div>
-                                            <div style={{ 
-                                                fontSize: '0.68rem', 
-                                                color: 'rgba(255,255,255,0.55)', 
-                                                fontWeight: '700', 
-                                                letterSpacing: '1.5px', 
-                                                marginBottom: '16px', 
-                                                textTransform: 'uppercase'
+                                            <div style={{
+                                                fontSize: '0.85rem',
+                                                color: 'rgba(255,255,255,0.55)',
+                                                fontWeight: '700',
+                                                letterSpacing: '1.5px',
+                                                marginBottom: '16px',
+                                                textTransform: 'uppercase',
+                                                fontFamily: '"Rajdhani", sans-serif'
                                             }}>
                                                 MEMBER
                                             </div>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.85rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '1rem', fontFamily: '"Rajdhani", sans-serif' }}>
                                                 <div>
-                                                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email:</div>
-                                                    <div style={{ color: 'rgba(255,255,255,0.95)', marginTop: '2px', fontWeight: '400', fontSize: '0.88rem' }}>{member.email}</div>
+                                                    <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email:</div>
+                                                    <div style={{ color: 'rgba(255,255,255,0.95)', marginTop: '2px', fontWeight: '500', fontSize: '1rem' }}>{member.email}</div>
                                                 </div>
                                                 {member.sapid && (
                                                     <div>
-                                                        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SAP ID:</div>
-                                                        <div style={{ color: 'rgba(255,255,255,0.95)', marginTop: '2px', fontWeight: '400', fontSize: '0.88rem' }}>{member.sapid}</div>
+                                                        <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SAP ID:</div>
+                                                        <div style={{ color: 'rgba(255,255,255,0.95)', marginTop: '2px', fontWeight: '500', fontSize: '1rem' }}>{member.sapid}</div>
                                                     </div>
                                                 )}
                                             </div>
@@ -631,14 +611,15 @@ const DashboardView = ({
 
                     {!selectedPS && (
                         <div style={{ marginTop: '35px', paddingTop: '25px' }}>
-                            <p style={{ 
-                                color: '#fff', 
-                                fontSize: '0.95rem', 
-                                lineHeight: '1.6', 
+                            <p style={{
+                                color: '#fff',
+                                fontSize: '1.1rem',
+                                lineHeight: '1.6',
                                 marginBottom: '25px',
                                 textAlign: 'left',
-                                fontWeight: '400',
-                                letterSpacing: '0.3px'
+                                fontWeight: '500',
+                                letterSpacing: '0.3px',
+                                fontFamily: '"Rajdhani", sans-serif'
                             }}>
                                 The vault is synchronized. Review team credentials and initiate the heist sequence.
                             </p>
