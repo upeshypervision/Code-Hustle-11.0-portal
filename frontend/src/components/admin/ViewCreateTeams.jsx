@@ -36,6 +36,34 @@ const ViewCreateTeams = () => {
         }));
     };
 
+    const deleteTeam = async (teamId, e) => {
+        e.stopPropagation(); // Prevent toggling accordion
+        if (!window.confirm("Are you sure you want to delete this team? This action cannot be undone.")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/admin/delete-create-team/${teamId}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                setTeams(teams.filter(t => t.teamId !== teamId));
+                // Clear expanded state if needed
+                const newExpanded = { ...expandedTeams };
+                delete newExpanded[teamId];
+                setExpandedTeams(newExpanded);
+            } else {
+                alert("Failed to delete team: " + (data.error || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Error deleting team:", error);
+            alert("Error deleting team");
+        }
+    };
+
     const filteredTeams = teams.filter(team => {
         const search = searchTerm.toLowerCase();
         return (
@@ -109,9 +137,31 @@ const ViewCreateTeams = () => {
                                         </div>
                                     </div>
 
-                                    <span className={`status-badge ${team.memberCount === 5 ? "status-success" : "status-pending"}`}>
-                                        {team.memberCount === 5 ? "FULL" : "INCOMPLETE"}
-                                    </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                        <span className={`status-badge ${team.memberCount === 5 ? "status-success" : "status-pending"}`}>
+                                            {team.memberCount === 5 ? "FULL" : "INCOMPLETE"}
+                                        </span>
+                                        <button
+                                            className="delete-btn"
+                                            onClick={(e) => deleteTeam(team.teamId, e)}
+                                            style={{
+                                                background: '#ef4444',
+                                                border: 'none',
+                                                color: 'white',
+                                                padding: '5px 12px',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px',
+                                                fontWeight: '600',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                transition: 'background 0.2s'
+                                            }}
+                                        >
+                                            DELETE
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {isExpanded && (
