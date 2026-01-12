@@ -61,3 +61,26 @@ def get_all_create_teams_route():
         "success": True, 
         "teams": teams_list
     }), 200
+
+def delete_create_team_route(team_id):
+    """
+    Admin route to delete a team by team_id.
+    """
+    # Check admin auth
+    token = request.cookies.get("admin_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    db = get_db()
+    
+    result = db.create_team.delete_one({"team_id": team_id})
+    
+    if result.deleted_count == 0:
+        return jsonify({"error": "Team not found"}), 404
+        
+    return jsonify({"success": True, "message": "Team deleted successfully"}), 200

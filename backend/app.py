@@ -46,7 +46,7 @@ from individual_registration import register_individual_route
 from createteam_registration import create_team_route
 from TeamDashboard import get_team_dashboard_data, delete_team_member
 from chat_service import send_message, get_chat_history, get_conversations, mark_as_read
-from view_create_teams import get_all_create_teams_route
+from view_create_teams import get_all_create_teams_route, delete_create_team_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -346,6 +346,10 @@ def available_teams():
 @app.route('/api/admin/view-create-teams', methods=['GET'])
 def admin_view_create_teams():
     return get_all_create_teams_route()
+
+@app.route('/api/admin/delete-create-team/<team_id>', methods=['DELETE'])
+def admin_delete_create_team(team_id):
+    return delete_create_team_route(team_id)
 
 # ----------------------------
 # INDIVIDUAL REQUEST ROUTES
