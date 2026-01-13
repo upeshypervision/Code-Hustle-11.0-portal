@@ -1,0 +1,262 @@
+/* Container for the Sidebar */
+.admin-sidebar-v2 {
+  width: 280px;
+  height: calc(100vh - 80px);
+  background: rgba(6, 11, 25, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 15px;
+  z-index: 10;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', sans-serif; 
+}
+
+.admin-sidebar-v2::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 200%; height: 200%;
+  background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+  background-size: 100px 100px;
+  opacity: 0.05;
+  animation: starMove 100s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes starMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+/* Original Header Styles Maintained */
+.admin-sidebar-header {
+  padding: 0 10px 20px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 15px;
+}
+
+.admin-sidebar-title {
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  font-size: 1.2rem;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.admin-sidebar-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  margin: 5px 0 0 0;
+}
+
+/* Section Labels (CORE OPS / USER OPS) */
+.sidebar-section-label {
+  /* Updated font to Orbitron for technical grouping */
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.65rem;
+  color: #38bdf8;
+  letter-spacing: 2px;
+  margin: 20px 0 10px 10px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+
+/* Navigation Items & Dropdown Triggers */
+.nav-item-v2, .dropdown-trigger {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.nav-item-v2:hover, .dropdown-trigger:hover {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+/* Active State Glow */
+.active-glow {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, transparent 100%);
+  border-left: 3px solid #38bdf8 !important;
+  color: #38bdf8 !important;
+  box-shadow: -10px 0 20px rgba(56, 189, 248, 0.05);
+}
+
+.icon-box {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  transition: transform 0.3s ease;
+}
+
+.nav-item-v2:hover .icon-box {
+  transform: scale(1.1);
+}
+
+/* Dropdown Arrow Animation */
+.arrow-icon {
+  margin-left: auto;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.6;
+}
+
+.dropdown-trigger.open .arrow-icon {
+  transform: rotate(180deg);
+  color: #38bdf8;
+}
+
+/* Dropdown Content Area */
+.dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding-left: 40px;
+  margin-bottom: 5px;
+}
+
+.dropdown-content.expanded {
+  max-height: 400px; 
+}
+
+/* Sub-menu Buttons */
+.dropdown-content button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: left;
+  padding: 10px 0;
+  font-size: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.dropdown-content button:hover {
+  color: #38bdf8;
+  padding-left: 5px;
+}
+
+/* Sub-active Indicator */
+.sub-active {
+  color: #38bdf8 !important;
+  font-weight: 600;
+}
+
+.sub-active::before {
+  content: "»";
+  position: absolute;
+  left: -15px;
+  color: #38bdf8;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+/* Bottom Glow Decor */
+.sidebar-vfx-glow {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 60px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+/* Custom Scrollbar for the container */
+.sidebar-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.sidebar-scroll-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 10px;
+}
+
+/* MOBILE RESPONSIVENESS */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 998;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar-v2 {
+    position: fixed;
+    left: -100% !important; /* Hide off-screen */
+    top: 0;
+    height: 100vh;
+    z-index: 2000;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+    width: 280px;
+    background: #060b19; /* Solid background for mobile overlay */
+  }
+
+  /* Slide in when mobile-open is applied to aside */
+  .admin-sidebar-v2.mobile-open {
+    left: 0 !important;
+  }
+
+  /* Slide in when sidebar-visible is applied to parent container */
+  .sidebar-visible .admin-sidebar-v2 {
+    left: 0 !important;
+  }
+
+  .sidebar-visible .sidebar-overlay {
+    display: block;
+  }
+
+  .admin-layout {
+    display: block; /* Stack content vertically */
+  }
+
+  .admin-content {
+    padding: 20px;
+    width: 100%;
+    margin-left: 0;
+    overflow-x: hidden;
+  }
+
+  /* Force hide old menu overlays if any */
+  .mobile-menu-overlay, 
+  .admin-nav-menu-mobile { 
+    display: none !important; 
+  }
+}

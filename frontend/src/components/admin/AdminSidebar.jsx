@@ -1,133 +1,121 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  ChevronDown,
+  LayoutDashboard,
+  FileStack,
+  Github,
+  Code2,
+  Users2,
+  UserPlus,
+  Target
+} from "lucide-react";
+import "./AdminSidebar.css";
 
-export default function AdminSidebar({ activeSection, setActiveSection }) {
+export default function AdminSidebar({ activeSection, setActiveSection, isMobileOpen }) {
+  const [openMenus, setOpenMenus] = useState({
+    ppt: false,
+    github: false,
+    hacker: false,
+    teams: false
+  });
+
+  const toggleMenu = (menu) => {
+    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
+
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar-v2 ${isMobileOpen ? "mobile-open" : ""}`}>
       <div className="admin-sidebar-header">
         <h2 className="admin-sidebar-title">Admin Console</h2>
         <p className="admin-sidebar-subtitle">Code Hustle Management</p>
       </div>
 
-      <ul className="admin-nav-menu">
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "rounds" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("rounds")}
-          >
-            <span>Round Management</span>
-          </a>
-        </li>
+      <div className="sidebar-scroll-container">
+        {/* CORE OPS */}
+        <div className="sidebar-section-label">CORE OPS</div>
+        <button
+          className={`nav-item-v2 ${activeSection === "rounds" ? "active-glow" : ""}`}
+          onClick={() => setActiveSection("rounds")}
+        >
+          <span className="icon-box"><LayoutDashboard size={18} /></span>
+          <span className="label-text">Round Management</span>
+        </button>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "view-teams" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("view-teams")}
-          >
-            <span>View Teams</span>
-          </a>
-        </li>
+        <button
+          className={`nav-item-v2 ${activeSection === "problem-statements" ? "active-glow" : ""}`}
+          onClick={() => setActiveSection("problem-statements")}
+        >
+          <span className="icon-box"><Target size={18} /></span>
+          <span className="label-text">Problem Statements</span>
+        </button>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "problem-statements" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("problem-statements")}
-          >
-            <span>Problem Statements</span>
-          </a>
-        </li>
+        {/* PPT FORGE */}
+        <div className="dropdown-node">
+          <button className={`dropdown-trigger ${openMenus.ppt ? "open" : ""}`} onClick={() => toggleMenu('ppt')}>
+            <span className="icon-box"><FileStack size={18} /></span>
+            <span className="label-text">PPT FORGE</span>
+            <ChevronDown className="arrow-icon" size={14} />
+          </button>
+          <div className={`dropdown-content ${openMenus.ppt ? "expanded" : ""}`}>
+            <button className={activeSection === "submissions" ? "sub-active" : ""} onClick={() => setActiveSection("submissions")}>View PPT Submissions</button>
+            <button className={activeSection === "review-ppts" ? "sub-active" : ""} onClick={() => setActiveSection("review-ppts")}>Review PPTs</button>
+            <button className={activeSection === "manual-ppt" ? "sub-active" : ""} onClick={() => setActiveSection("manual-ppt")}>Manual PPT</button>
+          </div>
+        </div>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "submissions" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("submissions")}
-          >
-            <span>View PPT Submissions</span>
-          </a>
-        </li>
+        {/* GITHUB SYNC */}
+        <div className="dropdown-node">
+          <button className={`dropdown-trigger ${openMenus.github ? "open" : ""}`} onClick={() => toggleMenu('github')}>
+            <span className="icon-box"><Github size={18} /></span>
+            <span className="label-text">GITHUB SYNC</span>
+            <ChevronDown className="arrow-icon" size={14} />
+          </button>
+          <div className={`dropdown-content ${openMenus.github ? "expanded" : ""}`}>
+            <button className={activeSection === "view-github-submissions" ? "sub-active" : ""} onClick={() => setActiveSection("view-github-submissions")}>View GitHub Submissions</button>
+            <button className={activeSection === "manual-github" ? "sub-active" : ""} onClick={() => setActiveSection("manual-github")}>Manual GitHub Submission</button>
+          </div>
+        </div>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "review-ppts" ? "active" : ""}`}
-            onClick={() => setActiveSection("review-ppts")}
-          >
-            <span>Review PPTs</span>
-          </a>
-        </li>
+        {/* HACKERRANK LAB */}
+        <div className="dropdown-node">
+          <button className={`dropdown-trigger ${openMenus.hacker ? "open" : ""}`} onClick={() => toggleMenu('hacker')}>
+            <span className="icon-box"><Code2 size={18} /></span>
+            <span className="label-text">HACKERRANK</span>
+            <ChevronDown className="arrow-icon" size={14} />
+          </button>
+          <div className={`dropdown-content ${openMenus.hacker ? "expanded" : ""}`}>
+            <button className={activeSection === "view-hackerrank" ? "sub-active" : ""} onClick={() => setActiveSection("view-hackerrank")}>View Hackerrank</button>
+            <button className={activeSection === "manual-hackerrank" ? "sub-active" : ""} onClick={() => setActiveSection("manual-hackerrank")}>Manual Hackerrank</button>
+          </div>
+        </div>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "manual-ppt" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("manual-ppt")}
-          >
-            <span>Manual PPT</span>
-          </a>
-        </li>
+        {/* TEAM NEXUS */}
+        <div className="dropdown-node">
+          <button className={`dropdown-trigger ${openMenus.teams ? "open" : ""}`} onClick={() => toggleMenu('teams')}>
+            <span className="icon-box"><Users2 size={18} /></span>
+            <span className="label-text">TEAM NEXUS</span>
+            <ChevronDown className="arrow-icon" size={14} />
+          </button>
+          <div className={`dropdown-content ${openMenus.teams ? "expanded" : ""}`}>
+            <button className={activeSection === "view-teams" ? "sub-active" : ""} onClick={() => setActiveSection("view-teams")}>View Teams</button>
+            <button className={activeSection === "selected-teams" ? "sub-active" : ""} onClick={() => setActiveSection("selected-teams")}>Selected Teams</button>
+            <button className={activeSection === "view-create-teams" ? "sub-active" : ""} onClick={() => setActiveSection("view-create-teams")}>View Create Teams</button>
+            <button className={activeSection === "view-individuals" ? "sub-active" : ""} onClick={() => setActiveSection("view-individuals")}>View Individuals</button>
+          </div>
+        </div>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "view-github-submissions" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("view-github-submissions")}
-          >
-            <span>View GitHub Submissions</span>
-          </a>
-        </li>
+        {/* USER OPS */}
+        <div className="sidebar-section-label" style={{ marginTop: '20px' }}>USER OPS</div>
+        <button
+          className={`nav-item-v2 ${activeSection === "add-participant" ? "active-glow" : ""}`}
+          onClick={() => setActiveSection("add-participant")}
+        >
+          <span className="icon-box"><UserPlus size={18} /></span>
+          <span className="label-text">Add Participant</span>
+        </button>
+      </div>
 
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "manual-github" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("manual-github")}
-          >
-            <span>Manual GitHub Submission</span>
-          </a>
-        </li>
-
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "manual-hackerrank" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("manual-hackerrank")}
-          >
-            <span>Manual Hackerrank</span>
-          </a>
-        </li>
-
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "view-hackerrank" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("view-hackerrank")}
-          >
-            <span>View Hackerrank</span>
-          </a>
-        </li>
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "selected-teams" ? "active" : ""}`}
-            onClick={() => setActiveSection("selected-teams")}
-          >
-            <span>Selected Teams</span>
-          </a>
-        </li>
-
-
-
-        <li className="admin-nav-item">
-          <a
-            className={`admin-nav-link ${activeSection === "add-participant" ? "active" : ""
-              }`}
-            onClick={() => setActiveSection("add-participant")}
-          >
-            <span>Add Participant</span>
-          </a>
-        </li>
-      </ul>
+      <div className="sidebar-vfx-glow"></div>
     </aside>
   );
 }
