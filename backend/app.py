@@ -21,9 +21,17 @@ from user_access import (
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_info import fetch_teamsnosubmission, view_githubsubmission_route
 from Indidashboard import get_individual_dashboard_data, get_available_teams
-from ppt_filters import get_teams_without_ppt_route, get_teams_with_ppt_route, view_details_route
-from individual_requests import send_join_request, get_sent_requests, get_accepted_team
-from team_requests import get_join_requests, accept_join_request, reject_join_request
+# Consolidated imports
+from admin_routes import (
+    get_all_create_teams_route, delete_create_team_route,
+    get_all_individuals_route, delete_individual_route,
+    get_evaluated_submissions_route, update_ppt_approval_route,
+    get_teams_without_ppt_route, get_teams_with_ppt_route, view_details_route
+)
+from team_matching import (
+    send_join_request, get_sent_requests, get_accepted_team,
+    get_join_requests, accept_join_request, reject_join_request
+)
 from round_management import get_round_status_route, update_round_status_route
 from socketio_instance import socketio
 import socket_events  # Register socket handlers
@@ -41,13 +49,10 @@ from evaluator import (
     distribute_submissions_route,
     check_evaluator_auth_route)
 
-from ppt_review import get_evaluated_submissions_route, update_ppt_approval_route
 from individual_registration import register_individual_route
 from createteam_registration import create_team_route
 from TeamDashboard import get_team_dashboard_data, delete_team_member
 from chat_service import send_message, get_chat_history, get_conversations, mark_as_read, get_all_chat_messages_route
-from view_create_teams import get_all_create_teams_route, delete_create_team_route
-from view_individuals import get_all_individuals_route, delete_individual_route
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
