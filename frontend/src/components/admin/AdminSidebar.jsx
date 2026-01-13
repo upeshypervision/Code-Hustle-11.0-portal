@@ -101,6 +101,7 @@ export default function AdminSidebar({ activeSection, setActiveSection, isMobile
             <button className={activeSection === "selected-teams" ? "sub-active" : ""} onClick={() => setActiveSection("selected-teams")}>Selected Teams</button>
             <button className={activeSection === "view-create-teams" ? "sub-active" : ""} onClick={() => setActiveSection("view-create-teams")}>View Create Teams</button>
             <button className={activeSection === "view-individuals" ? "sub-active" : ""} onClick={() => setActiveSection("view-individuals")}>View Individuals</button>
+            <button className={activeSection === "view-chat-messages" ? "sub-active" : ""} onClick={() => setActiveSection("view-chat-messages")}>View Chat Messages</button>
           </div>
         </div>
 

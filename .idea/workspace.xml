@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9aeba791-dc88-4a0a-821f-a4315233ff24" name="Changes" comment="REGISTRATION">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ViewIndividuals.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ViewIndividuals.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/ViewTeams.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/ViewTeams.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/admin/AdminSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/admin/AdminSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdminPanel.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdminPanel.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
