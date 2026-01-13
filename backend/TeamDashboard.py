@@ -42,6 +42,7 @@ def get_team_dashboard_data():
         "teamId": team.get("team_id"),  # For socket room joining
         "teamName": team.get("team_name", ""),
         "teamVision": team.get("team_bio", ""),
+        "visible": team.get("visible", True),  # Team visibility status
         "leader": {
             "name": leader_data.get("full_name", ""),
             "details": leader_data.get("bio", ""),
@@ -169,3 +170,52 @@ def delete_team_member():
         # Note: Original members don't have separate 'individuals' records to update
     
     return jsonify({"success": True, "message": "Member removed successfully"}), 200
+
+
+def toggle_team_visibility(team_id):
+    """
+    Team route to toggle the visibility of their own team.
+    Similar to problem statement visibility toggle.
+    """
+    # Team authentication (not admin)
+    token = request.cookies.get("team_auth")
+    if not token:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        authenticated_team_id = payload.get("team_id")
+        
+        # Verify the team is toggling their own visibility
+        if authenticated_team_id != team_id:
+            return jsonify({"error": "Unauthorized - can only toggle your own team visibility"}), 403
+            
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid session"}), 401
+    
+    # Find the team in create_team collection
+    team = db.create_team.find_one({"team_id": team_id})
+    
+    if not team:
+        return jsonify({"error": "Team not found"}), 404
+    
+    # Toggle visibility
+    current_visibility = team.get("visible", True)  # Default to True if not set
+    new_visibility = not current_visibility
+    
+    # Update in database
+    result = db.create_team.update_one(
+        {"team_id": team_id},
+        {"$set": {"visible": new_visibility}}
+    )
+    
+    if result.modified_count == 0:
+        return jsonify({"error": "Failed to update visibility"}), 500
+    
+    return jsonify({
+        "success": True,
+        "visible": new_visibility,
+        "message": f"Team visibility set to {'visible' if new_visibility else 'hidden'}"
+    }), 200
