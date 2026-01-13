@@ -530,3 +530,128 @@ def mark_as_read():
         "success": True,
         "marked_count": result.modified_count
     }), 200
+
+
+def get_all_chat_messages_route():
+    """
+    Admin endpoint to fetch all chat conversations grouped by conversation_id
+    Returns conversations with all messages in each conversation
+    """
+    try:
+        db = get_db()
+        
+        # Fetch all chat messages, sorted by timestamp
+        messages_cursor = db.chat_messages.find(
+            {"deleted": {"$ne": True}}  # Exclude deleted messages
+        ).sort("timestamp", 1)  # Ascending order for proper conversation flow
+        
+        # Group messages by conversation_id
+        conversations_map = {}
+        
+        for msg in messages_cursor:
+            conversation_id = msg.get("conversation_id", "")
+            
+            if conversation_id not in conversations_map:
+                # Initialize conversation
+                conversations_map[conversation_id] = {
+                    "conversationId": conversation_id,
+                    "messages": [],
+                    "participant1": None,
+                    "participant2": None,
+                    "lastMessageTime": None,
+                    "totalMessages": 0,
+                    "unreadCount": 0
+                }
+            
+            # Get sender details
+            sender_name = "Unknown"
+            sender_email = "N/A"
+            
+            if msg.get("sender_type") == "individual":
+                individual = db.individuals.find_one({"individual_id": msg.get("sender_id")})
+                if individual:
+                    sender_name = individual.get("full_name", "Unknown Individual")
+                    sender_email = individual.get("email", "N/A")
+            elif msg.get("sender_type") == "team":
+                team = db.create_team.find_one({"team_id": msg.get("sender_id")})
+                if team:
+                    sender_name = team.get("team_name", "Unknown Team")
+                    sender_email = team.get("leader_email", "N/A")
+            
+            # Add message to conversation
+            conversations_map[conversation_id]["messages"].append({
+                "messageId": msg.get("message_id"),
+                "senderType": msg.get("sender_type"),
+                "senderName": sender_name,
+                "senderEmail": sender_email,
+                "message": msg.get("message"),
+                "timestamp": msg.get("timestamp").isoformat() if msg.get("timestamp") else None,
+                "read": msg.get("read", False)
+            })
+            
+            conversations_map[conversation_id]["totalMessages"] += 1
+            if not msg.get("read", False):
+                conversations_map[conversation_id]["unreadCount"] += 1
+            
+            # Update last message time
+            if msg.get("timestamp"):
+                conversations_map[conversation_id]["lastMessageTime"] = msg.get("timestamp").isoformat()
+            
+            # Set participants (extract from conversation_id)
+            if conversation_id.startswith("CONV_") and not conversations_map[conversation_id]["participant1"]:
+                parts = conversation_id.split("_")
+                if len(parts) >= 3:
+                    # Parts could be CONV_TM081_IND065 or CONV_IND065_TM081
+                    id1 = parts[1]
+                    id2 = parts[2]
+                    
+                    # Determine which is team and which is individual based on prefix
+                    team_id = None
+                    individual_id = None
+                    
+                    if id1.startswith("TM"):
+                        team_id = id1
+                        individual_id = id2
+                    elif id1.startswith("IND"):
+                        individual_id = id1
+                        team_id = id2
+                    
+                    # Get individual details
+                    if individual_id:
+                        individual = db.individuals.find_one({"individual_id": individual_id})
+                        if individual:
+                            conversations_map[conversation_id]["participant1"] = {
+                                "type": "Individual",
+                                "name": individual.get("full_name", individual_id),
+                                "id": individual_id
+                            }
+                    
+                    # Get team details
+                    if team_id:
+                        team = db.create_team.find_one({"team_id": team_id})
+                        if team:
+                            conversations_map[conversation_id]["participant2"] = {
+                                "type": "Team",
+                                "name": team.get("team_name", team_id),
+                                "id": team_id
+                            }
+        
+        # Convert to list and sort by last message time (newest first)
+        conversations = list(conversations_map.values())
+        conversations.sort(key=lambda x: x.get("lastMessageTime") or "", reverse=True)
+        
+        return jsonify({
+            "success": True,
+            "conversations": conversations,
+            "total": len(conversations)
+        }), 200
+        
+    except Exception as e:
+        print(f"Error fetching chat messages: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "error": "Failed to fetch chat messages"
+        }), 500
+

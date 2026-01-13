@@ -170,6 +170,7 @@ def create_team_route():
         "team_bio": team_bio,
         "leader": leader_obj, # Leader has an ID
         "members": processed_members, # Members do NOT have member_id
+        "visible": False,  # New teams are hidden by default
         "created_at": datetime.utcnow().isoformat() # Add creation timestamp
     }
 

@@ -59,12 +59,19 @@ def get_individual_dashboard_data():
 def get_available_teams():
     """
     Fetch teams that have less than 5 total members (leader + members).
+    Only shows teams where visible is True (or not set).
     No authentication required - public data for individuals to browse.
     """
     db = get_db()
     
     # Fetch all teams from create_team collection
-    all_teams = list(db.create_team.find({}, {
+    # Filter to only show visible teams
+    all_teams = list(db.create_team.find({
+        "$or": [
+            {"visible": True},
+            {"visible": {"$exists": False}}  # Include teams without visible field (default to visible)
+        ]
+    }, {
         "_id": 0,
         "team_id": 1,
         "team_name": 1,
