@@ -45,7 +45,7 @@ from ppt_review import get_evaluated_submissions_route, update_ppt_approval_rout
 from individual_registration import register_individual_route
 from createteam_registration import create_team_route
 from TeamDashboard import get_team_dashboard_data, delete_team_member
-from chat_service import send_message, get_chat_history, get_conversations, mark_as_read
+from chat_service import send_message, get_chat_history, get_conversations, mark_as_read, get_all_chat_messages_route
 from view_create_teams import get_all_create_teams_route, delete_create_team_route
 from view_individuals import get_all_individuals_route, delete_individual_route
 
@@ -362,6 +362,14 @@ def admin_view_individuals():
 @app.route('/api/admin/delete-individual/<individual_id>', methods=['DELETE'])
 def admin_delete_individual(individual_id):
     return delete_individual_route(individual_id)
+
+# ----------------------------
+# ADMIN VIEW CHAT MESSAGES
+# ----------------------------
+@app.route('/api/admin/view-chat-messages', methods=['GET'])
+def admin_view_chat_messages():
+    return get_all_chat_messages_route()
+
 
 # ----------------------------
 # INDIVIDUAL REQUEST ROUTES
