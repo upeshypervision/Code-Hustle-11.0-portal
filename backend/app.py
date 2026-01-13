@@ -51,7 +51,7 @@ from evaluator import (
 
 from individual_registration import register_individual_route
 from createteam_registration import create_team_route
-from TeamDashboard import get_team_dashboard_data, delete_team_member
+from TeamDashboard import get_team_dashboard_data, delete_team_member, toggle_team_visibility
 from chat_service import send_message, get_chat_history, get_conversations, mark_as_read, get_all_chat_messages_route
 
 app = Flask(__name__)
@@ -70,6 +70,10 @@ def get_team_dashboard():
 @app.route('/api/team-member/delete', methods=['DELETE'])
 def delete_member():
     return delete_team_member()
+
+@app.route('/api/team/toggle-visibility/<team_id>', methods=['PUT'])
+def toggle_team_vis(team_id):
+    return toggle_team_visibility(team_id)
 
 
 @app.route("/api/check-auth", methods=["GET"])
