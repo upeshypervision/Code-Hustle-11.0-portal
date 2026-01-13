@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import socket from '../../socket';
-import UserStatus from './UserStatus';
-import strangerThingsBg from '../../assets/StrangerThings-bg.png';
+import UserSidebar from './UserSidebar'; // Imported from Logic Source
+import strangerThingsBg from '../../assets/StrangerThings-bg.png'; // Imported from UI Source
 
 const DashboardView = ({
     selectedPS,
@@ -10,40 +10,35 @@ const DashboardView = ({
     setActiveTab,
     activeTab,
     teamName = "THE AVENGERS",
-    teamMembers = ["Member 01", "Member 02", "Member 03", "Member 04"]
+    teamMembers = ["Member 01", "Member 02", "Member 03", "Member 04"],
+    isSidebarOpen, // Prop from Logic Source
+    setIsSidebarOpen // Prop from Logic Source
 }) => {
+    // --- LOGIC SECTION (From Source B) ---
     const [roundStatus, setRoundStatus] = useState(null);
     const [currentRound, setCurrentRound] = useState(null);
     const [teamInfo, setTeamInfo] = useState(null);
     const [hackerrankStatus, setHackerrankStatus] = useState(null);
 
-    // Fetch team info on mount
+    // Fetch team info
     useEffect(() => {
         const fetchTeamInfo = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/user-info', {
-                    credentials: 'include'
-                });
+                const res = await fetch('http://localhost:5000/api/user-info', { credentials: 'include' });
                 const data = await res.json();
-
-                if (data.success) {
-                    setTeamInfo(data);
-                }
+                if (data.success) setTeamInfo(data);
             } catch (err) {
                 console.error('Error fetching team info:', err);
             }
         };
-
         fetchTeamInfo();
     }, []);
 
-    // Fetch Hackerrank submission status on mount
+    // Fetch Hackerrank status
     useEffect(() => {
         const fetchHackerrankStatus = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', {
-                    credentials: 'include'
-                });
+                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', { credentials: 'include' });
                 const data = await res.json();
                 if (data.success && data.is_submitted) {
                     setHackerrankStatus(data.submission.approval_status);
@@ -55,16 +50,12 @@ const DashboardView = ({
         fetchHackerrankStatus();
     }, []);
 
-
-    // Fetch round status on mount
+    // Fetch round status
     useEffect(() => {
         const fetchRoundStatus = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/round-status', {
-                    credentials: 'include'
-                });
+                const res = await fetch('http://localhost:5000/api/round-status', { credentials: 'include' });
                 const data = await res.json();
-
                 if (data.success) {
                     setRoundStatus(data.rounds);
                     determineCurrentRound(data.rounds);
@@ -73,17 +64,13 @@ const DashboardView = ({
                 console.error('Error fetching round status:', err);
             }
         };
-
         fetchRoundStatus();
     }, []);
 
-    // Listen for round status changes via WebSocket
+    // WebSocket Listeners
     useEffect(() => {
         const handleRoundChange = (data) => {
-            // Fetch updated round status
-            fetch('http://localhost:5000/api/round-status', {
-                credentials: 'include'
-            })
+            fetch('http://localhost:5000/api/round-status', { credentials: 'include' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -93,26 +80,14 @@ const DashboardView = ({
                 })
                 .catch(err => console.error('Error fetching round status:', err));
         };
-
         socket.on("round_status_changed", handleRoundChange);
         return () => socket.off("round_status_changed", handleRoundChange);
     }, []);
 
-    // Re-determine current round when hackerrankStatus changes
-    useEffect(() => {
-        if (roundStatus && hackerrankStatus !== null) {
-            determineCurrentRound(roundStatus);
-        }
-    }, [hackerrankStatus]);
-
-    // Listen for Hackerrank approval status changes (real-time updates)
     useEffect(() => {
         const handleApprovalUpdate = async () => {
-            // Refetch Hackerrank status when admin approves/rejects
             try {
-                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', {
-                    credentials: 'include'
-                });
+                const res = await fetch('http://localhost:5000/api/check-hackerrank-submission', { credentials: 'include' });
                 const data = await res.json();
                 if (data.success && data.is_submitted) {
                     setHackerrankStatus(data.submission.approval_status);
@@ -121,12 +96,17 @@ const DashboardView = ({
                 console.error('Error refetching Hackerrank status:', err);
             }
         };
-
         socket.on("hackerrank_approval_updated", handleApprovalUpdate);
         return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
     }, []);
 
-    // Determine which round is currently active
+    // Logic to determine current round
+    useEffect(() => {
+        if (roundStatus && hackerrankStatus !== null) {
+            determineCurrentRound(roundStatus);
+        }
+    }, [hackerrankStatus]);
+
     const determineCurrentRound = (rounds) => {
         if (!rounds) return;
 
@@ -137,10 +117,8 @@ const DashboardView = ({
             { id: 'github_submission', number: 3, name: 'GitHub Submission', color: '#a78bfa', state: rounds.github_submission }
         ];
 
-        // Priority 1: Live Rounds (Pick Earliest Live)
         const liveRound = roundList.find(r => r.state === 'live');
         if (liveRound) {
-            // If it's Hackerrank and user has submitted, show approval status instead
             if (liveRound.id === 'hackerrank_submission' && hackerrankStatus) {
                 const statusDisplay = hackerrankStatus === 'approved' ? 'APPROVED' :
                     hackerrankStatus === 'rejected' ? 'NOT SELECTED' : 'REVIEW PENDING';
@@ -153,10 +131,8 @@ const DashboardView = ({
             return;
         }
 
-        // Priority 2: Last Closed Round (Show the last round that was closed)
         const closedRound = [...roundList].reverse().find(r => r.state === 'closed');
         if (closedRound) {
-            // If it's Hackerrank and user has submitted, show approval status instead
             if (closedRound.id === 'hackerrank_submission' && hackerrankStatus) {
                 const statusDisplay = hackerrankStatus === 'approved' ? 'APPROVED' :
                     hackerrankStatus === 'rejected' ? 'NOT SELECTED' : 'REVIEW PENDING';
@@ -169,61 +145,69 @@ const DashboardView = ({
             return;
         }
 
-        // Priority 3: Earliest Not Started (Fallback)
         const notStartedRound = roundList.find(r => r.state === 'not_started');
         if (notStartedRound) {
             setCurrentRound({ ...notStartedRound, status: 'NOT STARTED' });
             return;
         }
 
-        // Final Fallback
         setCurrentRound({ number: 1, name: 'Hackerrank Protocol', color: '#22c55e', status: 'UNKNOWN' });
     };
 
+    // --- UI RENDER SECTION (Merged) ---
     return (
-        <div
-            style={{
-                width: '100%',
-                minHeight: 'calc(100vh - 70px)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                overflow: 'hidden',
-                background: '#0a0a0a',
-                fontFamily: '"Courier New", Courier, monospace',
-                boxSizing: 'border-box',
-                padding: '20px'
-            }}
-        >
+        <div style={{
+            width: '100%',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'row', // Logic B: Flex row for sidebar
+            alignItems: 'stretch',
+            justifyContent: 'flex-start',
+            position: 'relative',
+            overflow: 'hidden',
+            background: '#0a0a0a',
+            fontFamily: '"Courier New", Courier, monospace', // UI A: Font
+            boxSizing: 'border-box'
+        }}>
+
+            {/* SIDEBAR (Logic B) */}
+            <div className={`sidebar-wrapper ${isSidebarOpen ? 'open' : ''}`}>
+                <UserSidebar activeTab={activeTab} setActiveTab={(tab) => {
+                    setActiveTab(tab);
+                    setIsSidebarOpen(false);
+                }} />
+                {isSidebarOpen && (
+                    <div onClick={() => setIsSidebarOpen(false)} style={{ position: 'absolute', top: '20px', right: '20px', color: '#fff', fontSize: '20px', cursor: 'pointer', zIndex: 1002 }}>✕</div>
+                )}
+            </div>
+
             {/* MAIN CONTENT AREA */}
             <div style={{
-                width: '100%',
+                flex: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
                 overflowY: 'auto',
-                zIndex: 2
+                zIndex: 2,
+                padding: '20px'
             }}>
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: '0',
-                        left: '0',
-                        width: '100%',
-                        height: '100%',
-                        backgroundImage: `url(${strangerThingsBg})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        opacity: '1',
-                        zIndex: 0,
-                        pointerEvents: 'none'
-                    }}
-                />
+                {/* Background (UI A) */}
+                <div style={{
+                    position: 'fixed',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    backgroundImage: `url(${strangerThingsBg})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    opacity: '1',
+                    zIndex: 0,
+                    pointerEvents: 'none'
+                }} />
 
                 <div style={{
                     position: 'fixed',
@@ -233,8 +217,22 @@ const DashboardView = ({
                     pointerEvents: 'none'
                 }} />
 
+                {/* CSS (UI A + Sidebar Logic from B) */}
                 <style>{`
+                    /* Sidebar Logic (B) */
+                    @media (max-width: 992px) {
+                        .sidebar-wrapper {
+                            position: fixed;
+                            left: -280px;
+                            top: 0;
+                            height: 100vh;
+                            z-index: 1000;
+                            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        }
+                        .sidebar-wrapper.open { left: 0; }
+                    }
 
+                    /* UI Styles (A) */
                     @keyframes liveShimmer {
                         0%, 100% { opacity: 0.5; text-shadow: 0 0 5px #00d4ff; }
                         50% { opacity: 1; text-shadow: 0 0 20px #8b5cf6; }
@@ -262,7 +260,6 @@ const DashboardView = ({
                         z-index: 5;
                         box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
                     }
-
                     .bubbles > .text {
                         font-weight: 900;
                         color: var(--c2);
@@ -270,19 +267,7 @@ const DashboardView = ({
                         z-index: 1;
                         transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
                     }
-
-                    .bubbles::before {
-                        top: 0;
-                        left: 0;
-                    }
-
-                    .bubbles::after {
-                        top: 100%;
-                        left: 100%;
-                    }
-
-                    .bubbles::before,
-                    .bubbles::after {
+                    .bubbles::before, .bubbles::after {
                         content: "";
                         width: 150%;
                         aspect-ratio: 1/1;
@@ -293,24 +278,13 @@ const DashboardView = ({
                         position: absolute;
                         translate: -50% -50%;
                     }
+                    .bubbles::before { top: 0; left: 0; }
+                    .bubbles::after { top: 100%; left: 100%; }
+                    .bubbles:hover { box-shadow: 0 0 30px rgba(220, 38, 38, 0.8); }
+                    .bubbles:hover > .text { color: var(--c1); }
+                    .bubbles:hover::before, .bubbles:hover::after { scale: 1; }
+                    .bubbles:active { scale: 0.98; filter: brightness(0.9); }
 
-                    .bubbles:hover {
-                         box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
-                    }
-
-                    .bubbles:hover > .text {
-                        color: var(--c1);
-                    }
-
-                    .bubbles:hover::before,
-                    .bubbles:hover::after {
-                        scale: 1;
-                    }
-
-                    .bubbles:active {
-                        scale: 0.98;
-                        filter: brightness(0.9);
-                    }
                     .main-glass-box {
                         background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
                         backdrop-filter: blur(10px);
@@ -326,19 +300,7 @@ const DashboardView = ({
                         box-shadow: 0 10px 40px rgba(0,0,0,0.8);
                         box-sizing: border-box;
                     }
-                    .live-badge {
-                        background: #dc2626;
-                        color: white;
-                        padding: 6px 16px;
-                        font-size: 11px;
-                        font-weight: 800;
-                        letter-spacing: 2px;
-                        border-radius: 4px;
-                        animation: liveShimmer 1.5s infinite;
-                        display: inline-block;
-                        margin-bottom: 24px;
-                        text-transform: uppercase;
-                    }
+
                     .team-roster-grid {
                         display: grid;
                         grid-template-columns: repeat(2, 1fr);
@@ -346,17 +308,23 @@ const DashboardView = ({
                         text-align: left;
                     }
                     @media (max-width: 768px) {
-                        .team-roster-grid {
-                            grid-template-columns: 1fr;
-                        }
+                        .team-roster-grid { grid-template-columns: 1fr; }
+                        .main-glass-box { padding: 35px 25px; width: 95%; text-align: left; }
+                        h1 { font-size: 2.8rem !important; text-align: left !important; line-height: 1.1 !important; }
                     }
+                    @media (max-width: 480px) {
+                         .main-glass-box { padding: 28px 20px; border-radius: 6px; text-align: left; }
+                         h1 { font-size: 2.2rem !important; }
+                         .bubbles { width: 100%; font-size: 12px; padding: 14px 0; }
+                    }
+
                     .leader-card {
                         background: rgba(25, 25, 25, 0.3);
                         backdrop-filter: blur(12px);
                         border: 1px solid rgba(59, 130, 246, 0.4);
                         border-radius: 6px;
                         padding: 28px;
-                        marginBottom: 20px;
+                        margin-bottom: 20px;
                         text-align: left;
                         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
                     }
@@ -375,267 +343,166 @@ const DashboardView = ({
                         border-color: rgba(255, 255, 255, 0.25);
                         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
                     }
-
-                    @media (max-width: 768px) {
-                        .main-glass-box {
-                            padding: 35px 25px;
-                            width: 95%;
-                            text-align: left;
-                        }
-                        .team-roster-grid {
-                            grid-template-columns: 1fr !important;
-                            gap: 15px;
-                        }
-                        h1 {
-                            font-size: 2.8rem !important;
-                            text-align: left !important;
-                            line-height: 1.1 !important;
-                        }
-                        .leader-card {
-                            text-align: left;
-                            padding: 22px;
-                        }
-                        .member-card {
-                            text-align: left;
-                            padding: 18px;
-                        }
-                    }
-                    @media (max-width: 480px) {
-                         .main-glass-box {
-                            padding: 28px 20px;
-                            border-radius: 6px;
-                            text-align: left;
-                        }
-                        h1 {
-                            font-size: 2.2rem !important;
-                            line-height: 1.1 !important;
-                            letter-spacing: '0.5px' !important;
-                        }
-                        .initiate-btn {
-                            width: 100%;
-                            max-width: 100%;
-                            font-size: 12px;
-                            padding: 14px 0;
-                        }
-                        .leader-card {
-                            padding: 18px;
-                            margin-bottom: 15px;
-                        }
-                        .member-card {
-                            padding: 16px;
-                        }
-                    }
-
                 `}</style>
 
+                {/* Content Container (UI A) */}
                 <div className="main-glass-box">
-                    {/* Round Badge Section - Exact Match from Image */}
-                    {currentRound && (currentRound.status === 'LIVE' || currentRound.id === 'hackerrank_submission') ? (
-                        <div style={{
+
+                    {/* ROUND STATUS – REUSED FROM SECOND CODE */}
+                    <div
+                        style={{
                             display: 'flex',
                             justifyContent: 'center',
-                            width: '100%',
-                            marginBottom: '30px'
-                        }}>
-                            <div style={{
-                                fontSize: '1rem',
-                                fontWeight: '700',
-                                color: '#22c55e',
-                                letterSpacing: '1px',
-                                textTransform: 'uppercase',
-                                fontFamily: '"Courier New", monospace',
-                                background: 'rgba(34, 197, 94, 0.1)',
-                                border: '1px solid rgba(34, 197, 94, 0.3)',
-                                padding: '5px 14px',
-                                borderRadius: '0px',
-                                boxShadow: '0 0 15px rgba(34, 197, 94, 0.2)',
-                                backdropFilter: 'blur(5px)'
-                            }}>
-                                Round 1 is Live
-                            </div>
-                        </div>
-                    ) : currentRound ? (
-                        <div style={{
-                            display: 'flex',
                             alignItems: 'center',
-                            gap: '12px',
-                            marginBottom: '30px'
-                        }}>
-                            <div style={{
-                                background: currentRound.color || '#6b7280',
-                                color: '#fff',
-                                padding: '6px 14px',
-                                borderRadius: '3px',
-                                fontSize: '0.8rem',
-                                fontWeight: '900',
-                                letterSpacing: '0.5px',
-                                textTransform: 'uppercase'
-                            }}>
-                                R{currentRound.number}
-                            </div>
-                            <div style={{
-                                fontSize: '0.9rem',
-                                fontWeight: '800',
-                                color: currentRound.color || '#6b7280',
-                                letterSpacing: '1.5px',
-                                textTransform: 'uppercase'
-                            }}>
-                                {currentRound.name} - {currentRound.status}
-                            </div>
-                        </div>
-                    ) : null}
+                            marginBottom: '30px',
+                            width: '100%',
+                        }}
+                    >
+                        {currentRound ? (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px',
+                                    padding: '10px 20px',
+                                    background: `${currentRound.color}15`,
+                                    borderRadius: '12px',
+                                    border: `1px solid ${currentRound.color}40`,
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        width: '30px',
+                                        height: '30px',
+                                        borderRadius: '50%',
+                                        background: currentRound.color,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '900',
+                                        color: '#0a0a0a',
+                                    }}
+                                >
+                                    R{currentRound.number}
+                                </div>
 
-                    {/* Welcome Section - Exact Match from Image */}
+                                <div
+                                    style={{
+                                        fontSize: '12px',
+                                        fontWeight: '800',
+                                        color: currentRound.color,
+                                        letterSpacing: '1.5px',
+                                        textTransform: 'uppercase',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                    }}
+                                >
+                                    {currentRound.name}
+                                    <span
+                                        style={{
+                                            background:
+                                                currentRound.status === 'LIVE'
+                                                    ? '#22c55e'
+                                                    : currentRound.status === 'APPROVED'
+                                                        ? '#22c55e'
+                                                        : currentRound.status === 'REVIEW PENDING'
+                                                            ? '#eab308'
+                                                            : '#ef4444',
+                                            color: '#fff',
+                                            padding: '2px 6px',
+                                            borderRadius: '4px',
+                                            fontSize: '10px',
+                                            border: '1px solid rgba(255,255,255,0.2)',
+                                        }}
+                                    >
+                                        {currentRound.status}
+                                    </span>
+                                </div>
+                            </div>
+                        ) : roundStatus ? (
+                            <div className="live-badge" style={{ background: '#ef4444' }}>
+                                NO ACTIVE ROUNDS
+                            </div>
+                        ) : (
+                            <div className="live-badge">LOADING STATUS...</div>
+                        )}
+                    </div>
+
+                    {/* Welcome Header (UI A) */}
                     <h1 style={{
-                        fontSize: 'clamp(2.8rem, 5vw, 4.5rem)',
-                        fontWeight: '700',
-                        color: '#dc2626',
-                        lineHeight: '1',
-                        margin: '0 0 12px 0',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px',
-                        textShadow: '0 0 10px rgba(220, 38, 38, 0.6)',
-                        fontFamily: '"Della Respira", serif',
-                        fontStyle: 'normal'
+                        fontSize: 'clamp(2.8rem, 5vw, 4.5rem)', fontWeight: '700', color: '#dc2626', lineHeight: '1', margin: '0 0 12px 0',
+                        textTransform: 'uppercase', letterSpacing: '2px', textShadow: '0 0 10px rgba(220, 38, 38, 0.6)',
+                        fontFamily: '"Della Respira", serif', fontStyle: 'normal'
                     }}>
                         WELCOME,<br />
-                        <span style={{
-                            color: '#dc2626',
-                            textShadow: '0 0 15px rgba(220, 38, 38, 0.7)'
-                        }}>{teamInfo?.team_name || teamName}</span>
+                        <span style={{ color: '#dc2626', textShadow: '0 0 15px rgba(220, 38, 38, 0.7)' }}>{teamInfo?.team_name || teamName}</span>
                     </h1>
 
-                    {/* Team ID Display - Exact Match from Image */}
+                    {/* Team ID (UI A) */}
                     {teamInfo?.team_id && (
                         <div style={{
-                            fontSize: '1.3rem',
-                            color: '#fff',
-                            marginBottom: '35px',
-                            letterSpacing: '0.5px',
-                            textTransform: 'uppercase',
-                            fontWeight: '600',
-                            fontFamily: '"Rajdhani", sans-serif'
+                            fontSize: '1.3rem', color: '#fff', marginBottom: '35px', letterSpacing: '0.5px',
+                            textTransform: 'uppercase', fontWeight: '600', fontFamily: '"Rajdhani", sans-serif'
                         }}>
                             TEAM ID: <span style={{ color: '#fff', fontWeight: '700' }}>{teamInfo.team_id}</span>
                         </div>
                     )}
 
-                    {/* Team Members Display */}
+                    {/* Team Display (UI A) */}
                     {teamInfo && (teamInfo.leader || (teamInfo.members && teamInfo.members.length > 0)) && (
-                        <div style={{
-                            marginBottom: '30px',
-                            textAlign: 'left'
-                        }}>
+                        <div style={{ marginBottom: '30px', textAlign: 'left' }}>
                             <div style={{
-                                fontSize: '1.1rem',
-                                color: '#fff',
-                                letterSpacing: '2.5px',
-                                textTransform: 'uppercase',
-                                marginBottom: '30px',
-                                marginTop: '10px',
-                                fontWeight: '700',
-                                textAlign: 'center',
-                                position: 'relative',
-                                padding: '18px 0',
-                                fontFamily: '"Rajdhani", sans-serif'
+                                fontSize: '1.1rem', color: '#fff', letterSpacing: '2.5px', textTransform: 'uppercase', marginBottom: '30px', marginTop: '10px',
+                                fontWeight: '700', textAlign: 'center', position: 'relative', padding: '18px 0', fontFamily: '"Rajdhani", sans-serif'
                             }}>
-                                <div style={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    left: '0',
-                                    right: '0',
-                                    height: '1px',
-                                    background: 'rgba(255,255,255,0.25)',
-                                    zIndex: 0
-                                }}></div>
+                                <div style={{ position: 'absolute', top: '50%', left: '0', right: '0', height: '1px', background: 'rgba(255,255,255,0.25)', zIndex: 0 }}></div>
                                 <span style={{
-                                    background: 'rgba(20, 20, 20, 0.3)',
-                                    backdropFilter: 'blur(10px)',
-                                    padding: '0 25px',
-                                    position: 'relative',
-                                    zIndex: 1,
-                                    display: 'inline-block',
-                                    fontFamily: '"Rajdhani", sans-serif',
-                                    fontWeight: '700'
+                                    background: 'rgba(20, 20, 20, 0.3)', backdropFilter: 'blur(10px)', padding: '0 25px', position: 'relative',
+                                    zIndex: 1, display: 'inline-block', fontFamily: '"Rajdhani", sans-serif', fontWeight: '700'
                                 }}>TEAM ROSTER</span>
                             </div>
 
-                            {/* Leader - Exact Match from Image */}
+                            {/* Leader (UI A) */}
                             {teamInfo.leader && (
                                 <div className="leader-card">
                                     <div className="leader-info">
-                                        <div style={{
-                                            fontSize: '1.4rem',
-                                            fontWeight: '700',
-                                            color: '#fff',
-                                            marginBottom: '8px',
-                                            letterSpacing: '0.5px',
-                                            fontFamily: '"Rajdhani", sans-serif'
-                                        }}>
+                                        <div style={{ fontSize: '1.4rem', fontWeight: '700', color: '#fff', marginBottom: '8px', letterSpacing: '0.5px', fontFamily: '"Rajdhani", sans-serif' }}>
                                             {teamInfo.leader.fullName}
                                         </div>
                                         <div style={{
-                                            fontSize: '0.9rem',
-                                            color: '#3b82f6',
-                                            fontWeight: '900',
-                                            letterSpacing: '1.5px',
-                                            marginTop: '8px',
-                                            textTransform: 'uppercase',
-                                            display: 'inline-block',
-                                            padding: '3px 10px',
-                                            background: 'rgba(59, 130, 246, 0.2)',
-                                            border: '1px solid rgba(59, 130, 246, 0.4)',
-                                            borderRadius: '3px',
-                                            fontFamily: '"Rajdhani", sans-serif'
+                                            fontSize: '0.9rem', color: '#3b82f6', fontWeight: '900', letterSpacing: '1.5px', marginTop: '8px', textTransform: 'uppercase',
+                                            display: 'inline-block', padding: '3px 10px', background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', borderRadius: '3px', fontFamily: '"Rajdhani", sans-serif'
                                         }}>
                                             TEAM LEADER
                                         </div>
                                     </div>
-                                    <div className="leader-details" style={{ fontSize: '1rem', fontFamily: '"Rajdhani", sans-serif' }}>
+                                    <div className="leader-details" style={{ fontSize: '1rem', fontFamily: '"Rajdhani", sans-serif', marginTop: '15px' }}>
                                         <div>
                                             <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email:</div>
                                             <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.email}</div>
                                         </div>
                                         {teamInfo.leader.sapid && (
-                                            <div>
+                                            <div style={{ marginTop: '10px' }}>
                                                 <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SAP ID:</div>
                                                 <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.sapid}</div>
-                                            </div>
-                                        )}
-                                        {teamInfo.leader.phone && (
-                                            <div>
-                                                <div style={{ color: 'rgba(59, 130, 246, 0.75)', fontSize: '0.9rem', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact:</div>
-                                                <div style={{ color: 'rgba(255,255,255,0.95)', fontWeight: '500', fontSize: '1.1rem' }}>{teamInfo.leader.phone}</div>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                             )}
 
-                            {/* Members - Exact Match from Image (2 column grid) */}
+                            {/* Members (UI A) */}
                             {teamInfo.members && teamInfo.members.length > 0 && (
                                 <div className="team-roster-grid">
                                     {teamInfo.members.map((member, index) => (
                                         <div key={index} className="member-card">
-                                            <div style={{
-                                                fontSize: '1.2rem',
-                                                fontWeight: '700',
-                                                color: '#fff',
-                                                marginBottom: '10px',
-                                                letterSpacing: '0.5px',
-                                                fontFamily: '"Rajdhani", sans-serif'
-                                            }}>
+                                            <div style={{ fontSize: '1.2rem', fontWeight: '700', color: '#fff', marginBottom: '10px', letterSpacing: '0.5px', fontFamily: '"Rajdhani", sans-serif' }}>
                                                 {member.fullName}
                                             </div>
-                                            <div style={{
-                                                fontSize: '0.85rem',
-                                                color: 'rgba(255,255,255,0.55)',
-                                                fontWeight: '700',
-                                                letterSpacing: '1.5px',
-                                                marginBottom: '16px',
-                                                textTransform: 'uppercase',
-                                                fontFamily: '"Rajdhani", sans-serif'
-                                            }}>
+                                            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)', fontWeight: '700', letterSpacing: '1.5px', marginBottom: '16px', textTransform: 'uppercase', fontFamily: '"Rajdhani", sans-serif' }}>
                                                 MEMBER
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '1rem', fontFamily: '"Rajdhani", sans-serif' }}>
@@ -657,22 +524,14 @@ const DashboardView = ({
                         </div>
                     )}
 
+                    {/* Action Button (UI A + Logic B) */}
                     {!selectedPS && (
                         <div style={{ marginTop: '35px', paddingTop: '25px' }}>
-                            <p style={{
-                                color: '#fff',
-                                fontSize: '1.1rem',
-                                lineHeight: '1.6',
-                                marginBottom: '25px',
-                                textAlign: 'center',
-                                fontWeight: '500',
-                                letterSpacing: '0.3px',
-                                fontFamily: '"Rajdhani", sans-serif'
-                            }}>
+                            <p style={{ color: '#fff', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '25px', textAlign: 'center', fontWeight: '500', letterSpacing: '0.3px', fontFamily: '"Rajdhani", sans-serif' }}>
                                 The gate is open. Check the walkie channels and get the crew ready for the Upside Down run.
                             </p>
                             <div style={{ textAlign: 'center' }}>
-                                <button className="bubbles" onClick={() => setActiveTab('ps-selection')}>
+                                <button className="bubbles" onClick={() => setActiveTab('hackerrank-submission')}>
                                     <span className="text">OPEN THE GATE</span>
                                 </button>
                             </div>
