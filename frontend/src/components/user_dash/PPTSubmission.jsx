@@ -201,12 +201,12 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     const hasUserSubmitted = localIsSubmitted || isSubmitted;
 
     return (
-        <div style={{
+        <div className="ppt-root-wrapper" style={{
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             width: '100%',
-            padding: '20px 20px 40px 20px',
+            padding: '20px 0 40px 0',
             boxSizing: 'border-box',
             position: 'relative',
             minHeight: '100vh',
@@ -314,8 +314,8 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     maxWidth: '800px',
                     boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
                 }}>
-                    <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
-                    <h2 style={{
+                    <div className="round-closed-icon" style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
+                    <h2 className="round-closed-title" style={{
                         color: '#ef4444',
                         fontWeight: '900',
                         fontSize: '2.5rem',
@@ -410,7 +410,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                     Review the <strong style={{ color: '#fff' }}>Phase 01 Submission Protocol</strong> before starting.
                                 </p>
                                 <button className="download-btn-creative" onClick={handleDownloadTemplate}>
-                                    DOWNLOAD DOSSIER ↓
+                                    DOWNLOAD FILE ↓
                                 </button>
                             </div>
                         </div>
@@ -458,15 +458,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                 {hasUserSubmitted ? (
                                     /* --- SUCCESS UI WITH APPROVAL STATUS --- */
                                     <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-                                        <div style={{
-                                            fontSize: "3rem",
-                                            color: submittedFile?.approval_status === 'approved' ? '#22c55e' :
-                                                submittedFile?.approval_status === 'rejected' ? '#ef4444' : '#eab308',
-                                            marginBottom: '15px'
-                                        }}>
-                                            {submittedFile?.approval_status === 'approved' ? '🎉' :
-                                                submittedFile?.approval_status === 'rejected' ? '❌' : '⏳'}
-                                        </div>
                                         <h4 style={{
                                             color: submittedFile?.approval_status === 'approved' ? "#22c55e" :
                                                 submittedFile?.approval_status === 'rejected' ? "#ef4444" : "#eab308",
@@ -519,23 +510,18 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                                 <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); handleUpload(); }}
-                                                        className="uplink-btn-red"
+                                                        className="creative-red-btn"
                                                         disabled={isUploading}
                                                     >
-                                                        {isUploading ? 'SYNCHRONIZING...' : 'CONFIRM & SUBMIT'}
+                                                        <span className="text">{isUploading ? 'SYNCHRONIZING...' : 'CONFIRM & SUBMIT'}</span>
                                                     </button>
 
                                                     {!isUploading && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); setPendingFile(null); }}
-                                                            style={{
-                                                                background: 'transparent', border: '1px solid #ef4444',
-                                                                color: '#ef4444', padding: '12px 25px', borderRadius: '2px',
-                                                                cursor: 'pointer', fontWeight: 'bold', fontSize: '12px',
-                                                                letterSpacing: '1px'
-                                                            }}
+                                                            className="creative-red-btn"
                                                         >
-                                                            ABORT
+                                                            <span className="text">ABORT</span>
                                                         </button>
                                                     )}
                                                 </div>
@@ -555,7 +541,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                                                 </h4>
                                                 <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '20px', letterSpacing: '1px' }}>Accepted Formats: PDF, PPTX (Max 15MB)</p>
 
-                                                <button className="uplink-btn-red" style={{ marginTop: '10px' }}>SELECT FILE</button>
+                                                <button className="creative-red-btn" style={{ marginTop: '10px' }}>
+                                                    <span className="text">SELECT FILE</span>
+                                                </button>
                                             </>
                                         )}
                                     </>
@@ -578,6 +566,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                             gap: 20px !important;
                         }
                         .uplink-btn-red { width: 100%; padding: 16px 20px !important; }
+                        .creative-red-btn { width: 100%; padding: 16px 20px !important; }
                     }
                     .template-card-visual { 
                         width: 140px; height: 110px; 
@@ -618,6 +607,66 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     
                     @keyframes shine-red { to { background-position: 200% center; } }
 
+                    .creative-red-btn {
+                        --c1: #0a0a0a;
+                        --c2: #dc2626;
+                        --size-letter: 14px;
+                        padding: 12px 25px;
+                        font-size: var(--size-letter);
+                        background-color: transparent;
+                        border: 2px solid var(--c2);
+                        border-radius: 4px;
+                        cursor: pointer;
+                        overflow: hidden;
+                        position: relative;
+                        transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                        font-family: inherit;
+                        font-weight: 900;
+                        letter-spacing: 3px;
+                        text-transform: uppercase;
+                        z-index: 5;
+                    }
+                    .creative-red-btn > .text {
+                        font-weight: 900;
+                        color: var(--c2);
+                        position: relative;
+                        z-index: 1;
+                        transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+                    }
+                    .creative-red-btn::before,
+                    .creative-red-btn::after {
+                        content: "";
+                        width: 150%;
+                        aspect-ratio: 1/1;
+                        scale: 0;
+                        transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                        background-color: var(--c2);
+                        border-radius: 50%;
+                        position: absolute;
+                        top: 0; left: 0;
+                        translate: -50% -50%;
+                    }
+                    .creative-red-btn::after {
+                        top: 100%;
+                        left: 100%;
+                    }
+                    .creative-red-btn:hover:not(:disabled) > .text {
+                        color: var(--c1);
+                    }
+                    .creative-red-btn:hover:not(:disabled)::before,
+                    .creative-red-btn:hover:not(:disabled)::after {
+                        scale: 1;
+                    }
+                    .creative-red-btn:active:not(:disabled) {
+                        scale: 0.98;
+                        filter: brightness(0.9);
+                    }
+                    .creative-red-btn:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        filter: grayscale(0.5);
+                    }
+
                     .success-check-ring { 
                         width: 70px; height: 70px; border: 3px solid #10b981; border-radius: 50%; 
                         display: flex; align-items: center; justify-content: center; 
@@ -627,13 +676,27 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     .upload-icon-wrapper { animation: float 3s infinite ease-in-out; }
                     
                     .ppt-container-main {
-                        transform: translateX(-100px);
+                        transform: translateX(-130px);
                     }
                     
-                    @media (max-width: 768px) {
+                    @media (max-width: 992px) {
                         .ppt-container-main {
                             transform: translateX(0);
+                            max-width: 100% !important;
+                            width: 100% !important;
+                            padding: 30px 20px !important;
+                            min-height: auto !important;
                         }
+                        .ppt-root-wrapper {
+                            /* Heavily override inline styles for mobile padding */
+                            padding: 20px 15px 40px 15px !important; 
+                            justify-content: center !important;
+                            align-items: flex-start !important;
+                        }
+                        
+                        /* Override inline font sizes */
+                        .round-closed-icon { font-size: 3rem !important; margin-bottom: 10px !important; }
+                        .round-closed-title { font-size: 1.8rem !important; letter-spacing: 1px !important; }
                     }
                     
                     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }

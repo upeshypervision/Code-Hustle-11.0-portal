@@ -289,7 +289,7 @@ export default function HackerrankSubmission({ teamName }) {
           {success ? (
             <div
               style={{
-                padding: "30px",
+                padding: "60px 30px",
                 background:
                   submissionData?.approval_status === "approved"
                     ? "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)"
@@ -310,23 +310,7 @@ export default function HackerrankSubmission({ teamName }) {
                     : "none",
               }}
             >
-              <div
-                style={{
-                  fontSize: "3rem",
-                  color:
-                    submissionData?.approval_status === "approved"
-                      ? "#22c55e"
-                      : submissionData?.approval_status === "rejected"
-                        ? "#ef4444"
-                        : "#eab308",
-                }}
-              >
-                {submissionData?.approval_status === "approved"
-                  ? "🎉"
-                  : submissionData?.approval_status === "rejected"
-                    ? "❌"
-                    : "⏳"}
-              </div>
+
               <div style={{ width: "100%" }}>
                 <h3
                   style={{
@@ -476,12 +460,13 @@ export default function HackerrankSubmission({ teamName }) {
               <div
                 style={{
                   display: "flex",
-                  gap: "15px",
-                  alignItems: "flex-start",
-                  flexWrap: "wrap",
+                  gap: "20px",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "100%",
                 }}
               >
-                <div style={{ flex: 1, minWidth: "250px" }}>
+                <div style={{ width: "80%", maxWidth: "500px" }}>
                   <input
                     type="url"
                     placeholder="https://www.hackerrank.com/profile/username"
@@ -493,7 +478,7 @@ export default function HackerrankSubmission({ teamName }) {
                       width: "100%",
                       padding: "15px",
                       background: "rgba(0,0,0,0.3)",
-                      border: "1px solid rgba(220, 38, 38, 0.2)", // Red border
+                      border: "1px solid rgba(220, 38, 38, 0.2)",
                       borderRadius: "2px",
                       color: "#fff",
                       fontSize: "0.9rem",
@@ -501,26 +486,19 @@ export default function HackerrankSubmission({ teamName }) {
                       outline: "none",
                       transition: "all 0.3s ease",
                       boxSizing: "border-box",
+                      textAlign: "center",
                     }}
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="hackerrank-submit-btn"
+                  className="bubbles"
                   style={{
-                    padding: "15px 30px",
-                    border: "none",
-                    color: "#fff",
-                    fontWeight: "900",
-                    fontSize: "0.9rem",
-                    letterSpacing: "1px",
                     cursor: loading ? "wait" : "pointer",
-                    textTransform: "uppercase",
-                    minWidth: "150px",
                   }}
                 >
-                  {loading ? "SUBMITTING..." : "SUBMIT PROFILE"}
+                  <span className="text">{loading ? "SUBMITTING..." : "SUBMIT PROFILE"}</span>
                 </button>
               </div>
             </form>
@@ -606,6 +584,85 @@ export default function HackerrankSubmission({ teamName }) {
                 .hackerrank-submit-btn:hover:not(:disabled) {
                     transform: translateY(-2px);
                     box-shadow: 0 0 35px rgba(220, 38, 38, 0.6);
+                }
+                
+
+                .bubbles {
+                    --c1: #0a0a0a;
+                    --c2: #dc2626;
+                    --size-letter: 14px;
+                    padding: 16px 40px; /* Adjusted padding */
+                    min-width: 200px;
+                    font-size: var(--size-letter);
+                    background-color: transparent;
+                    border: 2px solid var(--c2);
+                    border-radius: 5px;
+                    cursor: pointer;
+                    overflow: hidden;
+                    position: relative;
+                    transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                    font-family: 'Orbitron', sans-serif;
+                    font-weight: 900;
+                    letter-spacing: 3px;
+                    text-transform: uppercase;
+                    margin-top: 10px;
+                    z-index: 5;
+                    box-shadow: 0 0 5px rgba(220, 38, 38, 0.4);
+                }
+
+                .bubbles > .text {
+                    font-weight: 900;
+                    color: var(--c2);
+                    position: relative;
+                    z-index: 1;
+                    transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+                }
+
+                .bubbles::before {
+                    top: 0;
+                    left: 0;
+                }
+
+                .bubbles::after {
+                    top: 100%;
+                    left: 100%;
+                }
+
+                .bubbles::before,
+                .bubbles::after {
+                    content: "";
+                    width: 150%;
+                    aspect-ratio: 1/1;
+                    scale: 0;
+                    transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                    background-color: var(--c2);
+                    border-radius: 50%;
+                    position: absolute;
+                    translate: -50% -50%;
+                }
+
+                .bubbles:hover {
+                     box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+                }
+
+                .bubbles:hover > .text {
+                    color: var(--c1);
+                }
+
+                .bubbles:hover::before,
+                .bubbles:hover::after {
+                    scale: 1;
+                }
+
+                .bubbles:active {
+                    scale: 0.98;
+                    filter: brightness(0.9);
+                }
+                
+                .bubbles:disabled {
+                    opacity: 0.7;
+                    cursor: wait;
+                    pointer-events: none;
                 }
                 
                 @keyframes shine-red { to { background-position: 200% center; } }

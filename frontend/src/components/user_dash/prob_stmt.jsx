@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import socket from "../../socket";
 import strangerThingsBg from "../../assets/StrangerThings-bg.png";
 
-export default function PSGallery() {
+export default function PSGallery({ setIsExpandedView }) { // Accept prop
   // --- STATE ---
   const [expandedId, setExpandedId] = useState(null);
   const [problemStatements, setProblemStatements] = useState([]);
@@ -198,21 +198,35 @@ export default function PSGallery() {
     }
   };
 
+  // Helper for conditional layout
+  const showNotAllowedLayout = (!checkingRound && !checkingSelection && !selectedPS && hackerrankStatus && hackerrankStatus !== 'approved') || (!checkingRound && !selectedPS && !roundActive);
+
+  // Sync expanded view state with parent
+  useEffect(() => {
+    if (setIsExpandedView) {
+      // Expanded view (Grid) is active when we are NOT loading, NOT selected, and NOT showing 'Not Allowed' layout
+      const isGridView = !checkingRound && !checkingSelection && !selectedPS && !showNotAllowedLayout;
+      setIsExpandedView(isGridView);
+    }
+  }, [setIsExpandedView, checkingRound, checkingSelection, selectedPS, showNotAllowedLayout]);
+
   return (
     <div
+      className="ps-root-container"
       style={{
         display: "flex",
-        justifyContent: "center",   // ← ADD
-        alignItems: "flex-start",   // ← ADD
+        justifyContent: showNotAllowedLayout ? "flex-end" : "center",
+        alignItems: showNotAllowedLayout ? "center" : "flex-start",
         width: "100%",
-        paddingTop: "70px",
+        paddingTop: showNotAllowedLayout ? "0" : "70px",
+        paddingRight: showNotAllowedLayout ? "180px" : "0",
         paddingBottom: "40px",
         boxSizing: "border-box",
         position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
-        minHeight: "100vh",         // ← change height → minHeight
-        overflowY: "auto",
+        minHeight: "100vh",
+        overflowY: showNotAllowedLayout ? "hidden" : "auto",
       }}
 
 
@@ -246,14 +260,17 @@ export default function PSGallery() {
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
+        className="ps-main-content"
         style={{
           position: "relative",
           zIndex: 2,
           width: "100%",
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 30px",
+          maxWidth: showNotAllowedLayout ? "100%" : "1200px",
+          margin: showNotAllowedLayout ? "0" : "0 auto",
+          padding: showNotAllowedLayout ? "0" : "0 30px",
           boxSizing: "border-box",
+          display: showNotAllowedLayout ? "flex" : "block",
+          justifyContent: showNotAllowedLayout ? "flex-end" : "unset",
         }}
       >
 
@@ -370,13 +387,15 @@ export default function PSGallery() {
             minHeight: '60vh',
             padding: '40px',
             textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
+            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            borderRadius: "4px",
             animation: 'fadeIn 0.5s ease-out',
             maxWidth: '800px',
-            margin: '0 auto'
+            margin: '0',
+            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            width: "100%",
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
             <h2 style={{
@@ -414,13 +433,15 @@ export default function PSGallery() {
             minHeight: '60vh',
             padding: '40px',
             textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
+            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            borderRadius: "4px",
             animation: 'fadeIn 0.5s ease-out',
             maxWidth: '800px',
-            margin: '0 auto'
+            margin: '-80px auto 0 auto',
+            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            width: "100%",
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
             <h2 style={{
@@ -456,6 +477,7 @@ export default function PSGallery() {
             alignItems: 'center'
           }}>
             <div
+              className="caution-card"
               style={{
                 borderLeft: "8px solid #dc2626",
                 background: "rgba(20, 20, 20, 0.8)",
@@ -485,9 +507,7 @@ export default function PSGallery() {
               </p>
             </div>
 
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
+            <div className="ps-grid-container" style={{
               gap: "20px",
               padding: "0",
               width: "100%",
@@ -536,8 +556,8 @@ export default function PSGallery() {
                             style={{
                               color: "#fff",
                               background: "#dc2626",
-                              padding: "3px 10px",
-                              fontSize: "10px",
+                              padding: "8px 15px",
+                              fontSize: "12px",
                               fontWeight: "900",
                             }}
                           >
@@ -588,15 +608,7 @@ export default function PSGallery() {
                               marginBottom: "5px",
                             }}
                           >
-                            <span
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "900",
-                                color: "rgba(255,255,255,0.4)",
-                              }}
-                            >
-                              CONFLICT LEVEL
-                            </span>
+
                             <span
                               style={{
                                 fontSize: "16px",
@@ -637,7 +649,7 @@ export default function PSGallery() {
                         >
                           {expandedId === ps.problem_statement_id
                             ? "CLOSE DOSSIER"
-                            : "VIEW DOSSIER"}
+                            : "VIEW FILE"}
                         </button>
                       </div>
                     </div>
@@ -810,7 +822,30 @@ export default function PSGallery() {
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
                   .view-btn-heist { width: 100% !important; }
+                  .card-layout-inner { flex-direction: column !important; }
+                  .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
+                  .view-btn-heist { width: 100% !important; }
+                  .view-btn-heist { width: 100% !important; }
                   .heat-gauge-container { width: 100% !important; }
+                  .ps-grid-container { display: flex; flex-direction: column; width: 100%; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
+                  
+                  /* FORCE CENTER LAYOUT ON MOBILE FOR ROUND CLOSED / NOT ALLOWED */
+                  .ps-root-container { 
+                      padding-right: 0 !important; 
+                      justify-content: center !important; 
+                  }
+                  .ps-main-content { 
+                      justify-content: center !important; 
+                  }
+                  .ps-card { width: 100% !important; margin: 0 !important; box-sizing: border-box !important; }
+                  
+                  /* Maximize Mobile Width */
+                  .ps-main-content { padding: 0 4px !important; }
+                  .caution-card { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; }
+              }
+
+              @media (min-width: 993px) {
+                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); } /* Desktop: Grid */
               }
               .cross-top { transform: translateY(7px) rotate(45deg); }
               .cross-bottom { transform: translateY(-7px) rotate(-45deg); }

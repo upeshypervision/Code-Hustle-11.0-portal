@@ -81,8 +81,17 @@
 /* Logo Section */
 .user-navbar-logo {
     display: flex;
-    flex-direction: column;
     line-height: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+.user-navbar-logo-img {
+    height: 35px;
+    width: auto;
+    margin-right: 12px;
+    filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.5));
+
 }
 
 .user-navbar-logo-small {
@@ -570,7 +579,13 @@
     }
 
     .user-navbar-logo {
+        display: flex;
+        /* Keep logo container visible */
+    }
+
+    .user-navbar-logo-main {
         display: none;
+        /* Hide text on mobile */
     }
 
     .user-navbar-right {

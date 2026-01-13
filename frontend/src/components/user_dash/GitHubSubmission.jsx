@@ -254,9 +254,9 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 <h2 style={{
                   color: "#fff",
                   fontFamily: '"Della Respira", serif',
-                  fontSize: "2.2rem",
-                  fontWeight: "900",
-                  letterSpacing: "4px",
+                  fontSize: "1.8rem",
+                  fontWeight: "700",
+                  letterSpacing: "2px",
                   textTransform: "uppercase",
                   margin: "0 0 10px 0",
                   textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
@@ -443,10 +443,11 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 borderRadius: "4px",
                 border: "1px solid rgba(220, 38, 38, 0.3)",
                 boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+                padding: "40px 50px",
               }}
             >
               {/* Header Section */}
-              <div style={{ textAlign: "center", marginBottom: "45px" }}>
+              <div style={{ textAlign: "center", marginBottom: "45px", marginTop: "30px" }}>
                 <h2
                   style={{
                     color: "#fff",
@@ -471,7 +472,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 <p
                   style={{
                     color: "rgba(255,255,255,0.5)",
-                    fontSize: "0.85rem",
+                    fontSize: "1rem",
+                    fontWeight: "700",
                     letterSpacing: "1px",
                   }}
                 >
@@ -501,7 +503,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 <div style={{ position: "relative" }}>
                   <label style={{
                     color: "#dc2626",
-                    fontSize: "0.65rem",
+                    fontSize: "0.8rem",
                     fontWeight: "900",
                     letterSpacing: "2px",
                     display: "block",
@@ -552,7 +554,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 <div>
                   <label style={{
                     color: "rgba(255,255,255,0.4)",
-                    fontSize: "0.65rem",
+                    fontSize: "0.8rem",
                     fontWeight: "900",
                     letterSpacing: "2px",
                     display: "block",
@@ -583,25 +585,15 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
 
                 <button
                   type="submit"
-                  className="heist-submit-btn"
+                  className="creative-red-btn"
                   disabled={!githubLink.trim() || loading}
                   style={{
                     marginTop: "10px",
-                    padding: "20px",
-                    border: "none",
-                    borderRadius: "2px",
-                    color: "#fff",
-                    fontWeight: "900",
-                    fontSize: "1rem",
-                    letterSpacing: "4px",
-                    cursor: loading ? "wait" : "pointer",
-                    textTransform: "uppercase",
-                    position: "relative",
-                    overflow: "hidden",
-                    transition: "all 0.3s ease",
+                    width: "fit-content",
+                    margin: "10px auto 0"
                   }}
                 >
-                  {loading ? "TRANSMITTING..." : "INITIATE TRANSMISSION"}
+                  <span className="text">{loading ? "TRANSMITTING..." : "SEND THE SIGNAL"}</span>
                 </button>
 
                 <div style={{
@@ -660,6 +652,66 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                     background: #222; color: #444; cursor: not-allowed; box-shadow: none; animation: none;
                 }
                 @keyframes shine-red { to { background-position: 200% center; } }
+                
+                .creative-red-btn {
+                    --c1: #0a0a0a;
+                    --c2: #dc2626;
+                    --size-letter: 14px;
+                    padding: 12px 25px;
+                    font-size: var(--size-letter);
+                    background-color: transparent;
+                    border: 2px solid var(--c2);
+                    border-radius: 4px;
+                    cursor: pointer;
+                    overflow: hidden;
+                    position: relative;
+                    transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                    font-family: 'Orbitron', sans-serif;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    z-index: 5;
+                }
+                .creative-red-btn > .text {
+                    font-weight: 900;
+                    color: var(--c2);
+                    position: relative;
+                    z-index: 1;
+                    transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+                }
+                .creative-red-btn::before,
+                .creative-red-btn::after {
+                    content: "";
+                    width: 150%;
+                    aspect-ratio: 1/1;
+                    scale: 0;
+                    transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                    background-color: var(--c2);
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 0; left: 0;
+                    translate: -50% -50%;
+                }
+                .creative-red-btn::after {
+                    top: 100%;
+                    left: 100%;
+                }
+                .creative-red-btn:hover:not(:disabled) > .text {
+                    color: var(--c1);
+                }
+                .creative-red-btn:hover:not(:disabled)::before,
+                .creative-red-btn:hover:not(:disabled)::after {
+                    scale: 1;
+                }
+                .creative-red-btn:active:not(:disabled) {
+                    scale: 0.98;
+                    filter: brightness(0.9);
+                }
+                .creative-red-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    filter: grayscale(0.5);
+                }
+
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }

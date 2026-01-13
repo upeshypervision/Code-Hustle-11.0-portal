@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import GlobalNavbar from "../GlobalNavbar";
 import "../../styles/global.css";
 import "../Individual-Member/Indi.css";
 import "./Incomp_Page.css";
-import UserNavbar from "../user_dash/UserNavbar";
 import RequestedIndividual from "./RequestedIndividual"; // Fixed import path from prev step
 import { sanitizeText } from "../../utils/sanitizer";
 import NotificationBadge from "../NotificationBadge";
@@ -37,6 +36,7 @@ const Incomp_Page = () => {
     teamId: "",
     teamName: "Loading...",
     teamVision: "",
+    visible: false,  // Team visibility status (default hidden for new teams)
     leader: {
       name: "",
       details: "",
@@ -175,6 +175,20 @@ const Incomp_Page = () => {
     setDeleteReason("");
   };
 
+  // Visibility Warning State
+  const [showVisibilityWarning, setShowVisibilityWarning] = useState(false);
+
+  // New Toggle Handler (Intercepts "ON" action)
+  const handleToggleClick = () => {
+    if (!teamData.visible) {
+      // If currently hidden, we are turning it ON -> Show Warning
+      setShowVisibilityWarning(true);
+    } else {
+      // If currently visible, we are turning it OFF -> Proceed directly
+      toggleTeamVisibility();
+    }
+  };
+
   const confirmDeleteMember = async () => {
     if (!memberToDelete) return;
 
@@ -285,18 +299,73 @@ const Incomp_Page = () => {
   const closeRequestModal = () => setSelectedRequest(null);
 
   const handleViewMember = (member) => setSelectedMember(member);
-  const closeMemberModal = () => setSelectedMember(null);
+  const closeMemberModal = () => {
+    setSelectedMember(null);
+  };
+
+  const toggleTeamVisibility = async () => {
+    // If warning is open, close it (we are proceeding)
+    if (showVisibilityWarning) setShowVisibilityWarning(false);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/team/toggle-visibility/${teamData.teamId}`, {
+        method: 'PUT',
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTeamData(prev => ({ ...prev, visible: data.visible }));
+        showNotification(
+          `Team is now ${data.visible ? 'visible' : 'hidden'} to individuals`,
+          data.visible ? 'success' : 'error' // Red for hidden, Green for visible
+        );
+      } else {
+        showNotification(data.error || 'Failed to toggle visibility', 'error');
+      }
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      showNotification('Failed to toggle visibility', 'error');
+    }
+  };
 
 
   return (
-    <div className="dashboard-page team-up-page-container" style={{
-      minHeight: "100vh"
-    }}>
-      <UserNavbar
-        teamName={teamData.teamName}
-        activeTab={activeView}
-        setActiveTab={setActiveView}
-        showHamburger={false}
+    <div className="dashboard-page team-up-page-container" style={{ minHeight: "100vh", background: "#0a0b1e" }}>
+      <GlobalNavbar
+        userInfo={null}
+        logoutPath="/team-login"
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        menuItems={[
+          {
+            id: "profile",
+            label: "Team Info",
+            name: "Team Info",
+            active: showProfile,
+          },
+          {
+            id: "details",
+            label: "Team Details",
+            name: "Team Details",
+            active: activeView === "details" && !showProfile
+          },
+          {
+            id: "requests",
+            label: "Requests",
+            name: "Requested Individuals",
+            active: activeView === "requests" && !showProfile
+          },
+        ]}
+        onMenuItemClick={(item) => {
+          if (item.id === "profile") {
+            setShowProfile(!showProfile);
+          } else {
+            setActiveView(item.id);
+            setShowProfile(false);
+          }
+        }}
+        showContactUs={true}
       />
 
       <div className="admin-content dashboard-container">
@@ -339,19 +408,56 @@ const Incomp_Page = () => {
           {/* MAIN CONTENT AREA */}
           <div className="teams-content-section">
             {/* Navigation Tabs */}
-            <div className="tab-nav-container">
-              <button
-                onClick={() => setActiveView("details")}
-                className={`tab-nav-btn ${activeView === "details" ? "active" : ""}`}
-              >
-                Team Details
-              </button>
-              <button
-                onClick={() => setActiveView("requests")}
-                className={`tab-nav-btn ${activeView === "requests" ? "active" : ""}`}
-              >
-                Requested Individuals {teamData.joinRequests.length > 0 && `(${teamData.joinRequests.length})`}
-              </button>
+            <div className="tab-nav-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                  onClick={() => setActiveView("details")}
+                  className={`tab-nav-btn ${activeView === "details" ? "active" : ""}`}
+                >
+                  Team Details
+                </button>
+                <button
+                  onClick={() => setActiveView("requests")}
+                  className={`tab-nav-btn ${activeView === "requests" ? "active" : ""}`}
+                >
+                  Requested Individuals {teamData.joinRequests.length > 0 && `(${teamData.joinRequests.length})`}
+                </button>
+              </div>
+
+              {/* Visibility Toggle Switch moved here */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '10px' }}>
+                <span style={{
+                  color: '#94a3b8',
+                  fontSize: '1rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  marginRight: '5px',
+                  fontWeight: '600'
+                }}>
+                  Team Visibility
+                </span>
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.5px',
+                  padding: '4px 10px',
+                  borderRadius: '12px',
+                  backgroundColor: teamData.visible ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                  color: teamData.visible ? '#4ade80' : '#f87171',
+                  border: `1px solid ${teamData.visible ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                  transition: 'all 0.3s ease'
+                }}>
+                  {teamData.visible ? "VISIBLE" : "HIDDEN"}
+                </span>
+                <label className="visibility-toggle" title="Toggle Visibility">
+                  <input
+                    type="checkbox"
+                    checked={teamData.visible || false}
+                    onChange={handleToggleClick}
+                  />
+                  <span className="visibility-slider"></span>
+                </label>
+              </div>
             </div>
 
             {activeView === "details" && (
@@ -387,9 +493,11 @@ const Incomp_Page = () => {
                 </div>
 
                 {/* Original Team Members List */}
-                <span className="label-detail teamup-label members-list-label">
-                  TEAM MEMBERS ({totalCount}/5)
-                </span>
+                <div style={{ marginBottom: "15px" }}>
+                  <span className="label-detail teamup-label members-list-label">
+                    TEAM MEMBERS ({totalCount}/5)
+                  </span>
+                </div>
                 <div className="members-list">
                   {teamData.members
                     .concat(teamData.joinedMembers)
@@ -630,6 +738,34 @@ const Incomp_Page = () => {
           type={notification.type}
           onClose={() => setNotification(null)}
         />
+      )}
+      {/* Visibility Warning Modal */}
+      {showVisibilityWarning && (
+        <div className="modal-overlay">
+          <div className="visibility-warning-modal">
+            <div className="warning-icon">⚠️</div>
+            <h3 className="warning-title">Visibility Warning</h3>
+            <p className="warning-message">
+              Turning on visibility will allow <strong>individuals to send request</strong> to your team.
+              <br /><br />
+              Once your team is complete, please <strong>turn off visibility</strong> to avoid unwanted requests.
+            </p>
+            <div className="warning-actions">
+              <button
+                className="btn-cancel-warning"
+                onClick={() => setShowVisibilityWarning(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-confirm-visibility"
+                onClick={toggleTeamVisibility}
+              >
+                Confirm & Turn On
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

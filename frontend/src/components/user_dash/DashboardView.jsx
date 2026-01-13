@@ -234,34 +234,82 @@ const DashboardView = ({
                 }} />
 
                 <style>{`
-                    @keyframes neonPulse {
-                        0%, 100% { box-shadow: 0 0 15px #dc2626, inset 0 0 10px #dc2626; border-color: #dc2626; transform: scale(1); }
-                        50% { box-shadow: 0 0 40px #ff0000, inset 0 0 20px #ff0000; border-color: #fff; transform: scale(1.02); }
-                    }
+
                     @keyframes liveShimmer {
-                        0%, 100% { opacity: 0.5; text-shadow: 0 0 5px #ff0000; }
-                        50% { opacity: 1; text-shadow: 0 0 20px #ff0000; }
+                        0%, 100% { opacity: 0.5; text-shadow: 0 0 5px #00d4ff; }
+                        50% { opacity: 1; text-shadow: 0 0 20px #8b5cf6; }
                     }
-                    .initiate-btn {
-                        background: linear-gradient(180deg, rgba(220, 38, 38, 1) 0%, rgba(153, 27, 27, 1) 100%);
-                        border: 1px solid rgba(255,255,255,0.3);
-                        color: #fff;
+                    .bubbles {
+                        --c1: #0a0a0a;
+                        --c2: #dc2626;
+                        --size-letter: 14px;
                         padding: 16px 0;
                         width: 100%;
                         max-width: 340px;
-                        font-size: 14px;
-                        font-weight: 900;
-                        letter-spacing: 3px;
+                        font-size: var(--size-letter);
+                        background-color: transparent;
+                        border: 2px solid var(--c2);
                         border-radius: 100px;
                         cursor: pointer;
+                        overflow: hidden;
+                        position: relative;
+                        transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                        font-family: 'Orbitron', sans-serif;
+                        font-weight: 900;
+                        letter-spacing: 3px;
                         text-transform: uppercase;
-                        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                        animation: neonPulse 3s infinite;
-                        z-index: 5;
                         margin: 30px 0;
+                        z-index: 5;
+                        box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
                     }
-                    .initiate-btn:active {
-                        transform: scale(0.95);
+
+                    .bubbles > .text {
+                        font-weight: 900;
+                        color: var(--c2);
+                        position: relative;
+                        z-index: 1;
+                        transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+                    }
+
+                    .bubbles::before {
+                        top: 0;
+                        left: 0;
+                    }
+
+                    .bubbles::after {
+                        top: 100%;
+                        left: 100%;
+                    }
+
+                    .bubbles::before,
+                    .bubbles::after {
+                        content: "";
+                        width: 150%;
+                        aspect-ratio: 1/1;
+                        scale: 0;
+                        transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                        background-color: var(--c2);
+                        border-radius: 50%;
+                        position: absolute;
+                        translate: -50% -50%;
+                    }
+
+                    .bubbles:hover {
+                         box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+                    }
+
+                    .bubbles:hover > .text {
+                        color: var(--c1);
+                    }
+
+                    .bubbles:hover::before,
+                    .bubbles:hover::after {
+                        scale: 1;
+                    }
+
+                    .bubbles:active {
+                        scale: 0.98;
+                        filter: brightness(0.9);
                     }
                     .main-glass-box {
                         background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%);
@@ -390,7 +438,7 @@ const DashboardView = ({
                             marginBottom: '30px'
                         }}>
                             <div style={{
-                                fontSize: '0.75rem',
+                                fontSize: '1rem',
                                 fontWeight: '700',
                                 color: '#22c55e',
                                 letterSpacing: '1px',
@@ -439,7 +487,7 @@ const DashboardView = ({
 
                     {/* Welcome Section - Exact Match from Image */}
                     <h1 style={{
-                        fontSize: 'clamp(3.5rem, 7vw, 6rem)',
+                        fontSize: 'clamp(2.8rem, 5vw, 4.5rem)',
                         fontWeight: '700',
                         color: '#dc2626',
                         lineHeight: '1',
@@ -616,16 +664,16 @@ const DashboardView = ({
                                 fontSize: '1.1rem',
                                 lineHeight: '1.6',
                                 marginBottom: '25px',
-                                textAlign: 'left',
+                                textAlign: 'center',
                                 fontWeight: '500',
                                 letterSpacing: '0.3px',
                                 fontFamily: '"Rajdhani", sans-serif'
                             }}>
-                                The vault is synchronized. Review team credentials and initiate the heist sequence.
+                                The gate is open. Check the walkie channels and get the crew ready for the Upside Down run.
                             </p>
                             <div style={{ textAlign: 'center' }}>
-                                <button className="initiate-btn" onClick={() => setActiveTab('ps-selection')}>
-                                    INITIATE OPERATION
+                                <button className="bubbles" onClick={() => setActiveTab('ps-selection')}>
+                                    <span className="text">OPEN THE GATE</span>
                                 </button>
                             </div>
                         </div>

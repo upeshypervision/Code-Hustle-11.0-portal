@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserNavbar.css';
+import logo from '../../assets/codehustle-logo.png';
 
 export default function UserNavbar({ teamName, activeTab, setActiveTab, showHamburger = true }) {
     const navigate = useNavigate();
@@ -58,6 +59,7 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab, showHamb
                             </button>
                         )}
                         <div className="user-navbar-logo">
+                            <img src={logo} alt="Code Hustle Logo" className="user-navbar-logo-img" />
                             <span className="user-navbar-logo-main">Code Hustle 11</span>
                         </div>
                     </div>
