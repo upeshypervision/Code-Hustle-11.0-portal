@@ -20,7 +20,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   const [hackerrankStatus, setHackerrankStatus] = useState(null);
   const [checkingHackerrank, setCheckingHackerrank] = useState(true);
 
-  // --- USE EFFECTS (Keep your existing useEffects here) ---
+  // --- USE EFFECTS ---
   // Check selection
   useEffect(() => {
     const checkSelection = async () => {
@@ -91,7 +91,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         });
         const data = await res.json();
         if (data.success) {
-          // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
           setRoundActive(data.rounds.ps_selection === 'live');
         }
       } catch (err) {
@@ -107,7 +106,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === 'ps_selection') {
-        // data.state is enum: 'live', 'closed', 'not_started'
         setRoundActive(data.state === 'live');
       }
     };
@@ -199,12 +197,12 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   };
 
   // Helper for conditional layout
+  // Determines if we are in a "Blocking" state (Closed or Not Allowed)
   const showNotAllowedLayout = (!checkingRound && !checkingSelection && !selectedPS && hackerrankStatus && hackerrankStatus !== 'approved') || (!checkingRound && !selectedPS && !roundActive);
 
   // Sync expanded view state with parent
   useEffect(() => {
     if (setIsExpandedView) {
-      // Expanded view (Grid) is active when we are NOT loading, NOT selected, and NOT showing 'Not Allowed' layout
       const isGridView = !checkingRound && !checkingSelection && !selectedPS && !showNotAllowedLayout;
       setIsExpandedView(isGridView);
     }
@@ -213,23 +211,34 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   return (
     <div
       className="ps-root-container"
-      style={{
+      style={showNotAllowedLayout ? {
+        // ✅ CLOSED/NOT ALLOWED STATE (Position Fixed = Covers Whole Screen)
+        position: "fixed",
+        inset: 0,
+        zIndex: 2000, // High z-index to sit on top of sidebar
         display: "flex",
-        justifyContent: showNotAllowedLayout ? "flex-end" : "center",
-        alignItems: showNotAllowedLayout ? "center" : "flex-start",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100vw", // Viewport Width
+        height: "100vh", // Viewport Height
+        backgroundColor: "#0a0a0a",
+        overflow: "hidden", // No Scroll
+        fontFamily: '"Courier New", Courier, monospace',
+      } : {
+        // ✅ NORMAL GRID STATE
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
         width: "100%",
-        paddingTop: showNotAllowedLayout ? "0" : "70px",
-        paddingRight: showNotAllowedLayout ? "180px" : "0",
+        paddingTop: "70px",
         paddingBottom: "40px",
         boxSizing: "border-box",
-        position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
         minHeight: "100vh",
-        overflowY: showNotAllowedLayout ? "hidden" : "auto",
+        overflowY: "auto",
       }}
-
-
     >
       {/* --- FIXED BACKGROUND --- */}
       <div
@@ -265,22 +274,17 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           position: "relative",
           zIndex: 2,
           width: "100%",
+          // If blocking, minimal width to hold center text. If Grid, normal max-width.
           maxWidth: showNotAllowedLayout ? "100%" : "1200px",
           margin: showNotAllowedLayout ? "0" : "0 auto",
           padding: showNotAllowedLayout ? "0" : "0 30px",
           boxSizing: "border-box",
           display: showNotAllowedLayout ? "flex" : "block",
-          justifyContent: showNotAllowedLayout ? "flex-end" : "unset",
+          justifyContent: showNotAllowedLayout ? "center" : "unset",
+          alignItems: showNotAllowedLayout ? "center" : "unset",
+          height: showNotAllowedLayout ? "100%" : "auto"
         }}
       >
-
-
-        {/* LOGIC CHANGE HERE:
-            1. Check Loading
-            2. Check SelectedPS (Highest Priority UI)
-            3. Check !roundActive (Round Closed UI)
-            4. Default (Selection List)
-        */}
 
         {checkingRound || checkingSelection ? (
           /* --- LOADING STATE --- */
@@ -293,7 +297,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           </div>
         ) : selectedPS ? (
           /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
-          /* Shows even if round is closed */
           <div style={{
             background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
             backdropFilter: 'blur(10px)',
@@ -424,7 +427,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           </div>
         ) : !roundActive ? (
           /* --- PRIORITY 3: ROUND CLOSED UI --- */
-          /* Only shows if not selected AND round is closed */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -439,7 +441,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             borderRadius: "4px",
             animation: 'fadeIn 0.5s ease-out',
             maxWidth: '800px',
-            margin: '-80px auto 0 auto',
+            margin: '0',
             boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
             width: "100%",
           }}>
@@ -689,13 +691,13 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         )}
       </div>
 
-      {/* --- MODAL UI (Always render, visibility controlled by showModal) --- */}
+      {/* --- MODAL UI --- */}
       {showModal && (
         <div
           style={{
             position: "fixed",
             inset: 0,
-            zIndex: 2000,
+            zIndex: 3000, // Even higher than background
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -805,7 +807,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         )
       }
 
-      {/* --- STYLES (Moved outside conditional logic to apply everywhere) --- */}
+      {/* --- STYLES --- */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -845,7 +847,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
               }
 
               @media (min-width: 993px) {
-                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); } /* Desktop: Grid */
+                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); }
               }
               .cross-top { transform: translateY(7px) rotate(45deg); }
               .cross-bottom { transform: translateY(-7px) rotate(-45deg); }

@@ -110,7 +110,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                 const data = await res.json();
 
                 if (data.success) {
-                    // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
                     setRoundActive(data.rounds.ppt_upload === 'live');
                 }
             } catch (err) {
@@ -127,7 +126,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     useEffect(() => {
         const handleRoundChange = (data) => {
             if (data.round_type === 'ppt_upload') {
-                // data.state is enum: 'live', 'closed', 'not_started'
                 setRoundActive(data.state === 'live');
             }
         };
@@ -200,21 +198,34 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
     // Helper to consolidate submission status
     const hasUserSubmitted = localIsSubmitted || isSubmitted;
 
+    // --- CONDITIONAL LAYOUT LOGIC ---
+    const showNotAllowedLayout =
+        (!checkingRound && !checkingStatus && !checkingHackerrank) &&
+        (
+            (hackerrankStatus && hackerrankStatus !== 'approved' && !hasUserSubmitted) ||
+            (!roundActive && !hasUserSubmitted)
+        );
+
     return (
         <div className="ppt-root-wrapper" style={{
+            // ✅ UNIFIED FIXED POSITIONING FOR ALL STATES
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10,
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            padding: '20px 0 40px 0',
-            boxSizing: 'border-box',
-            position: 'relative',
-            minHeight: '100vh',
+            alignItems: 'center', // Default center (overridden on desktop via CSS below)
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: '#0a0a0a',
+            overflowY: 'auto',
+            padding: '20px',
+            boxSizing: 'border-box'
         }}>
 
             {/* --- BACKGROUNDS --- */}
             <div style={{
-                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
                 backgroundImage: `url(${strangerThingsBg})`,
                 backgroundSize: 'cover', backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
@@ -224,7 +235,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
             }} />
 
             <div style={{
-                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
                 background: 'radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)',
                 zIndex: 1,
                 pointerEvents: 'none',
@@ -232,7 +243,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
 
             {/* --- RENDERING LOGIC --- */}
 
-            {checkingRound || checkingStatus ? (
+            {checkingRound || checkingStatus || checkingHackerrank ? (
                 /* 1. Loading State */
                 <div className="ppt-container-main" style={{
                     textAlign: 'center',
@@ -247,7 +258,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)'
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    position: 'relative',
+                    zIndex: 2
                 }}>
                     <p>Loading...</p>
                 </div>
@@ -268,7 +281,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     animation: 'fadeIn 0.5s ease-out',
                     width: '100%',
                     maxWidth: '800px',
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
+                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)',
+                    position: 'relative',
+                    zIndex: 2
                 }}>
                     <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
                     <h2 style={{
@@ -312,7 +327,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     animation: 'fadeIn 0.5s ease-out',
                     width: '100%',
                     maxWidth: '800px',
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
+                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)',
+                    position: 'relative',
+                    zIndex: 2
                 }}>
                     <div className="round-closed-icon" style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
                     <h2 className="round-closed-title" style={{
@@ -340,7 +357,7 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     </p>
                 </div>
             ) : (
-                /* 3. Main Content Card */
+                /* 3. Main Content Card (NORMAL STATE) */
                 <div className="ppt-container-main" style={{
                     animation: 'fadeIn 0.5s ease-out',
                     width: '100%',
@@ -355,7 +372,9 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '30px',
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
+                    boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)',
+                    zIndex: 2,
+                    margin: 'auto'
                 }}>
 
                     {selectedPS && (
@@ -557,7 +576,29 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         __html: `
                     .ppt-section { margin-bottom: 20px; }
 
+                    /* ✅ DESKTOP FIX: PUSH DOWN FROM NAVBAR */
+                    @media (min-width: 993px) {
+                        .ppt-root-wrapper {
+                            padding-top: 120px !important;
+                            align-items: flex-start !important;
+                        }
+                    }
+
                     @media (max-width: 992px) {
+                        .ppt-container-main {
+                            max-width: 100% !important;
+                            width: 100% !important;
+                            padding: 30px 20px !important;
+                            min-height: auto !important;
+                        }
+                        
+                        /* ✅ MOBILE FIX: Added 90px top padding so it lowers down */
+                        .ppt-root-wrapper {
+                            padding: 90px 15px 40px 15px !important; 
+                            justify-content: center !important;
+                            align-items: flex-start !important;
+                        }
+
                         aside, .sidebar-container {}
                         .responsive-flex-card { 
                             flex-direction: column !important; 
@@ -567,6 +608,10 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                         }
                         .uplink-btn-red { width: 100%; padding: 16px 20px !important; }
                         .creative-red-btn { width: 100%; padding: 16px 20px !important; }
+                        
+                        /* Override inline font sizes */
+                        .round-closed-icon { font-size: 3rem !important; margin-bottom: 10px !important; }
+                        .round-closed-title { font-size: 1.8rem !important; letter-spacing: 1px !important; }
                     }
                     .template-card-visual { 
                         width: 140px; height: 110px; 
@@ -674,30 +719,6 @@ export default function PPTSubmission({ selectedPS, isSubmitted, onUploadSuccess
                     }
                     
                     .upload-icon-wrapper { animation: float 3s infinite ease-in-out; }
-                    
-                    .ppt-container-main {
-                        transform: translateX(-130px);
-                    }
-                    
-                    @media (max-width: 992px) {
-                        .ppt-container-main {
-                            transform: translateX(0);
-                            max-width: 100% !important;
-                            width: 100% !important;
-                            padding: 30px 20px !important;
-                            min-height: auto !important;
-                        }
-                        .ppt-root-wrapper {
-                            /* Heavily override inline styles for mobile padding */
-                            padding: 20px 15px 40px 15px !important; 
-                            justify-content: center !important;
-                            align-items: flex-start !important;
-                        }
-                        
-                        /* Override inline font sizes */
-                        .round-closed-icon { font-size: 3rem !important; margin-bottom: 10px !important; }
-                        .round-closed-title { font-size: 1.8rem !important; letter-spacing: 1px !important; }
-                    }
                     
                     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
                     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
