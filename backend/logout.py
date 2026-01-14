@@ -33,3 +33,4 @@ def logout_route():
         )
     
     return response, 200
+

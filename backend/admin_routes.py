@@ -9,7 +9,6 @@ from socketio_instance import socketio
 import jwt
 from config import JWT_SECRET, JWT_ALGORITHM
 
-
 # ============================================================================
 # ADMIN AUTHENTICATION HELPER
 # ============================================================================

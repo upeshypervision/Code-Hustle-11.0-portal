@@ -33,7 +33,7 @@ from team_matching import (
     get_join_requests, accept_join_request, reject_join_request
 )
 from round_management import get_round_status_route, update_round_status_route
-from socketio_instance import socketio
+from socketio_instance import socketio   # Initializing the shared SocketIO instance to enable real-time features across multiple modules.
 import socket_events  # Register socket handlers
 from hackerrank_submission import (
     submit_hackerrank_route, 
@@ -63,81 +63,185 @@ socketio.init_app(
     supports_credentials=True
 )
 
+
+
+#-----------------------------
+#TeamDashboard.py
+#-----------------------------
 @app.route('/api/team-details', methods=['GET'])
 def get_team_dashboard():
+    """Dashboard Entry Point: Fetches team details for the authenticated team."""
     return get_team_dashboard_data()
+
+
 
 @app.route('/api/team-member/delete', methods=['DELETE'])
 def delete_member():
+    """Removes a teammate: requires minimum 15-word reason for
+    the members who joined via request."""
     return delete_team_member()
+    
+
 
 @app.route('/api/team/toggle-visibility/<team_id>', methods=['PUT'])
 def toggle_team_vis(team_id):
+    """
+    Team route to toggle the visibility of their own team.
+    Similar to problem statement visibility toggle.
+    """
     return toggle_team_visibility(team_id)
 
 
+
+
+
+#----------------------------
+#login.py
+#----------------------------
 @app.route("/api/check-auth", methods=["GET"])
-def check_auth():
+def check_auth():  #Look for Cookie for ADMIN login
     return check_auth_route()
 
 @app.route("/api/check-student-auth", methods=["GET"])
-def check_student_auth():
+def check_student_auth():   #Look for Cookie(student_auth) for STUDENT login
     return check_student_auth_route()
 
 @app.route("/api/check-individual-auth", methods=["GET"])
-def check_individual_auth():
+def check_individual_auth():    #Avoid multiple Individual login while chnging pages: by sending cookies
     return check_individual_auth_route()
 
 @app.route("/api/check-team-auth", methods=["GET"])
-def check_team_auth():
+def check_team_auth():          # #Avoid multiple Team Leader/Memberlogin while chnging pages: by sending cookies
     return check_team_auth_route()
 
+@app.route("/api/individual-login", methods=["POST"])
+def individual_login():         #Students who haven't joined any team
+    return individual_login_route()
+
+#login route for admin
+@app.route("/api/admin-login", methods=["POST"])
+def admin_login():
+    return admin_login_route()
+
+
+@app.route("/api/team-login",  methods=["POST", "OPTIONS"])
+def team_login():
+    if request.method == "OPTIONS":
+        return "", 200   #  allow preflight
+    return team_login_route()
+
+
+@app.route("/api/student-login", methods=["POST"])
+def student_login():
+    #Student Login Check
+    return student_login_route()
+
+@app.route("/api/evaluator-login", methods=["POST"])
+def evaluator_login():
+    ##Evaluator Login(additional check for password field)
+    return evaluator_login_route()
+
+
+
+
+#--------------------------
+#validate_hypervision.py
+#--------------------------
 @app.route("/api/validate-hypervision", methods=["POST"])
-def validate_hypervision():
+def validate_hypervision():     
+    #DISCOUNT VALIDATOR: Check for Club membership to apply DISCOUNT(450 TO 380)
     return validate_hypervision_route()
 
-@app.route("/api/individual-login", methods=["POST"])
-def individual_login():
-    return individual_login_route()
+
+
+#-------------------------
+#verify_payment.py
+#-------------------------
+@app.route("/api/verify-payment", methods=["POST"])
+def verify_payment():
+    return verify_payment_route()
+
+
+
+#------------------------
+#round_management.py
+#------------------------
+@app.route('/api/round-status', methods=['GET'])
+def get_round_status():
+    #Manages to display round status to the user(not started, live, closed).
+    return get_round_status_route()
+
+@app.route('/api/admin/round-status', methods=['POST'])
+def update_round_status():
+    #Admin control only(brodcasts changes to all users via WebSockets)
+    return update_round_status_route()
+
+
+
+
+#-----------------------
+#logout.py
+#----------------------
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    #clears all authentication cookies and terminates sessions for all user roles.
+    return logout_route()
+
+
+
+
+#--------------------------
+#individual_registration.py
+#--------------------------
+@app.route("/api/register-individual", methods=["POST"])
+def register_individual():
+    #Validates student details, handles university-specific logic and creates a free ind. account.
+    return register_individual_route()
+
+
+
+
+# ----------------------------
+# INDIVIDUAL DASHBOARD ROUTE
+# ----------------------------
+@app.route('/api/individual-dashboard', methods=['GET', 'OPTIONS'])
+def individual_dashboard():
+    #Retrieves indv. profile data and current team-joining status for a indv. participant.
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_individual_dashboard_data()
+
+@app.route('/api/available-teams', methods=['GET', 'OPTIONS'])
+def available_teams():
+    #Fetches a filtered list of visible teams with open slots(less than 5 members).
+    if request.method == "OPTIONS":
+        return "", 200
+    return get_available_teams()
+
+
+
+
 
 
 @app.route("/api/register-team", methods=["POST"])
 def register_team():
     return register_team_route()
 
-@app.route("/api/register-individual", methods=["POST"])
-def register_individual():
-    return register_individual_route()
 
 @app.route("/api/create-team", methods=["POST"])
 def create_team():
     return create_team_route()
 
-@app.route("/api/team-login",  methods=["POST", "OPTIONS"])
-def team_login():
-    if request.method == "OPTIONS":
-        return "", 200   # ✅ allow preflight
-    return team_login_route()
+
 
 @app.route("/api/check-team-name", methods=["POST"])
 def check_team_name():
     return check_team_name_route()
 
-@app.route("/api/verify-payment", methods=["POST"])
-def verify_payment():
-    return verify_payment_route()
-
 @app.route("/api/razorpay-webhook", methods=["POST"])
 def razorpay_webhook():
     return razorpay_webhook_handler()
 
-@app.route("/api/student-login", methods=["POST"])
-def student_login():
-    return student_login_route()
-
-@app.route("/api/evaluator-login", methods=["POST"])
-def evaluator_login():
-    return evaluator_login_route()
 
 @app.route("/api/check-evaluator-auth", methods=["GET"])
 def check_evaluator_auth():
@@ -192,14 +296,6 @@ def get_pending_submission_teams():
 def get_submissions():
     return fetch_submissions_route()
 
-#login route for admin
-@app.route("/api/admin-login", methods=["POST"])
-def admin_login():
-    return admin_login_route()
-
-@app.route("/api/logout", methods=["POST"])
-def logout():
-    return logout_route()
 
 @app.route("/api/user-info", methods=["GET"])
 def get_user_info():
@@ -326,29 +422,6 @@ def get_submission_presigned_url(team_id):
 def toggle_ps_visibility(ps_id):
     return toggle_ps_visibility_route(ps_id)
 
-# --- Round Management Routes ---
-@app.route('/api/round-status', methods=['GET'])
-def get_round_status():
-    return get_round_status_route()
-
-@app.route('/api/admin/round-status', methods=['POST'])
-def update_round_status():
-    return update_round_status_route()
-
-# ----------------------------
-# INDIVIDUAL DASHBOARD ROUTE
-# ----------------------------
-@app.route('/api/individual-dashboard', methods=['GET', 'OPTIONS'])
-def individual_dashboard():
-    if request.method == "OPTIONS":
-        return "", 200
-    return get_individual_dashboard_data()
-
-@app.route('/api/available-teams', methods=['GET', 'OPTIONS'])
-def available_teams():
-    if request.method == "OPTIONS":
-        return "", 200
-    return get_available_teams()
 
 # ----------------------------
 # ADMIN VIEW CREATE TEAMS

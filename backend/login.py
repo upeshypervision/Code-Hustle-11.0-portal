@@ -7,22 +7,34 @@ from flask import request, jsonify, make_response
 
 db = get_db()
 
+
+#---KEY MATCHER---
 def verify_password(stored_hash, password):
     return bcrypt.checkpw(password.encode(), stored_hash.encode())
+    """
+    'bcrypt' will compare the typed password
+    with the scrambled version in database.
+    """
 
+
+
+#-----STUDENT LOGIN CHECK------P
 def student_login_route():
     data = request.json or {}
 
     team_id = data.get("team_id", "").strip()
     password = data.get("password", "").strip()
 
+    #identify: mandatory fields team_id and password.
     if not team_id or not password:
         return jsonify({"error": "Team ID and password required"}), 400
 
+    #verify: check if password is correct using the Decoder.
     team = db["teams"].find_one({"team_id": team_id})
     if not team or not verify_password(team["password_hashed"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 
+    #(JWT): if correct, the server generates a Token, containig user's ID and role.
     payload = {
         "team_id": team_id,
         "role": "student",
@@ -46,29 +58,46 @@ def student_login_route():
     response.set_cookie(
         'student_auth',
         token,
-        httponly=True,        # Prevents XSS
+        httponly=True,        # Prevents XSS (major security feature)
         secure=COOKIE_SECURE, # Auto-set based on environment
-        samesite='Lax',
-        max_age=JWT_EXPIRE_HOURS * 3600
+        samesite='Lax',         # Lax is better for localhost than None (which needs Secure)
+        max_age=JWT_EXPIRE_HOURS * 3600     #ensure logged in time period for users using check_auth_route etc.
     )
     return response
 
-def admin_login_route():
+
+
+
+#-----SPECIALISED LOGIN for admin with 'Session Limit'----
+def admin_login_route():    
     data = request.json or {}
+
+    #identify: mandotary fields
     login_id = data.get("login_id", "").strip()
     password = data.get("password", "").strip()
 
+    #verify credentials:
     admin = db["admins"].find_one({"login_id": login_id})
     if not admin or not verify_password(admin["password_hashed"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 
+
     # --- SESSION LIMIT LOGIC ---
+    #ensure admin's log in time period.
+    """
+    extra logic: unlike students, admin can login through max 2 devices simultaneously.
+    using Session Limit -> 'sessions' list in database.
+    """
     active_sessions = admin.get("sessions", [])
     now = datetime.datetime.now(datetime.timezone.utc).timestamp()
     active_sessions = [s for s in active_sessions if s['exp'] > now]
 
-    if len(active_sessions) >= 2000:
+    
+    if len(active_sessions) >= 2:
         return jsonify({"error": "Maximum session limit reached (2 devices). Logout elsewhere first."}), 403
+
+
+
 
     # --- JWT GENERATION ---
     expire_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
@@ -79,7 +108,7 @@ def admin_login_route():
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-    # Update DB with new session info
+    # Update DB with new session info after expiry
     db["admins"].update_one(
         {"_id": admin["_id"]},
         {"$push": {"sessions": {"token": token, "exp": expire_date.timestamp()}}}
@@ -97,6 +126,11 @@ def admin_login_route():
     )
     return response
 
+
+
+
+
+#----LOOKS IN ADMIN'S BROWSER FOR SPECIFIC COOKIE(admin_auth)-----
 def check_auth_route():
     token = request.cookies.get('admin_auth')
     if not token:
@@ -104,21 +138,34 @@ def check_auth_route():
     
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        #JWT_SECRET: a secret key only personal server knows to 'unlock' the token.
         return jsonify({"authenticated": True, "user": payload["login_id"]})
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return jsonify({"authenticated": False}), 401
 
+
+
+
+
+#----LOOKS IN USER'S BROWSER FOR SPECIFIC COOKIE(student_auth)-----
 def check_student_auth_route():
+    #Search
     token = request.cookies.get('student_auth')
     if not token:
         return jsonify({"authenticated": False}), 401
     
     try:
+        #Verify using 'JWT_SECRET'
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return jsonify({"authenticated": True, "team_id": payload["team_id"]})
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return jsonify({"authenticated": False}), 401
 
+
+
+
+
+#----LOOKS IN EVALUATOR'S BROWSER FOR SPEACIFIC COOKIE(student_auth)-----
 def evaluator_login_route():
     data = request.json or {}
     username = data.get("username", "").strip()
@@ -134,7 +181,8 @@ def evaluator_login_route():
         if not evaluator:
              return jsonify({"error": "Invalid credentials"}), 401
 
-        # Check if password field exists
+        # UNIQUE LOGIC: Check if password field exists:-
+        # it prevents the server from crashing if ecaluator account was set up incorrecly
         if "password" not in evaluator:
             return jsonify({"error": "Invalid credentials"}), 401
 
@@ -167,11 +215,16 @@ def evaluator_login_route():
         httponly=True,        # Prevents XSS
         secure=COOKIE_SECURE, # Auto-set based on environment
         samesite='Lax',
-        max_age=12 * 3600     # 12 hours in seconds
+        max_age=12 * 3600     # 12 hours in seconds(expiration)
     )
     return response
 
 
+
+
+
+
+#---STUDENTS WHO HAVEN'T JOINED ANY TEAM-------
 def individual_login_route():
     data = request.json or {}
 
@@ -186,7 +239,7 @@ def individual_login_route():
     if not individual or not verify_password(individual["password_hashed"], password):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    payload = {
+    payload = {             #DISPLAY INDIVIDUAL DASHBOARD
         "individual_id": individual_id,
         "role": "student",
         "iat": datetime.datetime.now(datetime.timezone.utc),
@@ -220,6 +273,12 @@ def individual_login_route():
     )
     return response
 
+
+
+
+
+
+#----CUSTOM TEAMS CREATED THROUGH "CREATE TEAM"----------
 def team_login_route():
     """
     Login route for teams created via Create_team.py (stored in create_team collection)
@@ -238,7 +297,7 @@ def team_login_route():
     if not team:
         return jsonify({"error": "Invalid credentials"}), 401
     
-    # Verify leader password (leader has the login credentials)
+    # Verify LEADER'S password (leader has the login credentials)
     leader = team.get("leader", {})
     if not leader or not verify_password(leader.get("password_hash", ""), password):
         return jsonify({"error": "Invalid credentials"}), 401
@@ -275,18 +334,30 @@ def team_login_route():
     return response
 
 
+
+
+
+#-------SILENT SECURITY SCANNERS(avoid multiple Individual login while chnging pages: by sending cookies)---------
 def check_individual_auth_route():
+    #Scan:Look for cookie 'individual_auth'
     token = request.cookies.get('individual_auth')
     if not token:
         return jsonify({"authenticated": False}), 401
     
     try:
+        #Decoding: uses server's secret key to open the token
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         return jsonify({"authenticated": True, "individual_id": payload["individual_id"]})
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return jsonify({"authenticated": False}), 401
 
+
+
+
+
+#-------SIMILARY FOR TEAM LEADERS/MEMBERS(avoid multiple login)
 def check_team_auth_route():
+    #Scan: Look for cookie 'team_auth'
     token = request.cookies.get('team_auth')
     if not token:
         return jsonify({"authenticated": False}), 401

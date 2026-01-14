@@ -112,3 +112,4 @@ def get_available_teams():
             available_teams.append(team_data)
     
     return jsonify({"success": True, "teams": available_teams}), 200
+

@@ -80,6 +80,7 @@ def delete_team_member():
     """
     Delete a member from the team's members array in the database.
     Uses cookie authentication to verify team ownership.
+    Requires minimum 15-words reason for members who joined via request.
     """
     token = request.cookies.get("team_auth")
     

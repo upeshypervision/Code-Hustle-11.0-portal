@@ -38,6 +38,7 @@ def handle_request_rejected(data):
         emit('request_rejected', data, room=f'individual_{individual_id}', include_self=False)
         print(f"Rejection broadcasted to individual_{individual_id}")
 
+
 # ===== CHAT SOCKET EVENTS =====
 
 @socketio.on('join_chat_room')
@@ -57,6 +58,8 @@ def handle_typing(data):
     sender_type = data.get('sender_type')
     is_typing = data.get('is_typing', False)
     
+
+    #when user is typing Display 'TYPING BUBBLES'
     if conversation_id and conversation_id.startswith('CONV_'):
         emit('user_typing', {
             'conversation_id': conversation_id,

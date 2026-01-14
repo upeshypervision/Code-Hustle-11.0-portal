@@ -7,10 +7,10 @@ export default function GlobalNavbar({
   isEvaluator = false,
   menuItems = [],
   onMenuItemClick,
-  onToggleSidebar, // ✅ This will now trigger the sidebar
+  onToggleSidebar, 
   showContactUs = false,
   logoutPath,
-  toggleMobileMenu, // ✅ Added to match AdminPanel state
+  toggleMobileMenu, 
 }) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,7 +44,6 @@ export default function GlobalNavbar({
   };
 
   const handleHamburgerClick = () => {
-    // ✅ MODIFIED: If it's admin, trigger the sidebar toggle instead of the old menu list
     if (isAdmin && (toggleMobileMenu || onToggleSidebar)) {
       if (toggleMobileMenu) toggleMobileMenu();
       if (onToggleSidebar) onToggleSidebar();
@@ -127,7 +126,6 @@ export default function GlobalNavbar({
         </div>
       </header>
 
-      {/* Mobile Menu Overlay - Only show for non-admin or if specifically needed */}
       {!isAdmin && isMobileMenuOpen && menuItems.length > 0 && (
         <div
           className="mobile-menu-overlay"
