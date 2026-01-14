@@ -41,21 +41,81 @@ export default function AdminPanel() {
   }, []);
 
   const adminMenuItems = [
-    { id: "rounds", label: "Round Management", active: activeSection === "rounds" },
-    { id: "view-teams", label: "View Teams", active: activeSection === "view-teams" },
-    { id: "problem-statements", label: "Problem Statements", active: activeSection === "problem-statements" },
-    { id: "submissions", label: "View PPT Submissions", active: activeSection === "submissions" },
-    { id: "review-ppts", label: "Review PPTs", active: activeSection === "review-ppts" },
-    { id: "manual-ppt", label: "Manual PPT", active: activeSection === "manual-ppt" },
-    { id: "view-github-submissions", label: "View GitHub Submissions", active: activeSection === "view-github-submissions" },
-    { id: "manual-github", label: "Manual GitHub Submission", active: activeSection === "manual-github" },
-    { id: "manual-hackerrank", label: "Manual Hackerrank", active: activeSection === "manual-hackerrank" },
-    { id: "view-hackerrank", label: "View Hackerrank", active: activeSection === "view-hackerrank" },
-    { id: "selected-teams", label: "Selected Teams", active: activeSection === "selected-teams" },
-    { id: "view-create-teams", label: "View Create Teams", active: activeSection === "view-create-teams" },
-    { id: "view-individuals", label: "View Individuals", active: activeSection === "view-individuals" },
-    { id: "view-chat-messages", label: "View Chat Messages", active: activeSection === "view-chat-messages" },
-    { id: "add-participant", label: "Add Participant", active: activeSection === "add-participant" },
+    {
+      id: "rounds",
+      label: "Round Management",
+      active: activeSection === "rounds",
+    },
+    {
+      id: "view-teams",
+      label: "View Teams",
+      active: activeSection === "view-teams",
+    },
+    {
+      id: "problem-statements",
+      label: "Problem Statements",
+      active: activeSection === "problem-statements",
+    },
+    {
+      id: "submissions",
+      label: "View PPT Submissions",
+      active: activeSection === "submissions",
+    },
+    {
+      id: "review-ppts",
+      label: "Review PPTs",
+      active: activeSection === "review-ppts",
+    },
+    {
+      id: "manual-ppt",
+      label: "Manual PPT",
+      active: activeSection === "manual-ppt",
+    },
+    {
+      id: "view-github-submissions",
+      label: "View GitHub Submissions",
+      active: activeSection === "view-github-submissions",
+    },
+    {
+      id: "manual-github",
+      label: "Manual GitHub Submission",
+      active: activeSection === "manual-github",
+    },
+    {
+      id: "manual-hackerrank",
+      label: "Manual Hackerrank",
+      active: activeSection === "manual-hackerrank",
+    },
+    {
+      id: "view-hackerrank",
+      label: "View Hackerrank",
+      active: activeSection === "view-hackerrank",
+    },
+    {
+      id: "selected-teams",
+      label: "Selected Teams",
+      active: activeSection === "selected-teams",
+    },
+    {
+      id: "view-create-teams",
+      label: "View Create Teams",
+      active: activeSection === "view-create-teams",
+    },
+    {
+      id: "view-individuals",
+      label: "View Individuals",
+      active: activeSection === "view-individuals",
+    },
+    {
+      id: "view-chat-messages",
+      label: "View Chat Messages",
+      active: activeSection === "view-chat-messages",
+    },
+    {
+      id: "add-participant",
+      label: "Add Participant",
+      active: activeSection === "add-participant",
+    },
   ];
 
   const handleMenuItemClick = (item) => {
@@ -65,27 +125,45 @@ export default function AdminPanel() {
 
   const renderContent = () => {
     switch (activeSection) {
-      case "rounds": return <RoundManagement />;
-      case "problem-statements": return <ProblemStatements />;
-      case "add-participant": return <AddParticipant />;
-      case "view-teams": return <ViewTeams />;
-      case "submissions": return <ViewSubmissions />;
-      case "manual-ppt": return <ManualPPT />;
-      case "manual-github": return <Manualgithub />;
-      case "view-github-submissions": return <Viewgithubsubmission />;
-      case "manual-hackerrank": return <ManualHackerrank />;
-      case "view-hackerrank": return <ViewHackerrank />;
-      case "review-ppts": return <ReviewEvaluatedPPTs />;
-      case "selected-teams": return <SelectedTeam />;
-      case "view-create-teams": return <ViewCreateTeams />;
-      case "view-individuals": return <ViewIndividuals />;
-      case "view-chat-messages": return <ViewChatMessages />;
-      default: return null;
+      case "rounds":
+        return <RoundManagement />;
+      case "problem-statements":
+        return <ProblemStatements />;
+      case "add-participant":
+        return <AddParticipant />;
+      case "view-teams":
+        return <ViewTeams />;
+      case "submissions":
+        return <ViewSubmissions />;
+      case "manual-ppt":
+        return <ManualPPT />;
+      case "manual-github":
+        return <Manualgithub />;
+      case "view-github-submissions":
+        return <Viewgithubsubmission />;
+      case "manual-hackerrank":
+        return <ManualHackerrank />;
+      case "view-hackerrank":
+        return <ViewHackerrank />;
+      case "review-ppts":
+        return <ReviewEvaluatedPPTs />;
+      case "selected-teams":
+        return <SelectedTeam />;
+      case "view-create-teams":
+        return <ViewCreateTeams />;
+      case "view-individuals":
+        return <ViewIndividuals />;
+      case "view-chat-messages":
+        return <ViewChatMessages />;
+      default:
+        return null;
     }
   };
 
   return (
-    <div className={`dashboard-page ${isMobileMenuOpen ? "sidebar-visible" : ""}`}>
+    <div
+      className={`dashboard-page ${isMobileMenuOpen ? "sidebar-visible" : ""}`}
+    >
       <style>{`
         @media (max-width: 1024px) {
           .hamburger-menu {
@@ -118,7 +196,11 @@ export default function AdminPanel() {
       `}</style>
 
       <GlobalNavbar
-        userInfo={<>Admin: <strong>{adminInfo.login_id}</strong></>}
+        userInfo={
+          <>
+            Admin: <strong>{adminInfo.login_id}</strong>
+          </>
+        }
         isAdmin={true}
         menuItems={adminMenuItems}
         onMenuItemClick={handleMenuItemClick}
@@ -142,11 +224,11 @@ export default function AdminPanel() {
             className="sidebar-overlay"
             onClick={() => setIsMobileMenuOpen(false)}
             style={{
-              display: 'block',
-              position: 'fixed',
+              display: "block",
+              position: "fixed",
               inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              zIndex: 1999
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: 1999,
             }}
           ></div>
         )}

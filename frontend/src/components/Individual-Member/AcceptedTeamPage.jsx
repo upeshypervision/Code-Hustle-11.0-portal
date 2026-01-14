@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import GlobalNavbar from "../GlobalNavbar";
+import IndividualMemberNavbar from "./IndividualMemberNavbar";
 import ChatBox from "./ChatBox";
+import { sanitizeText } from "../../utils/sanitizer";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
 import "../../pages/Registration.css";
 import "./Indi.css";
+import "./Indi.mobile.css";
 import socket from "../../socket";
+import indiBg from "../../assets/indi-bg.png";
 
 const AcceptedTeamPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { team: stateTeam, userDetails: stateUserDetails } = location.state || {};
+  const { team: stateTeam, userDetails: stateUserDetails } =
+    location.state || {};
 
   const [team, setTeam] = useState(stateTeam || null);
   const [userDetails, setUserDetails] = useState(stateUserDetails || null);
   const [loading, setLoading] = useState(!stateTeam);
   const [showChat, setShowChat] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
+  const [activeTab, setActiveTab] = useState("teams");
   const [rejectionReason, setRejectionReason] = useState(null);
 
   useEffect(() => {
@@ -34,9 +37,12 @@ const AcceptedTeamPage = () => {
         setLoading(true);
 
         // Fetch individual data to check status and get accepted team ID
-        const individualResponse = await fetch("http://localhost:5000/api/individual-dashboard", {
-          credentials: "include"
-        });
+        const individualResponse = await fetch(
+          "http://localhost:5000/api/individual-dashboard",
+          {
+            credentials: "include",
+          }
+        );
         const individualData = await individualResponse.json();
 
         if (!individualData.success) {
@@ -54,9 +60,12 @@ const AcceptedTeamPage = () => {
           // User has an accepted team - fetch and display it (ignore any reason)
           console.log("User has accepted team:", acceptedTeamId);
 
-          const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
-            credentials: "include"
-          });
+          const teamResponse = await fetch(
+            "http://localhost:5000/api/individual/accepted-team",
+            {
+              credentials: "include",
+            }
+          );
           const teamData = await teamResponse.json();
 
           if (teamData.success && teamData.team) {
@@ -109,9 +118,12 @@ const AcceptedTeamPage = () => {
         console.log("Real-time update: Team changed", data);
         // Refresh team data
         try {
-          const teamResponse = await fetch("http://localhost:5000/api/individual/accepted-team", {
-            credentials: "include"
-          });
+          const teamResponse = await fetch(
+            "http://localhost:5000/api/individual/accepted-team",
+            {
+              credentials: "include",
+            }
+          );
           const teamData = await teamResponse.json();
           if (teamData.success && teamData.team) {
             setTeam(teamData.team);
@@ -133,7 +145,17 @@ const AcceptedTeamPage = () => {
 
   if (loading) {
     return (
-      <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e", display: "flex", justifyContent: "center", alignItems: "center", color: "#fff" }}>
+      <div
+        className="dashboard-page"
+        style={{
+          minHeight: "100vh",
+          background: "#0a0b1e",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "#fff",
+        }}
+      >
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: "2rem", marginBottom: "20px" }}>⏳</div>
           <div>Loading your team...</div>
@@ -144,21 +166,81 @@ const AcceptedTeamPage = () => {
 
   if (!team) {
     if (rejectionReason) {
-      const parts = rejectionReason.split(':');
+      const parts = rejectionReason.split(":");
       const teamName = parts[0];
-      const reasonText = parts.slice(1).join(':').trim();
+      const reasonText = parts.slice(1).join(":").trim();
 
       return (
-        <div className="dashboard-page" style={{ minHeight: "100vh", background: "#0a0b1e", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <div style={{ textAlign: "center", padding: "40px", background: "rgba(220, 38, 38, 0.1)", borderRadius: "16px", border: "1px solid rgba(220, 38, 38, 0.3)", maxWidth: "600px", margin: "20px" }}>
+        <div
+          className="dashboard-page"
+          style={{
+            minHeight: "100vh",
+            background: "#0a0b1e",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px",
+              background: "rgba(220, 38, 38, 0.1)",
+              borderRadius: "16px",
+              border: "1px solid rgba(220, 38, 38, 0.3)",
+              maxWidth: "600px",
+              margin: "20px",
+            }}
+          >
             <div style={{ fontSize: "3rem", marginBottom: "20px" }}>⚠️</div>
-            <h2 style={{ color: "#ef4444", marginBottom: "15px", textShadow: "0 0 10px rgba(239, 68, 68, 0.3)" }}>Removed from Team</h2>
-            <div style={{ color: "#fff", fontSize: "1.2rem", marginBottom: "20px" }}>
-              You have been removed from <strong style={{ color: "#f87171" }}>{teamName}</strong>
+            <h2
+              style={{
+                color: "#ef4444",
+                marginBottom: "15px",
+                textShadow: "0 0 10px rgba(239, 68, 68, 0.3)",
+              }}
+            >
+              Removed from Team
+            </h2>
+            <div
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "20px",
+              }}
+            >
+              You have been removed from{" "}
+              <strong style={{ color: "#f87171" }}>{teamName}</strong>
             </div>
-            <div style={{ background: "rgba(0,0,0,0.3)", padding: "20px", borderRadius: "8px", borderLeft: "4px solid #ef4444", textAlign: "left" }}>
-              <label style={{ color: "#999", fontSize: "0.9rem", display: "block", marginBottom: "8px" }}>REASON:</label>
-              <p style={{ color: "#fff", margin: 0, fontStyle: "italic", fontSize: "1.1rem" }}>"{reasonText}"</p>
+            <div
+              style={{
+                background: "rgba(0,0,0,0.3)",
+                padding: "20px",
+                borderRadius: "8px",
+                borderLeft: "4px solid #ef4444",
+                textAlign: "left",
+              }}
+            >
+              <label
+                style={{
+                  color: "#999",
+                  fontSize: "0.9rem",
+                  display: "block",
+                  marginBottom: "8px",
+                }}
+              >
+                REASON:
+              </label>
+              <p
+                style={{
+                  color: "#fff",
+                  margin: 0,
+                  fontStyle: "italic",
+                  fontSize: "1.1rem",
+                }}
+              >
+                "{reasonText}"
+              </p>
             </div>
             <button
               onClick={() => navigate("/indimember")}
@@ -172,7 +254,7 @@ const AcceptedTeamPage = () => {
                 cursor: "pointer",
                 fontSize: "1rem",
                 fontWeight: "600",
-                boxShadow: "0 4px 15px rgba(239, 68, 68, 0.4)"
+                boxShadow: "0 4px 15px rgba(239, 68, 68, 0.4)",
               }}
             >
               Back to Dashboard
@@ -200,7 +282,7 @@ const AcceptedTeamPage = () => {
             style={{
               marginTop: "30px",
               padding: "12px 30px",
-              background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
               color: "#fff",
               border: "none",
               borderRadius: "8px",
@@ -219,129 +301,157 @@ const AcceptedTeamPage = () => {
   return (
     <div
       className="dashboard-page"
-      style={{ minHeight: "100vh", background: "#0a0b1e" }}
+      style={{
+        minHeight: "100vh",
+        background: "#0a0b1e",
+        paddingTop: "70px",
+        position: "relative",
+      }}
     >
-      <GlobalNavbar
-        userInfo={null}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        menuItems={[
-          {
-            id: "profile",
-            label: "Profile",
-            name: "Profile",
-          },
-        ]}
-        onMenuItemClick={(item) => {
-          if (item.id === "profile") {
-            setShowProfile(!showProfile);
-          }
+      {/* --- FIXED BACKGROUND --- */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url(${indiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: "1",
+          zIndex: 0,
+          pointerEvents: "none",
         }}
-        showContactUs={true}
-        logoutPath="/individual-login"
+      />
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
       />
 
-      <div className="admin-content dashboard-container">
-        <div className="teamup-layout">
-          {/* User Details Section - Left Sidebar (Desktop) / Mobile Modal */}
+      <IndividualMemberNavbar
+        userName={userDetails?.fullName || "INDIVIDUAL MEMBER"}
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+        }}
+      />
+
+      <div
+        className="admin-content dashboard-container"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: activeTab === "profile" ? "center" : "flex-start",
+          alignItems: "center",
+          minHeight: activeTab === "profile" ? "calc(100vh - 140px)" : "auto",
+        }}
+      >
+        {activeTab === "profile" ? (
+          /* Profile Box - Centered Square */
           <div
-            className={`member-details-sidebar ${showProfile ? "mobile-visible" : ""
-              }`}
+            className="neural-node node-materialize animate-enter delay-1 profile-container"
+            style={{
+              width: "100%",
+              maxWidth: "600px",
+              aspectRatio: "1",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              padding: "40px",
+            }}
           >
-            {/* Mobile Close Button */}
-            <button
-              className="mobile-profile-close"
-              onClick={() => setShowProfile(false)}
-              aria-label="Close profile"
-            >
-              ×
-            </button>
+            <span className="label-detail teamup-label">YOUR PROFILE</span>
             <div
-              className="neural-node node-materialize animate-enter delay-1"
-              style={{ marginBottom: "40px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "28px",
+                marginTop: "16px",
+                color: "#FFFFFF",
+              }}
             >
-              <span className="label-detail teamup-label">YOUR PROFILE</span>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "28px",
-                  marginTop: "16px",
-                  color: "#ddd",
-                }}
-              >
-                <div>
-                  <h3
-                    style={{
-                      color: "#fff",
-                      marginBottom: "10px",
-                      fontSize: "1.5rem",
-                    }}
-                  >
-                    {userDetails?.fullName || "Guest User"}
-                  </h3>
-                  <p style={{ fontSize: "1.1rem", color: "#aaa" }}>
-                    {userDetails?.university || "Unknown University"} •{" "}
-                    {userDetails?.sapId || "N/A"}
-                  </p>
+              <div>
+                <h3 className="user-profile-header">
+                  {sanitizeText(userDetails?.fullName || "Guest User", 100)}
+                </h3>
+                <p className="user-profile-sub">
+                  {sanitizeText(
+                    userDetails?.university || "Unknown University",
+                    200
+                  )}{" "}
+                  • {sanitizeText(userDetails?.sapId || "N/A", 50)}
+                </p>
+              </div>
+              <div>
+                <div className="user-profile-info-row">
+                  <span className="profile-label">Email:</span>{" "}
+                  {sanitizeText(userDetails?.email || "N/A", 100)}
                 </div>
-                <div>
-                  <div style={{ fontSize: "1.05rem", marginBottom: "12px" }}>
-                    Email: {userDetails?.email || "N/A"}
-                  </div>
-                  <div style={{ fontSize: "1.05rem", marginBottom: "12px" }}>
-                    Phone: {userDetails?.mobile || "N/A"}
-                  </div>
-                  <div style={{ fontSize: "1.05rem" }}>
-                    Member of UPES-Hypervision:{" "}
-                    <span style={{ color: "#60a5fa", fontWeight: "600" }}>
-                      {userDetails?.isUPESHypervision ? "Yes" : "No"}
-                    </span>
-                  </div>
+                <div className="user-profile-info-row">
+                  <span className="profile-label">Phone:</span>{" "}
+                  {sanitizeText(
+                    userDetails?.mobile || userDetails?.phone || "N/A",
+                    10
+                  )}
                 </div>
-                <div
+                <div className="user-profile-info-row">
+                  <span className="profile-label">
+                    Member of UPES-Hypervision:
+                  </span>{" "}
+                  <span style={{ color: "#00D4FF", fontWeight: "600" }}>
+                    {userDetails?.isUPESHypervision ? "Yes" : "No"}
+                  </span>
+                </div>
+              </div>
+              <div className="user-skills-box">
+                <strong
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    padding: "24px",
-                    borderRadius: "12px",
-                    marginTop: "12px",
+                    color: "#FF4D4D",
+                    fontSize: "1rem",
+                    display: "block",
+                    marginBottom: "10px",
                   }}
                 >
-                  <strong
-                    style={{
-                      color: "#aaa",
-                      fontSize: "1rem",
-                      display: "block",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    YOUR SKILLS
-                  </strong>
-                  <p
-                    style={{
-                      fontStyle: "italic",
-                      margin: 0,
-                      fontSize: "1.05rem",
-                      wordWrap: "break-word",
-                      wordBreak: "break-word",
-                      overflowWrap: "break-word",
-                      whiteSpace: "normal",
-                    }}
-                  >
-                    {userDetails?.skills || "No skills provided"}
-                  </p>
-                </div>
+                  YOUR SKILLS
+                </strong>
+                <p
+                  style={{
+                    fontStyle: "italic",
+                    margin: 0,
+                    fontSize: "1.05rem",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {sanitizeText(
+                    userDetails?.skills || "No skills provided",
+                    500
+                  )}
+                </p>
               </div>
             </div>
           </div>
-
-          {/* Vertical Separator */}
-          <div className="teamup-separator"></div>
-
-          {/* Team Details Section */}
-          <div className="teams-content-section">
+        ) : (
+          /* Team Details Section */
+          <div
+            className="teams-content-section"
+            style={{ width: "100%", maxWidth: "1200px", margin: "0 auto" }}
+          >
             <div className="team-details-section">
               <div className="neural-node node-materialize animate-enter">
                 <div
+                  className="team-header-label-container"
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -353,6 +463,7 @@ const AcceptedTeamPage = () => {
                 </div>
 
                 <div
+                  className="team-name-container"
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -363,12 +474,17 @@ const AcceptedTeamPage = () => {
                   }}
                 >
                   <h2
+                    className="team-name-heading"
                     style={{
                       color: "#fff",
                       margin: 0,
                       fontSize: "1.8rem",
                       flex: "1",
                       minWidth: "200px",
+                      wordWrap: "break-word",
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      whiteSpace: "normal",
                     }}
                   >
                     {team.teamName}
@@ -381,9 +497,10 @@ const AcceptedTeamPage = () => {
                       className="team-chat-btn"
                       style={{
                         background:
-                          "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
+                        border: "1px solid rgba(220, 38, 38, 0.5)",
+                        boxShadow: "0 2px 8px rgba(220, 38, 38, 0.3)",
                         color: "#fff",
-                        border: "none",
                         padding: "12px 24px",
                         borderRadius: "8px",
                         cursor: "pointer",
@@ -393,7 +510,6 @@ const AcceptedTeamPage = () => {
                         alignItems: "center",
                         gap: "8px",
                         transition: "all 0.3s ease",
-                        boxShadow: "0 4px 15px rgba(102, 126, 234, 0.4)",
                       }}
                       onMouseEnter={(e) => {
                         e.target.style.transform = "translateY(-2px)";
@@ -406,12 +522,12 @@ const AcceptedTeamPage = () => {
                           "0 4px 15px rgba(102, 126, 234, 0.4)";
                       }}
                     >
-                      <span>💬</span>
-                      <span>Chat</span>
+                      Chat
                     </button>
                   )}
                 </div>
                 <div
+                  className="team-id-section"
                   style={{
                     color: "#aaa",
                     fontSize: "1.1rem",
@@ -438,7 +554,6 @@ const AcceptedTeamPage = () => {
                       className="glow-input-container"
                       style={{
                         padding: "24px",
-                        background: "rgba(255,255,255,0.03)",
                         width: "100%",
                       }}
                     >
@@ -555,10 +670,8 @@ const AcceptedTeamPage = () => {
                               flexDirection: "column",
                               color: "#ddd",
                               padding: "16px",
-                              background: "rgba(255, 255, 255, 0.02)",
-                              borderRadius: "8px",
-                              border: "1px solid rgba(255, 255, 255, 0.05)",
                             }}
+                            className="team-details-box"
                           >
                             <div
                               style={{
@@ -621,7 +734,7 @@ const AcceptedTeamPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Footer */}

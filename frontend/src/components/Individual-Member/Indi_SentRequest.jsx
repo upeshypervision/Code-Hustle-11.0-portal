@@ -5,7 +5,7 @@ const Indi_SentRequest = ({ teams, onViewTeam, onChat, scrollToTop }) => {
   return (
     <div
       className="neural-node node-materialize animate-enter delay-3"
-      style={{ marginBottom: "40px" }}
+      style={{ marginBottom: "40px", width: "100%", maxWidth: "100%" }}
     >
       <span className="label-detail teamup-label">
         SENT REQUESTS (Status)
@@ -66,26 +66,40 @@ const Indi_SentRequest = ({ teams, onViewTeam, onChat, scrollToTop }) => {
                         }}
                         style={{
                           background:
-                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)",
                           color: "#fff",
-                          border: "none",
-                          padding: "8px 16px",
+                          border: "1px solid rgba(220, 38, 38, 0.5)",
+                          padding: "10px 20px",
                           borderRadius: "6px",
                           cursor: "pointer",
-                          fontSize: "0.95rem",
+                          fontSize: "1rem",
                           fontWeight: "500",
+                          lineHeight: "1.5",
+                          minHeight: "44px",
+                          height: "auto",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          gap: "6px",
-                          boxShadow:
-                            "0 2px 5px rgba(102, 126, 234, 0.4)",
+                          boxShadow: "0 2px 8px rgba(220, 38, 38, 0.3)",
                           width: "100%",
+                          maxWidth: "100%",
                           boxSizing: "border-box",
                           whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          transition: "all 0.3s ease",
+                          textAlign: "center",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "translateY(-1px)";
+                          e.target.style.boxShadow = "0 4px 15px rgba(220, 38, 38, 0.5)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "translateY(0)";
+                          e.target.style.boxShadow = "0 2px 8px rgba(220, 38, 38, 0.3)";
                         }}
                       >
-                        <span>💬</span> Chat
+                        Chat
                       </button>
                     )}
                   </td>

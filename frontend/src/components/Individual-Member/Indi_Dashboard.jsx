@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import GlobalNavbar from "../GlobalNavbar";
+import IndividualMemberNavbar from "./IndividualMemberNavbar";
 import Indi_SentRequest from "./Indi_SentRequest";
 import ChatBox from "./ChatBox";
 import "../../styles/global.css";
 import "../admin/ViewTeams.css";
 import "../../pages/Registration.css";
 import "./Indi.css";
+import "./Indi.mobile.css";
 import Indi_AvailableTeams from "./Indi_AvailableTeams";
 import Indi_TeamDetails from "./Indi_TeamDetails";
+import CongratulationsBanner from "./CongratulationsBanner";
 import { sanitizeText } from "../../utils/sanitizer";
 import socket from "../../socket";
 import NotificationBadge from "../NotificationBadge";
+import indiBg from "../../assets/indi-bg.png";
 
 const Indi_Dashboard = () => {
   const navigate = useNavigate();
@@ -31,14 +34,15 @@ const Indi_Dashboard = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [chatTeam, setChatTeam] = useState(null);
-  const [activeView, setActiveView] = useState("available"); // "available" or "sent-requests"
+  const [activeTab, setActiveTab] = useState("teams"); // For navbar navigation: "profile", "teams"
+  const [teamsSubSection, setTeamsSubSection] = useState("available-teams"); // Sub-section within teams: "available-teams" or "sent-requests"
   const [acceptedTeam, setAcceptedTeam] = useState(null); // Accepted team data
   const [rejectedTeamIds, setRejectedTeamIds] = useState([]);
 
   // Notification State
   const [notification, setNotification] = useState(null);
 
-  const showNotification = (message, type = 'info') => {
+  const showNotification = (message, type = "info") => {
     setNotification({ message, type });
   };
 
@@ -54,7 +58,10 @@ const Indi_Dashboard = () => {
     // Listen for request accepted
     const handleRequestAccepted = (data) => {
       console.log("Request accepted!", data);
-      showNotification(`🎉 Congratulations! You have been accepted by ${data.teamName}!`, 'success');
+      showNotification(
+        `🎉 Congratulations! You have been accepted by ${data.teamName}!`,
+        "success"
+      );
       // Refresh to show accepted team
       setTimeout(() => window.location.reload(), 2000);
     };
@@ -62,7 +69,10 @@ const Indi_Dashboard = () => {
     // Listen for request rejected
     const handleRequestRejected = (data) => {
       console.log("Request rejected", data);
-      showNotification(`Your request to ${data.teamName} was declined.`, 'error');
+      showNotification(
+        `Your request to ${data.teamName} was declined.`,
+        "error"
+      );
       // Refresh to update status
       setTimeout(() => window.location.reload(), 2000);
     };
@@ -79,10 +89,13 @@ const Indi_Dashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/individual-dashboard", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/individual-dashboard",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const data = await response.json();
 
@@ -107,10 +120,13 @@ const Indi_Dashboard = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/available-teams", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/available-teams",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const data = await response.json();
 
@@ -122,34 +138,39 @@ const Indi_Dashboard = () => {
       }
     };
 
-
-
     const fetchSentRequests = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/individual/sent-requests", {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:5000/api/individual/sent-requests",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         const data = await response.json();
 
         if (data.success) {
           // Extract rejected team IDs
           const rejected = data.teams
-            .filter(t => t.requestStatus === "Rejected")
-            .map(t => t.teamId);
+            .filter((t) => t.requestStatus === "Rejected")
+            .map((t) => t.teamId);
           setRejectedTeamIds(rejected);
 
           // Check for accepted team from sent requests
-          const accepted = data.teams.find(t => t.requestStatus === "Accepted");
+          const accepted = data.teams.find(
+            (t) => t.requestStatus === "Accepted"
+          );
           if (accepted) {
             setAcceptedTeam(accepted);
           }
 
           // Merge sent requests with available teams
-          setTeams(prevTeams => {
-            const sentTeamIds = data.teams.map(t => t.teamId);
-            const availableOnly = prevTeams.filter(t => !sentTeamIds.includes(t.teamId));
+          setTeams((prevTeams) => {
+            const sentTeamIds = data.teams.map((t) => t.teamId);
+            const availableOnly = prevTeams.filter(
+              (t) => !sentTeamIds.includes(t.teamId)
+            );
             return [...availableOnly, ...data.teams];
           });
         }
@@ -166,9 +187,12 @@ const Indi_Dashboard = () => {
       if (userDetails?.accepted) {
         try {
           console.log("Fetching accepted team data...");
-          const response = await fetch("http://localhost:5000/api/individual/accepted-team", {
-            credentials: "include"
-          });
+          const response = await fetch(
+            "http://localhost:5000/api/individual/accepted-team",
+            {
+              credentials: "include",
+            }
+          );
           const data = await response.json();
           console.log("Accepted team response:", data);
 
@@ -198,335 +222,364 @@ const Indi_Dashboard = () => {
   return (
     <div
       className="dashboard-page"
-      style={{ minHeight: "100vh", background: "#0a0b1e" }}
+      style={{
+        minHeight: "100vh",
+        background: "#0a0b1e",
+        paddingTop: "70px",
+        position: "relative",
+      }}
     >
-      <GlobalNavbar
-        userInfo={null}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        menuItems={[
-          {
-            id: "profile",
-            label: "Profile",
-            name: "Profile",
-            active: showProfile,
-          },
-          {
-            id: "available-teams",
-            label: "Available Teams",
-            name: "Available Teams",
-            active: activeView === "available" && !selectedTeam,
-          },
-          {
-            id: "sent-requests",
-            label: "Sent Requests",
-            name: "Sent Requests",
-            active: activeView === "sent-requests" && !selectedTeam,
-          },
-        ]}
-        onMenuItemClick={(item) => {
-          if (item.id === "profile") {
-            setShowProfile(!showProfile);
-          } else if (item.id === "available-teams") {
-            setActiveView("available");
-            setSelectedTeam(null);
-            setShowProfile(false);
-          } else if (item.id === "sent-requests") {
-            setActiveView("sent-requests");
-            setSelectedTeam(null);
-            setShowProfile(false);
-          }
+      {/* --- FIXED BACKGROUND --- */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url(${indiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: "1",
+          zIndex: 0,
+          pointerEvents: "none",
         }}
-        showContactUs={true}
-        logoutPath="/individual-login"
+      />
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background:
+            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
       />
 
-      <div className="admin-content dashboard-container">
-        <div className="teamup-layout">
-          {/* User Details Section - Left Sidebar */}
+      <IndividualMemberNavbar
+        userName={userDetails.fullName || "INDIVIDUAL MEMBER"}
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          setSelectedTeam(null);
+          // Reset to available-teams when switching to teams tab
+          if (tab === "teams") {
+            setTeamsSubSection("available-teams");
+          }
+        }}
+      />
+
+      <div
+        className="admin-content dashboard-container"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent:
+            activeTab === "profile" ||
+            (activeTab === "teams" &&
+              teamsSubSection === "available-teams" &&
+              acceptedTeam)
+              ? "center"
+              : "flex-start",
+          alignItems: "center",
+          minHeight:
+            activeTab === "profile" ||
+            (activeTab === "teams" &&
+              teamsSubSection === "available-teams" &&
+              acceptedTeam)
+              ? "calc(100vh - 140px)"
+              : "auto",
+        }}
+      >
+        {activeTab === "profile" ? (
+          /* Profile Box - Centered Square */
           <div
-            className={`member-details-sidebar ${showProfile ? "mobile-visible" : ""}`}
+            className="neural-node node-materialize animate-enter delay-1 profile-container"
+            style={{
+              width: "100%",
+              maxWidth: "600px",
+              aspectRatio: "1",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              padding: "40px",
+            }}
           >
+            <span className="label-detail teamup-label">YOUR PROFILE</span>
             <div
-              className="neural-node node-materialize animate-enter delay-1"
-              style={{ marginBottom: "40px" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "28px",
+                marginTop: "16px",
+                color: "#FFFFFF",
+              }}
             >
-              <span className="label-detail teamup-label">YOUR PROFILE</span>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "28px",
-                  marginTop: "16px",
-                  color: "#ddd",
-                }}
-              >
-                <div>
-                  <h3 className="user-profile-header">
-                    {sanitizeText(userDetails.fullName, 100)}
-                  </h3>
-                  <p className="user-profile-sub">
-                    {sanitizeText(userDetails.university, 200)} • {sanitizeText(userDetails.sapId, 50)}
-                  </p>
+              <div>
+                <h3 className="user-profile-header">
+                  {sanitizeText(userDetails.fullName, 100)}
+                </h3>
+                <p className="user-profile-sub">
+                  {sanitizeText(userDetails.university, 200)} •{" "}
+                  {sanitizeText(userDetails.sapId, 50)}
+                </p>
+              </div>
+              <div>
+                <div className="user-profile-info-row">
+                  <span className="profile-label">Email:</span>{" "}
+                  {sanitizeText(userDetails.email, 100)}
                 </div>
-                <div>
-                  <div className="user-profile-info-row">
-                    Email: {sanitizeText(userDetails.email, 100)}
-                  </div>
-                  <div className="user-profile-info-row">
-                    Phone: {sanitizeText(userDetails.phone, 10)}
-                  </div>
-                  <div className="user-profile-info-row">
-                    Member of UPES-Hypervision:{" "}
-                    <span style={{ color: "#60a5fa", fontWeight: "600" }}>
-                      {userDetails.isUPESHypervision ? "Yes" : "No"}
-                    </span>
-                  </div>
+                <div className="user-profile-info-row">
+                  <span className="profile-label">Phone:</span>{" "}
+                  {sanitizeText(userDetails.phone, 10)}
                 </div>
-                <div className="user-skills-box">
-                  <strong
-                    style={{
-                      color: "#aaa",
-                      fontSize: "1rem",
-                      display: "block",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    YOUR SKILLS
-                  </strong>
-                  <p
-                    style={{
-                      fontStyle: "italic",
-                      margin: 0,
-                      fontSize: "1.05rem",
-                      wordWrap: "break-word",
-                      whiteSpace: "normal",
-                    }}
-                  >
-                    {sanitizeText(userDetails.skills, 500) || "No skills provided"}
-                  </p>
+                <div className="user-profile-info-row">
+                  <span className="profile-label">
+                    Member of UPES-Hypervision:
+                  </span>{" "}
+                  <span style={{ color: "#00D4FF", fontWeight: "600" }}>
+                    {userDetails.isUPESHypervision ? "Yes" : "No"}
+                  </span>
                 </div>
               </div>
+              <div className="user-skills-box">
+                <strong
+                  style={{
+                    color: "#FF4D4D",
+                    fontSize: "1rem",
+                    display: "block",
+                    marginBottom: "10px",
+                  }}
+                >
+                  YOUR SKILLS
+                </strong>
+                <p
+                  style={{
+                    fontStyle: "italic",
+                    margin: 0,
+                    fontSize: "1.05rem",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {sanitizeText(userDetails.skills, 500) ||
+                    "No skills provided"}
+                </p>
+              </div>
             </div>
-            <button
-              className="mobile-profile-close"
-              onClick={() => setShowProfile(false)}
-              aria-label="Close profile"
-            >
-              ×
-            </button>
           </div>
-
-          {/* Vertical Separator */}
-          <div className="teamup-separator"></div>
-
-          {/* Main Content */}
-          <div className="teams-content-section">
+        ) : (
+          /* Main Content - Centered */
+          <>
             {!selectedTeam ? (
               <>
-                {/* Desktop Navigation Tabs */}
-                <div className="indi-view-tabs" style={{
-                  display: "flex",
-                  gap: "12px",
-                  marginBottom: "24px",
-                  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-                  paddingBottom: "12px"
-                }}>
-                  <button
-                    onClick={() => setActiveView("available")}
+                {activeTab === "teams" && (
+                  <div
                     style={{
-                      padding: "10px 20px",
-                      background: activeView === "available"
-                        ? "linear-gradient(135deg, #3b82f6, #2563eb)"
-                        : "transparent",
-                      color: activeView === "available" ? "#fff" : "#94a3b8",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontSize: "0.95rem",
-                      fontWeight: "600",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    Available Teams
-                  </button>
-                  <button
-                    onClick={() => setActiveView("sent-requests")}
-                    style={{
-                      padding: "10px 20px",
-                      background: activeView === "sent-requests"
-                        ? "linear-gradient(135deg, #3b82f6, #2563eb)"
-                        : "transparent",
-                      color: activeView === "sent-requests" ? "#fff" : "#94a3b8",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontSize: "0.95rem",
-                      fontWeight: "600",
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    Sent Requests
-                  </button>
-                </div>
-
-                {/* Content based on active view */}
-                {/* accepted team  do mess if you want to fix the ui it is till line 380*/}
-                {activeView === "available" ? (
-                  acceptedTeam ? (
-                    // Congratulations Banner when accepted
-                    <div className="neural-node node-materialize animate-enter congrats-banner" style={{
-                      background: "linear-gradient(135deg, rgba(148, 163, 184, 0.25) 0%, #2563eb 100%)",
-                      padding: "60px 40px",
-                      borderRadius: "16px",
-                      textAlign: "center",
-                      boxShadow: "0 20px 60px rgba(37, 99, 235, 0.4)",
-                      border: "2px solid rgba(255, 255, 255, 0.2)",
-                      margin: "0 auto",
+                      width: "fit-content",
                       maxWidth: "100%",
-                      boxSizing: "border-box"
-                    }}>
-                      <h1 className="congrats-title" style={{
-                        color: "#fff",
-                        fontSize: "2.5rem",
-                        marginBottom: "15px",
-                        fontWeight: "800",
-                        textShadow: "0 2px 10px rgba(0,0,0,0.2)",
-                        whiteSpace: "nowrap",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "12px"
-                      }}>
-                        <span>Congratulations!</span>
-                        <span>🎉</span>
-                      </h1>
-                      <p className="congrats-subtitle" style={{
-                        color: "#fff",
-                        fontSize: "1.5rem",
-                        marginBottom: "10px",
-                        fontWeight: "600",
-                        wordWrap: "break-word",
-                        overflowWrap: "break-word"
-                      }}>
-                        You've been accepted by
-                      </p>
-                      <h2 className="congrats-team-name" style={{
-                        color: "#fff",
-                        fontSize: "2rem",
-                        marginBottom: "10px",
-                        fontWeight: "700",
-                        textShadow: "0 2px 10px rgba(0,0,0,0.2)",
-                        wordWrap: "break-word",
-                        overflowWrap: "break-word"
-                      }}>
-                        {acceptedTeam.teamName}
-                      </h2>
-                      <p className="congrats-team-id" style={{
-                        color: "rgba(255,255,255,0.95)",
-                        fontSize: "1.2rem",
+                      margin: "0 auto",
+                      background: "transparent",
+                      border: "none",
+                      boxShadow: "none",
+                      padding: 0,
+                    }}
+                  >
+                    {/* Toggle Buttons - Separate Container */}
+                    <div
+                      style={{
+                        width: "100%",
                         marginBottom: "40px",
-                        fontWeight: "500",
-                        wordWrap: "break-word",
-                        overflowWrap: "break-word"
-                      }}>
-                        Team ID: {acceptedTeam.teamId}
-                      </p>
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0",
+                      }}
+                    >
                       <button
-                        className="congrats-button"
-                        onClick={() => navigate("/accepted-team", {
-                          state: { team: acceptedTeam, userDetails }
-                        })}
+                        onClick={() => setTeamsSubSection("available-teams")}
                         style={{
-                          background: "#fff",
-                          color: "#2563eb",
-                          border: "none",
-                          padding: "16px 40px",
-                          borderRadius: "10px",
-                          fontSize: "1.2rem",
-                          fontWeight: "700",
+                          padding: "12px 32px",
+                          fontSize: "1rem",
+                          fontWeight: "600",
                           cursor: "pointer",
-                          boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
+                          border: "none",
+                          borderRadius: "8px 0 0 8px",
                           transition: "all 0.3s ease",
-                          textTransform: "uppercase",
-                          letterSpacing: "1px",
-                          width: "auto",
-                          maxWidth: "100%"
+                          background:
+                            teamsSubSection === "available-teams"
+                              ? "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
+                              : "#FFFFFF",
+                          color:
+                            teamsSubSection === "available-teams"
+                              ? "#FFFFFF"
+                              : "#dc2626",
+                          boxShadow:
+                            teamsSubSection === "available-teams"
+                              ? "0 4px 15px rgba(220, 38, 38, 0.4)"
+                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                          borderRight: "1px solid rgba(220, 38, 38, 0.3)",
                         }}
                         onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-3px)";
-                          e.target.style.boxShadow = "0 10px 30px rgba(0,0,0,0.4)";
+                          if (teamsSubSection !== "available-teams") {
+                            e.target.style.background =
+                              "rgba(220, 38, 38, 0.1)";
+                          }
                         }}
                         onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 6px 20px rgba(0,0,0,0.3)";
+                          if (teamsSubSection !== "available-teams") {
+                            e.target.style.background = "#FFFFFF";
+                          }
                         }}
                       >
-                        View Your Team →
+                        Available Teams
+                      </button>
+                      <button
+                        onClick={() => setTeamsSubSection("sent-requests")}
+                        style={{
+                          padding: "12px 32px",
+                          fontSize: "1rem",
+                          fontWeight: "600",
+                          cursor: "pointer",
+                          border: "none",
+                          borderRadius: "0 8px 8px 0",
+                          transition: "all 0.3s ease",
+                          background:
+                            teamsSubSection === "sent-requests"
+                              ? "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
+                              : "#FFFFFF",
+                          color:
+                            teamsSubSection === "sent-requests"
+                              ? "#FFFFFF"
+                              : "#dc2626",
+                          boxShadow:
+                            teamsSubSection === "sent-requests"
+                              ? "0 4px 15px rgba(220, 38, 38, 0.4)"
+                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (teamsSubSection !== "sent-requests") {
+                            e.target.style.background =
+                              "rgba(220, 38, 38, 0.1)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (teamsSubSection !== "sent-requests") {
+                            e.target.style.background = "#FFFFFF";
+                          }
+                        }}
+                      >
+                        Sent Requests
                       </button>
                     </div>
-                  ) : (
-                    // Available Teams when not accepted
-                    <Indi_AvailableTeams
-                      teams={teams.filter(t => !t.requestStatus && !rejectedTeamIds.includes(t.teamId))}
-                      onViewTeam={setSelectedTeam}
-                      scrollToTop={scrollToTop}
-                    />
-                  )
-                ) : (
-                  <Indi_SentRequest
-                    teams={teams}
-                    onViewTeam={setSelectedTeam}
-                    onChat={(team) => {
-                      setChatTeam(team);
-                      setShowChat(true);
-                    }}
-                    scrollToTop={scrollToTop}
-                  />
+
+                    {/* Content Section - Separate Container */}
+                    <div
+                      className="teams-content-section"
+                      style={{
+                        width: "fit-content",
+                        height: "fit-content",
+                        minHeight: "auto",
+                        background: "transparent",
+                        border: "none",
+                        boxShadow: "none",
+                        padding: 0,
+                        margin: "0 auto",
+                      }}
+                    >
+                      {teamsSubSection === "available-teams" ? (
+                        <>
+                          {acceptedTeam ? (
+                            <CongratulationsBanner
+                              acceptedTeam={acceptedTeam}
+                              userDetails={userDetails}
+                            />
+                          ) : (
+                            <Indi_AvailableTeams
+                              teams={teams.filter(
+                                (t) =>
+                                  !t.requestStatus &&
+                                  !rejectedTeamIds.includes(t.teamId)
+                              )}
+                              onViewTeam={setSelectedTeam}
+                              scrollToTop={scrollToTop}
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <Indi_SentRequest
+                          teams={teams}
+                          onViewTeam={setSelectedTeam}
+                          onChat={(team) => {
+                            setChatTeam(team);
+                            setShowChat(true);
+                          }}
+                          scrollToTop={scrollToTop}
+                        />
+                      )}
+                    </div>
+                  </div>
                 )}
               </>
             ) : (
               /* Team Details Section */
-              <Indi_TeamDetails
-                team={selectedTeam}
-                onClose={() => setSelectedTeam(null)}
-                onChat={(team) => {
-                  setChatTeam(team);
-                  setShowChat(true);
-                }}
-                onSendRequest={async (team) => {
-                  try {
-                    const response = await fetch("http://localhost:5000/api/individual/send-request", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      credentials: "include",
-                      body: JSON.stringify({ team_id: team.teamId })
-                    });
+              <div
+                className="teams-content-section"
+                style={{ width: "100%", maxWidth: "1200px", margin: "0 auto" }}
+              >
+                <Indi_TeamDetails
+                  team={selectedTeam}
+                  onClose={() => setSelectedTeam(null)}
+                  onChat={(team) => {
+                    setChatTeam(team);
+                    setShowChat(true);
+                  }}
+                  onSendRequest={async (team) => {
+                    try {
+                      const response = await fetch(
+                        "http://localhost:5000/api/individual/send-request",
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          credentials: "include",
+                          body: JSON.stringify({ team_id: team.teamId }),
+                        }
+                      );
 
-                    const data = await response.json();
+                      const data = await response.json();
 
-                    if (response.ok) {
-                      socket.emit("new_join_request", {
-                        teamId: team.teamId,
-                        individualName: userDetails.fullName
-                      });
+                      if (response.ok) {
+                        socket.emit("new_join_request", {
+                          teamId: team.teamId,
+                          individualName: userDetails.fullName,
+                        });
 
-                      showNotification(`Request sent to ${team.teamName}!`, 'success');
-                      setSelectedTeam(null);
-                      // Refresh teams to update request status
-                      setTimeout(() => window.location.reload(), 1500);
-                    } else {
-                      showNotification(data.error || "Failed to send request", 'error');
+                        showNotification(
+                          `Request sent to ${team.teamName}!`,
+                          "success"
+                        );
+                        setSelectedTeam(null);
+                        // Refresh teams to update request status
+                        setTimeout(() => window.location.reload(), 1500);
+                      } else {
+                        showNotification(
+                          data.error || "Failed to send request",
+                          "error"
+                        );
+                      }
+                    } catch (error) {
+                      console.error("Error sending request:", error);
+                      showNotification("Failed to send request", "error");
                     }
-                  } catch (error) {
-                    console.error("Error sending request:", error);
-                    showNotification("Failed to send request", 'error');
-                  }
-                }}
-              />
+                  }}
+                />
+              </div>
             )}
-
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
       <footer className="teamup-footer">

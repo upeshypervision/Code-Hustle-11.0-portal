@@ -149,7 +149,9 @@ export default function ProblemStatements() {
       console.error(err);
       // Revert on error
       setProblemStatements((prev) =>
-        prev.map((ps) => (ps.id === psId ? { ...ps, visible: !ps.visible } : ps))
+        prev.map((ps) =>
+          ps.id === psId ? { ...ps, visible: !ps.visible } : ps
+        )
       );
       setPsMessage({
         type: "error",
@@ -188,7 +190,10 @@ export default function ProblemStatements() {
       </header>
 
       {psMessage.text && (
-        <div className={`message-box ${psMessage.type}`} style={{ marginBottom: "20px" }}>
+        <div
+          className={`message-box ${psMessage.type}`}
+          style={{ marginBottom: "20px" }}
+        >
           {psMessage.text}
         </div>
       )}
@@ -196,7 +201,14 @@ export default function ProblemStatements() {
       {/* Grid Layout for Problem Statements */}
       <div className="ps-grid">
         {problemStatements.length === 0 ? (
-          <div style={{ gridColumn: "1 / -1", textAlign: "center", color: "#64748b", padding: "40px" }}>
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              color: "#64748b",
+              padding: "40px",
+            }}
+          >
             No problem statements created yet. Get started below!
           </div>
         ) : (
@@ -273,7 +285,9 @@ export default function ProblemStatements() {
             <select
               className="ps-input"
               value={newPs.difficulty}
-              onChange={(e) => setNewPs({ ...newPs, difficulty: e.target.value })}
+              onChange={(e) =>
+                setNewPs({ ...newPs, difficulty: e.target.value })
+              }
             >
               <option>Easy</option>
               <option>Medium</option>
@@ -286,7 +300,9 @@ export default function ProblemStatements() {
             <textarea
               className="ps-input"
               value={newPs.description}
-              onChange={(e) => setNewPs({ ...newPs, description: e.target.value })}
+              onChange={(e) =>
+                setNewPs({ ...newPs, description: e.target.value })
+              }
               placeholder="Detailed description of the problem..."
               rows={4}
               style={{ resize: "vertical" }}
@@ -305,7 +321,10 @@ export default function ProblemStatements() {
             />
           </div>
 
-          <div className="ps-input-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <div
+            className="ps-input-group"
+            style={{ display: "flex", alignItems: "flex-end" }}
+          >
             <button type="submit" className="btn-add-ps">
               + Create Problem Statement
             </button>
@@ -321,8 +340,15 @@ export default function ProblemStatements() {
       >
         {selectedPs && selectedPs.teamsList ? (
           <div>
-            <p style={{ fontSize: "0.9rem", color: "#9ca3af", marginBottom: "16px" }}>
-              {selectedPs.teamsList.length} team(s) selected this problem statement
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: "#9ca3af",
+                marginBottom: "16px",
+              }}
+            >
+              {selectedPs.teamsList.length} team(s) selected this problem
+              statement
             </p>
             {selectedPs.teamsList.length === 0 ? (
               <p style={{ textAlign: "center", color: "#6b7280" }}>
@@ -340,7 +366,9 @@ export default function ProblemStatements() {
                 <tbody>
                   {selectedPs.teamsList.map((team, idx) => (
                     <tr key={idx}>
-                      <td><strong>{team.team_id}</strong></td>
+                      <td>
+                        <strong>{team.team_id}</strong>
+                      </td>
                       <td>{team.team_name}</td>
                       <td>{new Date(team.selected_at).toLocaleString()}</td>
                     </tr>
@@ -350,7 +378,9 @@ export default function ProblemStatements() {
             )}
           </div>
         ) : (
-          <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>Loading teams...</p>
+          <p style={{ fontSize: "0.9rem", color: "#9ca3af" }}>
+            Loading teams...
+          </p>
         )}
       </Modal>
     </div>

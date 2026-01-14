@@ -13,15 +13,15 @@
 
 @keyframes pulse-glow {
   0% {
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 5px rgba(220, 38, 38, 0.3), 0 0 5px rgba(37, 99, 235, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6), 0 0 20px rgba(37, 99, 235, 0.6);
   }
 
   100% {
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 5px rgba(220, 38, 38, 0.3), 0 0 5px rgba(37, 99, 235, 0.3);
   }
 }
 
@@ -51,16 +51,22 @@
 
 /* TeamUp Dashboard Page Background - Consistent Gradient */
 .dashboard-page {
-  background: radial-gradient(ellipse at top center,
+  background: radial-gradient(
+      ellipse at top center,
       rgba(15, 23, 42, 0.4) 0%,
-      transparent 60%),
-    radial-gradient(ellipse at bottom center,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom center,
       rgba(15, 23, 42, 0.4) 0%,
-      transparent 60%),
-    linear-gradient(to bottom,
+      transparent 60%
+    ),
+    linear-gradient(
+      to bottom,
       rgba(10, 11, 30, 0.95) 0%,
       rgba(10, 11, 30, 1) 50%,
-      rgba(10, 11, 30, 0.95) 100%),
+      rgba(10, 11, 30, 0.95) 100%
+    ),
     #0a0b1e !important;
   background-attachment: fixed;
   width: 100%;
@@ -82,11 +88,17 @@
 }
 
 /* Neural Node Base Styles */
-.neural-node {
+.dashboard-page .neural-node {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
+  background: rgb(22 28 51 / 52%);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 24px;
 }
 
 /* TeamUp Label Styles */
@@ -99,17 +111,21 @@
   display: inline-block;
   width: 100%;
   max-width: 100%;
-  background: linear-gradient(to right,
-      rgba(56, 189, 248, 0.08) 0%,
-      rgba(56, 189, 248, 0.15) 20%,
-      rgba(56, 189, 248, 0.15) 80%,
-      rgba(56, 189, 248, 0.08) 100%);
+  color: #ff4d4d !important;
+  background: linear-gradient(
+    to right,
+    rgba(255, 77, 77, 0.15) 0%,
+    rgba(255, 77, 77, 0.25) 20%,
+    rgba(0, 212, 255, 0.25) 80%,
+    rgba(0, 212, 255, 0.15) 100%
+  );
   border-radius: 4px;
   margin-left: -20px;
   margin-right: -20px;
   padding-left: 34px !important;
   padding-right: 20px !important;
-  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 2px 8px rgba(255, 77, 77, 0.2), 0 2px 8px rgba(0, 212, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
 }
 
@@ -137,11 +153,7 @@
 }
 
 .team-row:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  transform: scale(1.01);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-  position: relative;
+  /* Hover effects removed */
 }
 
 /* TeamUp Table Styles */
@@ -163,11 +175,8 @@
   animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* TeamUp Layout Styles */
+/* TeamUp Layout Styles - Removed for centered layout */
 .teamup-layout {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -178,14 +187,24 @@
   min-width: 0;
   max-width: 380px;
   overflow: hidden;
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .teamup-separator {
   width: 1px;
-  background: linear-gradient(to bottom,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(220, 38, 38, 0.4),
+    rgba(37, 99, 235, 0.4),
+    rgba(220, 38, 38, 0.4),
+    transparent
+  );
   align-self: stretch;
   margin: 0 10px;
   flex-shrink: 0;
@@ -197,6 +216,13 @@
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: visible;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+  width: fit-content;
+  height: fit-content;
+  min-height: auto;
 }
 
 .mobile-profile-close {
@@ -215,10 +241,11 @@
 
 .team-details-section .neural-node {
   padding: 40px 60px;
-  background: rgba(15, 23, 42, 0.3);
+  background: rgb(22 28 51 / 52%);
+  backdrop-filter: blur(12px);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 77, 77, 0.1);
   margin-bottom: 0;
   flex: 1;
   display: flex;
@@ -247,7 +274,7 @@
   box-sizing: border-box;
 }
 
-.team-details-section>div {
+.team-details-section > div {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -295,10 +322,12 @@
 .teamup-footer-separator {
   width: 100%;
   height: 1px;
-  background: linear-gradient(to right,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   margin-bottom: 30px;
 }
 
@@ -314,9 +343,16 @@
   font-weight: 400;
 }
 
+/* Desktop-specific styles for Congratulations Banner */
+@media (min-width: 769px) {
+  .congrats-banner {
+    aspect-ratio: 0.9 !important;
+    min-height: 600px;
+  }
+}
+
 /* Mobile Responsiveness - Card View for Tables */
 @media (max-width: 768px) {
-
   /* Override admin-content padding for mobile */
   .admin-content.dashboard-container {
     padding-top: 20px !important;
@@ -368,7 +404,6 @@
     box-sizing: border-box;
   }
 
-
   /* Glass mobile menu overlay */
   .glass-mobile-overlay {
     background: rgba(0, 0, 0, 0.6) !important;
@@ -396,9 +431,9 @@
   }
 
   .glass-mobile-content .mobile-menu-item.active {
-    background: rgba(96, 165, 250, 0.2) !important;
-    color: #60a5fa !important;
-    border-left: 3px solid #60a5fa !important;
+    background: rgba(220, 38, 38, 0.2) !important;
+    color: #dc2626 !important;
+    border-left: 3px solid #dc2626 !important;
   }
 
   .teamup-layout {
@@ -534,7 +569,7 @@
     /* Now like a table header */
     content: attr(data-label);
     font-weight: bold;
-    color: #38bdf8;
+    color: #2563eb;
     margin-right: 15px;
     font-size: 0.95rem;
     text-transform: uppercase;
@@ -609,69 +644,69 @@
   .indi-table td.indi-td-id:before {
     content: "Team ID: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: inline-block;
     margin-right: 8px;
+    font-size: 1rem;
   }
 
   .indi-table td.indi-td-name:before {
     content: "Team Name: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: inline-block;
     margin-right: 8px;
+    font-size: 1rem;
   }
 
   .indi-table td.indi-td-bio:before {
     content: "Team Vision: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: block;
     margin-bottom: 8px;
+    font-size: 1rem;
   }
 
   .indi-table td.indi-td-skills:before {
     content: "Skills: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: block;
     margin-bottom: 8px;
+    font-size: 1rem;
   }
 
   .indi-table td.indi-td-members:before {
     content: "Members: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: inline-block;
     margin-right: 8px;
+    font-size: 1rem;
   }
 
   /* Style for cells containing status tags */
   .indi-table td:has(.indi-status-tag):before {
     content: "Request Status: ";
     font-weight: bold;
-    color: #38bdf8;
+    color: #aaa;
     display: block;
     margin-bottom: 8px;
+    font-size: 1rem;
   }
 
-  /* Style for cells containing chat button */
+  /* Remove Chat: and Action: labels in mobile view */
   .indi-table td:has(.edit-btn.chat-btn-mobile):before,
   .indi-table td:has(button.edit-btn):before {
-    content: "Chat: ";
-    font-weight: bold;
-    color: #38bdf8;
-    display: block;
-    margin-bottom: 8px;
+    content: "" !important;
+    display: none !important;
   }
 
   /* Style for action cells with View button (not chat) */
   .indi-table td:has(.indi-btn-view):not(:has(.edit-btn)):before {
-    content: "Action: ";
-    font-weight: bold;
-    color: #38bdf8;
-    display: block;
-    margin-bottom: 8px;
+    content: "" !important;
+    display: none !important;
   }
 
   /* Fallback: if :has() is not supported, use nth-child for sent requests (6 columns) */
@@ -679,25 +714,20 @@
     .indi-table tbody tr td:nth-child(4):not(.indi-td-members):before {
       content: "Request Status: ";
       font-weight: bold;
-      color: #38bdf8;
+      color: #aaa;
       display: block;
       margin-bottom: 8px;
+      font-size: 1rem;
     }
 
     .indi-table tbody tr td:nth-child(5):before {
-      content: "Chat: ";
-      font-weight: bold;
-      color: #38bdf8;
-      display: block;
-      margin-bottom: 8px;
+      content: "" !important;
+      display: none !important;
     }
 
     .indi-table tbody tr td:nth-child(6):before {
-      content: "Action: ";
-      font-weight: bold;
-      color: #38bdf8;
-      display: block;
-      margin-bottom: 8px;
+      content: "" !important;
+      display: none !important;
     }
   }
 
@@ -710,8 +740,10 @@
     overflow: visible !important;
     text-overflow: clip !important;
     word-wrap: break-word !important;
-    padding: 12px 20px !important;
-    min-height: 44px;
+    padding: 10px 20px !important;
+    min-height: 44px !important;
+    height: auto !important;
+    line-height: 1.5 !important;
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -754,16 +786,16 @@
     font-size: 1rem;
   }
 
-  /* Ensure team name and ID are prominent in cards */
+  /* Ensure team name and ID have consistent font sizes */
   .indi-table td.indi-td-name {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
     font-weight: 600 !important;
     padding-top: 0 !important;
     margin-bottom: 8px;
   }
 
   .indi-table td.indi-td-id {
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
     margin-bottom: 4px;
   }
 
@@ -815,7 +847,7 @@
   }
 
   /* Mobile grid adjustments */
-  .team-details-section .neural-node>div[style*="grid"] {
+  .team-details-section .neural-node > div[style*="grid"] {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
     width: 100%;
@@ -823,7 +855,7 @@
     box-sizing: border-box;
   }
 
-  .team-details-section .glow-input-container>div[style*="grid"] {
+  .team-details-section .glow-input-container > div[style*="grid"] {
     grid-template-columns: 1fr !important;
     width: 100%;
     max-width: 100%;
@@ -1148,9 +1180,10 @@
 }
 
 .message-right .chatbox-message-bubble {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
   border-top-right-radius: 4px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 .chatbox-message-name {
@@ -1199,16 +1232,39 @@
 }
 
 .chatbox-input:focus {
-  border-color: rgba(59, 130, 246, 0.5);
+  border-color: rgba(37, 99, 235, 0.5);
   background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+}
+
+.send-request-btn {
+  margin-top: 40px;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(270deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.send-request-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.6);
+  background: linear-gradient(270deg, #1d4ed8, #1e40af);
 }
 
 .chatbox-send-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: #3b82f6;
-  border: none;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border: 1px solid rgba(220, 38, 38, 0.5);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -1216,10 +1272,12 @@
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
 }
 
 .chatbox-send-btn:hover {
-  background: #2563eb;
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5);
   transform: scale(1.05);
 }
 
@@ -1292,7 +1350,7 @@
 .indi-table {
   width: 100%;
   border-collapse: collapse;
-  color: #ddd;
+  color: #ffffff;
   table-layout: fixed;
   min-width: 600px;
 }
@@ -1305,6 +1363,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #aaa;
 }
 
 .indi-table td {
@@ -1316,7 +1375,7 @@
 
 .indi-td-id {
   font-family: monospace;
-  color: #aaa;
+  color: #ffffff;
   font-size: 1rem;
   word-wrap: break-word;
   white-space: normal;
@@ -1335,8 +1394,9 @@
 }
 
 .indi-td-bio {
-  color: #ccc;
+  color: #ffffff;
   font-size: 0.95rem;
+  opacity: 0.9;
   word-wrap: break-word;
   white-space: normal;
   line-height: 1.5;
@@ -1346,7 +1406,7 @@
 }
 
 .indi-td-members {
-  color: #ddd;
+  color: #ffffff;
   font-size: 1rem;
   white-space: nowrap;
   overflow: hidden;
@@ -1354,17 +1414,20 @@
 }
 
 .indi-btn-view {
-  background: #007bff;
-  color: #fff;
-  border: none;
+  background: #ffffff;
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.5);
   padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
+  line-height: 1.5;
   width: 100%;
   max-width: 100%;
-  transition: background 0.2s;
+  min-height: 44px;
+  height: auto;
+  transition: all 0.3s ease;
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
@@ -1373,10 +1436,44 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .indi-btn-view:hover {
-  background: #0056b3;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Chat button styling to match View button */
+.edit-btn.chat-btn-mobile {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(220, 38, 38, 0.5) !important;
+  padding: 10px 20px !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  min-height: 44px !important;
+  height: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transition: all 0.3s ease !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+}
+
+.edit-btn.chat-btn-mobile:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5) !important;
 }
 
 .indi-status-tag {
@@ -1402,13 +1499,38 @@
 .user-profile-info-row {
   font-size: 1.05rem;
   margin-bottom: 12px;
+  color: #ffffff;
+}
+
+/* Make profile labels (Email, Phone, Member) greyish */
+.user-profile-info-row .profile-label {
+  color: #aaa;
 }
 
 .user-skills-box {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(12px);
   padding: 24px;
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Make skills text greyish */
+.user-skills-box p {
+  color: #aaa !important;
+}
+
+/* YOUR SKILLS heading - left aligned */
+.user-skills-box strong {
+  text-align: left !important;
+}
+
+/* Make "You've been accepted by" and "Team ID" greyish in congratulations banner */
+.congrats-subtitle,
+.congrats-team-id {
+  color: #aaa !important;
 }
 
 /* Team Details View */
@@ -1438,9 +1560,10 @@
 }
 
 .team-details-id {
-  color: #aaa;
+  color: #ffffff;
   font-size: 1.1rem;
   margin-bottom: 30px;
+  opacity: 0.8;
 }
 
 .team-details-grid {
@@ -1460,13 +1583,16 @@
 
 .team-details-box {
   padding: 24px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(12px);
   width: 100%;
   border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .team-details-text {
-  color: #ddd;
+  color: #ffffff;
   font-size: 1.1rem;
   line-height: 1.7;
   margin: 0;
@@ -1489,14 +1615,15 @@
 }
 
 .leader-university {
-  color: #aaa;
+  color: #ffffff;
   font-size: 1rem;
   margin-bottom: 8px;
+  opacity: 0.8;
 }
 
 .skills-section {
   font-size: 0.95rem;
-  color: #ddd;
+  color: #ffffff;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   word-wrap: break-word;
@@ -1506,7 +1633,7 @@
 }
 
 .skills-label {
-  color: #aaa;
+  color: #ff4d4d;
   font-size: 0.85rem;
   display: block;
   margin-bottom: 4px;
@@ -1523,11 +1650,20 @@
 .member-card {
   display: flex;
   flex-direction: column;
-  color: #ddd;
+  color: #ffffff;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(12px);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.member-card:hover {
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 20px rgba(220, 38, 38, 0.2);
+  transform: translateY(-2px);
 }
 
 .member-header {
@@ -1545,8 +1681,9 @@
 }
 
 .member-university {
-  color: #aaa;
+  color: #ffffff;
   font-size: 0.95rem;
+  opacity: 0.8;
 }
 
 .send-request-btn {
@@ -1615,4 +1752,77 @@
   .indi-view-tabs {
     display: none !important;
   }
+}
+
+/* Teams Toggle Button Styles */
+.teams-toggle-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 0;
+}
+
+.teams-toggle-button {
+  padding: 12px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.teams-toggle-button:first-child {
+  border-radius: 8px 0 0 8px;
+  border-right: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.teams-toggle-button:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.teams-toggle-button.active {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+.teams-toggle-button.inactive {
+  background: #ffffff;
+  color: #dc2626;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.teams-toggle-button.inactive:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Mobile responsive toggle buttons */
+@media (max-width: 768px) {
+  .teams-toggle-container {
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+
+  .teams-toggle-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Make TEAM VISION, LEADER, and MEMBERS labels red */
+.team-details-section .label-row span {
+  color: #dc2626 !important;
+}
+
+/* Requested transparency settings for Accepted Page containers and Congrats Banner */
+.glow-input-container,
+.team-details-box,
+.user-skills-box,
+.congrats-banner {
+  background: rgb(22 28 51 / 0.52) !important;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
 }

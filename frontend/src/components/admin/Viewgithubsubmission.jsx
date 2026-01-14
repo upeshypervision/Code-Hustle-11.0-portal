@@ -82,7 +82,9 @@ export default function ViewGithubSubmissions() {
                   style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
                   <p className="team-name">{sub.team_name}</p>
-                  <span className={`badge-via badge-via-desktop ${sub.submitted_via}`}>
+                  <span
+                    className={`badge-via badge-via-desktop ${sub.submitted_via}`}
+                  >
                     {sub.submitted_via}
                   </span>
                 </div>
@@ -95,7 +97,9 @@ export default function ViewGithubSubmissions() {
               </div>
 
               <div className="submission-right-section">
-                <span className={`badge-via badge-via-mobile ${sub.submitted_via}`}>
+                <span
+                  className={`badge-via badge-via-mobile ${sub.submitted_via}`}
+                >
                   {sub.submitted_via}
                 </span>
                 <button className="btn-view" onClick={() => openModal(sub)}>

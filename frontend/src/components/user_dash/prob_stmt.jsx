@@ -45,9 +45,12 @@ export default function PSGallery() {
   useEffect(() => {
     const checkHackerrankStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          }
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setHackerrankStatus(data.submission.approval_status);
@@ -67,9 +70,12 @@ export default function PSGallery() {
   useEffect(() => {
     const handleApprovalUpdate = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          }
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setHackerrankStatus(data.submission.approval_status);
@@ -79,7 +85,8 @@ export default function PSGallery() {
       }
     };
     socket.on("hackerrank_approval_updated", handleApprovalUpdate);
-    return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
+    return () =>
+      socket.off("hackerrank_approval_updated", handleApprovalUpdate);
   }, []);
 
   // Check round status
@@ -92,7 +99,7 @@ export default function PSGallery() {
         const data = await res.json();
         if (data.success) {
           // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
-          setRoundActive(data.rounds.ps_selection === 'live');
+          setRoundActive(data.rounds.ps_selection === "live");
         }
       } catch (err) {
         console.error("Error checking round status:", err);
@@ -106,9 +113,9 @@ export default function PSGallery() {
   // Listen for round status
   useEffect(() => {
     const handleRoundChange = (data) => {
-      if (data.round_type === 'ps_selection') {
+      if (data.round_type === "ps_selection") {
         // data.state is enum: 'live', 'closed', 'not_started'
-        setRoundActive(data.state === 'live');
+        setRoundActive(data.state === "live");
       }
     };
     socket.on("round_status_changed", handleRoundChange);
@@ -129,7 +136,9 @@ export default function PSGallery() {
       .catch((err) => console.error("Fetch error:", err));
   };
 
-  useEffect(() => { fetchProblemStatements(); }, []);
+  useEffect(() => {
+    fetchProblemStatements();
+  }, []);
 
   // Sockets
   useEffect(() => {
@@ -178,17 +187,23 @@ export default function PSGallery() {
           description: pendingPs.description,
           track: pendingPs.track,
           difficulty: pendingPs.difficulty,
-          selected_at: new Date().toISOString()
+          selected_at: new Date().toISOString(),
         });
         setPendingPs(null);
-        showNotification("success", "Target Locked! Problem statement selected successfully.");
+        showNotification(
+          "success",
+          "Target Locked! Problem statement selected successfully."
+        );
         fetchProblemStatements();
       } else {
         setShowModal(false);
         if (res.status === 403) {
           showNotification("error", data.error || "Round closed.");
         } else {
-          showNotification("error", data.error || "Failed to select problem statement");
+          showNotification(
+            "error",
+            data.error || "Failed to select problem statement"
+          );
         }
       }
     } catch (err) {
@@ -209,7 +224,7 @@ export default function PSGallery() {
         padding: "0",
         boxSizing: "border-box",
         position: "relative",
-        fontFamily: '"Courier New", Courier, monospace',
+        fontFamily: '"Space Mono", "Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
         height: "calc(100vh - 70px)",
       }}
@@ -235,7 +250,8 @@ export default function PSGallery() {
         style={{
           position: "fixed",
           inset: 0,
-          background: "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
+          background:
+            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -261,178 +277,220 @@ export default function PSGallery() {
 
         {checkingRound || checkingSelection ? (
           /* --- LOADING STATE --- */
-          <div style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            color: 'rgba(255,255,255,0.6)'
-          }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "60px 20px",
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
             <p>Loading...</p>
           </div>
         ) : selectedPS ? (
           /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
           /* Shows even if round is closed */
-          <div style={{
-            background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #10b981',
-            borderRadius: '8px',
-            padding: '40px',
-            textAlign: 'center',
-            animation: 'fadeIn 0.5s ease-out'
-          }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
-            <h2 style={{
-              color: '#10b981',
-              fontWeight: '900',
-              fontSize: '2rem',
-              letterSpacing: '3px',
-              marginBottom: '15px'
-            }}>
+          <div
+            style={{
+              background:
+                "linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)",
+              backdropFilter: "blur(10px)",
+              border: "2px solid #10b981",
+              borderRadius: "8px",
+              padding: "40px",
+              textAlign: "center",
+              animation: "fadeIn 0.5s ease-out",
+            }}
+          >
+            <div style={{ fontSize: "4rem", marginBottom: "20px" }}>🎯</div>
+            <h2
+              style={{
+                color: "#10b981",
+                fontWeight: "900",
+                fontSize: "2rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+              }}
+            >
               TARGET LOCKED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '30px',
-              letterSpacing: '1px'
-            }}>
-              Problem Statement Selected: <strong>{selectedPS.problem_statement_id}</strong>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "30px",
+                letterSpacing: "1px",
+              }}
+            >
+              Problem Statement Selected:{" "}
+              <strong>{selectedPS.problem_statement_id}</strong>
             </p>
 
-            <div style={{
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '6px',
-              padding: '25px',
-              textAlign: 'left',
-              marginTop: '20px'
-            }}>
-              <h3 style={{
-                color: '#10b981',
-                fontSize: '1.5rem',
-                marginBottom: '15px',
-                fontWeight: '800'
-              }}>
+            <div
+              style={{
+                background: "rgba(0,0,0,0.4)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                borderRadius: "6px",
+                padding: "25px",
+                textAlign: "left",
+                marginTop: "20px",
+              }}
+            >
+              <h3
+                style={{
+                  color: "#10b981",
+                  fontSize: "1.5rem",
+                  marginBottom: "15px",
+                  fontWeight: "800",
+                }}
+              >
                 {selectedPS.title}
               </h3>
-              <div style={{ marginBottom: '15px' }}>
-                <span style={{
-                  color: 'rgba(255,255,255,0.6)',
-                  fontSize: '0.9rem',
-                  marginRight: '15px'
-                }}>
-                  <strong>Track:</strong> {selectedPS.track || 'N/A'}
+              <div style={{ marginBottom: "15px" }}>
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "0.9rem",
+                    marginRight: "15px",
+                  }}
+                >
+                  <strong>Track:</strong> {selectedPS.track || "N/A"}
                 </span>
-                <span style={{
-                  color: 'rgba(255,255,255,0.6)',
-                  fontSize: '0.9rem'
-                }}>
-                  <strong>Difficulty:</strong> {selectedPS.difficulty || 'N/A'}
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <strong>Difficulty:</strong> {selectedPS.difficulty || "N/A"}
                 </span>
               </div>
-              <div style={{
-                color: 'rgba(255,255,255,0.8)',
-                fontSize: '1rem',
-                lineHeight: '1.6',
-                marginTop: '15px',
-                paddingTop: '15px',
-                borderTop: '1px solid rgba(16, 185, 129, 0.2)'
-              }}>
-                <strong style={{ color: '#10b981' }}>Description:</strong>
-                <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
+              <div
+                style={{
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "1rem",
+                  lineHeight: "1.6",
+                  marginTop: "15px",
+                  paddingTop: "15px",
+                  borderTop: "1px solid rgba(16, 185, 129, 0.2)",
+                }}
+              >
+                <strong style={{ color: "#10b981" }}>Description:</strong>
+                <p style={{ marginTop: "10px" }}>{selectedPS.description}</p>
               </div>
             </div>
 
-            <p style={{
-              color: 'rgba(255,255,255,0.5)',
-              fontSize: '0.85rem',
-              marginTop: '25px',
-              letterSpacing: '1px'
-            }}>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                fontSize: "0.85rem",
+                marginTop: "25px",
+                letterSpacing: "1px",
+              }}
+            >
               ⚠️ SELECTION IS PERMANENT. PROCEED TO NEXT PHASE.
             </p>
           </div>
-        ) : hackerrankStatus && hackerrankStatus !== 'approved' ? (
+        ) : hackerrankStatus && hackerrankStatus !== "approved" ? (
           /* --- PRIORITY 2: NOT ALLOWED (Round 1 Not Approved) --- */
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-            padding: '40px',
-            textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
-          }}>
-            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
-            <h2 style={{
-              color: '#ef4444',
-              fontWeight: '900',
-              fontSize: '2.5rem',
-              letterSpacing: '3px',
-              marginBottom: '15px'
-            }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "60vh",
+              padding: "40px",
+              textAlign: "center",
+              background:
+                "linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)",
+              backdropFilter: "blur(10px)",
+              border: "2px solid #ef4444",
+              borderRadius: "8px",
+              animation: "fadeIn 0.5s ease-out",
+            }}
+          >
+            <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🚫</div>
+            <h2
+              style={{
+                color: "#ef4444",
+                fontWeight: "900",
+                fontSize: "2.5rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+              }}
+            >
               NOT ALLOWED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '15px',
-              maxWidth: '600px'
-            }}>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "15px",
+                maxWidth: "600px",
+              }}
+            >
               Sorry, you are not allowed in this round.
             </p>
-            <p style={{
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: '1rem'
-            }}>
-              You must be approved in Round 1 (Hackerrank) to access Problem Statement selection.
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "1rem",
+              }}
+            >
+              You must be approved in Round 1 (Hackerrank) to access Problem
+              Statement selection.
             </p>
           </div>
         ) : !roundActive ? (
           /* --- PRIORITY 3: ROUND CLOSED UI --- */
           /* Only shows if not selected AND round is closed */
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-            padding: '40px',
-            textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
-          }}>
-            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
-            <h2 style={{
-              color: '#ef4444',
-              fontWeight: '900',
-              fontSize: '2.5rem',
-              letterSpacing: '3px',
-              marginBottom: '15px'
-            }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "60vh",
+              padding: "40px",
+              textAlign: "center",
+              background:
+                "linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)",
+              backdropFilter: "blur(10px)",
+              border: "2px solid #ef4444",
+              borderRadius: "8px",
+              animation: "fadeIn 0.5s ease-out",
+            }}
+          >
+            <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🔒</div>
+            <h2
+              style={{
+                color: "#ef4444",
+                fontWeight: "900",
+                fontSize: "2.5rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+              }}
+            >
               ROUND CLOSED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '15px',
-              maxWidth: '600px'
-            }}>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "15px",
+                maxWidth: "600px",
+              }}
+            >
               Problem Statement Selection is currently not available.
             </p>
-            <p style={{
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: '1rem'
-            }}>
-              ⏳ Please wait for the organizing committee to activate this round.
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "1rem",
+              }}
+            >
+              ⏳ Please wait for the organizing committee to activate this
+              round.
             </p>
           </div>
         ) : (
@@ -458,12 +516,14 @@ export default function PSGallery() {
                   margin: 0,
                 }}
               >
-                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET LOCK
-                IS PERMANENT. MODIFICATIONS RESTRICTED ONCE INITIALIZED.
+                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET
+                LOCK IS PERMANENT. MODIFICATIONS RESTRICTED ONCE INITIALIZED.
               </p>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "30px" }}
+            >
               {problemStatements.map((ps) => {
                 const count = ps.selections || 0;
                 const target = ps.max_count || 30;
@@ -629,7 +689,9 @@ export default function PSGallery() {
                             fontSize: "0.95rem",
                           }}
                         >
-                          <strong style={{ color: "#dc2626" }}>[BRIEFING]:</strong>{" "}
+                          <strong style={{ color: "#dc2626" }}>
+                            [BRIEFING]:
+                          </strong>{" "}
                           {ps.description}
                         </p>
                         <button
@@ -748,8 +810,9 @@ export default function PSGallery() {
               zIndex: 3000,
               padding: "20px 40px",
               background: "#0a0a0a",
-              borderLeft: `5px solid ${notification.type === "success" ? "#22c55e" : "#dc2626"
-                }`,
+              borderLeft: `5px solid ${
+                notification.type === "success" ? "#22c55e" : "#dc2626"
+              }`,
               boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
               animation: "fadeIn 0.3s ease",
             }}

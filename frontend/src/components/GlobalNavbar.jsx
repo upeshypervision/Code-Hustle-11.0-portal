@@ -17,6 +17,7 @@ export default function GlobalNavbar({
 
   const handleLogout = async () => {
     try {
+      // Call the logout endpoint to clear all auth cookies
       await fetch("http://localhost:5000/api/logout", {
         method: "POST",
         credentials: "include",
@@ -113,8 +114,8 @@ export default function GlobalNavbar({
               <button
                 className="nav-logout"
                 onClick={() =>
-                (window.location.href =
-                  "https://codehustle11.upeshypervision.in/#contact")
+                  (window.location.href =
+                    "https://codehustle11.upeshypervision.in/#contact")
                 }
               >
                 Contact us
@@ -142,8 +143,8 @@ export default function GlobalNavbar({
                 {isEvaluator
                   ? "Evaluator Menu"
                   : isAdmin
-                    ? "Admin Menu"
-                    : "Navigation"}
+                  ? "Admin Menu"
+                  : "Navigation"}
               </h3>
               <button
                 className="mobile-menu-close"
@@ -157,8 +158,9 @@ export default function GlobalNavbar({
               {menuItems.map((item, index) => (
                 <li key={item.id || index}>
                   <button
-                    className={`mobile-menu-item ${item.active ? "active" : ""
-                      }`}
+                    className={`mobile-menu-item ${
+                      item.active ? "active" : ""
+                    }`}
                     onClick={() => handleMenuClick(item)}
                   >
                     {item.label || item.name}

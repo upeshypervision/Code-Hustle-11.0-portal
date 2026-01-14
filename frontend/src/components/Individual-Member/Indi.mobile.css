@@ -1,0 +1,490 @@
+/* Mobile-specific styles for Individual Member and Accepted Team pages */
+/* Only applies to screens with max-width: 768px */
+
+@media (max-width: 768px) {
+  /* Override admin-content padding for mobile */
+  .admin-content.dashboard-container {
+    padding-top: 20px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 20px !important;
+    overflow-x: hidden;
+  }
+
+  /* Ensure first section has proper spacing from navbar */
+  .teams-content-section {
+    padding-top: 0;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .teams-content-section .neural-node:first-of-type {
+    margin-top: 0 !important;
+    padding-top: 0;
+  }
+
+  /* Ensure congratulations banner is properly centered both horizontally and vertically */
+  .teams-content-section .congrats-banner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto !important;
+    margin-top: 15vh !important;
+    margin-bottom: 15vh !important;
+    position: relative !important;
+    text-align: center !important;
+  }
+
+  /* Add extra spacing for the first section label */
+  .teams-content-section .label-detail:first-of-type {
+    margin-top: 0;
+  }
+
+  .teamup-label {
+    font-size: 12px !important;
+    padding: 10px 16px 10px 12px !important;
+    margin-bottom: 20px !important;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    padding-left: 28px !important;
+    padding-right: 16px !important;
+    max-width: calc(100% + 30px);
+    box-sizing: border-box;
+  }
+
+  /* Glass mobile menu overlay */
+  .glass-mobile-overlay {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .glass-mobile-content {
+    background: rgba(10, 11, 30, 0.95) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+  }
+
+  .glass-mobile-content .mobile-menu-item.active {
+    background: rgba(220, 38, 38, 0.2) !important;
+    color: #dc2626 !important;
+    border-left: 3px solid #dc2626 !important;
+  }
+
+  .teamup-layout {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .member-details-sidebar {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    display: none;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 11, 30, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    padding: 24px 20px 20px 20px;
+    padding-top: 32px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    animation: slideIn 0.3s ease-out;
+    box-sizing: border-box;
+  }
+
+  .member-details-sidebar.mobile-visible {
+    display: block;
+  }
+
+  /* Ensure profile heading isn't cut off by navbar */
+  .member-details-sidebar.mobile-visible .neural-node {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .member-details-sidebar.mobile-visible .teamup-label:first-child {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .teamup-separator {
+    display: none;
+  }
+
+  .teams-content-section {
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .mobile-profile-close {
+    position: fixed;
+    top: 88px;
+    right: 24px;
+    background: rgba(220, 38, 38, 0.2);
+    border: none;
+    color: #fff;
+    font-size: 2.2rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .mobile-profile-close:hover {
+    background: rgba(220, 38, 38, 0.4);
+    transform: scale(1.1);
+  }
+
+  /* Team Details Section Mobile Styles */
+  .team-details-section .neural-node {
+    padding: 24px 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .team-details-section h2 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Mobile grid adjustments */
+  .team-details-section .neural-node>div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .team-details-section .glow-input-container>div[style*="grid"] {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .team-details-grid {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Chat button mobile styling */
+  .team-chat-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-top: 10px;
+  }
+
+  .team-details-section h2 {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  /* CENTER "YOUR TEAM" TEXT AND TEAM NAME FOR MOBILE */
+  .team-details-section .team-header-label-container {
+    justify-content: center !important;
+  }
+
+  .team-details-section .team-header-label-container .teamup-label {
+    text-align: center !important;
+  }
+
+  /* Team name container - left aligned */
+  .team-details-section .team-name-container {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 15px !important;
+  }
+
+  /* Team name - left aligned with wrapping enabled */
+  .team-details-section .team-name-heading {
+    text-align: left !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* Keep team ID, leader, and member sections left-aligned (as they are) */
+  .team-details-section .team-id-section {
+    text-align: left !important;
+  }
+
+  .team-details-section .input-group {
+    text-align: left !important;
+  }
+
+  .team-details-section .label-row {
+    text-align: left !important;
+  }
+
+  /* Make TEAM VISION, LEADER, and MEMBERS labels red on mobile */
+  .team-details-section .label-row span {
+    color: #dc2626 !important;
+  }
+
+  .team-details-section .glow-input-container {
+    text-align: left !important;
+  }
+
+  .team-details-section .glow-input-container p,
+  .team-details-section .glow-input-container span,
+  .team-details-section .glow-input-container div {
+    text-align: left !important;
+  }
+
+  /* Teams Toggle Button Mobile Styles */
+  .teams-toggle-container {
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+
+  .teams-toggle-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  /* Indi View Tabs Mobile */
+  .indi-view-tabs {
+    display: none !important;
+  }
+
+  /* ChatBox Mobile Styles */
+  .chatbox-container {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .chatbox-container.chatbox-maximized {
+    width: 100%;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  /* Hide maximize/minimize button on mobile, keep only close button */
+  .chatbox-header-right .chatbox-control-btn:first-child {
+    display: none;
+  }
+
+  /* Ensure buttons are properly sized on mobile */
+  .chatbox-control-btn {
+    padding: 8px !important;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  /* Expand YOUR PROFILE div vertically on mobile to show all content */
+  /* Target profile div with class selector for highest specificity */
+  .profile-container,
+  .neural-node.profile-container,
+  .admin-content.dashboard-container .profile-container,
+  .neural-node.node-materialize.animate-enter.delay-1.profile-container {
+    aspect-ratio: auto !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    padding: 24px 20px !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Fallback for any neural-node with aspectRatio */
+  .neural-node.node-materialize.animate-enter.delay-1,
+  .neural-node[style*="aspectRatio"],
+  .admin-content.dashboard-container .neural-node {
+    aspect-ratio: auto !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Center YOUR PROFILE label in mobile view */
+  .profile-container .teamup-label,
+  .neural-node.profile-container .teamup-label,
+  .admin-content.dashboard-container .profile-container .teamup-label {
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* YOUR SKILLS heading - left aligned */
+  .profile-container .user-skills-box strong,
+  .neural-node.profile-container .user-skills-box strong,
+  .admin-content.dashboard-container .profile-container .user-skills-box strong {
+    text-align: left !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Make skills text greyish in mobile view */
+  .user-skills-box p,
+  .profile-container .user-skills-box p,
+  .neural-node.profile-container .user-skills-box p {
+    color: #aaa !important;
+  }
+
+  /* Make profile labels (Email, Phone, Member) greyish in mobile view */
+  .user-profile-info-row .profile-label,
+  .profile-container .user-profile-info-row .profile-label,
+  .neural-node.profile-container .user-profile-info-row .profile-label {
+    color: #aaa !important;
+  }
+
+  /* Make "You've been accepted by" and "Team ID" greyish in congratulations banner - mobile */
+  .congrats-subtitle,
+  .congrats-team-id {
+    color: #aaa !important;
+  }
+
+  /* Ensure profile content is fully visible */
+  .neural-node .user-profile-header,
+  .neural-node .user-profile-sub,
+  .neural-node .user-profile-info-row,
+  .neural-node .user-skills-box {
+    width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Adjust profile container to allow scrolling if needed */
+  .admin-content.dashboard-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Sent Requests Mobile View Styling */
+  /* Make label colors greyish */
+  .indi-table td.indi-td-id:before,
+  .indi-table td.indi-td-name:before,
+  .indi-table td.indi-td-members:before,
+  .indi-table td:has(.indi-status-tag):before {
+    color: #aaa !important;
+  }
+
+  /* Make font sizes of labels and values similar */
+  .indi-table td.indi-td-id:before,
+  .indi-table td.indi-td-name:before,
+  .indi-table td.indi-td-members:before,
+  .indi-table td:has(.indi-status-tag):before {
+    font-size: 1rem !important;
+  }
+
+  .indi-table td.indi-td-id,
+  .indi-table td.indi-td-name,
+  .indi-table td.indi-td-members {
+    font-size: 1rem !important;
+  }
+
+  /* Remove Chat: and Action: labels */
+  .indi-table td:has(.edit-btn.chat-btn-mobile):before,
+  .indi-table td:has(button.edit-btn):before,
+  .indi-table td:has(.indi-btn-view):not(:has(.edit-btn)):before {
+    content: "" !important;
+    display: none !important;
+  }
+
+  /* Fallback for browsers without :has() support */
+  @supports not selector(:has(*)) {
+    .indi-table tbody tr td:nth-child(5):before,
+    .indi-table tbody tr td:nth-child(6):before {
+      content: "" !important;
+      display: none !important;
+    }
+  }
+
+  /* Make View button same size as Chat button */
+  .indi-table td .indi-btn-view {
+    padding: 10px 20px !important;
+    min-height: 44px !important;
+    height: auto !important;
+    line-height: 1.5 !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Extra small screens - ensure "Congratulations!" fits on one line */
+  @media (max-width: 360px) {
+    .congrats-title {
+      font-size: 1.3rem !important;
+      gap: 8px !important;
+    }
+
+    .congrats-title span:first-child {
+      font-size: 1.5rem !important;
+    }
+
+    .congrats-banner {
+      max-width: 95% !important;
+      width: 95% !important;
+      padding: 35px 20px !important;
+    }
+
+    /* Further reduce padding on very small screens */
+    .neural-node[style*="aspectRatio"] {
+      padding: 20px 16px !important;
+    }
+  }
+}

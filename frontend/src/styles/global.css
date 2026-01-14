@@ -13,9 +13,11 @@
   --radius-lg: 12px;
   --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
   --transition-fast: 150ms ease-out;
-  --font-sans: "Eater", "Rajdhani", system-ui, -apple-system, BlinkMacSystemFont,
+  --font-primary: "Orbitron", system-ui, -apple-system, BlinkMacSystemFont,
     "SF Pro Text", "Segoe UI", sans-serif;
-  --font-display: "Eater", "Orbitron", sans-serif;
+  --font-secondary: "Space Mono", "Courier New", Courier, monospace;
+  --font-sans: var(--font-primary);
+  --font-display: var(--font-primary);
 }
 
 *,
@@ -28,7 +30,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-primary);
   background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
   color: var(--text);
   min-height: 100%;

@@ -238,7 +238,7 @@
     font-weight: 700;
     letter-spacing: 1px;
     transition: all 0.3s ease;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Space Mono', 'Courier New', Courier, monospace;
 }
 
 .user-navbar-btn svg {
@@ -395,7 +395,7 @@
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Space Mono', 'Courier New', Courier, monospace;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -512,7 +512,7 @@
     color: rgba(255, 255, 255, 0.4);
     letter-spacing: 3px;
     text-transform: uppercase;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Space Mono', 'Courier New', Courier, monospace;
     font-weight: 600;
 }
 

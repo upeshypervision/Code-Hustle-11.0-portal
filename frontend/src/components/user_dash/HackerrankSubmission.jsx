@@ -560,7 +560,7 @@ export default function HackerrankSubmission({ teamName }) {
                     border-radius: 2px;
                     color: #fff;
                     fontSize: 0.9rem;
-                    font-family: monospace;
+                    font-family: 'Space Mono', 'Courier New', Courier, monospace;
                     outline: none;
                     transition: all 0.3s ease;
                     box-sizing: border-box;

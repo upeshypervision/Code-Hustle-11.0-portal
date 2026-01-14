@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Registration.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Registration.css";
 
 export default function TeamLogin() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ teamId: '', password: '' });
+  const [formData, setFormData] = useState({ teamId: "", password: "" });
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState({ type: '', text: '' });
+  const [message, setMessage] = useState({ type: "", text: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -31,23 +31,23 @@ export default function TeamLogin() {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setMessage({
-        type: 'error',
-        text: 'Please enter a valid Team ID and Password.'
+        type: "error",
+        text: "Please enter a valid Team ID and Password.",
       });
       return;
     }
 
     setIsSubmitting(true);
-    setMessage({ type: '', text: '' });
+    setMessage({ type: "", text: "" });
 
     try {
-      const response = await fetch('http://localhost:5000/api/team-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await fetch("http://localhost:5000/api/team-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           team_id: formData.teamId,
-          password: formData.password
+          password: formData.password,
         }),
       });
 
@@ -56,43 +56,70 @@ export default function TeamLogin() {
       if (response.ok) {
         // Cookie is set by backend automatically
 
-        setMessage({ type: 'success', text: 'Login successful. Redirecting...' });
+        setMessage({
+          type: "success",
+          text: "Login successful. Redirecting...",
+        });
         setTimeout(() => {
-          navigate('/team-up');
+          navigate("/team-up");
         }, 800);
       } else {
-        setMessage({ type: 'error', text: data.error || 'Invalid credentials' });
+        setMessage({
+          type: "error",
+          text: data.error || "Invalid credentials",
+        });
         setIsSubmitting(false);
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Unable to connect to server.' });
+      setMessage({ type: "error", text: "Unable to connect to server." });
       setIsSubmitting(false);
     }
   };
 
   return (
     <div className="app-viewport">
-      <div className="cosmic-bg"><div className="nebula-cloud-blue"></div><div className="nebula-cloud-purple"></div><div className="starfield"></div></div>
+      <div className="cosmic-bg">
+        <div className="nebula-cloud-blue"></div>
+        <div className="nebula-cloud-purple"></div>
+        <div className="starfield"></div>
+      </div>
 
       <div className="portal-card animate-in">
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
-          <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
+          <h1 className="main-logo syncopate-font">
+            CODE HUSTLE <span className="v-tag">11.0</span>
+          </h1>
         </header>
 
         {message.text && (
-          <div className={`global-error-banner`} style={{ borderColor: message.type === 'success' ? '#10b981' : '#ff4d4d', color: message.type === 'success' ? '#10b981' : '#ff4d4d', background: message.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 77, 77, 0.1)' }}>
+          <div
+            className={`global-error-banner`}
+            style={{
+              borderColor: message.type === "success" ? "#10b981" : "#ff4d4d",
+              color: message.type === "success" ? "#10b981" : "#ff4d4d",
+              background:
+                message.type === "success"
+                  ? "rgba(16, 185, 129, 0.1)"
+                  : "rgba(255, 77, 77, 0.1)",
+            }}
+          >
             {message.text}
           </div>
         )}
 
         <div className="animate-in">
-
           <form onSubmit={handleSubmit}>
             <div className="input-group">
-              <div className="label-row"><span>Team ID</span></div>
-              <div className={`glow-input-container ${errors.teamId ? 'error-border' : ''}`}>
+              <div className="label-row">
+                <span>Team ID</span>
+              </div>
+              <div
+                className={`glow-input-container ${
+                  errors.teamId ? "error-border" : ""
+                }`}
+              >
                 <input
                   className="glow-input"
                   name="teamId"
@@ -104,8 +131,14 @@ export default function TeamLogin() {
             </div>
 
             <div className="input-group">
-              <div className="label-row"><span>Password</span></div>
-              <div className={`glow-input-container ${errors.password ? 'error-border' : ''}`}>
+              <div className="label-row">
+                <span>Password</span>
+              </div>
+              <div
+                className={`glow-input-container ${
+                  errors.password ? "error-border" : ""
+                }`}
+              >
                 <input
                   className="glow-input"
                   name="password"
@@ -117,7 +150,11 @@ export default function TeamLogin() {
               </div>
             </div>
 
-            <button type="submit" className="neon-shade-btn next-glow" disabled={isSubmitting}>
+            <button
+              type="submit"
+              className="neon-shade-btn next-glow"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "VERIFYING..." : "LOGIN"}
             </button>
           </form>
