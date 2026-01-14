@@ -196,42 +196,47 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
     }
   };
 
-  // Helper for conditional layout
-  // Determines if we are in a "Blocking" state (Closed or Not Allowed)
+  // --- LAYOUT LOGIC ---
   const showNotAllowedLayout = (!checkingRound && !checkingSelection && !selectedPS && hackerrankStatus && hackerrankStatus !== 'approved') || (!checkingRound && !selectedPS && !roundActive);
+  const isFullScreenMode = showNotAllowedLayout || selectedPS;
 
   // Sync expanded view state with parent
   useEffect(() => {
     if (setIsExpandedView) {
-      const isGridView = !checkingRound && !checkingSelection && !selectedPS && !showNotAllowedLayout;
+      const isGridView = !checkingRound && !checkingSelection && !isFullScreenMode;
       setIsExpandedView(isGridView);
     }
-  }, [setIsExpandedView, checkingRound, checkingSelection, selectedPS, showNotAllowedLayout]);
+  }, [setIsExpandedView, checkingRound, checkingSelection, isFullScreenMode]);
 
   return (
     <div
       className="ps-root-container"
-      style={showNotAllowedLayout ? {
-        // ✅ CLOSED/NOT ALLOWED STATE (Position Fixed = Covers Whole Screen)
+      style={isFullScreenMode ? {
+        // ✅ FULL SCREEN MODE (Success / Closed / Not Allowed)
+        // Keeps the layout you liked
         position: "fixed",
         inset: 0,
-        zIndex: 2000, // High z-index to sit on top of sidebar
+        zIndex: 2000,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "100vw", // Viewport Width
-        height: "100vh", // Viewport Height
+        width: "100vw",
+        height: "100vh",
         backgroundColor: "#0a0a0a",
-        overflow: "hidden", // No Scroll
+        overflowY: "auto",
         fontFamily: '"Courier New", Courier, monospace',
+        padding: '20px',
+        boxSizing: 'border-box',
+        paddingTop: '120px' // High padding for full screen center mode
       } : {
-        // ✅ NORMAL GRID STATE
+        // ✅ NORMAL GRID MODE
+        // Reduced gap here so it looks correct on load
         position: "relative",
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
         width: "100%",
-        paddingTop: "70px",
+        paddingTop: "80px", // Reduced from 120px to 80px for better fit
         paddingBottom: "40px",
         boxSizing: "border-box",
         fontFamily: '"Courier New", Courier, monospace',
@@ -274,15 +279,14 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           position: "relative",
           zIndex: 2,
           width: "100%",
-          // If blocking, minimal width to hold center text. If Grid, normal max-width.
-          maxWidth: showNotAllowedLayout ? "100%" : "1200px",
-          margin: showNotAllowedLayout ? "0" : "0 auto",
-          padding: showNotAllowedLayout ? "0" : "0 30px",
+          maxWidth: isFullScreenMode ? "100%" : "1200px",
+          margin: isFullScreenMode ? "0" : "0 auto",
+          padding: isFullScreenMode ? "0" : "0 30px",
           boxSizing: "border-box",
-          display: showNotAllowedLayout ? "flex" : "block",
-          justifyContent: showNotAllowedLayout ? "center" : "unset",
-          alignItems: showNotAllowedLayout ? "center" : "unset",
-          height: showNotAllowedLayout ? "100%" : "auto"
+          display: isFullScreenMode ? "flex" : "block",
+          justifyContent: isFullScreenMode ? "center" : "unset",
+          alignItems: isFullScreenMode ? "center" : "unset",
+          height: isFullScreenMode ? "100%" : "auto"
         }}
       >
 
@@ -306,7 +310,8 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             textAlign: 'center',
             animation: 'fadeIn 0.5s ease-out',
             maxWidth: '600px',
-            margin: '0 auto'
+            width: '100%',
+            margin: 'auto'
           }}>
             <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
             <h2 style={{
@@ -381,7 +386,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             </p>
           </div>
         ) : hackerrankStatus && hackerrankStatus !== 'approved' ? (
-          /* --- PRIORITY 2: NOT ALLOWED (Round 1 Not Approved) --- */
+          /* --- PRIORITY 2: NOT ALLOWED --- */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -471,7 +476,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             </p>
           </div>
         ) : (
-          /* --- PRIORITY 3: ACTIVE SELECTION LIST --- */
+          /* --- PRIORITY 4: ACTIVE SELECTION LIST (GRID MODE) --- */
           <div style={{
             width: '100%',
             display: 'flex',
@@ -697,7 +702,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           style={{
             position: "fixed",
             inset: 0,
-            zIndex: 3000, // Even higher than background
+            zIndex: 3000,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -814,41 +819,35 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
               .ps-container::-webkit-scrollbar { display: none; }
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
+              /* ✅ Desktop: Grid */
               @media (min-width: 993px) {
-                  .ps-container {
-                      padding-left: 0 !important;
-                  }
+                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); }
+                  /* ✅ No hardcoded padding here, handled in JS */
               }
 
+              /* ✅ Mobile: 90px top padding is handled in JS logic too, but CSS backup here */
               @media (max-width: 992px) {
+                  .ps-root-container {
+                      padding: 90px 15px 40px 15px !important;
+                      justify-content: center !important;
+                      align-items: flex-start !important;
+                  }
+                  
+                  .ps-main-content { 
+                      justify-content: center !important; 
+                      padding: 0 4px !important; 
+                  }
+                  .ps-card { width: 100% !important; margin: 0 !important; box-sizing: border-box !important; }
+                  
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
-                  .view-btn-heist { width: 100% !important; }
-                  .card-layout-inner { flex-direction: column !important; }
-                  .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
-                  .view-btn-heist { width: 100% !important; }
                   .view-btn-heist { width: 100% !important; }
                   .heat-gauge-container { width: 100% !important; }
                   .ps-grid-container { display: flex; flex-direction: column; width: 100%; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
                   
-                  /* FORCE CENTER LAYOUT ON MOBILE FOR ROUND CLOSED / NOT ALLOWED */
-                  .ps-root-container { 
-                      padding-right: 0 !important; 
-                      justify-content: center !important; 
-                  }
-                  .ps-main-content { 
-                      justify-content: center !important; 
-                  }
-                  .ps-card { width: 100% !important; margin: 0 !important; box-sizing: border-box !important; }
-                  
-                  /* Maximize Mobile Width */
-                  .ps-main-content { padding: 0 4px !important; }
                   .caution-card { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; }
               }
 
-              @media (min-width: 993px) {
-                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); }
-              }
               .cross-top { transform: translateY(7px) rotate(45deg); }
               .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
               .hide { opacity: 0; }
