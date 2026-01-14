@@ -27,6 +27,10 @@
   min-height: calc(100vh - 80px);
 }
 
+.mobile-only {
+  display: none;
+}
+
 .team-page-layout {
   display: flex;
   gap: 40px;

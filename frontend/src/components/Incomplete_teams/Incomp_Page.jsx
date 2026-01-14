@@ -406,165 +406,188 @@ const Incomp_Page = () => {
             style={{ width: "100%", maxWidth: "100%" }}
           >
             {activeView === "details" && (
-              <div className="neural-node node-materialize animate-enter">
-                {/* TEAM DETAILS SECTION - At the top */}
-                <div style={{ marginBottom: "32px" }}>
+              <div
+                className="desktop-layout-container animate-enter"
+                style={{
+                  display: "flex",
+                  gap: "0",
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+              >
+                {/* LEFT SIDEBAR (Desktop Only) */}
+                <div
+                  className="desktop-sidebar desktop-only"
+                  style={{
+                    width: "350px",
+                    flexShrink: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "24px",
+                    position: "sticky",
+                    top: "100px",
+                  }}
+                >
                   <span
                     className="label-detail teamup-label"
-                    style={{ marginBottom: "24px" }}
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      display: "block",
+                    }}
                   >
                     TEAM DETAILS
                   </span>
 
-                  {/* DESKTOP LAYOUT (Side-by-side) */}
+                  {/* Team Info Card */}
                   <div
-                    className="desktop-only"
+                    className="team-details-card neural-node"
                     style={{
+                      padding: "24px",
                       display: "flex",
-                      flexDirection: "row",
-                      gap: "20px",
-                      alignItems: "stretch",
-                      marginBottom: "30px",
+                      flexDirection: "column",
+                      gap: "16px",
                     }}
                   >
-                    {/* Team Name & ID Card (Left) */}
-                    <div
-                      className="team-details-card neural-node"
-                      style={{
-                        padding: "20px",
-                        flex: "1",
-                        minWidth: "0",
-                      }}
-                    >
-                      <div
+                    <div>
+                      <h3
+                        className="user-profile-header"
                         style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          width: "100%",
+                          fontSize: "1.8rem",
+                          color: "#ffffff",
+                          margin: "0 0 6px 0",
+                          fontWeight: "600",
+                          lineHeight: "1.3",
+                          wordBreak: "break-word",
                         }}
                       >
-                        <div>
-                          <h3
-                            className="user-profile-header"
-                            style={{
-                              fontSize: "1.5rem",
-                              color: "#ffffff",
-                              margin: "0 0 6px 0",
-                              fontWeight: "600",
-                              lineHeight: "1.3",
-                            }}
-                          >
-                            {sanitizeText(teamData.teamName, 100) ||
-                              "Loading..."}
-                          </h3>
-                          <p
-                            className="user-profile-sub"
-                            style={{
-                              color: "#94a3b8",
-                              fontSize: "0.85rem",
-                              margin: "0",
-                              lineHeight: "1.4",
-                            }}
-                          >
-                            ID: {sanitizeText(teamData.teamId, 50)}
-                          </p>
-                        </div>
-
-                        {/* Visibility Toggle - Desktop */}
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: "0.7rem",
-                              fontWeight: "700",
-                              letterSpacing: "0.5px",
-                              padding: "4px 8px",
-                              borderRadius: "12px",
-                              backgroundColor: teamData.visible
-                                ? "rgba(34, 197, 94, 0.15)"
-                                : "rgba(239, 68, 68, 0.15)",
-                              color: teamData.visible ? "#4ade80" : "#f87171",
-                              border: `1px solid ${
-                                teamData.visible
-                                  ? "rgba(34, 197, 94, 0.3)"
-                                  : "rgba(239, 68, 68, 0.3)"
-                              }`,
-                            }}
-                          >
-                            {teamData.visible ? "VISIBLE" : "HIDDEN"}
-                          </span>
-                          <label
-                            className="visibility-toggle"
-                            title="Toggle Visibility"
-                            style={{ marginBottom: 0 }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={teamData.visible || false}
-                              onChange={handleToggleClick}
-                            />
-                            <span className="visibility-slider"></span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Team Vision Card (Right) */}
-                    <div
-                      className="team-details-card neural-node"
-                      style={{
-                        padding: "20px",
-                        flex: "1",
-                        minWidth: "0",
-                      }}
-                    >
-                      <strong
+                        {sanitizeText(teamData.teamName, 100) || "Loading..."}
+                      </h3>
+                      <p
+                        className="user-profile-sub"
                         style={{
                           color: "#94a3b8",
-                          fontSize: "0.75rem",
-                          display: "block",
-                          marginBottom: "10px",
-                          textTransform: "uppercase",
-                          letterSpacing: "1.5px",
-                          fontWeight: "600",
-                          lineHeight: "1.2",
-                        }}
-                      >
-                        TEAM VISION
-                      </strong>
-                      <p
-                        style={{
-                          fontStyle: "italic",
+                          fontSize: "0.85rem",
                           margin: "0",
-                          fontSize: "0.9rem",
-                          color: "#cbd5e1",
-                          lineHeight: "1.5",
+                          lineHeight: "1.4",
                         }}
                       >
-                        {sanitizeText(teamData.teamVision, 500) ||
-                          "No vision provided"}
+                        ID: {sanitizeText(teamData.teamId, 50)}
                       </p>
+                    </div>
+
+                    {/* Visibility Toggle */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "12px",
+                        background: "rgba(255,255,255,0.03)",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.7rem",
+                          fontWeight: "700",
+                          letterSpacing: "0.5px",
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          backgroundColor: teamData.visible
+                            ? "rgba(34, 197, 94, 0.15)"
+                            : "rgba(239, 68, 68, 0.15)",
+                          color: teamData.visible ? "#4ade80" : "#f87171",
+                          border: `1px solid ${
+                            teamData.visible
+                              ? "rgba(34, 197, 94, 0.3)"
+                              : "rgba(239, 68, 68, 0.3)"
+                          }`,
+                        }}
+                      >
+                        {teamData.visible ? "VISIBLE" : "HIDDEN"}
+                      </span>
+                      <label
+                        className="visibility-toggle"
+                        title="Toggle Visibility"
+                        style={{ marginBottom: 0 }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={teamData.visible || false}
+                          onChange={handleToggleClick}
+                        />
+                        <span className="visibility-slider"></span>
+                      </label>
                     </div>
                   </div>
 
-                  {/* MOBILE LAYOUT (Combined) */}
+                  {/* Team Vision Card */}
+                  <div
+                    className="team-details-card neural-node"
+                    style={{ padding: "24px" }}
+                  >
+                    <strong
+                      style={{
+                        color: "#94a3b8",
+                        fontSize: "0.75rem",
+                        display: "block",
+                        marginBottom: "12px",
+                        textTransform: "uppercase",
+                        letterSpacing: "1.5px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      TEAM VISION
+                    </strong>
+                    <p
+                      style={{
+                        fontStyle: "italic",
+                        margin: "0",
+                        fontSize: "0.95rem",
+                        color: "#cbd5e1",
+                        lineHeight: "1.6",
+                      }}
+                    >
+                      {sanitizeText(teamData.teamVision, 500) ||
+                        "No vision provided"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* DIVIDER (Desktop Only) */}
+                <div
+                  className="desktop-only"
+                  style={{
+                    width: "1px",
+                    background:
+                      "linear-gradient(to bottom, transparent, rgba(148, 163, 184, 0.3), transparent)",
+                    alignSelf: "stretch",
+                    margin: "0 24px",
+                  }}
+                ></div>
+
+                {/* MAIN CONTENT (Flex 1) */}
+                <div
+                  className="main-content"
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {/* MOBILE HEADER (Mobile Only) */}
                   <div
                     className="team-details-card mobile-only neural-node"
                     style={{
                       padding: "24px",
-                      marginBottom: "30px", // Add bottom margin
+                      marginBottom: "30px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "20px",
                     }}
                   >
-                    {/* Team Name Section */}
                     <div
                       style={{
                         display: "flex",
@@ -598,8 +621,6 @@ const Incomp_Page = () => {
                       >
                         ID: {sanitizeText(teamData.teamId, 50)}
                       </p>
-
-                      {/* Visibility Toggle - Mobile */}
                       <div
                         style={{
                           display: "flex",
@@ -642,8 +663,6 @@ const Incomp_Page = () => {
                         </label>
                       </div>
                     </div>
-
-                    {/* Divider Line */}
                     <div
                       style={{
                         height: "1px",
@@ -651,8 +670,6 @@ const Incomp_Page = () => {
                         width: "100%",
                       }}
                     ></div>
-
-                    {/* Team Vision Section */}
                     <div>
                       <strong
                         style={{
@@ -683,255 +700,269 @@ const Incomp_Page = () => {
                       </p>
                     </div>
                   </div>
-                </div>
 
-                {/* TEAM LEADER SECTION IN MAIN AREA */}
-                <span
-                  className="label-detail teamup-label"
-                  style={{ marginBottom: "24px" }}
-                >
-                  TEAM LEADER
-                </span>
-                <div
-                  className="team-header-wrapper neural-node"
-                  style={{
-                    padding: "24px",
-                    marginBottom: "30px",
-                  }}
-                >
-                  <div
+                  {/* REST OF CONTENT - Leader, Members */}
+                  <span
+                    className="label-detail teamup-label"
                     style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "flex-start",
-                      flexWrap: "wrap",
-                      gap: "20px",
+                      marginBottom: "24px",
+                      width: "100%",
+                      textAlign: "center",
+                      display: "block",
                     }}
                   >
-                    <div style={{ flex: "1", minWidth: "200px" }}>
-                      <h1
-                        className="team-header-main"
-                        style={{ margin: "0 0 4px 0", fontSize: "1.8rem" }}
-                      >
-                        {sanitizeText(teamData.leader.name, 100)}
-                      </h1>
-                      <p
-                        style={{
-                          color: "#94a3b8",
-                          margin: "0",
-                          fontSize: "1rem",
-                        }}
-                      >
-                        {sanitizeText(teamData.leader.university, 200)} •{" "}
-                        {sanitizeText(teamData.leader.sapId, 50)}
-                      </p>
-                    </div>
-                    <div style={{ textAlign: "left", minWidth: "200px" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          color: "#fff",
-                          fontSize: "0.9rem",
-                          marginBottom: "4px",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ color: "#94a3b8" }}>Email:</span>
-                        <span>{sanitizeText(teamData.leader.email, 100)}</span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          color: "#fff",
-                          fontSize: "0.9rem",
-                          gap: "8px",
-                        }}
-                      >
-                        <span style={{ color: "#94a3b8" }}>Phone:</span>
-                        <span>{sanitizeText(teamData.leader.phone, 20)}</span>
-                      </div>
-                    </div>
-                  </div>
+                    TEAM LEADER
+                  </span>
                   <div
-                    style={{
-                      marginTop: "16px",
-                      paddingTop: "12px",
-                      borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-                    }}
+                    className="team-header-wrapper neural-node"
+                    style={{ padding: "24px", marginBottom: "30px" }}
                   >
                     <div
                       style={{
                         display: "flex",
                         flexDirection: "row",
-                        gap: "8px",
-                        marginBottom: "4px",
+                        alignItems: "flex-start",
+                        flexWrap: "wrap",
+                        gap: "20px",
                       }}
                     >
-                      <strong
-                        style={{
-                          color: "#aaa",
-                          fontSize: "0.8rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "1px",
-                        }}
-                      >
-                        LEADER BIO / SKILLS:
-                      </strong>
-                    </div>
-                    <p
-                      style={{
-                        color: "#ddd",
-                        margin: "0",
-                        fontStyle: "italic",
-                        fontSize: "0.95rem",
-                        lineHeight: "1.5",
-                      }}
-                    >
-                      {sanitizeText(teamData.leader.details, 500) ||
-                        "No details provided"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Original Team Members List */}
-                <div style={{ marginBottom: "15px" }}>
-                  <span className="label-detail teamup-label members-list-label">
-                    TEAM MEMBERS ({totalCount}/5)
-                  </span>
-                </div>
-                <div
-                  className="members-list neural-node"
-                  style={{
-                    padding: "20px",
-                  }}
-                >
-                  {teamData.members
-                    .concat(teamData.joinedMembers)
-                    .filter((member) => !member.joinedViaRequest)
-                    .map((member) => (
-                      <div key={member.id} className="member-list-item">
-                        <span className="member-name">
-                          {sanitizeText(member.name, 100)}
-                        </span>
-                        <div className="member-actions">
-                          <button
-                            onClick={() => handleViewMember(member)}
-                            className="member-btn-view"
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(member)}
-                            className="member-btn-remove"
-                          >
-                            Remove
-                          </button>
+                      <div style={{ flex: "1", minWidth: "200px" }}>
+                        <h1
+                          className="team-header-main"
+                          style={{ margin: "0 0 4px 0", fontSize: "1.8rem" }}
+                        >
+                          {sanitizeText(teamData.leader.name, 100)}
+                        </h1>
+                        <p
+                          style={{
+                            color: "#94a3b8",
+                            margin: "0",
+                            fontSize: "1rem",
+                          }}
+                        >
+                          {sanitizeText(teamData.leader.university, 200)} •{" "}
+                          {sanitizeText(teamData.leader.sapId, 50)}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: "left", minWidth: "200px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            color: "#fff",
+                            fontSize: "0.9rem",
+                            marginBottom: "4px",
+                            gap: "8px",
+                          }}
+                        >
+                          <span style={{ color: "#94a3b8" }}>Email:</span>
+                          <span>
+                            {sanitizeText(teamData.leader.email, 100)}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            color: "#fff",
+                            fontSize: "0.9rem",
+                            gap: "8px",
+                          }}
+                        >
+                          <span style={{ color: "#94a3b8" }}>Phone:</span>
+                          <span>{sanitizeText(teamData.leader.phone, 20)}</span>
                         </div>
                       </div>
-                    ))}
-                </div>
-
-                {/* Accepted Team Members Section */}
-                {teamData.members.filter((m) => m.joinedViaRequest).length >
-                  0 && (
-                  <>
-                    <span
-                      className="label-detail teamup-label members-list-label"
-                      style={{ marginTop: "40px" }}
-                    >
-                      ACCEPTED TEAM MEMBERS (
-                      {
-                        teamData.members.filter((m) => m.joinedViaRequest)
-                          .length
-                      }
-                      )
-                    </span>
+                    </div>
                     <div
-                      className="indi-table-container"
                       style={{
-                        marginTop: "20px",
-                        background: "rgba(0, 0, 0, 0.4)",
-                        backdropFilter: "blur(12px)",
-                        WebkitBackdropFilter: "blur(12px)",
-                        borderRadius: "8px",
-                        border: "1px solid rgba(255, 255, 255, 0.08)",
-                        padding: "20px",
+                        marginTop: "16px",
+                        paddingTop: "12px",
+                        borderTop: "1px solid rgba(255, 255, 255, 0.05)",
                       }}
                     >
-                      <table className="indi-table">
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>University</th>
-                            <th>Skills</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {teamData.members
-                            .filter((m) => m.joinedViaRequest)
-                            .map((member, idx) => (
-                              <tr key={idx}>
-                                <td data-label="Name">
-                                  {sanitizeText(
-                                    member.full_name || member.name,
-                                    100
-                                  )}
-                                </td>
-                                <td data-label="University">
-                                  {sanitizeText(
-                                    member.college_name || member.university,
-                                    150
-                                  )}
-                                </td>
-                                <td data-label="Skills">
-                                  {sanitizeText(
-                                    member.bio || member.details,
-                                    200
-                                  )}
-                                </td>
-                                <td data-label="Actions">
-                                  <div className="action-buttons-container">
-                                    <button
-                                      onClick={() => handleViewMember(member)}
-                                      className="indi-btn-view"
-                                    >
-                                      View
-                                    </button>
-                                    <button
-                                      onClick={() => handleChatOpen(member)}
-                                      className="indi-btn-chat"
-                                    >
-                                      Chat
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteClick(member)}
-                                      className="indi-btn-remove"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: "8px",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        <strong
+                          style={{
+                            color: "#aaa",
+                            fontSize: "0.8rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "1px",
+                          }}
+                        >
+                          LEADER BIO / SKILLS:
+                        </strong>
+                      </div>
+                      <p
+                        style={{
+                          color: "#ddd",
+                          margin: "0",
+                          fontStyle: "italic",
+                          fontSize: "0.95rem",
+                          lineHeight: "1.5",
+                        }}
+                      >
+                        {sanitizeText(teamData.leader.details, 500) ||
+                          "No details provided"}
+                      </p>
                     </div>
-                  </>
-                )}
-
-                {totalCount >= 3 && (
-                  <div className="register-btn-container">
-                    <button
-                      onClick={() => navigate("/register")}
-                      className="neon-shade-btn next-glow register-team-btn"
-                    >
-                      Register Team In Hackathon
-                    </button>
                   </div>
-                )}
+
+                  <div style={{ marginBottom: "15px" }}>
+                    <span
+                      className="label-detail teamup-label members-list-label"
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                        display: "block",
+                      }}
+                    >
+                      TEAM MEMBERS ({totalCount})
+                    </span>
+                  </div>
+                  <div
+                    className="members-list neural-node"
+                    style={{ padding: "20px" }}
+                  >
+                    {teamData.members
+                      .concat(teamData.joinedMembers)
+                      .filter((member) => !member.joinedViaRequest)
+                      .map((member) => (
+                        <div key={member.id} className="member-list-item">
+                          <span className="member-name">
+                            {sanitizeText(member.name, 100)}
+                          </span>
+                          <div className="member-actions">
+                            <button
+                              onClick={() => handleViewMember(member)}
+                              className="member-btn-view"
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(member)}
+                              className="member-btn-remove"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {teamData.members.filter((m) => m.joinedViaRequest).length >
+                    0 && (
+                    <>
+                      <span
+                        className="label-detail teamup-label members-list-label"
+                        style={{
+                          marginTop: "40px",
+                          width: "100%",
+                          textAlign: "center",
+                          display: "block",
+                        }}
+                      >
+                        ACCEPTED TEAM MEMBERS (
+                        {
+                          teamData.members.filter((m) => m.joinedViaRequest)
+                            .length
+                        }
+                        )
+                      </span>
+                      <div
+                        className="indi-table-container"
+                        style={{
+                          marginTop: "20px",
+                          background: "rgba(0, 0, 0, 0.4)",
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          borderRadius: "8px",
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          padding: "20px",
+                        }}
+                      >
+                        <table className="indi-table">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>University</th>
+                              <th>Skills</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {teamData.members
+                              .filter((m) => m.joinedViaRequest)
+                              .map((member, idx) => (
+                                <tr key={idx}>
+                                  <td data-label="Name">
+                                    {sanitizeText(
+                                      member.full_name || member.name,
+                                      100
+                                    )}
+                                  </td>
+                                  <td data-label="University">
+                                    {sanitizeText(
+                                      member.college_name || member.university,
+                                      150
+                                    )}
+                                  </td>
+                                  <td data-label="Skills">
+                                    {sanitizeText(
+                                      member.bio || member.details,
+                                      200
+                                    )}
+                                  </td>
+                                  <td data-label="Actions">
+                                    <div className="action-buttons-container">
+                                      <button
+                                        onClick={() => handleViewMember(member)}
+                                        className="indi-btn-view"
+                                      >
+                                        View
+                                      </button>
+                                      <button
+                                        onClick={() => handleChatOpen(member)}
+                                        className="indi-btn-chat"
+                                      >
+                                        Chat
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteClick(member)
+                                        }
+                                        className="indi-btn-remove"
+                                      >
+                                        Remove
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
+
+                  {totalCount >= 3 && (
+                    <div className="register-btn-container">
+                      <button
+                        onClick={() => navigate("/register")}
+                        className="neon-shade-btn next-glow register-team-btn"
+                      >
+                        Register Team In Hackathon
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
