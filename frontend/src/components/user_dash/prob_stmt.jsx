@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import socket from "../../socket";
+import strangerThingsBg from "../../assets/StrangerThings-bg.png";
 
-export default function PSGallery() {
+export default function PSGallery({ setIsExpandedView }) { // Accept prop
   // --- STATE ---
   const [expandedId, setExpandedId] = useState(null);
   const [problemStatements, setProblemStatements] = useState([]);
@@ -19,7 +20,7 @@ export default function PSGallery() {
   const [hackerrankStatus, setHackerrankStatus] = useState(null);
   const [checkingHackerrank, setCheckingHackerrank] = useState(true);
 
-  // --- USE EFFECTS (Keep your existing useEffects here) ---
+  // --- USE EFFECTS ---
   // Check selection
   useEffect(() => {
     const checkSelection = async () => {
@@ -90,7 +91,6 @@ export default function PSGallery() {
         });
         const data = await res.json();
         if (data.success) {
-          // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
           setRoundActive(data.rounds.ps_selection === 'live');
         }
       } catch (err) {
@@ -106,7 +106,6 @@ export default function PSGallery() {
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === 'ps_selection') {
-        // data.state is enum: 'live', 'closed', 'not_started'
         setRoundActive(data.state === 'live');
       }
     };
@@ -197,19 +196,53 @@ export default function PSGallery() {
     }
   };
 
+  // --- LAYOUT LOGIC ---
+  const showNotAllowedLayout = (!checkingRound && !checkingSelection && !selectedPS && hackerrankStatus && hackerrankStatus !== 'approved') || (!checkingRound && !selectedPS && !roundActive);
+  const isFullScreenMode = showNotAllowedLayout || selectedPS;
+
+  // Sync expanded view state with parent
+  useEffect(() => {
+    if (setIsExpandedView) {
+      const isGridView = !checkingRound && !checkingSelection && !isFullScreenMode;
+      setIsExpandedView(isGridView);
+    }
+  }, [setIsExpandedView, checkingRound, checkingSelection, isFullScreenMode]);
+
   return (
     <div
-      className="ps-container"
-      style={{
+      className="ps-root-container"
+      style={isFullScreenMode ? {
+        // ✅ FULL SCREEN MODE (Success / Closed / Not Allowed)
+        // Keeps the layout you liked
+        position: "fixed",
+        inset: 0,
+        zIndex: 2000,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "#0a0a0a",
+        overflowY: "auto",
+        fontFamily: '"Courier New", Courier, monospace',
+        padding: '20px',
+        boxSizing: 'border-box',
+        paddingTop: '120px' // High padding for full screen center mode
+      } : {
+        // ✅ NORMAL GRID MODE
+        // Reduced gap here so it looks correct on load
+        position: "relative",
         display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
         width: "100%",
-        padding: "20px",
+        paddingTop: "80px", // Reduced from 120px to 80px for better fit
+        paddingBottom: "40px",
         boxSizing: "border-box",
-        position: "relative",
         fontFamily: '"Courier New", Courier, monospace',
         backgroundColor: "#0a0a0a",
+        minHeight: "100vh",
+        overflowY: "auto",
       }}
     >
       {/* --- FIXED BACKGROUND --- */}
@@ -220,7 +253,7 @@ export default function PSGallery() {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage: `url('https://www.hollywoodreporter.com/wp-content/uploads/2018/12/MoneyHeist.jpg?w=1296&h=730&crop=1')`,
+          backgroundImage: `url(${strangerThingsBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -241,20 +274,21 @@ export default function PSGallery() {
 
       {/* --- MAIN CONTENT CONTAINER --- */}
       <div
+        className="ps-main-content"
         style={{
-          animation: "fadeIn 0.5s ease-out",
-          width: "100%",
-          maxWidth: "900px",
           position: "relative",
           zIndex: 2,
+          width: "100%",
+          maxWidth: isFullScreenMode ? "100%" : "1200px",
+          margin: isFullScreenMode ? "0" : "0 auto",
+          padding: isFullScreenMode ? "0" : "0 30px",
+          boxSizing: "border-box",
+          display: isFullScreenMode ? "flex" : "block",
+          justifyContent: isFullScreenMode ? "center" : "unset",
+          alignItems: isFullScreenMode ? "center" : "unset",
+          height: isFullScreenMode ? "100%" : "auto"
         }}
       >
-        {/* LOGIC CHANGE HERE:
-            1. Check Loading
-            2. Check SelectedPS (Highest Priority UI)
-            3. Check !roundActive (Round Closed UI)
-            4. Default (Selection List)
-        */}
 
         {checkingRound || checkingSelection ? (
           /* --- LOADING STATE --- */
@@ -267,25 +301,28 @@ export default function PSGallery() {
           </div>
         ) : selectedPS ? (
           /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
-          /* Shows even if round is closed */
           <div style={{
-            background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #10b981',
+            background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid #10b981',
             borderRadius: '8px',
             padding: '40px',
             textAlign: 'center',
-            animation: 'fadeIn 0.5s ease-out'
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '600px',
+            width: '100%',
+            margin: 'auto',
+            boxShadow: '0 10px 40px rgba(16, 185, 129, 0.1)'
           }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
             <h2 style={{
-              color: '#10b981',
+              color: '#fff',
               fontWeight: '900',
               fontSize: '2rem',
               letterSpacing: '3px',
-              marginBottom: '15px'
+              marginBottom: '15px',
+              textShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
             }}>
-              TARGET LOCKED
+              COORDINATE LOCKED
             </h2>
             <p style={{
               color: '#fff',
@@ -297,15 +334,16 @@ export default function PSGallery() {
             </p>
 
             <div style={{
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '6px',
+              background: 'linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)',
+              border: '2px solid #22c55e',
+              borderRadius: '8px',
               padding: '25px',
               textAlign: 'left',
-              marginTop: '20px'
+              marginTop: '20px',
+              boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
             }}>
               <h3 style={{
-                color: '#10b981',
+                color: '#22c55e',
                 fontSize: '1.5rem',
                 marginBottom: '15px',
                 fontWeight: '800'
@@ -333,9 +371,9 @@ export default function PSGallery() {
                 lineHeight: '1.6',
                 marginTop: '15px',
                 paddingTop: '15px',
-                borderTop: '1px solid rgba(16, 185, 129, 0.2)'
+                borderTop: '1px solid rgba(34, 197, 94, 0.3)'
               }}>
-                <strong style={{ color: '#10b981' }}>Description:</strong>
+                <strong style={{ color: '#22c55e' }}>Description:</strong>
                 <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
               </div>
             </div>
@@ -350,7 +388,7 @@ export default function PSGallery() {
             </p>
           </div>
         ) : hackerrankStatus && hackerrankStatus !== 'approved' ? (
-          /* --- PRIORITY 2: NOT ALLOWED (Round 1 Not Approved) --- */
+          /* --- PRIORITY 2: NOT ALLOWED --- */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -359,11 +397,15 @@ export default function PSGallery() {
             minHeight: '60vh',
             padding: '40px',
             textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
+            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            borderRadius: "4px",
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '800px',
+            margin: '0',
+            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            width: "100%",
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
             <h2 style={{
@@ -392,7 +434,6 @@ export default function PSGallery() {
           </div>
         ) : !roundActive ? (
           /* --- PRIORITY 3: ROUND CLOSED UI --- */
-          /* Only shows if not selected AND round is closed */
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -401,11 +442,15 @@ export default function PSGallery() {
             minHeight: '60vh',
             padding: '40px',
             textAlign: 'center',
-            background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #ef4444',
-            borderRadius: '8px',
-            animation: 'fadeIn 0.5s ease-out'
+            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            borderRadius: "4px",
+            animation: 'fadeIn 0.5s ease-out',
+            maxWidth: '800px',
+            margin: '0',
+            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            width: "100%",
           }}>
             <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
             <h2 style={{
@@ -433,9 +478,15 @@ export default function PSGallery() {
             </p>
           </div>
         ) : (
-          /* --- PRIORITY 3: ACTIVE SELECTION LIST --- */
-          <>
+          /* --- PRIORITY 4: ACTIVE SELECTION LIST (GRID MODE) --- */
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}>
             <div
+              className="caution-card"
               style={{
                 borderLeft: "8px solid #dc2626",
                 background: "rgba(20, 20, 20, 0.8)",
@@ -443,6 +494,10 @@ export default function PSGallery() {
                 padding: "15px 25px",
                 marginBottom: "40px",
                 boxShadow: "0 10px 40px rgba(183, 99, 80, 0.5)",
+                maxWidth: "80%",
+                width: "100%",
+                margin: "0 auto 40px auto",
+                boxSizing: "border-box"
               }}
             >
               <p
@@ -453,14 +508,20 @@ export default function PSGallery() {
                   letterSpacing: "2px",
                   textTransform: "uppercase",
                   margin: 0,
+                  textAlign: "center"
                 }}
               >
-                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET LOCK
-                IS PERMANENT. MODIFICATIONS RESTRICTED ONCE INITIALIZED.
+                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: COORDINATES CANNOT BE CHANGED ONCE LOCKED.
+
               </p>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+            <div className="ps-grid-container" style={{
+              gap: "20px",
+              padding: "0",
+              width: "100%",
+              boxSizing: "border-box"
+            }}>
               {problemStatements.map((ps) => {
                 const count = ps.selections || 0;
                 const target = ps.max_count || 30;
@@ -504,8 +565,8 @@ export default function PSGallery() {
                             style={{
                               color: "#fff",
                               background: "#dc2626",
-                              padding: "3px 10px",
-                              fontSize: "10px",
+                              padding: "8px 15px",
+                              fontSize: "12px",
                               fontWeight: "900",
                             }}
                           >
@@ -556,15 +617,7 @@ export default function PSGallery() {
                               marginBottom: "5px",
                             }}
                           >
-                            <span
-                              style={{
-                                fontSize: "16px",
-                                fontWeight: "900",
-                                color: "rgba(255,255,255,0.4)",
-                              }}
-                            >
-                              CONFLICT LEVEL
-                            </span>
+
                             <span
                               style={{
                                 fontSize: "16px",
@@ -604,8 +657,8 @@ export default function PSGallery() {
                           className="view-btn-heist"
                         >
                           {expandedId === ps.problem_statement_id
-                            ? "CLOSE DOSSIER"
-                            : "VIEW DOSSIER"}
+                            ? "CLOSE FILE"
+                            : "VIEW FILE"}
                         </button>
                       </div>
                     </div>
@@ -631,9 +684,9 @@ export default function PSGallery() {
                         </p>
                         <button
                           onClick={() => triggerLockSequence(ps)}
-                          className="lock-shine-btn"
+                          className="creative-red-btn"
                         >
-                          INITIALIZE TARGET LOCK
+                          <span className="text">LOCK THE COORDINATES</span>
                         </button>
                       </div>
                     )}
@@ -641,102 +694,90 @@ export default function PSGallery() {
                 );
               })}
             </div>
-          </>
+          </div>
         )}
+      </div>
 
-        {/* --- MODAL UI (Always render, visibility controlled by showModal) --- */}
-        {showModal && (
+      {/* --- MODAL UI --- */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 3000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.95)",
+            padding: "20px",
+          }}
+        >
           <div
             style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 2000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "rgba(0,0,0,0.95)",
-              padding: "20px",
+              width: "100%",
+              maxWidth: "420px",
+              padding: "40px",
+              background: "#0a0a0a",
+              border: "2px solid #dc2626",
+              textAlign: "center",
+              boxShadow: "0 0 50px rgba(220,38,38,0.3)",
             }}
           >
             <div
               style={{
-                width: "100%",
-                maxWidth: "420px",
-                padding: "40px",
-                background: "#0a0a0a",
-                border: "2px solid #dc2626",
-                textAlign: "center",
-                boxShadow: "0 0 50px rgba(220,38,38,0.3)",
+                fontSize: "11px",
+                color: "#dc2626",
+                fontWeight: "900",
+                letterSpacing: "5px",
+                marginBottom: "15px",
               }}
             >
-              <div
-                style={{
-                  fontSize: "10px",
-                  color: "#dc2626",
-                  fontWeight: "900",
-                  letterSpacing: "5px",
-                  marginBottom: "15px",
-                }}
+              CODE RED, HAWKINS
+            </div>
+            <h2
+              style={{
+                color: "#fff",
+                textTransform: "uppercase",
+                margin: "0 0 20px 0",
+              }}
+            >
+              LOCK COORDINATES?
+            </h2>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                marginBottom: "30px",
+                fontSize: "14px",
+              }}
+            >
+              The {" "}
+              <strong style={{ color: "#dc2626" }}>
+                {pendingPs?.problem_statement_id}
+              </strong>
+              . gate is armed, trigger it once, and it never reopens.
+            </p>
+            <div style={{ display: "flex", gap: "15px" }}>
+              <button
+                onClick={() => setShowModal(false)}
+                className="modal-abort-btn"
               >
-                BELLA CIAO
-              </div>
-              <h2
-                style={{
-                  color: "#fff",
-                  textTransform: "uppercase",
-                  margin: "0 0 20px 0",
-                }}
+                <span className="text">ABORT</span>
+              </button>
+              <button
+                onClick={confirmLock}
+                className="modal-initialize-btn"
               >
-                LOCK TARGET?
-              </h2>
-              <p
-                style={{
-                  color: "rgba(255,255,255,0.6)",
-                  marginBottom: "30px",
-                  fontSize: "14px",
-                }}
-              >
-                Confirming lock for{" "}
-                <strong style={{ color: "#dc2626" }}>
-                  {pendingPs?.problem_statement_id}
-                </strong>
-                . Once breached, the vault stays locked.
-              </p>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <button
-                  onClick={() => setShowModal(false)}
-                  style={{
-                    flex: 1,
-                    background: "transparent",
-                    color: "#fff",
-                    border: "1px solid #333",
-                    padding: "15px",
-                    cursor: "pointer",
-                  }}
-                >
-                  ABORT
-                </button>
-                <button
-                  onClick={confirmLock}
-                  style={{
-                    flex: 1,
-                    background: "#dc2626",
-                    color: "#fff",
-                    border: "none",
-                    padding: "15px",
-                    fontWeight: "900",
-                    cursor: "pointer",
-                  }}
-                >
-                  INITIALIZE
-                </button>
-              </div>
+                <span className="text">INITIALIZE</span>
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )
+      }
 
-        {/* --- NOTIFICATION UI --- */}
-        {notification.show && (
+      {/* --- NOTIFICATION UI --- */}
+      {
+        notification.show && (
           <div
             style={{
               position: "fixed",
@@ -755,33 +796,227 @@ export default function PSGallery() {
               {notification.message}
             </p>
           </div>
-        )}
+        )
+      }
 
-        {/* --- STYLES (Moved outside conditional logic to apply everywhere) --- */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
+      {/* --- STYLES --- */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
               .ps-container::-webkit-scrollbar { display: none; }
               .ps-container { -ms-overflow-style: none; scrollbar-width: none; }
               
+              /* ✅ Desktop: Grid */
+              @media (min-width: 993px) {
+                  .ps-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); }
+                  /* ✅ No hardcoded padding here, handled in JS */
+              }
+
+              /* ✅ Mobile: 90px top padding is handled in JS logic too, but CSS backup here */
               @media (max-width: 992px) {
+                  .ps-root-container {
+                      padding: 90px 15px 40px 15px !important;
+                      justify-content: center !important;
+                      align-items: flex-start !important;
+                  }
+                  
+                  .ps-main-content { 
+                      justify-content: center !important; 
+                      padding: 0 4px !important; 
+                  }
+                  .ps-card { width: 100% !important; margin: 0 !important; box-sizing: border-box !important; }
+                  
                   .card-layout-inner { flex-direction: column !important; }
                   .action-column { align-items: flex-start !important; width: 100% !important; margin-top: 15px; }
                   .view-btn-heist { width: 100% !important; }
                   .heat-gauge-container { width: 100% !important; }
+                  .ps-grid-container { display: flex; flex-direction: column; width: 100%; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
+                  
+                  .caution-card { max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; }
               }
+
               .cross-top { transform: translateY(7px) rotate(45deg); }
               .cross-bottom { transform: translateY(-7px) rotate(-45deg); }
               .hide { opacity: 0; }
               .view-btn-heist { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
               .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
-              .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
-              .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
+              
+              .creative-red-btn {
+                  --c1: #0a0a0a;
+                  --c2: #dc2626;
+                  --size-letter: 14px;
+                  width: 100%;
+                  padding: 18px 25px;
+                  margin-top: 25px;
+                  font-size: var(--size-letter);
+                  background-color: transparent;
+                  border: 2px solid var(--c2);
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .creative-red-btn > .text {
+                  font-weight: 900;
+                  color: var(--c2);
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .creative-red-btn::before,
+              .creative-red-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: var(--c2);
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .creative-red-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .creative-red-btn:hover:not(:disabled) > .text {
+                  color: var(--c1);
+              }
+              .creative-red-btn:hover:not(:disabled)::before,
+              .creative-red-btn:hover:not(:disabled)::after {
+                  scale: 1;
+              }
+              .creative-red-btn:active:not(:disabled) {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
+              .creative-red-btn:disabled {
+                  opacity: 0.6;
+                  cursor: not-allowed;
+                  filter: grayscale(0.5);
+              }
+
+              /* Modal Abort Button */
+              .modal-abort-btn {
+                  --c1: #fff;
+                  --c2: #666;
+                  flex: 1;
+                  padding: 15px;
+                  font-size: 14px;
+                  background-color: transparent;
+                  border: 2px solid #333;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .modal-abort-btn > .text {
+                  font-weight: 900;
+                  color: #fff;
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .modal-abort-btn::before,
+              .modal-abort-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: #666;
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .modal-abort-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .modal-abort-btn:hover > .text {
+                  color: #0a0a0a;
+              }
+              .modal-abort-btn:hover::before,
+              .modal-abort-btn:hover::after {
+                  scale: 1;
+              }
+              .modal-abort-btn:active {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
+
+              /* Modal Initialize Button */
+              .modal-initialize-btn {
+                  --c1: #0a0a0a;
+                  --c2: #dc2626;
+                  flex: 1;
+                  padding: 15px;
+                  font-size: 14px;
+                  background-color: transparent;
+                  border: 2px solid var(--c2);
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .modal-initialize-btn > .text {
+                  font-weight: 900;
+                  color: var(--c2);
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .modal-initialize-btn::before,
+              .modal-initialize-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: var(--c2);
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .modal-initialize-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .modal-initialize-btn:hover > .text {
+                  color: var(--c1);
+              }
+              .modal-initialize-btn:hover::before,
+              .modal-initialize-btn:hover::after {
+                  scale: 1;
+              }
+              .modal-initialize-btn:active {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
+
               @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `,
-          }}
-        />
-      </div>
-    </div>
+        }}
+      />
+
+    </div >
   );
 }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import GlobalNavbar from '../components/GlobalNavbar';
-import UserSidebar from '../components/user_dash/UserSidebar';
+import UserNavbar from '../components/user_dash/UserNavbar';
 import PSGallery from '../components/user_dash/prob_stmt';
 import DashboardView from '../components/user_dash/DashboardView';
 import PPTSubmission from '../components/user_dash/PPTSubmission';
@@ -22,27 +21,12 @@ export default function UserPortal() {
     // Add a specific loading state for the authentication check
     const [isLoading, setIsLoading] = useState(true);
     const [teamInfo, setTeamInfo] = useState({ login_id: '' });
-
-    // Hoisted state for sidebar
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    // Menu items for mobile menu (matching UserSidebar)
-    const userMenuItems = [
-        { id: 'dashboard', label: 'Dashboard', active: activeTab === 'dashboard' },
-        { id: 'hackerrank-submission', label: 'Hackerrank Protocol', active: activeTab === 'hackerrank-submission' },
-        { id: 'ps-selection', label: 'Problem Statement', active: activeTab === 'ps-selection' },
-        { id: 'ppt-submission', label: 'PPT Submission', active: activeTab === 'ppt-submission' },
-        { id: 'github-submission', label: 'GitHub Link Submission', active: activeTab === 'github-submission' },
-    ];
-
-    const handleMenuItemClick = (item) => {
-        setActiveTab(item.id);
-        setIsSidebarOpen(false); // Close sidebar if open
-    };
+    const [isExpandedView, setIsExpandedView] = useState(false); // State for expanded view
 
     // Persist activeTab to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('userPortalActiveTab', activeTab);
+        setIsExpandedView(false); // Reset expanded view on tab change
     }, [activeTab]);
 
     useEffect(() => {
@@ -92,18 +76,11 @@ export default function UserPortal() {
 
     // 2. Main Render
     return (
-        <div className="dashboard-page" style={{ background: 'transparent', minHeight: '100vh' }}>
-            <GlobalNavbar
-                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-                menuItems={userMenuItems}
-                onMenuItemClick={handleMenuItemClick}
-                userInfo={
-                    <div className="team-name-badge">
-                        <span className="team-name-label">TEAM:</span>
-                        <span className="team-name-value">{teamInfo.login_id}</span>
-                    </div>
-                }
-                showContactUs={true}
+        <div className="dashboard-page" style={{ background: 'transparent', minHeight: '100vh', paddingTop: '70px' }}>
+            <UserNavbar
+                teamName={teamInfo.login_id}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
             />
 
             {/* DASHBOARD VIEW */}
@@ -115,94 +92,90 @@ export default function UserPortal() {
                     setActiveTab={setActiveTab}
                     teamName={teamInfo.login_id}
                     activeTab={activeTab}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
                 />
             )}
 
             {/* OTHER TABS */}
             {activeTab !== 'dashboard' && (
-                <div className="dashboard-main" style={{
-                    background: 'transparent',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    minHeight: 'calc(100vh - 70px)'
-                }}>
-                    <div className={`sidebar-wrapper ${isSidebarOpen ? 'open' : ''}`}>
-                        <UserSidebar
-                            activeTab={activeTab}
-                            setActiveTab={(tab) => {
-                                setActiveTab(tab);
-                                setIsSidebarOpen(false); // Close sidebar on selection
-                            }}
-                        />
-                        {/* Close button for non-dashboard tabs */}
-                        {isSidebarOpen && (
-                            <div
-                                onClick={() => setIsSidebarOpen(false)}
-                                style={{
-                                    position: 'absolute',
-                                    top: '20px',
-                                    right: '20px',
-                                    color: '#fff',
-                                    fontSize: '20px',
-                                    cursor: 'pointer',
-                                    zIndex: 1002
-                                }}
-                            >
-                                ✕
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="main-content-wrapper"
-                        style={{
-                            flex: 1,
+                <div className="main-content-wrapper"
+                    style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: '20px',
+                        background: 'transparent',
+                        position: 'relative',
+                        boxSizing: 'border-box',
+                        minHeight: 'calc(100vh - 70px)',
+                        marginLeft: isExpandedView ? '26px' : undefined, // Apply reduced margin if expanded
+                        transition: 'margin-left 0.3s ease'
+                    }}>
+                    {activeTab === 'ps-selection' && (
+                        <div className="card-inner" style={{
+                            width: '100%',
+                            maxWidth: '100%',
+                            margin: 'auto',
                             display: 'flex',
-                            flexDirection: 'column',
-                            padding: '0',
-                            background: 'transparent',
-                            position: 'relative',
-                            boxSizing: 'border-box',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flex: 1,
+                            minHeight: '100%'
                         }}>
-                        {activeTab === 'ps-selection' && (
                             <PSGallery
                                 onSelect={handlePSSelect}
                                 teamName={teamInfo.login_id}
+                                setIsExpandedView={setIsExpandedView} // Pass setter to PSGallery
                             />
-                        )}
+                        </div>
+                    )}
 
-                        {activeTab === 'hackerrank-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '100%', margin: 'auto' }}>
-                                <HackerrankSubmission teamName={teamInfo.login_id} />
-                            </div>
-                        )}
+                    {activeTab === 'hackerrank-submission' && (
+                        <div className="card-inner" style={{
+                            width: '100%',
+                            maxWidth: '100%',
+                            margin: 'auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flex: 1,
+                            minHeight: '100%'
+                        }}>
+                            <HackerrankSubmission teamName={teamInfo.login_id} />
+                        </div>
+                    )}
 
-                        {activeTab === 'ppt-submission' && (
-                            <div className="card-inner submission-container-responsive">
-                                <PPTSubmission
-                                    selectedPS={selectedPS}
-                                    isSubmitted={isPPTSubmitted}
-                                    onUploadSuccess={() => setIsPPTSubmitted(true)}
-                                />
-                            </div>
-                        )}
+                    {activeTab === 'ppt-submission' && (
+                        <div className="card-inner" style={{
+                            width: '100%',
+                            maxWidth: '100%',
+                            margin: 'auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flex: 1,
+                            minHeight: '100%'
+                        }}>
+                            <PPTSubmission
+                                selectedPS={selectedPS}
+                                isSubmitted={isPPTSubmitted}
+                                onUploadSuccess={() => setIsPPTSubmitted(true)}
+                            />
+                        </div>
+                    )}
 
-                        {activeTab === 'github-submission' && (
-                            <div className="card-inner" style={{ width: '100%', maxWidth: '100%', margin: 'auto' }}>
-                                <GitHubSubmission
-                                    isSubmitted={isGithubSubmitted}
-                                    onUpload={() => {
-                                        setIsGithubSubmitted(true);
-                                        setActiveTab('dashboard');
-                                    }}
-                                />
-                            </div>
-                        )}
-                    </div>
+                    {activeTab === 'github-submission' && (
+                        <div className="card-inner" style={{ width: '100%', maxWidth: '100%', margin: 'auto' }}>
+                            <GitHubSubmission
+                                isSubmitted={isGithubSubmitted}
+                                onUpload={() => {
+                                    setIsGithubSubmitted(true);
+                                    setActiveTab('dashboard');
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
-            )
-            }
-        </div >
+            )}
+        </div>
     );
 }
