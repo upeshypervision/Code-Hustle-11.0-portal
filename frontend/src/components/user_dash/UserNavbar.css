@@ -338,6 +338,16 @@
     z-index: 1;
 }
 
+/* Hide scrollbar for sidebar menu */
+.user-navbar-menu-content::-webkit-scrollbar {
+    display: none;
+}
+
+.user-navbar-menu-content {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* Menu Header */
 .user-navbar-menu-header {
     display: flex;

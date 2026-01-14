@@ -302,26 +302,27 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         ) : selectedPS ? (
           /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
           <div style={{
-            background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid #10b981',
+            background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid #10b981',
             borderRadius: '8px',
             padding: '40px',
             textAlign: 'center',
             animation: 'fadeIn 0.5s ease-out',
             maxWidth: '600px',
             width: '100%',
-            margin: 'auto'
+            margin: 'auto',
+            boxShadow: '0 10px 40px rgba(16, 185, 129, 0.1)'
           }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎯</div>
             <h2 style={{
-              color: '#10b981',
+              color: '#fff',
               fontWeight: '900',
               fontSize: '2rem',
               letterSpacing: '3px',
-              marginBottom: '15px'
+              marginBottom: '15px',
+              textShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
             }}>
-              TARGET LOCKED
+              COORDINATE LOCKED
             </h2>
             <p style={{
               color: '#fff',
@@ -333,15 +334,16 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             </p>
 
             <div style={{
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '6px',
+              background: 'linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)',
+              border: '2px solid #22c55e',
+              borderRadius: '8px',
               padding: '25px',
               textAlign: 'left',
-              marginTop: '20px'
+              marginTop: '20px',
+              boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
             }}>
               <h3 style={{
-                color: '#10b981',
+                color: '#22c55e',
                 fontSize: '1.5rem',
                 marginBottom: '15px',
                 fontWeight: '800'
@@ -369,9 +371,9 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                 lineHeight: '1.6',
                 marginTop: '15px',
                 paddingTop: '15px',
-                borderTop: '1px solid rgba(16, 185, 129, 0.2)'
+                borderTop: '1px solid rgba(34, 197, 94, 0.3)'
               }}>
-                <strong style={{ color: '#10b981' }}>Description:</strong>
+                <strong style={{ color: '#22c55e' }}>Description:</strong>
                 <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
               </div>
             </div>
@@ -509,8 +511,8 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                   textAlign: "center"
                 }}
               >
-                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: TARGET LOCK
-                IS PERMANENT. MODIFICATIONS RESTRICTED ONCE INITIALIZED.
+                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: COORDINATES CANNOT BE CHANGED ONCE LOCKED.
+
               </p>
             </div>
 
@@ -655,7 +657,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                           className="view-btn-heist"
                         >
                           {expandedId === ps.problem_statement_id
-                            ? "CLOSE DOSSIER"
+                            ? "CLOSE FILE"
                             : "VIEW FILE"}
                         </button>
                       </div>
@@ -682,9 +684,9 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                         </p>
                         <button
                           onClick={() => triggerLockSequence(ps)}
-                          className="lock-shine-btn"
+                          className="creative-red-btn"
                         >
-                          INITIALIZE TARGET LOCK
+                          <span className="text">LOCK THE COORDINATES</span>
                         </button>
                       </div>
                     )}
@@ -723,14 +725,14 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           >
             <div
               style={{
-                fontSize: "10px",
+                fontSize: "11px",
                 color: "#dc2626",
                 fontWeight: "900",
                 letterSpacing: "5px",
                 marginBottom: "15px",
               }}
             >
-              BELLA CIAO
+              CODE RED, HAWKINS
             </div>
             <h2
               style={{
@@ -739,7 +741,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                 margin: "0 0 20px 0",
               }}
             >
-              LOCK TARGET?
+              LOCK COORDINATES?
             </h2>
             <p
               style={{
@@ -748,39 +750,24 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                 fontSize: "14px",
               }}
             >
-              Confirming lock for{" "}
+              The {" "}
               <strong style={{ color: "#dc2626" }}>
                 {pendingPs?.problem_statement_id}
               </strong>
-              . Once breached, the vault stays locked.
+              . gate is armed, trigger it once, and it never reopens.
             </p>
             <div style={{ display: "flex", gap: "15px" }}>
               <button
                 onClick={() => setShowModal(false)}
-                style={{
-                  flex: 1,
-                  background: "transparent",
-                  color: "#fff",
-                  border: "1px solid #333",
-                  padding: "15px",
-                  cursor: "pointer",
-                }}
+                className="modal-abort-btn"
               >
-                ABORT
+                <span className="text">ABORT</span>
               </button>
               <button
                 onClick={confirmLock}
-                style={{
-                  flex: 1,
-                  background: "#dc2626",
-                  color: "#fff",
-                  border: "none",
-                  padding: "15px",
-                  fontWeight: "900",
-                  cursor: "pointer",
-                }}
+                className="modal-initialize-btn"
               >
-                INITIALIZE
+                <span className="text">INITIALIZE</span>
               </button>
             </div>
           </div>
@@ -853,8 +840,177 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
               .hide { opacity: 0; }
               .view-btn-heist { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 25px; cursor: pointer; font-weight: 900; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; }
               .view-btn-heist:hover { background: #fff; color: #000; border-color: #fff; }
-              .lock-shine-btn { width: 100%; padding: 18px; margin-top: 25px; background: #dc2626; color: #fff; border: none; font-weight: 900; letter-spacing: 3px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
-              .lock-shine-btn:hover { background: #ff0000; box-shadow: 0 0 30px rgba(220, 38, 38, 0.5); }
+              
+              .creative-red-btn {
+                  --c1: #0a0a0a;
+                  --c2: #dc2626;
+                  --size-letter: 14px;
+                  width: 100%;
+                  padding: 18px 25px;
+                  margin-top: 25px;
+                  font-size: var(--size-letter);
+                  background-color: transparent;
+                  border: 2px solid var(--c2);
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .creative-red-btn > .text {
+                  font-weight: 900;
+                  color: var(--c2);
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .creative-red-btn::before,
+              .creative-red-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: var(--c2);
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .creative-red-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .creative-red-btn:hover:not(:disabled) > .text {
+                  color: var(--c1);
+              }
+              .creative-red-btn:hover:not(:disabled)::before,
+              .creative-red-btn:hover:not(:disabled)::after {
+                  scale: 1;
+              }
+              .creative-red-btn:active:not(:disabled) {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
+              .creative-red-btn:disabled {
+                  opacity: 0.6;
+                  cursor: not-allowed;
+                  filter: grayscale(0.5);
+              }
+
+              /* Modal Abort Button */
+              .modal-abort-btn {
+                  --c1: #fff;
+                  --c2: #666;
+                  flex: 1;
+                  padding: 15px;
+                  font-size: 14px;
+                  background-color: transparent;
+                  border: 2px solid #333;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .modal-abort-btn > .text {
+                  font-weight: 900;
+                  color: #fff;
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .modal-abort-btn::before,
+              .modal-abort-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: #666;
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .modal-abort-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .modal-abort-btn:hover > .text {
+                  color: #0a0a0a;
+              }
+              .modal-abort-btn:hover::before,
+              .modal-abort-btn:hover::after {
+                  scale: 1;
+              }
+              .modal-abort-btn:active {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
+
+              /* Modal Initialize Button */
+              .modal-initialize-btn {
+                  --c1: #0a0a0a;
+                  --c2: #dc2626;
+                  flex: 1;
+                  padding: 15px;
+                  font-size: 14px;
+                  background-color: transparent;
+                  border: 2px solid var(--c2);
+                  border-radius: 4px;
+                  cursor: pointer;
+                  overflow: hidden;
+                  position: relative;
+                  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                  font-family: 'Orbitron', sans-serif;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  z-index: 5;
+              }
+              .modal-initialize-btn > .text {
+                  font-weight: 900;
+                  color: var(--c2);
+                  position: relative;
+                  z-index: 1;
+                  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+              }
+              .modal-initialize-btn::before,
+              .modal-initialize-btn::after {
+                  content: "";
+                  width: 150%;
+                  aspect-ratio: 1/1;
+                  scale: 0;
+                  transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                  background-color: var(--c2);
+                  border-radius: 50%;
+                  position: absolute;
+                  top: 0; left: 0;
+                  translate: -50% -50%;
+              }
+              .modal-initialize-btn::after {
+                  top: 100%;
+                  left: 100%;
+              }
+              .modal-initialize-btn:hover > .text {
+                  color: var(--c1);
+              }
+              .modal-initialize-btn:hover::before,
+              .modal-initialize-btn:hover::after {
+                  scale: 1;
+              }
+              .modal-initialize-btn:active {
+                  scale: 0.98;
+                  filter: brightness(0.9);
+              }
 
               @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             `,
