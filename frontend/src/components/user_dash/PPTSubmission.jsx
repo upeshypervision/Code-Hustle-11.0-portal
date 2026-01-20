@@ -26,7 +26,7 @@ export default function PPTSubmission({
     const checkSubmissionStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-ppt-submission",
+          "http://localhost:5001/api/check-ppt-submission",
           {
             credentials: "include",
           },
@@ -52,7 +52,7 @@ export default function PPTSubmission({
     const checkHackerrankStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -77,7 +77,7 @@ export default function PPTSubmission({
     const handleApprovalUpdate = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -100,7 +100,7 @@ export default function PPTSubmission({
     const handlePPTApprovalUpdate = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-ppt-submission",
+          "http://localhost:5001/api/check-ppt-submission",
           {
             credentials: "include",
           },
@@ -121,7 +121,7 @@ export default function PPTSubmission({
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/round-status", {
+        const res = await fetch("http://localhost:5001/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -177,7 +177,7 @@ export default function PPTSubmission({
     formData.append("file", pendingFile);
 
     try {
-      const res = await fetch("http://localhost:5000/api/submit-ppt-student", {
+      const res = await fetch("http://localhost:5001/api/submit-ppt-student", {
         method: "POST",
         body: formData,
         credentials: "include",

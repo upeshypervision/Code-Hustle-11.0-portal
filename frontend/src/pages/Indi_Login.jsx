@@ -43,7 +43,7 @@ export default function Indi_Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/individual-login",
+        "http://localhost:5001/api/individual-login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

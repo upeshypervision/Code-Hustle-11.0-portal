@@ -16,7 +16,7 @@ export default function HackerrankSubmission({ teamName }) {
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/round-status", {
+        const res = await fetch("http://localhost:5001/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -50,7 +50,7 @@ export default function HackerrankSubmission({ teamName }) {
     const checkSubmissionStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -75,7 +75,7 @@ export default function HackerrankSubmission({ teamName }) {
       // Refetch submission status when this team's submission is updated
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -104,7 +104,7 @@ export default function HackerrankSubmission({ teamName }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5000/api/submit-hackerrank", {
+      const res = await fetch("http://localhost:5001/api/submit-hackerrank", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

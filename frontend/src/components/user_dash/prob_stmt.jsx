@@ -26,7 +26,7 @@ export default function PSGallery({ setIsExpandedView }) {
   useEffect(() => {
     const checkSelection = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-selected-ps", {
+        const res = await fetch("http://localhost:5001/api/check-selected-ps", {
           credentials: "include",
         });
         const data = await res.json();
@@ -47,7 +47,7 @@ export default function PSGallery({ setIsExpandedView }) {
     const checkHackerrankStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -72,7 +72,7 @@ export default function PSGallery({ setIsExpandedView }) {
     const handleApprovalUpdate = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/check-hackerrank-submission",
+          "http://localhost:5001/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -94,7 +94,7 @@ export default function PSGallery({ setIsExpandedView }) {
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/round-status", {
+        const res = await fetch("http://localhost:5001/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -123,7 +123,7 @@ export default function PSGallery({ setIsExpandedView }) {
 
   // Fetch Data
   const fetchProblemStatements = () => {
-    fetch("http://localhost:5000/api/student/getallproblem-statements", {
+    fetch("http://localhost:5001/api/student/getallproblem-statements", {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -166,7 +166,7 @@ export default function PSGallery({ setIsExpandedView }) {
     if (!pendingPs) return;
     try {
       const res = await fetch(
-        "http://localhost:5000/api/student/select-problem-statement",
+        "http://localhost:5001/api/student/select-problem-statement",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

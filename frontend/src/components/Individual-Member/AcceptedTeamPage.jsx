@@ -38,7 +38,7 @@ const AcceptedTeamPage = () => {
 
         // Fetch individual data to check status and get accepted team ID
         const individualResponse = await fetch(
-          "http://localhost:5000/api/individual-dashboard",
+          "http://localhost:5001/api/individual-dashboard",
           {
             credentials: "include",
           }
@@ -61,7 +61,7 @@ const AcceptedTeamPage = () => {
           console.log("User has accepted team:", acceptedTeamId);
 
           const teamResponse = await fetch(
-            "http://localhost:5000/api/individual/accepted-team",
+            "http://localhost:5001/api/individual/accepted-team",
             {
               credentials: "include",
             }
@@ -119,7 +119,7 @@ const AcceptedTeamPage = () => {
         // Refresh team data
         try {
           const teamResponse = await fetch(
-            "http://localhost:5000/api/individual/accepted-team",
+            "http://localhost:5001/api/individual/accepted-team",
             {
               credentials: "include",
             }

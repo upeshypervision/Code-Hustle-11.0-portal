@@ -23,7 +23,7 @@ const Indi_Regi = () => {
     hypervisionId: "",
   });
 
-  const API_BASE = "http://localhost:5000";
+  const API_BASE = "http://localhost:5001";
 
   const validateField = (name, value, uType) => {
     if (!value.trim() && name !== "hypervisionId") return "Required Field";

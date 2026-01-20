@@ -14,7 +14,7 @@ const ViewIndividuals = () => {
   const fetchIndividuals = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/admin/view-individuals",
+        "http://localhost:5001/api/admin/view-individuals",
         {
           credentials: "include",
         }
@@ -42,7 +42,7 @@ const ViewIndividuals = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/admin/delete-individual/${individualId}`,
+        `http://localhost:5001/api/admin/delete-individual/${individualId}`,
         {
           method: "DELETE",
           credentials: "include",

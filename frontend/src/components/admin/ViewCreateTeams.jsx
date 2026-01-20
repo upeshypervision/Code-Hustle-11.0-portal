@@ -13,7 +13,7 @@ const ViewCreateTeams = () => {
   const fetchTeams = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/admin/view-create-teams",
+        "http://localhost:5001/api/admin/view-create-teams",
         {
           credentials: "include",
         }
@@ -51,7 +51,7 @@ const ViewCreateTeams = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/admin/delete-create-team/${teamId}`,
+        `http://localhost:5001/api/admin/delete-create-team/${teamId}`,
         {
           method: "DELETE",
           credentials: "include",

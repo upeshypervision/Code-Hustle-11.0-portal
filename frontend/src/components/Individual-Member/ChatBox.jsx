@@ -48,7 +48,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:5000/api/chat/history/${conversationId}`,
+          `http://localhost:5001/api/chat/history/${conversationId}`,
           {
             credentials: "include",
           }
@@ -152,7 +152,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/chat/send", {
+      const response = await fetch("http://localhost:5001/api/chat/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

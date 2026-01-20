@@ -30,7 +30,7 @@ const Registration = () => {
     setAgreedToTerms(false);
   }, [step]);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = "http://localhost:5001/api";
 
   const [team, setTeam] = useState({
     leader: {

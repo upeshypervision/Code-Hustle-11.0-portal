@@ -90,7 +90,7 @@ const Indi_Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/individual-dashboard",
+          "http://localhost:5001/api/individual-dashboard",
           {
             method: "GET",
             credentials: "include",
@@ -121,7 +121,7 @@ const Indi_Dashboard = () => {
     const fetchTeams = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/available-teams",
+          "http://localhost:5001/api/available-teams",
           {
             method: "GET",
             credentials: "include",
@@ -141,7 +141,7 @@ const Indi_Dashboard = () => {
     const fetchSentRequests = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/individual/sent-requests",
+          "http://localhost:5001/api/individual/sent-requests",
           {
             method: "GET",
             credentials: "include",
@@ -188,7 +188,7 @@ const Indi_Dashboard = () => {
         try {
           console.log("Fetching accepted team data...");
           const response = await fetch(
-            "http://localhost:5000/api/individual/accepted-team",
+            "http://localhost:5001/api/individual/accepted-team",
             {
               credentials: "include",
             }
@@ -540,7 +540,7 @@ const Indi_Dashboard = () => {
                   onSendRequest={async (team) => {
                     try {
                       const response = await fetch(
-                        "http://localhost:5000/api/individual/send-request",
+                        "http://localhost:5001/api/individual/send-request",
                         {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },

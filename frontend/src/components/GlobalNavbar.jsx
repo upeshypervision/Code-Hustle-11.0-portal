@@ -18,7 +18,7 @@ export default function GlobalNavbar({
   const handleLogout = async () => {
     try {
       // Call the logout endpoint to clear all auth cookies
-      await fetch("http://localhost:5000/api/logout", {
+      await fetch("http://localhost:5001/api/logout", {
         method: "POST",
         credentials: "include",
       });

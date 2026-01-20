@@ -20,7 +20,7 @@ export default function TeamUpNavbar({
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/logout", {
+      await fetch("http://localhost:5001/api/logout", {
         method: "POST",
         credentials: "include",
       });
