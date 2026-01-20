@@ -29,7 +29,7 @@ export default function PPTSubmission({
           "http://localhost:5000/api/check-ppt-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
 
@@ -55,7 +55,7 @@ export default function PPTSubmission({
           "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
         if (data.success && data.is_submitted) {
@@ -80,7 +80,7 @@ export default function PPTSubmission({
           "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
         if (data.success && data.is_submitted) {
@@ -103,7 +103,7 @@ export default function PPTSubmission({
           "http://localhost:5000/api/check-ppt-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
         if (data.success && data.is_submitted) {
@@ -127,7 +127,6 @@ export default function PPTSubmission({
         const data = await res.json();
 
         if (data.success) {
-          // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
           setRoundActive(data.rounds.ppt_upload === "live");
         }
       } catch (err) {
@@ -144,7 +143,6 @@ export default function PPTSubmission({
   useEffect(() => {
     const handleRoundChange = (data) => {
       if (data.round_type === "ppt_upload") {
-        // data.state is enum: 'live', 'closed', 'not_started'
         setRoundActive(data.state === "live");
       }
     };
@@ -220,17 +218,33 @@ export default function PPTSubmission({
   // Helper to consolidate submission status
   const hasUserSubmitted = localIsSubmitted || isSubmitted;
 
+  // --- CONDITIONAL LAYOUT LOGIC ---
+  const showNotAllowedLayout =
+    !checkingRound &&
+    !checkingStatus &&
+    !checkingHackerrank &&
+    ((hackerrankStatus &&
+      hackerrankStatus !== "approved" &&
+      !hasUserSubmitted) ||
+      (!roundActive && !hasUserSubmitted));
+
   return (
     <div
+      className="ppt-root-wrapper"
       style={{
+        // ✅ UNIFIED FIXED POSITIONING FOR ALL STATES
+        position: "fixed",
+        inset: 0,
+        zIndex: 10,
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        padding: "0",
+        alignItems: "center", // Default center (overridden on desktop via CSS below)
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "#0a0a0a",
+        overflowY: "auto",
+        padding: "20px",
         boxSizing: "border-box",
-        position: "relative",
-        height: "calc(100vh - 70px)",
       }}
     >
       {/* --- BACKGROUNDS --- */}
@@ -239,8 +253,8 @@ export default function PPTSubmission({
           position: "fixed",
           top: 0,
           left: 0,
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
           backgroundImage: `url(${strangerThingsBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -256,8 +270,8 @@ export default function PPTSubmission({
           position: "fixed",
           top: 0,
           left: 0,
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
           background:
             "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
           zIndex: 1,
@@ -267,7 +281,7 @@ export default function PPTSubmission({
 
       {/* --- RENDERING LOGIC --- */}
 
-      {checkingRound || checkingStatus ? (
+      {checkingRound || checkingStatus || checkingHackerrank ? (
         /* 1. Loading State */
         <div
           className="ppt-container-main"
@@ -276,7 +290,17 @@ export default function PPTSubmission({
             padding: "60px 20px",
             color: "rgba(255,255,255,0.6)",
             width: "100%",
-            maxWidth: "900px",
+            maxWidth: "800px",
+            minHeight: "50vh",
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(10px)",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "1px solid rgba(255,255,255,0.1)",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <p>Loading...</p>
@@ -292,17 +316,21 @@ export default function PPTSubmission({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "60vh",
+            minHeight: "50vh",
             padding: "40px",
             textAlign: "center",
             background:
-              "linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)",
+              "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
             backdropFilter: "blur(10px)",
-            border: "2px solid #ef4444",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
             borderRadius: "8px",
             animation: "fadeIn 0.5s ease-out",
             width: "100%",
             maxWidth: "800px",
+            boxShadow:
+              "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            position: "relative",
+            zIndex: 2,
           }}
         >
           <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🚫</div>
@@ -345,21 +373,31 @@ export default function PPTSubmission({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "60vh",
+            minHeight: "50vh",
             padding: "40px",
             textAlign: "center",
             background:
-              "linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%)",
+              "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
             backdropFilter: "blur(10px)",
-            border: "2px solid #ef4444",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
             borderRadius: "8px",
             animation: "fadeIn 0.5s ease-out",
             width: "100%",
             maxWidth: "800px",
+            boxShadow:
+              "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            position: "relative",
+            zIndex: 2,
           }}
         >
-          <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🔒</div>
+          <div
+            className="round-closed-icon"
+            style={{ fontSize: "5rem", marginBottom: "20px" }}
+          >
+            🔒
+          </div>
           <h2
+            className="round-closed-title"
             style={{
               color: "#ef4444",
               fontWeight: "900",
@@ -390,29 +428,41 @@ export default function PPTSubmission({
           </p>
         </div>
       ) : (
-        /* 3. Main Content Card
-                   Shows if Round is Active OR if User has Submitted (bypassing the lock).
-                */
+        /* 3. Main Content Card (NORMAL STATE) */
         <div
           className="ppt-container-main"
           style={{
             animation: "fadeIn 0.5s ease-out",
             width: "100%",
-            maxWidth: "500px",
+            maxWidth: "800px",
             position: "relative",
+            background:
+              "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(220, 38, 38, 0.3)",
+            borderRadius: "8px",
+            padding: "40px",
+            minHeight: "50vh",
+            display: "flex",
+            flexDirection: "column",
+            gap: "30px",
+            boxShadow:
+              "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+            zIndex: 2,
+            margin: "auto",
           }}
         >
           {selectedPS && (
             <div
               style={{
                 position: "absolute",
-                top: "-35px",
-                right: "0",
+                top: "15px",
+                right: "20px",
                 background: "rgba(220, 38, 38, 0.1)",
                 border: "1px solid #dc2626",
                 padding: "5px 15px",
                 borderRadius: "2px",
-                fontSize: "0.65rem",
+                fontSize: "0.75rem",
                 color: "#dc2626",
                 fontWeight: "900",
                 letterSpacing: "1.5px",
@@ -423,8 +473,25 @@ export default function PPTSubmission({
             </div>
           )}
 
+          <h2
+            style={{
+              color: "#fff",
+              fontFamily: '"Della Respira", serif',
+              fontSize: "1.8rem",
+              fontWeight: "700",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              margin: 0,
+              borderBottom: "1px solid rgba(255,255,255,0.1)",
+              paddingBottom: "15px",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>📄</span> PROBLEM STATEMENT
+            PROTOCOL
+          </h2>
+
           {/* --- SECTION 1: TEMPLATE --- */}
-          <div className="ppt-section">
+          <div className="ppt-section" style={{ marginBottom: 0 }}>
             <div
               style={{
                 display: "flex",
@@ -434,7 +501,7 @@ export default function PPTSubmission({
               }}
             >
               <div
-                style={{ width: "8px", height: "24px", background: "#dc2626" }}
+                style={{ width: "4px", height: "20px", background: "#dc2626" }}
               ></div>
               <h3
                 style={{
@@ -443,6 +510,7 @@ export default function PPTSubmission({
                   fontWeight: "700",
                   letterSpacing: "1px",
                   textTransform: "uppercase",
+                  margin: 0,
                 }}
               >
                 01. CHECK PPT TEMPLATE
@@ -452,18 +520,15 @@ export default function PPTSubmission({
             <div
               className="responsive-flex-card"
               style={{
-                background:
-                  "linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)",
-                backdropFilter: "blur(10px)",
+                background: "rgba(0,0,0,0.3)",
                 border: "1px solid rgba(220, 38, 38, 0.2)",
                 borderRadius: "4px",
-                padding: "30px",
+                padding: "20px",
                 display: "flex",
                 alignItems: "center",
-                gap: "40px",
+                gap: "30px",
                 position: "relative",
                 overflow: "hidden",
-                boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
               }}
             >
               <div className="template-card-visual">
@@ -476,11 +541,11 @@ export default function PPTSubmission({
                 >
                   📄
                 </div>
-                <div style={{ marginTop: "15px", textAlign: "center" }}>
+                <div style={{ marginTop: "10px", textAlign: "center" }}>
                   <div
                     style={{
-                      height: "3px",
-                      width: "40px",
+                      height: "2px",
+                      width: "30px",
                       background: "#dc2626",
                       margin: "0 auto 5px",
                     }}
@@ -503,8 +568,8 @@ export default function PPTSubmission({
                   style={{
                     color: "rgba(255,255,255,0.7)",
                     fontSize: "0.95rem",
-                    lineHeight: "1.7",
-                    marginBottom: "20px",
+                    lineHeight: "1.6",
+                    marginBottom: "15px",
                   }}
                 >
                   Review the{" "}
@@ -517,14 +582,14 @@ export default function PPTSubmission({
                   className="download-btn-creative"
                   onClick={handleDownloadTemplate}
                 >
-                  DOWNLOAD DOSSIER ↓
+                  DOWNLOAD FILE ↓
                 </button>
               </div>
             </div>
           </div>
 
           {/* --- SECTION 2: UPLOAD --- */}
-          <div className="ppt-section">
+          <div className="ppt-section" style={{ marginBottom: 0 }}>
             <div
               style={{
                 display: "flex",
@@ -535,8 +600,8 @@ export default function PPTSubmission({
             >
               <div
                 style={{
-                  width: "8px",
-                  height: "24px",
+                  width: "4px",
+                  height: "20px",
                   background: hasUserSubmitted ? "#10b981" : "#dc2626",
                 }}
               ></div>
@@ -547,6 +612,7 @@ export default function PPTSubmission({
                   fontWeight: "700",
                   letterSpacing: "1px",
                   textTransform: "uppercase",
+                  margin: 0,
                 }}
               >
                 02. UPLOAD YOUR PPT
@@ -562,7 +628,11 @@ export default function PPTSubmission({
               onDrop={handleFileAction}
               style={{
                 border: hasUserSubmitted
-                  ? "2px solid #10b981"
+                  ? submittedFile?.approval_status === "approved"
+                    ? "2px solid #10b981"
+                    : submittedFile?.approval_status === "rejected"
+                      ? "2px solid #ef4444"
+                      : "2px solid #eab308"
                   : "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "4px",
                 padding: "15px",
@@ -570,12 +640,14 @@ export default function PPTSubmission({
                 background: dragActive
                   ? "rgba(220, 38, 38, 0.05)"
                   : hasUserSubmitted
-                  ? "rgba(16, 185, 129, 0.05)"
-                  : "linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.8) 100%)",
-                backdropFilter: "blur(10px)",
+                    ? submittedFile?.approval_status === "approved"
+                      ? "rgba(16, 185, 129, 0.05)"
+                      : submittedFile?.approval_status === "rejected"
+                        ? "rgba(239, 68, 68, 0.05)"
+                        : "rgba(234, 179, 8, 0.05)"
+                    : "rgba(0,0,0,0.3)",
                 transition: "all 0.4s ease",
                 cursor: hasUserSubmitted ? "default" : "pointer",
-                boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
               }}
               // Only allow click if NOT submitted
               onClick={() =>
@@ -590,10 +662,11 @@ export default function PPTSubmission({
                   border: hasUserSubmitted
                     ? "none"
                     : dragActive
-                    ? "2px dotted #dc2626"
-                    : "1px dotted rgba(220, 38, 38, 0.6)",
-                  padding: "40px 20px",
+                      ? "2px dotted #dc2626"
+                      : "1px dotted rgba(220, 38, 38, 0.6)",
+                  padding: "30px",
                   borderRadius: "2px",
+                  background: "rgba(0,0,0,0.2)",
                 }}
               >
                 <input
@@ -606,32 +679,14 @@ export default function PPTSubmission({
                 {hasUserSubmitted ? (
                   /* --- SUCCESS UI WITH APPROVAL STATUS --- */
                   <div style={{ animation: "fadeIn 0.5s ease-out" }}>
-                    <div
-                      style={{
-                        fontSize: "3rem",
-                        color:
-                          submittedFile?.approval_status === "approved"
-                            ? "#22c55e"
-                            : submittedFile?.approval_status === "rejected"
-                            ? "#ef4444"
-                            : "#eab308",
-                        marginBottom: "15px",
-                      }}
-                    >
-                      {submittedFile?.approval_status === "approved"
-                        ? "🎉"
-                        : submittedFile?.approval_status === "rejected"
-                        ? "❌"
-                        : "⏳"}
-                    </div>
                     <h4
                       style={{
                         color:
                           submittedFile?.approval_status === "approved"
                             ? "#22c55e"
                             : submittedFile?.approval_status === "rejected"
-                            ? "#ef4444"
-                            : "#eab308",
+                              ? "#ef4444"
+                              : "#eab308",
                         fontWeight: "900",
                         fontSize: "1.5rem",
                         marginBottom: "10px",
@@ -641,8 +696,8 @@ export default function PPTSubmission({
                       {submittedFile?.approval_status === "approved"
                         ? "CONGRATS! APPROVED"
                         : submittedFile?.approval_status === "rejected"
-                        ? "SORRY, NOT SELECTED"
-                        : "REVIEW PENDING"}
+                          ? "SORRY, NOT SELECTED"
+                          : "REVIEW PENDING"}
                     </h4>
                     {submittedFile?.approval_status === "approved" && (
                       <p
@@ -694,7 +749,7 @@ export default function PPTSubmission({
                 ) : checkingStatus ? (
                   <div
                     style={{
-                      padding: "40px",
+                      padding: "20px",
                       textAlign: "center",
                       color: "rgba(255,255,255,0.6)",
                     }}
@@ -749,12 +804,14 @@ export default function PPTSubmission({
                               e.stopPropagation();
                               handleUpload();
                             }}
-                            className="uplink-btn-red"
+                            className="creative-red-btn"
                             disabled={isUploading}
                           >
-                            {isUploading
-                              ? "SYNCHRONIZING..."
-                              : "CONFIRM & SUBMIT"}
+                            <span className="text">
+                              {isUploading
+                                ? "SYNCHRONIZING..."
+                                : "CONFIRM & SUBMIT"}
+                            </span>
                           </button>
 
                           {!isUploading && (
@@ -763,19 +820,9 @@ export default function PPTSubmission({
                                 e.stopPropagation();
                                 setPendingFile(null);
                               }}
-                              style={{
-                                background: "transparent",
-                                border: "1px solid #ef4444",
-                                color: "#ef4444",
-                                padding: "12px 25px",
-                                borderRadius: "2px",
-                                cursor: "pointer",
-                                fontWeight: "bold",
-                                fontSize: "12px",
-                                letterSpacing: "1px",
-                              }}
+                              className="creative-red-btn"
                             >
-                              ABORT
+                              <span className="text">ABORT</span>
                             </button>
                           )}
                         </div>
@@ -831,10 +878,10 @@ export default function PPTSubmission({
                         </p>
 
                         <button
-                          className="uplink-btn-red"
+                          className="creative-red-btn"
                           style={{ marginTop: "10px" }}
                         >
-                          SELECT FILE
+                          <span className="text">SELECT FILE</span>
                         </button>
                       </>
                     )}
@@ -848,9 +895,31 @@ export default function PPTSubmission({
           <style
             dangerouslySetInnerHTML={{
               __html: `
-                    .ppt-section { margin-bottom: 40px; }
+                    .ppt-section { margin-bottom: 20px; }
+
+                    /* ✅ DESKTOP FIX: PUSH DOWN FROM NAVBAR */
+                    @media (min-width: 993px) {
+                        .ppt-root-wrapper {
+                            padding-top: 120px !important;
+                            align-items: flex-start !important;
+                        }
+                    }
 
                     @media (max-width: 992px) {
+                        .ppt-container-main {
+                            max-width: 100% !important;
+                            width: 100% !important;
+                            padding: 30px 20px !important;
+                            min-height: auto !important;
+                        }
+                        
+                        /* ✅ MOBILE FIX: Added 90px top padding so it lowers down */
+                        .ppt-root-wrapper {
+                            padding: 90px 15px 40px 15px !important; 
+                            justify-content: center !important;
+                            align-items: flex-start !important;
+                        }
+
                         aside, .sidebar-container {}
                         .responsive-flex-card { 
                             flex-direction: column !important; 
@@ -859,10 +928,14 @@ export default function PPTSubmission({
                             gap: 20px !important;
                         }
                         .uplink-btn-red { width: 100%; padding: 16px 20px !important; }
-                        .ppt-section { margin-bottom: 20px !important; }
+                        .creative-red-btn { width: 100%; padding: 16px 20px !important; }
+                        
+                        /* Override inline font sizes */
+                        .round-closed-icon { font-size: 3rem !important; margin-bottom: 10px !important; }
+                        .round-closed-title { font-size: 1.8rem !important; letter-spacing: 1px !important; }
                     }
                     .template-card-visual { 
-                        width: 160px; height: 130px; 
+                        width: 140px; height: 110px; 
                         background: rgba(10, 10, 10, 0.8); 
                         border: 1px solid rgba(220, 38, 38, 0.3); 
                         border-radius: 4px; flex-shrink: 0; 
@@ -874,20 +947,91 @@ export default function PPTSubmission({
                         background: linear-gradient(45deg, transparent 45%, rgba(220,38,38,0.05) 50%, transparent 55%); 
                     }
                     .download-btn-creative { 
-                        background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; 
-                        padding: 12px 25px; cursor: pointer; font-weight: 900; font-size: 10px; 
-                        letter-spacing: 2px; text-transform: uppercase; transition: all 0.3s ease;
+                        background: transparent; border: 1px solid #dc2626; color: #dc2626; 
+                        padding: 10px 20px; cursor: pointer; font-weight: 800; font-size: 0.8rem; 
+                        letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s ease;
+                        border-radius: 2px;
                     }
-                    .download-btn-creative:hover { background: #fff !important; color: #000 !important; box-shadow: 0 0 20px #fff; border-color: #fff; }
+                    .download-btn-creative:hover { 
+                        background: #dc2626; 
+                        color: #fff; 
+                        box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); 
+                    }
                     
                     .uplink-btn-red { 
-                        padding: 16px 50px; background: #dc2626; border: none; color: #fff; 
-                        font-weight: 900; border-radius: 2px; letter-spacing: 2px; cursor: pointer; 
-                        box-shadow: 0 0 20px rgba(220, 38, 38, 0.4); text-transform: uppercase; font-size: 12px; 
+                        padding: 16px 40px; 
+                        background: linear-gradient(90deg, #991b1b, #dc2626, #991b1b);
+                        background-size: 200% auto;
+                        border: none; color: #fff; 
+                        font-weight: 900; border-radius: 2px; letter-spacing: 1px; cursor: pointer; 
+                        box-shadow: 0 0 20px rgba(220, 38, 38, 0.4); text-transform: uppercase; font-size: 0.9rem; 
                         transition: all 0.3s ease;
+                        animation: shine-red 3s linear infinite;
                     }
-                    .uplink-btn-red:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(220, 38, 38, 0.6) !important; background: #b91c1c !important; }
-                    .uplink-btn-red:disabled { opacity: 0.7; cursor: not-allowed; }
+                    .uplink-btn-red:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(220, 38, 38, 0.6) !important; background-position: right center; }
+                    .uplink-btn-red:disabled { opacity: 0.7; cursor: not-allowed; background: #222; animation: none; box-shadow: none; color: #555; }
+                    
+                    @keyframes shine-red { to { background-position: 200% center; } }
+
+                    .creative-red-btn {
+                        --c1: #0a0a0a;
+                        --c2: #dc2626;
+                        --size-letter: 14px;
+                        padding: 12px 25px;
+                        font-size: var(--size-letter);
+                        background-color: transparent;
+                        border: 2px solid var(--c2);
+                        border-radius: 4px;
+                        cursor: pointer;
+                        overflow: hidden;
+                        position: relative;
+                        transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+                        font-family: inherit;
+                        font-weight: 900;
+                        letter-spacing: 3px;
+                        text-transform: uppercase;
+                        z-index: 5;
+                    }
+                    .creative-red-btn > .text {
+                        font-weight: 900;
+                        color: var(--c2);
+                        position: relative;
+                        z-index: 1;
+                        transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+                    }
+                    .creative-red-btn::before,
+                    .creative-red-btn::after {
+                        content: "";
+                        width: 150%;
+                        aspect-ratio: 1/1;
+                        scale: 0;
+                        transition: 1000ms cubic-bezier(0.76, 0, 0.24, 1);
+                        background-color: var(--c2);
+                        border-radius: 50%;
+                        position: absolute;
+                        top: 0; left: 0;
+                        translate: -50% -50%;
+                    }
+                    .creative-red-btn::after {
+                        top: 100%;
+                        left: 100%;
+                    }
+                    .creative-red-btn:hover:not(:disabled) > .text {
+                        color: var(--c1);
+                    }
+                    .creative-red-btn:hover:not(:disabled)::before,
+                    .creative-red-btn:hover:not(:disabled)::after {
+                        scale: 1;
+                    }
+                    .creative-red-btn:active:not(:disabled) {
+                        scale: 0.98;
+                        filter: brightness(0.9);
+                    }
+                    .creative-red-btn:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        filter: grayscale(0.5);
+                    }
 
                     .success-check-ring { 
                         width: 70px; height: 70px; border: 3px solid #10b981; border-radius: 50%; 
@@ -897,25 +1041,8 @@ export default function PPTSubmission({
                     
                     .upload-icon-wrapper { animation: float 3s infinite ease-in-out; }
                     
-                    .ppt-container-main {
-                        transform: translateX(-200px) !important;
-                    }
-                    
-                    @media (max-width: 768px) {
-                        .ppt-container-main {
-                            transform: translateX(0) !important;
-                        }
-                    }
-                    
                     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateX(-200px) translateY(10px); } to { opacity: 1; transform: translateX(-200px) translateY(0); } }
-                    
-                    @media (max-width: 768px) {
-                        .ppt-container-main {
-                            transform: translateX(0) !important;
-                        }
-                        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                    }
+                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
                 `,
             }}
           />

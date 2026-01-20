@@ -21,10 +21,12 @@ export default function UserPortal() {
   // Add a specific loading state for the authentication check
   const [isLoading, setIsLoading] = useState(true);
   const [teamInfo, setTeamInfo] = useState({ login_id: "" });
+  const [isExpandedView, setIsExpandedView] = useState(false); // State for expanded view
 
   // Persist activeTab to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("userPortalActiveTab", activeTab);
+    setIsExpandedView(false); // Reset expanded view on tab change
   }, [activeTab]);
 
   useEffect(() => {
@@ -122,6 +124,8 @@ export default function UserPortal() {
             position: "relative",
             boxSizing: "border-box",
             minHeight: "calc(100vh - 70px)",
+            marginLeft: isExpandedView ? "26px" : undefined, // Apply reduced margin if expanded
+            transition: "margin-left 0.3s ease",
           }}
         >
           {activeTab === "ps-selection" && (
@@ -141,6 +145,7 @@ export default function UserPortal() {
               <PSGallery
                 onSelect={handlePSSelect}
                 teamName={teamInfo.login_id}
+                setIsExpandedView={setIsExpandedView} // Pass setter to PSGallery
               />
             </div>
           )}

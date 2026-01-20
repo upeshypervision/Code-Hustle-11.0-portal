@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserNavbar.css";
+import logo from "../../assets/codehustle-logo.png";
 
-export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
+export default function UserNavbar({
+  teamName,
+  activeTab,
+  setActiveTab,
+  showHamburger = true,
+}) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -46,20 +52,24 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
         <div className="user-navbar-inner">
           {/* Left Section - Hamburger & Logo */}
           <div className="user-navbar-left">
-            <button
-              className={`user-navbar-hamburger ${
-                isMenuOpen ? "menu-open" : ""
-              }`}
-              onClick={toggleMenu}
-              aria-label="Toggle menu"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
+            {showHamburger && (
+              <button
+                className={`user-navbar-hamburger ${isMenuOpen ? "menu-open" : ""}`}
+                onClick={toggleMenu}
+                aria-label="Toggle menu"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            )}
             <div className="user-navbar-logo">
-              <span className="user-navbar-logo-small">THE</span>
-              <span className="user-navbar-logo-main">CODEHUSTLE</span>
+              <img
+                src={logo}
+                alt="Code Hustle Logo"
+                className="user-navbar-logo-img"
+              />
+              <span className="user-navbar-logo-main">Code Hustle 11</span>
             </div>
           </div>
 
@@ -122,9 +132,7 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
                 {menuItems.map((item) => (
                   <button
                     key={item.id}
-                    className={`menu-item ${
-                      activeTab === item.id ? "active" : ""
-                    }`}
+                    className={`menu-item ${activeTab === item.id ? "active" : ""}`}
                     onClick={() => handleMenuClick(item.id)}
                   >
                     <span className="menu-item-icon">
@@ -196,7 +204,7 @@ export default function UserNavbar({ teamName, activeTab, setActiveTab }) {
                 ))}
               </div>
               <div className="menu-footer">
-                <div className="menu-footer-text">DATA_STREAM: ENCRYPTED</div>
+                <div className="menu-footer-text">On a curiosity voyage</div>
               </div>
             </div>
           </div>
