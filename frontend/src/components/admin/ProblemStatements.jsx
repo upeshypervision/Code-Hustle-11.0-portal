@@ -20,10 +20,10 @@ export default function ProblemStatements() {
   const fetchProblemStatements = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/getallproblem-statements",
+        "http://localhost:5000/api/admin/getallproblem-statements",
         {
           credentials: "include",
-        }
+        },
       );
 
       const data = await res.json();
@@ -82,7 +82,7 @@ export default function ProblemStatements() {
 
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/createproblem-statements",
+        "http://localhost:5000/api/admin/createproblem-statements",
         {
           method: "POST",
           credentials: "include",
@@ -96,7 +96,7 @@ export default function ProblemStatements() {
             difficulty: newPs.difficulty,
             Max_Count: Number(newPs.maxTeams),
           }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -129,16 +129,16 @@ export default function ProblemStatements() {
 
   const togglePsVisibility = async (psId) => {
     setProblemStatements((prev) =>
-      prev.map((ps) => (ps.id === psId ? { ...ps, visible: !ps.visible } : ps))
+      prev.map((ps) => (ps.id === psId ? { ...ps, visible: !ps.visible } : ps)),
     );
 
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${psId}/toggle-visibility`,
+        `http://localhost:5000/api/admin/problem-statement/${psId}/toggle-visibility`,
         {
           method: "POST",
           credentials: "include",
-        }
+        },
       );
 
       if (!res.ok) {
@@ -150,8 +150,8 @@ export default function ProblemStatements() {
       // Revert on error
       setProblemStatements((prev) =>
         prev.map((ps) =>
-          ps.id === psId ? { ...ps, visible: !ps.visible } : ps
-        )
+          ps.id === psId ? { ...ps, visible: !ps.visible } : ps,
+        ),
       );
       setPsMessage({
         type: "error",
@@ -164,8 +164,8 @@ export default function ProblemStatements() {
     setSelectedPs(ps);
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/problem-statement/${ps.id}/teams`,
-        { credentials: "include" }
+        `http://localhost:5000/api/admin/problem-statement/${ps.id}/teams`,
+        { credentials: "include" },
       );
       const data = await res.json();
 

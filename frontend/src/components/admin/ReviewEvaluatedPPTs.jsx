@@ -22,11 +22,11 @@ export default function ReviewEvaluatedPPTs() {
     setError("");
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/evaluated-ppts",
+        "http://localhost:5000/api/admin/evaluated-ppts",
         {
           method: "GET",
           credentials: "include",
-        }
+        },
       );
       const data = await res.json();
 
@@ -46,13 +46,13 @@ export default function ReviewEvaluatedPPTs() {
   const handleAction = async (teamId, action) => {
     try {
       const res = await fetch(
-        "http://localhost:5001/api/admin/update-ppt-approval",
+        "http://localhost:5000/api/admin/update-ppt-approval",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({ team_id: teamId, action: action }),
-        }
+        },
       );
       const data = await res.json();
 
@@ -62,8 +62,8 @@ export default function ReviewEvaluatedPPTs() {
           prev.map((sub) =>
             sub.team_id === teamId
               ? { ...sub, approval_status: data.new_status }
-              : sub
-          )
+              : sub,
+          ),
         );
       } else {
         console.error(`Failed to ${action}: ${data.error}`);
@@ -189,20 +189,20 @@ export default function ReviewEvaluatedPPTs() {
                           submission.approval_status === "approved"
                             ? "rgba(34, 197, 94, 0.1)"
                             : submission.approval_status === "rejected"
-                            ? "rgba(239, 68, 68, 0.1)"
-                            : "rgba(234, 179, 8, 0.1)",
+                              ? "rgba(239, 68, 68, 0.1)"
+                              : "rgba(234, 179, 8, 0.1)",
                         color:
                           submission.approval_status === "approved"
                             ? "#22c55e"
                             : submission.approval_status === "rejected"
-                            ? "#ef4444"
-                            : "#eab308",
+                              ? "#ef4444"
+                              : "#eab308",
                         border: `1px solid ${
                           submission.approval_status === "approved"
                             ? "#22c55e"
                             : submission.approval_status === "rejected"
-                            ? "#ef4444"
-                            : "#eab308"
+                              ? "#ef4444"
+                              : "#eab308"
                         }`,
                         padding: "2px 8px",
                         borderRadius: "4px",

@@ -29,13 +29,13 @@ export default function EvaluatorLogin() {
 
     try {
       const response = await fetch(
-        "http://localhost:5001/api/evaluator-login",
+        "http://localhost:5000/api/evaluator-login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify(formData),
-        }
+        },
       );
 
       const data = await response.json();

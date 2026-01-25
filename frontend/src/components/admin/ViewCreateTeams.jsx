@@ -13,10 +13,10 @@ const ViewCreateTeams = () => {
   const fetchTeams = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5001/api/admin/view-create-teams",
+        "http://localhost:5000/api/admin/view-create-teams",
         {
           credentials: "include",
-        }
+        },
       );
       const data = await response.json();
       if (data.success) {
@@ -43,7 +43,7 @@ const ViewCreateTeams = () => {
     e.stopPropagation(); // Prevent toggling accordion
     if (
       !window.confirm(
-        "Are you sure you want to delete this team? This action cannot be undone."
+        "Are you sure you want to delete this team? This action cannot be undone.",
       )
     ) {
       return;
@@ -51,11 +51,11 @@ const ViewCreateTeams = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5001/api/admin/delete-create-team/${teamId}`,
+        `http://localhost:5000/api/admin/delete-create-team/${teamId}`,
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
       const data = await response.json();
 

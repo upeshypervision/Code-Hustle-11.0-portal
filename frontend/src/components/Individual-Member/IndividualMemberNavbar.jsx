@@ -18,7 +18,7 @@ export default function IndividualMemberNavbar({
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5001/api/logout", {
+      await fetch("http://localhost:5000/api/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -50,7 +50,7 @@ export default function IndividualMemberNavbar({
       if (isMenuOpen) {
         // Check if click is on the hamburger button - allow it to toggle
         const hamburgerButton = document.querySelector(
-          ".user-navbar-hamburger"
+          ".user-navbar-hamburger",
         );
         if (hamburgerButton && hamburgerButton.contains(event.target)) {
           return; // Let the hamburger button handle the toggle
@@ -94,7 +94,6 @@ export default function IndividualMemberNavbar({
               <span></span>
             </button>
             <div className="user-navbar-logo">
-              <span className="user-navbar-logo-small">THE</span>
               <span className="user-navbar-logo-main">CODEHUSTLE 11.0</span>
             </div>
           </div>

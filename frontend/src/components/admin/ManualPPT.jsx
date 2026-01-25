@@ -21,7 +21,7 @@ export default function ManualPPT() {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
 
-  const API_BASE = "http://localhost:5001"; // Or your backend server's address
+  const API_BASE = "http://localhost:5000"; // Or your backend server's address
 
   const fetchTeams = async () => {
     setLoading(true);
@@ -32,7 +32,7 @@ export default function ManualPPT() {
         {
           method: "GET",
           credentials: "include",
-        }
+        },
       );
       const data = await res.json();
       if (res.ok) {
@@ -78,7 +78,7 @@ export default function ManualPPT() {
         {
           method: "GET",
           credentials: "include", // Include cookies for auth
-        }
+        },
       );
 
       const data = await res.json();
@@ -89,7 +89,7 @@ export default function ManualPPT() {
       } else {
         setError(
           data.error ||
-            `Failed to fetch details. Server responded with status: ${res.status}`
+            `Failed to fetch details. Server responded with status: ${res.status}`,
         );
       }
     } catch (err) {

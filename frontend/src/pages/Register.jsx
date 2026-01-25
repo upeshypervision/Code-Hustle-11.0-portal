@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Registration.css";
+import regiBg from "../assets/regi-bg.png";
 
 const loadScript = (src) => {
   return new Promise((resolve) => {
@@ -30,7 +31,7 @@ const Registration = () => {
     setAgreedToTerms(false);
   }, [step]);
 
-  const API_BASE = "http://localhost:5001/api";
+  const API_BASE = "http://localhost:5000/api";
 
   const [team, setTeam] = useState({
     leader: {
@@ -81,8 +82,8 @@ const Registration = () => {
       m.universityType === "UPES"
         ? m.sapid.length === 9
         : m.universityType === "Others"
-        ? m.sapid.length > 0
-        : false;
+          ? m.sapid.length > 0
+          : false;
     return (
       m.fullName &&
       m.universityType &&
@@ -129,7 +130,7 @@ const Registration = () => {
     razorpay_payment_id,
     razorpay_order_id,
     razorpay_signature,
-    teamPayload
+    teamPayload,
   ) => {
     setLoading(true);
     try {
@@ -166,7 +167,7 @@ const Registration = () => {
           response.razorpay_payment_id,
           response.razorpay_order_id,
           response.razorpay_signature,
-          teamPayload
+          teamPayload,
         );
       },
       prefill: {
@@ -214,11 +215,11 @@ const Registration = () => {
     }
 
     const membersList = [team.m1, team.m2, team.m3, team.m4].filter(
-      (m) => m.fullName !== ""
+      (m) => m.fullName !== "",
     );
     if (membersList.length < 2) {
       setErrorBadge(
-        "⚠️ You need at least 2 Team Members besides the Leader (Total 3)."
+        "⚠️ You need at least 2 Team Members besides the Leader (Total 3).",
       );
       return;
     }
@@ -335,21 +336,28 @@ const Registration = () => {
           member,
           "sapid",
           "University Name",
-          "Enter University Name"
+          "Enter University Name",
         )}
     </>
   );
 
   return (
     <div className="app-viewport">
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
       {!submitted ? (
-        <div className="portal-card animate-in">
+        <div
+          className="portal-card animate-in"
+          style={{ backgroundColor: "#0f172a" }}
+        >
           <header className="brand-header">
             <div className="hypervision-badge">HYPERVISION</div>
             <p className="presents-text">PRESENTS</p>
@@ -391,6 +399,10 @@ const Registration = () => {
                 }`}
                 disabled={!isStepValid("leader") || !teamName}
                 onClick={handleStep1Next}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
               >
                 {loading ? "Checking..." : "NEXT"}
               </button>
@@ -410,6 +422,10 @@ const Registration = () => {
                 }`}
                 disabled={!isStepValid("m1")}
                 onClick={() => setStep(3)}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
               >
                 + MEMBER 3
               </button>
@@ -442,7 +458,12 @@ const Registration = () => {
               >
                 <button
                   className="neon-shade-btn next-glow"
-                  style={{ flex: 1, marginTop: 0 }}
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   onClick={() => setStep(4)}
                 >
                   + MEMBER 4
@@ -451,7 +472,12 @@ const Registration = () => {
                   className={`neon-shade-btn next-glow ${
                     !isStepValid("m2") ? "btn-locked" : ""
                   }`}
-                  style={{ flex: 1, marginTop: 0 }}
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   disabled={!isStepValid("m2")}
                   onClick={() => setStep(6)}
                 >
@@ -487,14 +513,24 @@ const Registration = () => {
               >
                 <button
                   className="neon-shade-btn next-glow"
-                  style={{ flex: 1, marginTop: 0 }}
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   onClick={() => setStep(5)}
                 >
                   + MEMBER 5
                 </button>
                 <button
                   className="neon-shade-btn next-glow"
-                  style={{ flex: 1, marginTop: 0 }}
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   onClick={() => setStep(6)}
                 >
                   PROCEED
@@ -526,6 +562,10 @@ const Registration = () => {
               <button
                 className="neon-shade-btn next-glow"
                 onClick={() => setStep(6)}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
               >
                 PROCEED TO PAY
               </button>
@@ -695,6 +735,10 @@ const Registration = () => {
                 }`}
                 disabled={loading || !agreedToTerms}
                 onClick={handleRegistrationFlow}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
               >
                 {loading ? "PROCESSING..." : "REGISTER & PAY"}
               </button>
@@ -772,7 +816,10 @@ const Registration = () => {
           <button
             className="neon-shade-btn next-glow"
             onClick={() => (window.location.href = "/userlogin")}
-            style={{ marginTop: "25px" }}
+            style={{
+              marginTop: "25px",
+              background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+            }}
           >
             GO TO LOGIN →
           </button>

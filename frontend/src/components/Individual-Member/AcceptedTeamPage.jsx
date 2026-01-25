@@ -38,10 +38,10 @@ const AcceptedTeamPage = () => {
 
         // Fetch individual data to check status and get accepted team ID
         const individualResponse = await fetch(
-          "http://localhost:5001/api/individual-dashboard",
+          "http://localhost:5000/api/individual-dashboard",
           {
             credentials: "include",
-          }
+          },
         );
         const individualData = await individualResponse.json();
 
@@ -61,10 +61,10 @@ const AcceptedTeamPage = () => {
           console.log("User has accepted team:", acceptedTeamId);
 
           const teamResponse = await fetch(
-            "http://localhost:5001/api/individual/accepted-team",
+            "http://localhost:5000/api/individual/accepted-team",
             {
               credentials: "include",
-            }
+            },
           );
           const teamData = await teamResponse.json();
 
@@ -119,10 +119,10 @@ const AcceptedTeamPage = () => {
         // Refresh team data
         try {
           const teamResponse = await fetch(
-            "http://localhost:5001/api/individual/accepted-team",
+            "http://localhost:5000/api/individual/accepted-team",
             {
               credentials: "include",
-            }
+            },
           );
           const teamData = await teamResponse.json();
           if (teamData.success && teamData.team) {
@@ -388,7 +388,7 @@ const AcceptedTeamPage = () => {
                 <p className="user-profile-sub">
                   {sanitizeText(
                     userDetails?.university || "Unknown University",
-                    200
+                    200,
                   )}{" "}
                   • {sanitizeText(userDetails?.sapId || "N/A", 50)}
                 </p>
@@ -402,7 +402,7 @@ const AcceptedTeamPage = () => {
                   <span className="profile-label">Phone:</span>{" "}
                   {sanitizeText(
                     userDetails?.mobile || userDetails?.phone || "N/A",
-                    10
+                    10,
                   )}
                 </div>
                 <div className="user-profile-info-row">
@@ -436,7 +436,7 @@ const AcceptedTeamPage = () => {
                 >
                   {sanitizeText(
                     userDetails?.skills || "No skills provided",
-                    500
+                    500,
                   )}
                 </p>
               </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Registration.css";
 import "./Team_Regi.css";
+import regiBg from "../assets/regi-bg.png";
 
 const Team_Regi = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const Team_Regi = () => {
     },
   });
 
-  const API_BASE = "http://localhost:5001";
+  const API_BASE = "http://localhost:5000";
 
   // --- UPDATED VALIDATION LOGIC ---
   const validateField = (name, value, uType, currentMemberKey) => {
@@ -86,7 +87,7 @@ const Team_Regi = () => {
         (item) =>
           item.val.toLowerCase() === value.toLowerCase() &&
           item.val !== "" &&
-          item.key !== currentMemberKey
+          item.key !== currentMemberKey,
       );
 
       if (duplicate) return "Email already used in team";
@@ -105,7 +106,9 @@ const Team_Regi = () => {
 
       const duplicate = allPhones.find(
         (item) =>
-          item.val === value && item.val !== "" && item.key !== currentMemberKey
+          item.val === value &&
+          item.val !== "" &&
+          item.key !== currentMemberKey,
       );
 
       if (duplicate) return "Phone already used in team";
@@ -123,7 +126,7 @@ const Team_Regi = () => {
           { key: "m3", val: formData.m3.sapid },
         ];
         const duplicate = allSaps.find(
-          (s) => s.val === value && s.val !== "" && s.key !== currentMemberKey
+          (s) => s.val === value && s.val !== "" && s.key !== currentMemberKey,
         );
         if (duplicate) return "SAP ID already used";
       }
@@ -158,7 +161,7 @@ const Team_Regi = () => {
       "sap",
       formData.sap,
       formData.universityType,
-      "leader"
+      "leader",
     );
     const emailErr = validateField("email", formData.email, null, "leader");
     const phoneErr = validateField("phone", formData.phone, null, "leader");
@@ -383,7 +386,7 @@ const Team_Regi = () => {
                   "sapid",
                   e.target.value,
                   formData[mKey].universityType,
-                  mKey
+                  mKey,
                 )
               }
             />
@@ -524,7 +527,10 @@ const Team_Regi = () => {
               className={`liquid-btn animated-btn ${
                 !isMemberValid(mKey) ? "btn-locked" : ""
               }`}
-              style={{ flex: 1 }}
+              style={{
+                flex: 1,
+                background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+              }}
               onClick={() => {
                 if (isMemberValid(mKey)) {
                   setStep(nextStep);
@@ -545,6 +551,7 @@ const Team_Regi = () => {
           style={{
             width: "100%",
             padding: "15px",
+            background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
             cursor:
               isSubmitting || !isMemberValid(mKey) || !agreements[mKey]
                 ? "not-allowed"
@@ -561,13 +568,20 @@ const Team_Regi = () => {
 
   return (
     <div className="app-viewport forge-container">
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
-      <div className="portal-card animate-in forge-card">
+      <div
+        className="portal-card animate-in forge-card"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">CODE-HUSTLE-11.0</p>
@@ -856,7 +870,7 @@ const Team_Regi = () => {
                           "sap",
                           e.target.value,
                           formData.universityType,
-                          "leader"
+                          "leader",
                         )
                       }
                     />

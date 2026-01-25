@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import socket from "../../socket";
 import "./Viewgithubsubmission.css"; // Reuse existing styles
 
-const API = "http://localhost:5001";
+const API = "http://localhost:5000";
 
 export default function ViewHackerrank() {
   const [submissions, setSubmissions] = useState([]);
@@ -148,20 +148,20 @@ export default function ViewHackerrank() {
                           sub.approval_status === "approved"
                             ? "rgba(34, 197, 94, 0.1)"
                             : sub.approval_status === "pending"
-                            ? "rgba(234, 179, 8, 0.1)"
-                            : "rgba(239, 68, 68, 0.1)",
+                              ? "rgba(234, 179, 8, 0.1)"
+                              : "rgba(239, 68, 68, 0.1)",
                         color:
                           sub.approval_status === "approved"
                             ? "#22c55e"
                             : sub.approval_status === "pending"
-                            ? "#eab308"
-                            : "#ef4444",
+                              ? "#eab308"
+                              : "#ef4444",
                         border: `1px solid ${
                           sub.approval_status === "approved"
                             ? "#22c55e"
                             : sub.approval_status === "pending"
-                            ? "#eab308"
-                            : "#ef4444"
+                              ? "#eab308"
+                              : "#ef4444"
                         }`,
                         padding: "2px 8px",
                         borderRadius: "4px",

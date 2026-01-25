@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Registration.css";
 import "./Team_Regi.css";
 import "./Indi_Regi.css";
+import regiBg from "../assets/regi-bg.png";
 
 const Indi_Regi = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Indi_Regi = () => {
     hypervisionId: "",
   });
 
-  const API_BASE = "http://localhost:5001";
+  const API_BASE = "http://localhost:5000";
 
   const validateField = (name, value, uType) => {
     if (!value.trim() && name !== "hypervisionId") return "Required Field";
@@ -43,7 +44,7 @@ const Indi_Regi = () => {
     const error = validateField(
       field,
       value,
-      formData.universityType.toLowerCase()
+      formData.universityType.toLowerCase(),
     );
     setValErrors((prev) => ({ ...prev, [field]: error }));
   };
@@ -152,13 +153,20 @@ const Indi_Regi = () => {
 
   return (
     <div className="app-viewport forge-container">
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
-      <div className="portal-card animate-in forge-card">
+      <div
+        className="portal-card animate-in forge-card"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">CODE-HUSTLE-11.0</p>
@@ -281,7 +289,7 @@ const Indi_Regi = () => {
                     onChange={(e) =>
                       updateField(
                         "universityType",
-                        e.target.value.toLowerCase()
+                        e.target.value.toLowerCase(),
                       )
                     }
                   >
@@ -481,7 +489,12 @@ const Indi_Regi = () => {
                   className={`liquid-btn animated-btn ${
                     !isFormValid() || isSubmitting ? "btn-locked" : ""
                   }`}
-                  style={{ width: "100%", padding: "18px" }}
+                  style={{
+                    width: "100%",
+                    padding: "18px",
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   onClick={handleSubmit}
                   disabled={!isFormValid() || isSubmitting}
                 >
@@ -527,7 +540,12 @@ const Indi_Regi = () => {
               <div className="forge-btn-group" style={{ marginTop: "30px" }}>
                 <button
                   className="liquid-btn animated-btn"
-                  style={{ width: "100%", padding: "18px" }}
+                  style={{
+                    width: "100%",
+                    padding: "18px",
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
                   onClick={() => navigate("/individual-login")}
                 >
                   LOG IN ❯

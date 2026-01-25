@@ -26,7 +26,7 @@ export default function ViewSubmissions() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5001/api/admin/submissions", {
+      const res = await fetch("http://localhost:5000/api/admin/submissions", {
         method: "GET",
         credentials: "include",
       });
@@ -52,11 +52,11 @@ export default function ViewSubmissions() {
     const disposition = action === "view" ? "inline" : "attachment";
     try {
       const res = await fetch(
-        `http://localhost:5001/api/admin/submission/${teamId}?disposition=${disposition}`,
+        `http://localhost:5000/api/admin/submission/${teamId}?disposition=${disposition}`,
         {
           method: "GET",
           credentials: "include",
-        }
+        },
       );
       const data = await res.json();
 
@@ -80,7 +80,7 @@ export default function ViewSubmissions() {
           alert(
             `${action === "view" ? "View" : "Download"} failed: ${
               data.error || "Unknown error"
-            }`
+            }`,
           );
         }
       }

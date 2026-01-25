@@ -32,7 +32,7 @@ export default function UserPortal() {
   useEffect(() => {
     // CHECK YOUR PORT: Is your backend on 5001?
     // Ensure this matches your Flask/Node server console.
-    fetch("http://localhost:5001/api/user-info", {
+    fetch("http://localhost:5000/api/user-info", {
       method: "GET",
       credentials: "include", // Crucial for cookies
     })

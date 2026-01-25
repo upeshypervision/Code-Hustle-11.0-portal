@@ -12,14 +12,14 @@ export default function ProtectedRoute({
     const verifyAuth = async () => {
       let endpoint;
       if (role === "student")
-        endpoint = "http://localhost:5001/api/check-student-auth";
+        endpoint = "http://localhost:5000/api/check-student-auth";
       else if (role === "evaluator")
-        endpoint = "http://localhost:5001/api/check-evaluator-auth";
+        endpoint = "http://localhost:5000/api/check-evaluator-auth";
       else if (role === "individual")
-        endpoint = "http://localhost:5001/api/check-individual-auth";
+        endpoint = "http://localhost:5000/api/check-individual-auth";
       else if (role === "team")
-        endpoint = "http://localhost:5001/api/check-team-auth";
-      else endpoint = "http://localhost:5001/api/check-auth";
+        endpoint = "http://localhost:5000/api/check-team-auth";
+      else endpoint = "http://localhost:5000/api/check-auth";
 
       try {
         const res = await fetch(endpoint, {
@@ -43,12 +43,12 @@ export default function ProtectedRoute({
         {role === "student"
           ? "Authenticating Session..."
           : role === "evaluator"
-          ? "Verifying Evaluator..."
-          : role === "individual"
-          ? "Verifying Individual Access..."
-          : role === "team"
-          ? "Verifying Team Access..."
-          : "Verifying Access..."}
+            ? "Verifying Evaluator..."
+            : role === "individual"
+              ? "Verifying Individual Access..."
+              : role === "team"
+                ? "Verifying Team Access..."
+                : "Verifying Access..."}
       </div>
     );
   }

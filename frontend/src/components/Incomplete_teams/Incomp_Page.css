@@ -146,10 +146,10 @@
   width: 100% !important;
   background: linear-gradient(
     to right,
-    rgba(56, 189, 248, 0.08) 0%,
-    rgba(56, 189, 248, 0.15) 20%,
-    rgba(56, 189, 248, 0.15) 80%,
-    rgba(56, 189, 248, 0.08) 100%
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.9) 20%,
+    rgba(0, 0, 0, 0.9) 80%,
+    rgba(0, 0, 0, 0.7) 100%
   );
   border-radius: 4px;
   margin-left: 0 !important;
@@ -495,14 +495,16 @@
   flex-direction: column;
   gap: 15px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .request-card:hover {
   transform: translateY(-5px);
   border-color: rgba(96, 165, 250, 0.5);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2),
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.2),
     0 4px 6px -2px rgba(0, 0, 0, 0.1);
   background: linear-gradient(
     145deg,
@@ -1236,7 +1238,8 @@ input:checked + .visibility-slider:before {
   width: 90%;
   max-width: 500px;
   z-index: 3000;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
     0 0 30px rgba(239, 68, 68, 0.2);
   text-align: center;
 }

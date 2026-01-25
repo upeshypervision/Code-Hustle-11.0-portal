@@ -19,7 +19,7 @@ export default function RoundManagement() {
 
   const fetchRoundStatus = async () => {
     try {
-      const res = await fetch("http://localhost:5001/api/round-status", {
+      const res = await fetch("http://localhost:5000/api/round-status", {
         credentials: "include",
       });
       const data = await res.json();
@@ -28,10 +28,10 @@ export default function RoundManagement() {
         setPsSelectionState(data.rounds.ps_selection || "not_started");
         setPptUploadState(data.rounds.ppt_upload || "not_started");
         setGithubSubmissionState(
-          data.rounds.github_submission || "not_started"
+          data.rounds.github_submission || "not_started",
         );
         setHackerrankSubmissionState(
-          data.rounds.hackerrank_submission || "not_started"
+          data.rounds.hackerrank_submission || "not_started",
         );
       }
     } catch (err) {
@@ -43,7 +43,7 @@ export default function RoundManagement() {
 
   const updateRoundStatus = async (roundType, state) => {
     try {
-      const res = await fetch("http://localhost:5001/api/admin/round-status", {
+      const res = await fetch("http://localhost:5000/api/admin/round-status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -79,11 +79,11 @@ export default function RoundManagement() {
           message: "Distributing submissions...",
         });
         const res = await fetch(
-          "http://localhost:5001/api/admin/distribute-submissions",
+          "http://localhost:5000/api/admin/distribute-submissions",
           {
             method: "POST",
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
         if (data.success) {
@@ -149,21 +149,21 @@ export default function RoundManagement() {
                 notification.type === "success"
                   ? "rgba(34, 197, 94, 0.1)"
                   : notification.type === "error"
-                  ? "rgba(239, 68, 68, 0.1)"
-                  : "rgba(59, 130, 246, 0.1)",
+                    ? "rgba(239, 68, 68, 0.1)"
+                    : "rgba(59, 130, 246, 0.1)",
               border: `1px solid ${
                 notification.type === "success"
                   ? "#22c55e"
                   : notification.type === "error"
-                  ? "#ef4444"
-                  : "#3b82f6"
+                    ? "#ef4444"
+                    : "#3b82f6"
               }`,
               color:
                 notification.type === "success"
                   ? "#22c55e"
                   : notification.type === "error"
-                  ? "#ef4444"
-                  : "#60a5fa",
+                    ? "#ef4444"
+                    : "#60a5fa",
               fontSize: "0.9rem",
               fontWeight: "500",
             }}

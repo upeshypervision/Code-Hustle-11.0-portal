@@ -21,7 +21,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const checkRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/round-status", {
+        const res = await fetch("http://localhost:5000/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -55,7 +55,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const checkSubmissionStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5001/api/check-github-submission",
+          "http://localhost:5000/api/check-github-submission",
           {
             credentials: "include",
           },
@@ -80,7 +80,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
       try {
         // Check Hackerrank
         const hrRes = await fetch(
-          "http://localhost:5001/api/check-hackerrank-submission",
+          "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -94,7 +94,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
 
         // Check PPT
         const pptRes = await fetch(
-          "http://localhost:5001/api/check-ppt-submission",
+          "http://localhost:5000/api/check-ppt-submission",
           {
             credentials: "include",
           },
@@ -119,7 +119,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const handleHackerrankUpdate = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5001/api/check-hackerrank-submission",
+          "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -146,7 +146,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("http://localhost:5001/api/submit-link", {
+      const res = await fetch("http://localhost:5000/api/submit-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

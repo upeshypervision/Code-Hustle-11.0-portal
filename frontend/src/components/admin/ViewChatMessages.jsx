@@ -14,10 +14,10 @@ const ViewChatMessages = () => {
   const fetchConversations = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5001/api/admin/view-chat-messages",
+        "http://localhost:5000/api/admin/view-chat-messages",
         {
           credentials: "include",
-        }
+        },
       );
       const data = await response.json();
       if (data.success) {

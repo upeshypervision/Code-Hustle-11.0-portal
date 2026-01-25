@@ -14,10 +14,10 @@ const ViewIndividuals = () => {
   const fetchIndividuals = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5001/api/admin/view-individuals",
+        "http://localhost:5000/api/admin/view-individuals",
         {
           credentials: "include",
-        }
+        },
       );
       const data = await response.json();
       if (data.success) {
@@ -34,7 +34,7 @@ const ViewIndividuals = () => {
     e.stopPropagation();
     if (
       !window.confirm(
-        "Are you sure you want to delete this individual? This action cannot be undone."
+        "Are you sure you want to delete this individual? This action cannot be undone.",
       )
     ) {
       return;
@@ -42,21 +42,21 @@ const ViewIndividuals = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5001/api/admin/delete-individual/${individualId}`,
+        `http://localhost:5000/api/admin/delete-individual/${individualId}`,
         {
           method: "DELETE",
           credentials: "include",
-        }
+        },
       );
       const data = await response.json();
 
       if (data.success) {
         setIndividuals(
-          individuals.filter((i) => i.individualId !== individualId)
+          individuals.filter((i) => i.individualId !== individualId),
         );
       } else {
         alert(
-          "Failed to delete individual: " + (data.error || "Unknown error")
+          "Failed to delete individual: " + (data.error || "Unknown error"),
         );
       }
     } catch (error) {

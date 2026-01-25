@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Landing_Page.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Landing_Page.css";
+import regiBg from "../assets/regi-bg.png";
 
 const Landing_Page = () => {
   const navigate = useNavigate();
@@ -8,39 +9,70 @@ const Landing_Page = () => {
   return (
     <div className="app-viewport forge-container">
       {/* Cosmic Background  */}
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
       {/* Added 'forge-card' and adjusted wrapper to match Registration pages */}
-      <div className="portal-card animate-in forge-card">
+      <div
+        className="portal-card animate-in forge-card"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         {/* Header Branding */}
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
-          <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
+          <h1 className="main-logo syncopate-font">
+            CODE HUSTLE <span className="v-tag">11.0</span>
+          </h1>
         </header>
 
         <div className="interaction-container">
           <div className="step-block animate-in">
             <div className="input-group">
-              <div className="label-row" style={{ marginBottom: '20px', textAlign: 'center' }}>
+              <div
+                className="label-row"
+                style={{ marginBottom: "20px", textAlign: "center" }}
+              >
                 <span>How do you intend to navigate the Arena?</span>
               </div>
-              <div className="dual-button-row" style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+              <div
+                className="dual-button-row"
+                style={{
+                  display: "flex",
+                  gap: "15px",
+                  justifyContent: "center",
+                }}
+              >
                 <button
                   className="liquid-btn animated-btn"
-                  style={{ marginTop: 0, flex: 1, padding: '15px' }}
-                  onClick={() => navigate('/Indiregi')}
+                  style={{
+                    marginTop: 0,
+                    flex: 1,
+                    padding: "15px",
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  onClick={() => navigate("/Indiregi")}
                 >
                   JOIN TEAM
                 </button>
                 <button
                   className="liquid-btn animated-btn"
-                  style={{ marginTop: 0, flex: 1, padding: '15px' }}
-                  onClick={() => navigate('/create-team')}
+                  style={{
+                    marginTop: 0,
+                    flex: 1,
+                    padding: "15px",
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  onClick={() => navigate("/create-team")}
                 >
                   CREATE TEAM
                 </button>
@@ -51,10 +83,10 @@ const Landing_Page = () => {
 
         {/* Footer */}
         <footer className="footer-links-clean">
-          <a 
-            href="https://codehustle11.upeshypervision.in/#terms-conditions" 
-            className="terms-link" 
-            target="_blank" 
+          <a
+            href="https://codehustle11.upeshypervision.in/#terms-conditions"
+            className="terms-link"
+            target="_blank"
             rel="noopener noreferrer"
           >
             Terms & Conditions

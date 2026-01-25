@@ -60,7 +60,7 @@ const Indi_Dashboard = () => {
       console.log("Request accepted!", data);
       showNotification(
         `🎉 Congratulations! You have been accepted by ${data.teamName}!`,
-        "success"
+        "success",
       );
       // Refresh to show accepted team
       setTimeout(() => window.location.reload(), 2000);
@@ -71,7 +71,7 @@ const Indi_Dashboard = () => {
       console.log("Request rejected", data);
       showNotification(
         `Your request to ${data.teamName} was declined.`,
-        "error"
+        "error",
       );
       // Refresh to update status
       setTimeout(() => window.location.reload(), 2000);
@@ -90,11 +90,11 @@ const Indi_Dashboard = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5001/api/individual-dashboard",
+          "http://localhost:5000/api/individual-dashboard",
           {
             method: "GET",
             credentials: "include",
-          }
+          },
         );
 
         const data = await response.json();
@@ -121,11 +121,11 @@ const Indi_Dashboard = () => {
     const fetchTeams = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5001/api/available-teams",
+          "http://localhost:5000/api/available-teams",
           {
             method: "GET",
             credentials: "include",
-          }
+          },
         );
 
         const data = await response.json();
@@ -141,11 +141,11 @@ const Indi_Dashboard = () => {
     const fetchSentRequests = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5001/api/individual/sent-requests",
+          "http://localhost:5000/api/individual/sent-requests",
           {
             method: "GET",
             credentials: "include",
-          }
+          },
         );
 
         const data = await response.json();
@@ -159,7 +159,7 @@ const Indi_Dashboard = () => {
 
           // Check for accepted team from sent requests
           const accepted = data.teams.find(
-            (t) => t.requestStatus === "Accepted"
+            (t) => t.requestStatus === "Accepted",
           );
           if (accepted) {
             setAcceptedTeam(accepted);
@@ -169,7 +169,7 @@ const Indi_Dashboard = () => {
           setTeams((prevTeams) => {
             const sentTeamIds = data.teams.map((t) => t.teamId);
             const availableOnly = prevTeams.filter(
-              (t) => !sentTeamIds.includes(t.teamId)
+              (t) => !sentTeamIds.includes(t.teamId),
             );
             return [...availableOnly, ...data.teams];
           });
@@ -188,10 +188,10 @@ const Indi_Dashboard = () => {
         try {
           console.log("Fetching accepted team data...");
           const response = await fetch(
-            "http://localhost:5001/api/individual/accepted-team",
+            "http://localhost:5000/api/individual/accepted-team",
             {
               credentials: "include",
-            }
+            },
           );
           const data = await response.json();
           console.log("Accepted team response:", data);
@@ -390,90 +390,77 @@ const Indi_Dashboard = () => {
                     }}
                   >
                     {/* Toggle Buttons - Separate Container */}
+                    {/* View Switching Toggle from Team Up Page */}
                     <div
                       style={{
-                        width: "100%",
-                        marginBottom: "40px",
                         display: "flex",
                         justifyContent: "center",
-                        gap: "0",
+                        marginBottom: "20px",
                       }}
                     >
-                      <button
-                        onClick={() => setTeamsSubSection("available-teams")}
+                      <div
                         style={{
-                          padding: "12px 32px",
-                          fontSize: "1rem",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                          border: "none",
-                          borderRadius: "8px 0 0 8px",
-                          transition: "all 0.3s ease",
-                          background:
-                            teamsSubSection === "available-teams"
-                              ? "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
-                              : "#FFFFFF",
-                          color:
-                            teamsSubSection === "available-teams"
-                              ? "#FFFFFF"
-                              : "#dc2626",
-                          boxShadow:
-                            teamsSubSection === "available-teams"
-                              ? "0 4px 15px rgba(220, 38, 38, 0.4)"
-                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
-                          borderRight: "1px solid rgba(220, 38, 38, 0.3)",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (teamsSubSection !== "available-teams") {
-                            e.target.style.background =
-                              "rgba(220, 38, 38, 0.1)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (teamsSubSection !== "available-teams") {
-                            e.target.style.background = "#FFFFFF";
-                          }
+                          background: "rgba(22, 28, 51, 0.5)",
+                          backdropFilter: "blur(10px)",
+                          borderRadius: "30px",
+                          padding: "4px",
+                          display: "flex",
+                          gap: "4px",
+                          border: "1px solid rgba(255, 255, 255, 0.1)",
                         }}
                       >
-                        Available Teams
-                      </button>
-                      <button
-                        onClick={() => setTeamsSubSection("sent-requests")}
-                        style={{
-                          padding: "12px 32px",
-                          fontSize: "1rem",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                          border: "none",
-                          borderRadius: "0 8px 8px 0",
-                          transition: "all 0.3s ease",
-                          background:
-                            teamsSubSection === "sent-requests"
-                              ? "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)"
-                              : "#FFFFFF",
-                          color:
-                            teamsSubSection === "sent-requests"
-                              ? "#FFFFFF"
-                              : "#dc2626",
-                          boxShadow:
-                            teamsSubSection === "sent-requests"
-                              ? "0 4px 15px rgba(220, 38, 38, 0.4)"
-                              : "0 2px 8px rgba(0, 0, 0, 0.1)",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (teamsSubSection !== "sent-requests") {
-                            e.target.style.background =
-                              "rgba(220, 38, 38, 0.1)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (teamsSubSection !== "sent-requests") {
-                            e.target.style.background = "#FFFFFF";
-                          }
-                        }}
-                      >
-                        Sent Requests
-                      </button>
+                        <button
+                          onClick={() => setTeamsSubSection("available-teams")}
+                          style={{
+                            background:
+                              teamsSubSection === "available-teams"
+                                ? "rgba(56, 189, 248, 0.2)"
+                                : "transparent",
+                            color:
+                              teamsSubSection === "available-teams"
+                                ? "#38bdf8"
+                                : "#94a3b8",
+                            border: "none",
+                            padding: "8px 24px",
+                            borderRadius: "24px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "0.8rem",
+                            transition: "all 0.3s ease",
+                            fontFamily: "'Orbitron', sans-serif",
+                            letterSpacing: "1px",
+                          }}
+                        >
+                          AVAILABLE TEAMS
+                        </button>
+                        <button
+                          onClick={() => setTeamsSubSection("sent-requests")}
+                          style={{
+                            background:
+                              teamsSubSection === "sent-requests"
+                                ? "rgba(56, 189, 248, 0.2)"
+                                : "transparent",
+                            color:
+                              teamsSubSection === "sent-requests"
+                                ? "#38bdf8"
+                                : "#94a3b8",
+                            border: "none",
+                            padding: "8px 24px",
+                            borderRadius: "24px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "0.8rem",
+                            transition: "all 0.3s ease",
+                            fontFamily: "'Orbitron', sans-serif",
+                            letterSpacing: "1px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
+                          SENT REQUESTS
+                        </button>
+                      </div>
                     </div>
 
                     {/* Content Section - Separate Container */}
@@ -502,7 +489,7 @@ const Indi_Dashboard = () => {
                               teams={teams.filter(
                                 (t) =>
                                   !t.requestStatus &&
-                                  !rejectedTeamIds.includes(t.teamId)
+                                  !rejectedTeamIds.includes(t.teamId),
                               )}
                               onViewTeam={setSelectedTeam}
                               scrollToTop={scrollToTop}
@@ -540,13 +527,13 @@ const Indi_Dashboard = () => {
                   onSendRequest={async (team) => {
                     try {
                       const response = await fetch(
-                        "http://localhost:5001/api/individual/send-request",
+                        "http://localhost:5000/api/individual/send-request",
                         {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           credentials: "include",
                           body: JSON.stringify({ team_id: team.teamId }),
-                        }
+                        },
                       );
 
                       const data = await response.json();
@@ -559,7 +546,7 @@ const Indi_Dashboard = () => {
 
                         showNotification(
                           `Request sent to ${team.teamName}!`,
-                          "success"
+                          "success",
                         );
                         setSelectedTeam(null);
                         // Refresh teams to update request status
@@ -567,7 +554,7 @@ const Indi_Dashboard = () => {
                       } else {
                         showNotification(
                           data.error || "Failed to send request",
-                          "error"
+                          "error",
                         );
                       }
                     } catch (error) {

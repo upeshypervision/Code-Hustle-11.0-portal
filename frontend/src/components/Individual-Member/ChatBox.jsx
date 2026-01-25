@@ -48,10 +48,10 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:5001/api/chat/history/${conversationId}`,
+          `http://localhost:5000/api/chat/history/${conversationId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         const data = await response.json();
@@ -152,7 +152,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5001/api/chat/send", {
+      const response = await fetch("http://localhost:5000/api/chat/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -178,7 +178,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
       } else {
         if (response.status === 429) {
           setError(
-            "You're sending messages too quickly. Please wait a moment."
+            "You're sending messages too quickly. Please wait a moment.",
           );
         } else {
           setError(data.error || "Failed to send message");

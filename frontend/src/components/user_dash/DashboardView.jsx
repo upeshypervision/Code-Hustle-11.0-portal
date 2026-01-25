@@ -24,7 +24,7 @@ const DashboardView = ({
   useEffect(() => {
     const fetchTeamInfo = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/user-info", {
+        const res = await fetch("http://localhost:5000/api/user-info", {
           credentials: "include",
         });
         const data = await res.json();
@@ -41,7 +41,7 @@ const DashboardView = ({
     const fetchHackerrankStatus = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5001/api/check-hackerrank-submission",
+          "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
           },
@@ -61,7 +61,7 @@ const DashboardView = ({
   useEffect(() => {
     const fetchRoundStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/round-status", {
+        const res = await fetch("http://localhost:5000/api/round-status", {
           credentials: "include",
         });
         const data = await res.json();
@@ -80,7 +80,7 @@ const DashboardView = ({
   useEffect(() => {
     const handleRoundChange = (data) => {
       // Fetch updated round status
-      fetch("http://localhost:5001/api/round-status", {
+      fetch("http://localhost:5000/api/round-status", {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -100,7 +100,7 @@ const DashboardView = ({
     const handleApprovalUpdate = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5001/api/check-hackerrank-submission",
+          "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
           },

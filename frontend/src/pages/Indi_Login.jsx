@@ -43,7 +43,7 @@ export default function Indi_Login() {
 
     try {
       const response = await fetch(
-        "http://localhost:5001/api/individual-login",
+        "http://localhost:5000/api/individual-login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -52,7 +52,7 @@ export default function Indi_Login() {
             individual_id: formData.individualId,
             password: formData.password,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -90,7 +90,10 @@ export default function Indi_Login() {
         }}
       ></div>
 
-      <div className="portal-card animate-in">
+      <div
+        className="portal-card animate-in"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
@@ -161,6 +164,9 @@ export default function Indi_Login() {
             <button
               type="submit"
               className="neon-shade-btn next-glow"
+              style={{
+                background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+              }}
               disabled={isSubmitting}
             >
               {isSubmitting ? "VERIFYING..." : "LOGIN"}

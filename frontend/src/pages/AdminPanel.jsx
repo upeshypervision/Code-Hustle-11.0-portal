@@ -27,7 +27,7 @@ export default function AdminPanel() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/user-info", {
+    fetch("http://localhost:5000/api/user-info", {
       method: "GET",
       credentials: "include",
     })

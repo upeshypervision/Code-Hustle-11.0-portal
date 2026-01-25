@@ -29,7 +29,7 @@ const Incomp_Page = () => {
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [deleteReason, setDeleteReason] = useState("");
 
-  const API_BASE = "http://localhost:5001";
+  const API_BASE = "http://localhost:5000";
 
   const [activeView, setActiveView] = useState("details");
 
@@ -71,7 +71,7 @@ const Incomp_Page = () => {
       console.log("New join request received!", data);
       showNotification(
         `📩 New join request from ${data.individualName}!`,
-        "info"
+        "info",
       );
       // Refresh to show new request
       window.location.reload();
@@ -96,7 +96,7 @@ const Incomp_Page = () => {
           console.error("Team Auth Error:", errData);
           showNotification(
             `Authentication Failed: ${errData.error || "Unknown Error"}`,
-            "error"
+            "error",
           );
           // navigate('/team-login'); // Disabled for debugging
           return;
@@ -207,7 +207,7 @@ const Incomp_Page = () => {
     if (wordCount < 15) {
       showNotification(
         "Please provide a reason of at least 15 words.",
-        "error"
+        "error",
       );
       return;
     }
@@ -264,7 +264,7 @@ const Incomp_Page = () => {
         }));
         showNotification(
           "Request accepted successfully! Member added to team.",
-          "success"
+          "success",
         );
         // Refresh team data to get updated member count
         setTimeout(() => window.location.reload(), 1500);
@@ -329,7 +329,7 @@ const Incomp_Page = () => {
         {
           method: "PUT",
           credentials: "include",
-        }
+        },
       );
 
       const data = await response.json();
@@ -338,7 +338,7 @@ const Incomp_Page = () => {
         setTeamData((prev) => ({ ...prev, visible: data.visible }));
         showNotification(
           `Team is now ${data.visible ? "visible" : "hidden"} to individuals`,
-          data.visible ? "success" : "error" // Red for hidden, Green for visible
+          data.visible ? "success" : "error", // Red for hidden, Green for visible
         );
       } else {
         showNotification(data.error || "Failed to toggle visibility", "error");
@@ -405,6 +405,89 @@ const Incomp_Page = () => {
             className="teams-content-section"
             style={{ width: "100%", maxWidth: "100%" }}
           >
+            {/* View Switching Toggle */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginBottom: "20px",
+              }}
+            >
+              <div
+                style={{
+                  background: "rgba(22, 28, 51, 0.5)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: "30px",
+                  padding: "4px",
+                  display: "flex",
+                  gap: "4px",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                }}
+              >
+                <button
+                  onClick={() => setActiveView("details")}
+                  style={{
+                    background:
+                      activeView === "details"
+                        ? "rgba(56, 189, 248, 0.2)"
+                        : "transparent",
+                    color: activeView === "details" ? "#38bdf8" : "#94a3b8",
+                    border: "none",
+                    padding: "8px 24px",
+                    borderRadius: "24px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.8rem",
+                    transition: "all 0.3s ease",
+                    fontFamily: "'Orbitron', sans-serif",
+                    letterSpacing: "1px",
+                  }}
+                >
+                  TEAM DETAILS
+                </button>
+                <button
+                  onClick={() => setActiveView("requests")}
+                  style={{
+                    background:
+                      activeView === "requests"
+                        ? "rgba(56, 189, 248, 0.2)"
+                        : "transparent",
+                    color: activeView === "requests" ? "#38bdf8" : "#94a3b8",
+                    border: "none",
+                    padding: "8px 24px",
+                    borderRadius: "24px",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.8rem",
+                    transition: "all 0.3s ease",
+                    fontFamily: "'Orbitron', sans-serif",
+                    letterSpacing: "1px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  REQUESTS
+                  {teamData.joinRequests &&
+                    teamData.joinRequests.length > 0 && (
+                      <span
+                        style={{
+                          background: "#ef4444",
+                          color: "white",
+                          borderRadius: "12px",
+                          padding: "2px 8px",
+                          fontSize: "0.7rem",
+                          fontWeight: "bold",
+                          lineHeight: "1",
+                        }}
+                      >
+                        {teamData.joinRequests.length}
+                      </span>
+                    )}
+                </button>
+              </div>
+            </div>
+
             {activeView === "details" && (
               <div
                 className="desktop-layout-container animate-enter"
@@ -413,6 +496,11 @@ const Incomp_Page = () => {
                   gap: "0",
                   width: "100%",
                   alignItems: "flex-start",
+                  background: "rgba(22, 28, 51, 0.3)",
+                  backdropFilter: "blur(12px)",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  padding: "24px",
                 }}
               >
                 {/* LEFT SIDEBAR (Desktop Only) */}
@@ -447,6 +535,11 @@ const Incomp_Page = () => {
                       display: "flex",
                       flexDirection: "column",
                       gap: "16px",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
                     }}
                   >
                     <div>
@@ -525,7 +618,14 @@ const Incomp_Page = () => {
                   {/* Team Vision Card */}
                   <div
                     className="team-details-card neural-node"
-                    style={{ padding: "24px" }}
+                    style={{
+                      padding: "24px",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                    }}
                   >
                     <strong
                       style={{
@@ -586,6 +686,11 @@ const Incomp_Page = () => {
                       display: "flex",
                       flexDirection: "column",
                       gap: "20px",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
                     }}
                   >
                     <div
@@ -715,7 +820,15 @@ const Incomp_Page = () => {
                   </span>
                   <div
                     className="team-header-wrapper neural-node"
-                    style={{ padding: "24px", marginBottom: "30px" }}
+                    style={{
+                      padding: "24px",
+                      marginBottom: "30px",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                    }}
                   >
                     <div
                       style={{
@@ -829,7 +942,14 @@ const Incomp_Page = () => {
                   </div>
                   <div
                     className="members-list neural-node"
-                    style={{ padding: "20px" }}
+                    style={{
+                      padding: "20px",
+                      background: "rgba(0, 0, 0, 0.4)",
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "8px",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                    }}
                   >
                     {teamData.members
                       .concat(teamData.joinedMembers)
@@ -905,19 +1025,19 @@ const Incomp_Page = () => {
                                   <td data-label="Name">
                                     {sanitizeText(
                                       member.full_name || member.name,
-                                      100
+                                      100,
                                     )}
                                   </td>
                                   <td data-label="University">
                                     {sanitizeText(
                                       member.college_name || member.university,
-                                      150
+                                      150,
                                     )}
                                   </td>
                                   <td data-label="Skills">
                                     {sanitizeText(
                                       member.bio || member.details,
-                                      200
+                                      200,
                                     )}
                                   </td>
                                   <td data-label="Actions">
@@ -1014,7 +1134,7 @@ const Incomp_Page = () => {
                 <span className="detail-value">
                   {sanitizeText(
                     selectedMember.skills || selectedMember.about,
-                    500
+                    500,
                   ) || "N/A"}
                 </span>
               </div>

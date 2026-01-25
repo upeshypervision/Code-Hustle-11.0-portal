@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Registration.css";
+import indiLoginBg from "../assets/indi-login-bg.png";
 
 export default function TeamLogin() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function TeamLogin() {
     setMessage({ type: "", text: "" });
 
     try {
-      const response = await fetch("http://localhost:5001/api/team-login", {
+      const response = await fetch("http://localhost:5000/api/team-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -78,13 +79,20 @@ export default function TeamLogin() {
 
   return (
     <div className="app-viewport">
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${indiLoginBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
-      <div className="portal-card animate-in">
+      <div
+        className="portal-card animate-in"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
@@ -153,6 +161,9 @@ export default function TeamLogin() {
             <button
               type="submit"
               className="neon-shade-btn next-glow"
+              style={{
+                background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+              }}
               disabled={isSubmitting}
             >
               {isSubmitting ? "VERIFYING..." : "LOGIN"}

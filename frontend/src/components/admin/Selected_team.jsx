@@ -27,7 +27,7 @@ export default function SelectedTeam() {
         endpoint = "/api/admin/approved-hackerrank-teams";
     }
 
-    fetch(`http://localhost:5001${endpoint}`, {
+    fetch(`http://localhost:5000${endpoint}`, {
       credentials: "include",
     })
       .then((res) => res.json())

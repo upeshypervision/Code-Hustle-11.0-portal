@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Registration.css"; // Reusing the same CSS for consistency
+import regiBg from "../assets/regi-bg.png";
 
 export default function StudentLogin() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function StudentLogin() {
     setMessage({ type: "", text: "" });
 
     try {
-      const response = await fetch("http://localhost:5001/api/student-login", {
+      const response = await fetch("http://localhost:5000/api/student-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -76,13 +77,20 @@ export default function StudentLogin() {
 
   return (
     <div className="app-viewport">
-      <div className="cosmic-bg">
-        <div className="nebula-cloud-blue"></div>
-        <div className="nebula-cloud-purple"></div>
-        <div className="starfield"></div>
-      </div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
-      <div className="portal-card animate-in">
+      <div
+        className="portal-card animate-in"
+        style={{ backgroundColor: "#0f172a" }}
+      >
         <header className="brand-header">
           <div className="hypervision-badge">HYPERVISION</div>
           <p className="presents-text">PRESENTS</p>
@@ -153,6 +161,9 @@ export default function StudentLogin() {
             <button
               type="submit"
               className="neon-shade-btn next-glow"
+              style={{
+                background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+              }}
               disabled={isSubmitting}
             >
               {isSubmitting ? "ENTERING..." : "LOGIN TO DASHBOARD"}
