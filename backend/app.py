@@ -18,7 +18,8 @@ from user_access import (
     fetch_teams_route, get_user_info_route,
     fetch_teams_pending_submission_route,
     fetch_submissions_route,
-    generate_presigned_url_route
+    generate_presigned_url_route_ppt,
+    generate_presigned_url_route_screenshot
 )
 from git_submission import submit_link_route,check_github_submission_route, fetch_approved_github_teams
 from get_info import fetch_teamsnosubmission, view_githubsubmission_route
@@ -55,6 +56,12 @@ from individual_registration import register_individual_route
 from createteam_registration import create_team_route
 from TeamDashboard import get_team_dashboard_data, delete_team_member, toggle_team_visibility
 from chat_service import send_message, get_chat_history, get_conversations, mark_as_read, get_all_chat_messages_route
+from payment_validation import (
+    get_payment_validation_status_route,
+    update_payment_validation_status_route,
+    get_pending_payment_teams_route,
+    validate_payment_route
+)
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -93,6 +100,23 @@ def check_individual_auth():
 @app.route("/api/check-team-auth", methods=["GET"])
 def check_team_auth():
     return check_team_auth_route()
+
+@app.route('/api/admin/payment-validation-status', methods=['GET'])
+def get_payment_validation_status():
+    return get_payment_validation_status_route()
+
+@app.route('/api/admin/payment-validation-status', methods=['POST'])
+def update_payment_validation_status():
+    return update_payment_validation_status_route()
+
+@app.route('/api/admin/pending-payments', methods=['GET'])
+def get_pending_payments():
+    return get_pending_payment_teams_route()
+
+@app.route('/api/admin/validate-payment', methods=['POST'])
+def validate_payment():
+    return validate_payment_route()
+
 
 @app.route("/api/validate-hypervision", methods=["POST"])
 def validate_hypervision():
@@ -322,9 +346,13 @@ def get_teams_by_ps(ps_id):
     return get_teams_by_ps_route(ps_id)
 
 # --- NEW Route for Presigned URLs ---
-@app.route("/api/admin/submission/<team_id>", methods=["GET"]) # New route
-def get_submission_presigned_url(team_id):
-    return generate_presigned_url_route(team_id)
+@app.route("/api/admin/submission/<team_id>", methods=["GET"]) # For PPT submissions
+def get_ppt_submission_presigned_url(team_id):
+    return generate_presigned_url_route_ppt(team_id)
+
+@app.route("/api/admin/payment-screenshot/<team_id>", methods=["GET"]) # For payment screenshots
+def get_payment_screenshot_presigned_url(team_id):
+    return generate_presigned_url_route_screenshot(team_id)
 
 @app.route('/api/admin/problem-statement/<ps_id>/toggle-visibility', methods=['POST'])
 def toggle_ps_visibility(ps_id):

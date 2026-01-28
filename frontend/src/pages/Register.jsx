@@ -357,7 +357,6 @@ const Registration = () => {
 
               {/* QR Code Display Logic */}
               <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <p style={{ fontSize: '12px', color: '#38bdf8', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>Scan to Pay ₹{finalPrice}</p>
                 <img 
                     src={isDiscounted ? qr380 : qr400} 
                     alt={`QR Code for ₹${finalPrice}`}

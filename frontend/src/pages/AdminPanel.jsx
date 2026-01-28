@@ -11,6 +11,7 @@ import Manualgithub from "../components/admin/Manualgithub";
 import ViewCreateTeams from "../components/admin/ViewCreateTeams";
 import ViewIndividuals from "../components/admin/ViewIndividuals";
 import ViewChatMessages from "../components/admin/ViewChatMessages";
+import PaymentValidation from "../components/admin/PaymentValidation"; // Add this import
 
 /* ✅ ORIGINAL IMPORTS KEPT STRICTLY INTACT */
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
@@ -56,6 +57,7 @@ export default function AdminPanel() {
     { id: "view-individuals", label: "View Individuals", active: activeSection === "view-individuals" },
     { id: "view-chat-messages", label: "View Chat Messages", active: activeSection === "view-chat-messages" },
     { id: "add-participant", label: "Add Participant", active: activeSection === "add-participant" },
+    { id: "payment-validation", label: "Payment Validation", active: activeSection === "payment-validation" }, // Add this
   ];
 
   const handleMenuItemClick = (item) => {
@@ -80,6 +82,7 @@ export default function AdminPanel() {
       case "view-create-teams": return <ViewCreateTeams />;
       case "view-individuals": return <ViewIndividuals />;
       case "view-chat-messages": return <ViewChatMessages />;
+      case "payment-validation": return <PaymentValidation />; // Add this case
       default: return null;
     }
   };

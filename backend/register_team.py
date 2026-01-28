@@ -132,8 +132,7 @@ def register_team_route():
             "hypervision_member": hypervision_member,
             "amount": amount,
             "payment_screenshot": payment_s3_url,
-            "payment_status": "Submitted for Review",
-            "status": "Payment Pending Review",
+            "status": "Pending Payment",
             "role": "student",
             "timestamp": datetime.utcnow().isoformat(),
             "password_hashed": password_hashed  # Add hashed password

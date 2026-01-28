@@ -73,13 +73,6 @@ def fetch_teams_route():
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except jwt.ExpiredSignatureError:
-        return jsonify({"error": "Session expired"}), 401
-    except jwt.InvalidTokenError:
-        return jsonify({"error": "Invalid token"}), 401
-
-    try:
         teams = list(db["teams"].find({}, {"_id": 0, "password_hashed": 0}).sort("_id", -1))
         return jsonify({"success": True, "teams": teams, "count": len(teams)}), 200
     except Exception as e:
@@ -200,7 +193,7 @@ def fetch_submissions_route():
 
 
 # ✅ ONLY ONE DEFINITION — OPTIMIZED
-def generate_presigned_url_route(team_id):
+def generate_presigned_url_route_ppt(team_id):
     """
     Generate a presigned S3 URL for admin OR evaluator to view/download a team's submission.
     Supports ?disposition=inline (default) or ?disposition=attachment.
@@ -276,6 +269,87 @@ def generate_presigned_url_route(team_id):
                 "ResponseContentDisposition": f'{disposition}; filename="{file_name}"'
             },
             ExpiresIn=600  # 10 minutes
+        )
+
+        return jsonify({"success": True, "url": presigned_url}), 200
+
+    except Exception as e:
+        print(f"Error generating presigned URL for team {team_id}: {e}")
+        return jsonify({"error": "Failed to generate view link"}), 500
+    
+def generate_presigned_url_route_screenshot(team_id): #fix this at hostel
+    """
+    Generate a presigned S3 URL for admin OR evaluator to view/download a team's submission.
+    Supports ?disposition=inline (default) or ?disposition=attachment.
+    """
+    admin_cookie = request.cookies.get('admin_auth')
+    evaluator_cookie = request.cookies.get('evaluator_auth')
+    
+    auth_success = False
+
+    # Check Admin Auth
+    if admin_cookie:
+        try:
+            payload = jwt.decode(admin_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            if payload.get("role") == "admin":
+                auth_success = True
+        except:
+            pass
+            
+    # Check Evaluator Auth (if not already admin authenticated)
+    if not auth_success and evaluator_cookie:
+        try:
+            payload = jwt.decode(evaluator_cookie, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            # Evaluators just need a valid token with a username
+            if payload.get("username"):
+                auth_success = True
+        except:
+            pass
+
+    if not auth_success:
+        return jsonify({"error": "Admin or Evaluator authentication required"}), 401
+     
+    try:
+        screenshot = db.teams.find_one({"team_id": team_id})
+        file_path = screenshot.get("payment_screenshot")
+
+        if not isinstance(file_path, str) or not file_path.startswith("https://"):
+            return jsonify({"error": "Invalid or missing file path"}), 500
+
+        # Parse URL safely
+        parsed = urlparse(file_path)
+        expected_netloc = f"{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com"
+        if parsed.netloc != expected_netloc:
+            if not parsed.netloc.startswith(f"{S3_BUCKET_NAME}.s3.") or not parsed.netloc.endswith(".amazonaws.com"):
+                return jsonify({"error": "File path is not from the expected S3 bucket"}), 500
+
+        s3_key = parsed.path.lstrip("/")
+        if not s3_key:
+            return jsonify({"error": "Empty S3 key"}), 500
+
+        # Handle disposition
+        disposition = request.args.get("disposition", "inline")
+        if disposition not in ("inline", "attachment"):
+            disposition = "inline"
+
+        s3_client = boto3.client(
+            "s3",
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            region_name=AWS_REGION
+        )
+
+        # Fixed: Use proper filename for Content-Disposition
+        filename = f"payment_screenshot_{team_id}.jpg"
+        
+        presigned_url = s3_client.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": S3_BUCKET_NAME,
+                "Key": s3_key,
+                "ResponseContentDisposition": f'{disposition}; filename="{filename}"'
+            },
+            ExpiresIn=600
         )
 
         return jsonify({"success": True, "url": presigned_url}), 200
