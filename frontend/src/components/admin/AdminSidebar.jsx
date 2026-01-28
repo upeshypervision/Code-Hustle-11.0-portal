@@ -7,7 +7,8 @@ import {
   Code2,
   Users2,
   UserPlus,
-  Target
+  Target,
+  CreditCard
 } from "lucide-react";
 import "./AdminSidebar.css";
 
@@ -113,6 +114,15 @@ export default function AdminSidebar({ activeSection, setActiveSection, isMobile
         >
           <span className="icon-box"><UserPlus size={18} /></span>
           <span className="label-text">Add Participant</span>
+        </button>
+        
+        {/* Add Payment Validation under USER OPS */}
+        <button
+          className={`nav-item-v2 ${activeSection === "payment-validation" ? "active-glow" : ""}`}
+          onClick={() => setActiveSection("payment-validation")}
+        >
+          <span className="icon-box"><CreditCard size={18} /></span>
+          <span className="label-text">Payment Validation</span>
         </button>
       </div>
 

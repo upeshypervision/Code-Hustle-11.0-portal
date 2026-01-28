@@ -18,7 +18,7 @@ def upload_file_to_s3(file_content, file_key, content_type):
     Args:
         file_content (bytes): The binary content of the file.
         file_key (str): The key (name) for the file in the S3 bucket.
-        content_type (str): The MIME type of the file (e.g., 'application/pdf').
+        content_type (str): The MIME type of the file (e.g., 'application/pdf', 'image/png').
 
     Returns:
         str: The S3 URL of the uploaded file if successful, None otherwise.
@@ -39,13 +39,24 @@ def upload_file_to_s3(file_content, file_key, content_type):
         return None
 
 # File validation logic can also be here if desired, but often sits in the controller layer
-ALLOWED_EXTENSIONS = {'pdf', 'ppt', 'pptx'}
+ALLOWED_EXTENSIONS_REGISTRATION = {'png', 'jpg', 'jpeg', 'gif'}  # For registration images
+ALLOWED_EXTENSIONS_PPT = {'pdf', 'ppt', 'pptx'}  # For PPT submissions
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB in bytes
 
-def allowed_file(filename):
-    """Check if the file extension is allowed."""
+def allowed_file_registration(filename):
+    """Check if the file extension is allowed for registration."""
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_REGISTRATION
+
+def allowed_file_ppt(filename):
+    """Check if the file extension is allowed for PPT submissions."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_PPT
+
+def allowed_file(filename):
+    """Check if the file extension is allowed for any upload."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in (ALLOWED_EXTENSIONS_REGISTRATION | ALLOWED_EXTENSIONS_PPT)
 
 def is_valid_file_size(file):
     """Check if the file size is within the limit."""
@@ -57,7 +68,11 @@ def is_valid_file_size(file):
 CONTENT_TYPE_MAP = {
     'pdf': 'application/pdf',
     'ppt': 'application/vnd.ms-powerpoint',
-    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'png': 'image/png',
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'gif': 'image/gif'
 }
 
 def get_content_type(filename):

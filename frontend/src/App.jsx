@@ -22,7 +22,9 @@ import TeamLogin from './pages/TeamLogin.jsx';
 import EvaluatorLogin from "./pages/EvaluatorLogin";
 import EvaluatorPanel from "./pages/EvaluatorPanel";
 
+// Lazy load AdminPanel which includes PaymentValidation
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+
 function App() {
   return (
     <Router>
@@ -52,8 +54,6 @@ function App() {
         <Route path="/Indiregi" element={<Indi_Regi />} />
         <Route path="/individual-login" element={<Indi_Login />} />
         <Route path="/team-login" element={<TeamLogin />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userlogin" element={<Userlogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
