@@ -73,7 +73,21 @@ def fetch_teams_route():
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        teams = list(db["teams"].find({}, {"_id": 0, "password_hashed": 0}).sort("_id", -1))
+        jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Session expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
+
+    try:
+        # Filter teams: only those with "Paid" status or "MANUAL_ENTRY" in payment_id
+        teams = list(db["teams"].find({
+            "$or": [
+                {"status": {"$regex": "Paid", "$options": "i"}},
+                {"payment_id": "MANUAL_ENTRY"}
+            ]
+        }, {"_id": 0, "password_hashed": 0}).sort("_id", -1))
+        
         return jsonify({"success": True, "teams": teams, "count": len(teams)}), 200
     except Exception as e:
         print(f"Error fetching teams: {str(e)}")
