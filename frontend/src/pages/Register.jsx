@@ -64,7 +64,8 @@ const Registration = () => {
   };
 
   // --- DISCOUNT LOGIC ---
-  const handleVerifyDiscount = async () => {
+  const handleVerifyDiscount = async (e) => {
+    if (e) e.preventDefault(); 
     if (!discount.hyperId || !discount.verifySapId) {
       setErrorBadge("Enter HV ID and SAP ID first");
       return;
@@ -75,16 +76,21 @@ const Registration = () => {
       const res = await fetch(`${API_BASE}/validate-hypervision`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hypervision_id: discount.hyperId.trim(), sapid: discount.verifySapId.trim() })
+        body: JSON.stringify({ 
+          hypervision_id: discount.hyperId.trim(), 
+          sapid: discount.verifySapId.trim() 
+        })
       });
       const data = await res.json();
       if (data.is_hypervision) {
-        setFinalPrice(380); // Set Discounted Price
+        setFinalPrice(380); 
         setHyperMemberData(data.member);
         setIsDiscounted(true);
+        // AUTOMATICALLY GO TO NEXT PAGE ON SUCCESS
+        setStep(7); 
       } else {
         setErrorBadge("Invalid Hypervision ID or Credentials");
-        setFinalPrice(400); // Reset to Standard Price
+        setFinalPrice(400);
         setIsDiscounted(false);
       }
     } catch (err) {
@@ -146,11 +152,10 @@ const Registration = () => {
       return;
     }
 
-    setLoading(true); // Locks the button
+    setLoading(true); 
     setErrorBadge("");
     
     try {
-      // Create FormData to send file + JSON
       const formData = new FormData();
       const teamPayload = {
         leader: team.leader,
@@ -163,16 +168,15 @@ const Registration = () => {
       formData.append('data', JSON.stringify(teamPayload));
       formData.append('payment_screenshot', screenshot);
 
-      // Sending to manual registration endpoint
       const res = await fetch(`${API_BASE}/register-team`, {
         method: "POST",
-        body: formData // Browser sets boundary automatically
+        body: formData 
       });
       
       const data = await res.json();
       
       if (data.success) {
-        setSubmitted(true); // Shows success screen
+        setSubmitted(true); 
       } else {
         setErrorBadge(data.error || "Registration failed");
       }
@@ -237,7 +241,7 @@ const Registration = () => {
 
       {!submitted ? (
         <div className="portal-card animate-in">
-          <header className="brand-header">
+          <header className="brand-header" style={{ marginBottom: '10px' }}>
             <div className="hypervision-badge">HYPERVISION</div>
             <p className="presents-text">PRESENTS</p>
             <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
@@ -329,7 +333,7 @@ const Registration = () => {
             </div>
           )}
 
-          {/* STEP 6: PAYMENT & SUBMISSION */}
+          {/* STEP 6: DISCOUNT VERIFICATION */}
           {step === 6 && (
             <div className="animate-in">
               <span className="label-detail">DISCOUNT & PAYMENT</span>
@@ -344,90 +348,79 @@ const Registration = () => {
                     <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} maxLength={9} onChange={(e) => setDiscount({ ...discount, verifySapId: e.target.value })} /></div>
                   </div>
 
-                  <button className="secondary-add-btn" style={{ width: '100%', padding: '12px', border: '1px solid #38bdf8', color: '#38bdf8', marginBottom: '15px', borderRadius: '30px', background: 'rgba(56, 189, 248, 0.1)', fontWeight: 800 }} onClick={handleVerifyDiscount}>APPLY DISCOUNT</button>
+                  <button className="secondary-add-btn" style={{ width: '100%', padding: '12px', border: '1px solid #38bdf8', color: '#38bdf8', marginBottom: '15px', borderRadius: '30px', background: 'rgba(56, 189, 248, 0.1)', fontWeight: 800, cursor: 'pointer' }} onClick={handleVerifyDiscount}>{loading ? "VERIFYING..." : "APPLY DISCOUNT"}</button>
                 </>
               )}
+              
+              <button className="neon-shade-btn next-glow" onClick={() => setStep(7)}>PROCEED TO QR →</button>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(5)}>← BACK</p>
+            </div>
+          )}
 
-              <div style={{ textAlign: 'center', margin: '15px 0', padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <p style={{ fontSize: '12px', opacity: 0.6 }}>Total Payable:</p>
-                <h2 style={{ fontSize: '28px', color: isDiscounted ? '#10b981' : '#fff' }}>
-                  {isDiscounted ? <><span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '16px', marginRight: '10px' }}>₹400</span>₹{finalPrice}</> : `₹${finalPrice}`}
+          {/* STEP 7: QR SCAN & UPLOAD */}
+          {step === 7 && (
+            <div className="animate-in creative-payment-container" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span className="label-detail" style={{ marginBottom: '2px' }}>SCAN & SUBMIT</span>
+              
+              <div style={{ textAlign: 'center', margin: '4px 0', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <p style={{ fontSize: '10px', opacity: 0.6, marginBottom: '2px' }}>Total Payable:</p>
+                <h2 style={{ fontSize: '24px', color: isDiscounted ? '#10b981' : '#fff', margin: 0 }}>
+                  {isDiscounted ? <><span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '14px', marginRight: '8px' }}>₹400</span>₹{finalPrice}</> : `₹${finalPrice}`}
                 </h2>
               </div>
 
-              {/* QR Code Display Logic */}
-              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <img 
+              <div className="qr-portal-frame" style={{ padding: '8px', margin: '0 auto', maxWidth: '160px' }}>
+                  <div className="qr-scan-line"></div>
+                  <img 
                     src={isDiscounted ? qr380 : qr400} 
                     alt={`QR Code for ₹${finalPrice}`}
-                    style={{ 
-                        width: '200px', 
-                        height: '200px', 
-                        borderRadius: '10px',
-                        border: '2px solid #38bdf8',
-                        boxShadow: '0 0 15px rgba(56, 189, 248, 0.4)'
-                    }} 
-                />
-              </div>
-
-              {/* File Upload Logic */}
-              <div className="input-group">
-                <div className="label-row"><span>Upload Payment Screenshot</span></div>
-                <div className="glow-input-container" style={{ padding: '10px', display: 'flex', alignItems: 'center' }}>
-                    <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        style={{ color: '#fff', fontSize: '13px' }}
-                    />
-                </div>
-                {screenshot && <p style={{ fontSize: '11px', color: '#10b981', marginTop: '5px' }}>✓ File selected: {screenshot.name}</p>}
-              </div>
-
-              {/* Terms Checkbox */}
-              <div className="input-group" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center' }}>
-                  <input 
-                      type="checkbox" 
-                      id="agree-reg"
-                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                      checked={agreedToTerms}
-                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="qr-image-creative" 
+                    style={{ width: '100%', height: 'auto' }}
                   />
-                  <label htmlFor="agree-reg" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
+                  <p className="qr-hint" style={{ fontSize: '10px', marginTop: '4px' }}>Scan to Pay</p>
+              </div>
+
+              <div className="input-group" style={{ marginBottom: '4px' }}>
+                <div className="label-row"><span style={{ fontSize: '12px' }}>Transaction Proof</span></div>
+                <label className={`creative-upload-box ${screenshot ? 'file-uploaded' : ''}`} style={{ padding: '8px' }}>
+                    <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
+                    <div className="upload-content">
+                        <span className="upload-icon" style={{ fontSize: '14px' }}>{screenshot ? '✓' : '⇪'}</span>
+                        <span className="upload-text" style={{ fontSize: '11px' }}>{screenshot ? screenshot.name : "Tap to upload screenshot"}</span>
+                    </div>
+                </label>
+              </div>
+
+              <div className="input-group" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                  <input type="checkbox" id="agree-reg" style={{ width: '16px', height: '16px', cursor: 'pointer' }} checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} />
+                  <label htmlFor="agree-reg" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
                     I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{color: '#38bdf8', textDecoration: 'underline'}}>TERMS AND CONDITIONS</a>.
                   </label>
               </div>
 
-              <button 
-                className={`neon-shade-btn next-glow ${(loading || !agreedToTerms || !screenshot) ? 'btn-locked' : ''}`} 
-                disabled={loading || !agreedToTerms || !screenshot} 
-                onClick={handleManualRegistration}
-              >
-                {loading ? "PROCESSING..." : "SUBMIT PAYMENT"}
+              <button className={`neon-shade-btn next-glow ${(loading || !agreedToTerms || !screenshot) ? 'btn-locked' : ''}`} style={{ marginTop: '0' }} disabled={loading || !agreedToTerms || !screenshot} onClick={handleManualRegistration}>
+                {loading ? "PROCESSING..." : "SUBMIT REGISTRATION"}
               </button>
-              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(2)}>← BACK</p>
+              
+              <p className="signin-link back-btn-creative" style={{ marginTop: '8px', cursor: 'pointer', fontSize: '12px' }} onClick={() => setStep(6)}>
+                <span>←</span> BACK
+              </p>
             </div>
           )}
 
-          <footer className="footer-links">
+          <footer className="footer-links" style={{ marginTop: '10px' }}>
             <a href="/userlogin" className="footer-btn">Sign In</a>
           </footer>
         </div>
       ) : (
-        // SUCCESS SCREEN
         <div className="portal-card animate-in success-layout" style={{ textAlign: 'center' }}>
-          <h2 className="syncopate-font" style={{ color: '#10b981', fontSize: '1.4rem' }}>✅ SUBMISSION SUCCESSFUL!</h2>
-
+          <h2 className="syncopate-font" style={{ color: '#10b981', fontSize: '1.4rem' }}>SUBMISSION SUCCESSFUL!</h2>
           <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '30px', borderRadius: '12px', border: '2px solid rgba(16, 185, 129, 0.5)', margin: '30px 0' }}>
             <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.8' }}>
               Your registration request has been received.<br />
               <strong style={{ color: '#10b981' }}>Credentials</strong> will be sent to your email after admin verification.
             </p>
           </div>
-
-          <p style={{ marginTop: '20px', opacity: 0.7, fontSize: '13px', color: '#cbd5e1', lineHeight: '1.6' }}>
-            Please check your inbox periodically.
-          </p>
           <button className="neon-shade-btn next-glow" onClick={() => window.location.href = '/userlogin'} style={{ marginTop: '25px' }}>
             GO TO LOGIN →
           </button>
