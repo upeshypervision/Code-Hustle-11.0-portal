@@ -326,3 +326,148 @@ select.glow-input option {
         transform: translateY(0);
     }
 }
+
+/* --- CREATIVE PAYMENT STEP STYLES --- */
+.creative-payment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-receipt-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 10px;
+}
+
+.receipt-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.receipt-label { opacity: 0.6; }
+.receipt-value { font-weight: 700; }
+.discount-row { color: #10b981; }
+
+.receipt-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 12px 0;
+}
+
+.total-row {
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.receipt-total {
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.text-glow-green { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+.text-glow-blue { color: #38bdf8; text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+
+.qr-portal-frame {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+    padding: 10px;
+    background: #fff;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-image-creative {
+    width: 140px;
+    height: 140px;
+}
+
+.qr-scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #38bdf8;
+    box-shadow: 0 0 15px #38bdf8;
+    top: 0;
+    animation: scanMove 3s infinite linear;
+    z-index: 1;
+}
+
+@keyframes scanMove {
+    0% { top: 10%; }
+    50% { top: 90%; }
+    100% { top: 10%; }
+}
+
+.qr-hint {
+    color: #060812;
+    font-size: 10px;
+    font-weight: 800;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+.creative-upload-box {
+    display: block;
+    background: rgba(56, 189, 248, 0.05);
+    border: 2px dashed rgba(56, 189, 248, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.creative-upload-box:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: #38bdf8;
+}
+
+.upload-icon {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #38bdf8;
+}
+
+.upload-text {
+    font-size: 11px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.file-uploaded {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
+}
+
+.file-uploaded .upload-icon, .file-uploaded .upload-text {
+    color: #10b981;
+}
+
+.back-btn-creative {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.back-btn-creative span {
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.back-btn-creative:hover span {
+    transform: translateX(-5px);
+}
