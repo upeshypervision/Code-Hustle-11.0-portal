@@ -20,7 +20,9 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
         </div>
 
         <div className="team-details-title-row">
-          <h2 className="team-details-name">{sanitizeText(team.teamName, 100)}</h2>
+          <h2 className="team-details-name">
+            {sanitizeText(team.teamName, 100)}
+          </h2>
           {team.requestStatus && team.requestStatus !== "Rejected" && (
             <button
               onClick={() => onChat(team)}
@@ -46,7 +48,9 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
             </button>
           )}
         </div>
-        <div className="team-details-id">TEAM ID: {sanitizeText(team.teamId, 50)}</div>
+        <div className="team-details-id">
+          TEAM ID: {sanitizeText(team.teamId, 50)}
+        </div>
 
         <div className="team-details-grid">
           <div className="input-group" style={{ gridColumn: "1 / -1" }}>
@@ -54,7 +58,9 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
               <span>TEAM VISION</span>
             </div>
             <div className="glow-input-container team-details-box">
-              <p className="team-details-text">{sanitizeText(team.vision, 1000)}</p>
+              <p className="team-details-text">
+                {sanitizeText(team.vision, 1000)}
+              </p>
             </div>
           </div>
 
@@ -67,7 +73,9 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
             </div>
             <div className="glow-input-container team-details-box">
               <div className="leader-info-container">
-                <span className="leader-name">{sanitizeText(team.leaderName, 100)}</span>
+                <span className="leader-name">
+                  {sanitizeText(team.leaderName, 100)}
+                </span>
                 <span className="leader-university">
                   {sanitizeText(team.leaderUniversity, 200)}
                 </span>
@@ -92,7 +100,9 @@ const Indi_TeamDetails = ({ team, onClose, onChat, onSendRequest }) => {
                 {team.members.map((member, idx) => (
                   <div key={idx} className="member-card">
                     <div className="member-header">
-                      <span className="member-name">{sanitizeText(member.name, 100)}</span>
+                      <span className="member-name">
+                        {sanitizeText(member.name, 100)}
+                      </span>
                       <span className="member-university">
                         {sanitizeText(member.university, 200)}
                       </span>

@@ -146,17 +146,17 @@
   width: 100% !important;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.9) 20%,
-    rgba(0, 0, 0, 0.9) 80%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(30, 30, 30, 0.8) 0%,
+    rgba(50, 50, 50, 0.8) 20%,
+    rgba(50, 50, 50, 0.8) 80%,
+    rgba(30, 30, 30, 0.8) 100%
   );
   border-radius: 4px;
   margin-left: 0 !important;
   margin-right: 0 !important;
   padding-left: 20px !important;
   padding-right: 20px !important;
-  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.1);
+  /* box-shadow updated above */
   color: #38bdf8;
   font-weight: 600;
   text-transform: uppercase;

@@ -370,6 +370,55 @@ const Indi_Dashboard = () => {
                     "No skills provided"}
                 </p>
               </div>
+
+              <div
+                style={{
+                  marginTop: "24px",
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <button
+                  onClick={() => {
+                    setActiveTab("teams");
+                    setTeamsSubSection("available-teams");
+                  }}
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                    color: "white",
+                    border: "none",
+                    padding: "14px 32px",
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    fontFamily: "'Orbitron', sans-serif",
+                    letterSpacing: "1px",
+                    width: "100%",
+                    textTransform: "uppercase",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "10px",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 6px 20px rgba(37, 99, 235, 0.5)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 15px rgba(37, 99, 235, 0.3)";
+                  }}
+                >
+                  <span>Explore Team</span>
+                </button>
+              </div>
             </div>
           </div>
         ) : (
