@@ -2,16 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Registration.css";
 import regiBg from "../assets/regi-bg.png";
 
-const loadScript = (src) => {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+// Import Assets (QR Codes)
+import qr380 from '../assets/380.png';
+import qr400 from '../assets/400.png';
 
 const Registration = () => {
   const [step, setStep] = useState(1);
@@ -19,14 +12,21 @@ const Registration = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errorBadge, setErrorBadge] = useState("");
   const [valErrors, setValErrors] = useState({});
-  const [finalPrice, setFinalPrice] = useState(450);
+  
+  // Default price is now 400 (Standard)
+  const [finalPrice, setFinalPrice] = useState(400); 
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
 
   // --- NEW STATE FOR TERMS AGREEMENT ---
+  
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  
+  // New state for payment screenshot file
+  const [screenshot, setScreenshot] = useState(null);
 
   // RESET checkbox of terms and conditions TERMS EVERY TIME STEP CHANGES
+  // Reset terms agreement on step change
   useEffect(() => {
     setAgreedToTerms(false);
   }, [step]);
@@ -50,20 +50,12 @@ const Registration = () => {
   const [teamName, setTeamName] = useState("");
   const [discount, setDiscount] = useState({ hyperId: "", verifySapId: "" });
 
-  useEffect(() => {
-    loadScript("https://checkout.razorpay.com/v1/checkout.js");
-  }, []);
-
+  // --- VALIDATION LOGIC ---
   const validate = (name, value, memberData) => {
-    if (!value && name !== "sapid") return ""; // Relax check for sapid initially
-
-    if (name === "sapid") {
-      if (!value)
-        return memberData.universityType === "UPES"
-          ? "SAP ID is required"
-          : "University Name is required";
-      if (memberData.universityType === "UPES" && value.length !== 9)
-        return "SAP ID must be 9 digits";
+    if (!value && name !== 'sapid') return ""; 
+    if (name === 'sapid') {
+      if (!value) return memberData.universityType === 'UPES' ? "SAP ID is required" : "University Name is required";
+      if (memberData.universityType === 'UPES' && value.length !== 9) return "SAP ID must be 9 digits";
     }
     if (name === "email" && !value.includes("@")) return "Invalid email format";
     if (name === "phone" && value.length !== 10)
@@ -93,8 +85,9 @@ const Registration = () => {
     );
   };
 
-  // --- RE-ADDED APPLY DISCOUNT LOGIC ---
-  const handleVerifyDiscount = async () => {
+  // --- DISCOUNT LOGIC ---
+  const handleVerifyDiscount = async (e) => {
+    if (e) e.preventDefault(); 
     if (!discount.hyperId || !discount.verifySapId) {
       setErrorBadge("Enter HV ID and SAP ID first");
       return;
@@ -105,19 +98,21 @@ const Registration = () => {
       const res = await fetch(`${API_BASE}/validate-hypervision`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          hypervision_id: discount.hyperId.trim(),
-          sapid: discount.verifySapId.trim(),
-        }),
+        body: JSON.stringify({ 
+          hypervision_id: discount.hyperId.trim(), 
+          sapid: discount.verifySapId.trim() 
+        })
       });
       const data = await res.json();
       if (data.is_hypervision) {
-        setFinalPrice(data.amount);
+        setFinalPrice(380); 
         setHyperMemberData(data.member);
         setIsDiscounted(true);
+        // AUTOMATICALLY GO TO NEXT PAGE ON SUCCESS
+        setStep(7); 
       } else {
         setErrorBadge("Invalid Hypervision ID or Credentials");
-        setFinalPrice(450);
+        setFinalPrice(400);
         setIsDiscounted(false);
       }
     } catch (err) {
@@ -126,61 +121,7 @@ const Registration = () => {
     setLoading(false);
   };
 
-  const verifyPayment = async (
-    razorpay_payment_id,
-    razorpay_order_id,
-    razorpay_signature,
-    teamPayload,
-  ) => {
-    setLoading(true);
-    try {
-      const payRes = await fetch(`${API_BASE}/verify-payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_payment_id,
-          razorpay_order_id,
-          razorpay_signature,
-          teamPayload,
-        }),
-      });
-      const data = await payRes.json();
-      if (data.success) {
-        setSubmitted(true);
-      } else setErrorBadge("Payment verification failed: " + data.error);
-    } catch (err) {
-      setErrorBadge("Network Error: Could not verify payment.");
-    }
-    setLoading(false);
-  };
-
-  const openRazorpay = async (order_id, finalAmount, key_id, teamPayload) => {
-    const options = {
-      key: key_id,
-      amount: finalAmount * 100,
-      currency: "INR",
-      name: "CodeHustle Hackathon",
-      description: "Team Registration",
-      order_id: order_id,
-      handler: function (response) {
-        verifyPayment(
-          response.razorpay_payment_id,
-          response.razorpay_order_id,
-          response.razorpay_signature,
-          teamPayload,
-        );
-      },
-      prefill: {
-        name: teamPayload.leader.fullName,
-        email: teamPayload.leader.email,
-        contact: teamPayload.leader.phone,
-      },
-      theme: { color: "#38bdf8" },
-    };
-    const rz = new window.Razorpay(options);
-    rz.open();
-  };
-
+  // --- STEP 1 CHECK ---
   const handleStep1Next = async () => {
     if (!teamName.trim()) {
       setErrorBadge("Please enter a Team Name");
@@ -207,16 +148,27 @@ const Registration = () => {
     }
   };
 
-  const handleRegistrationFlow = async () => {
-    // SECURITY CHECK FOR TERMS
+  // --- FILE HANDLER ---
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+        setScreenshot(e.target.files[0]);
+        setErrorBadge("");
+    }
+  };
+
+  // --- MANUAL REGISTRATION FLOW ---
+  const handleManualRegistration = async () => {
     if (!agreedToTerms) {
       setErrorBadge("Please agree to the terms and conditions");
       return;
     }
 
-    const membersList = [team.m1, team.m2, team.m3, team.m4].filter(
-      (m) => m.fullName !== "",
-    );
+    if (!screenshot) {
+        setErrorBadge("Please upload payment screenshot.");
+        return;
+    }
+
+    const membersList = [team.m1, team.m2, team.m3, team.m4].filter(m => m.fullName !== "");
     if (membersList.length < 2) {
       setErrorBadge(
         "⚠️ You need at least 2 Team Members besides the Leader (Total 3).",
@@ -224,44 +176,47 @@ const Registration = () => {
       return;
     }
 
-    setLoading(true);
+    setLoading(true); 
     setErrorBadge("");
+    
     try {
+      const formData = new FormData();
       const teamPayload = {
         leader: team.leader,
         members: membersList,
         team_name: teamName,
         hypervision_member: hyperMemberData,
+        amount: finalPrice
       };
+
+      formData.append('data', JSON.stringify(teamPayload));
+      formData.append('payment_screenshot', screenshot);
 
       const res = await fetch(`${API_BASE}/register-team`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(teamPayload),
+        body: formData 
       });
+      
       const data = await res.json();
+      
       if (data.success) {
-        await openRazorpay(data.order_id, data.amount, data.key_id, {
-          ...teamPayload,
-          team_id: data.team_id,
-        });
+        setSubmitted(true); 
       } else {
         setErrorBadge(data.error || "Registration failed");
       }
     } catch (err) {
       setErrorBadge("Server unreachable during registration.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  // --- RENDER HELPERS ---
   const renderInput = (member, name, label, placeholder) => {
     const maxLengths = {
-      fullName: 100,
-      email: 100,
-      phone: 10,
-      sapid:
-        name === "sapid" && team[member].universityType === "UPES" ? 9 : 200,
+      fullName: 100, email: 100, phone: 10,
+      sapid: name === 'sapid' && team[member].universityType === 'UPES' ? 9 : 200
     };
 
     return (
@@ -309,35 +264,17 @@ const Registration = () => {
             value={team[member].universityType}
             onChange={(e) => {
               const newType = e.target.value;
-              setTeam((prev) => ({
-                ...prev,
-                [member]: {
-                  ...prev[member],
-                  universityType: newType,
-                  sapid: "",
-                },
-              })); // Reset value on switch
-              setValErrors((prev) => ({ ...prev, [`${member}_sapid`]: "" }));
-            }}
-          >
-            <option value="" disabled>
-              Select
-            </option>
+              setTeam(prev => ({ ...prev, [member]: { ...prev[member], universityType: newType, sapid: '' } }));
+              setValErrors(prev => ({ ...prev, [`${member}_sapid`]: "" }));
+            }}>
+            <option value="" disabled>Select</option>
             <option value="UPES">UPES</option>
             <option value="Others">Others</option>
           </select>
         </div>
       </div>
-
-      {team[member].universityType === "UPES" &&
-        renderInput(member, "sapid", "SAP ID", "5900XXXXX")}
-      {team[member].universityType === "Others" &&
-        renderInput(
-          member,
-          "sapid",
-          "University Name",
-          "Enter University Name",
-        )}
+      {team[member].universityType === 'UPES' && renderInput(member, 'sapid', 'SAP ID', '5900XXXXX')}
+      {team[member].universityType === 'Others' && renderInput(member, 'sapid', 'University Name', 'Enter University Name')}
     </>
   );
 
@@ -370,6 +307,7 @@ const Registration = () => {
             <div className="global-error-banner">{errorBadge}</div>
           )}
 
+          {/* STEP 1 */}
           {step === 1 && (
             <div className="animate-in">
               <span className="label-detail">TEAM NAME</span>
@@ -409,6 +347,7 @@ const Registration = () => {
             </div>
           )}
 
+          {/* STEP 2 */}
           {step === 2 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 2</span>
@@ -445,6 +384,7 @@ const Registration = () => {
             </div>
           )}
 
+          {/* STEP 3 */}
           {step === 3 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 3</span>
@@ -500,6 +440,7 @@ const Registration = () => {
             </div>
           )}
 
+          {/* STEP 4 */}
           {step === 4 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 4 (OPTIONAL)</span>
@@ -552,6 +493,7 @@ const Registration = () => {
             </div>
           )}
 
+          {/* STEP 5 */}
           {step === 5 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 5 (OPTIONAL)</span>
@@ -585,6 +527,7 @@ const Registration = () => {
             </div>
           )}
 
+          {/* STEP 6: DISCOUNT VERIFICATION */}
           {step === 6 && (
             <div className="animate-in">
               <span className="label-detail">DISCOUNT & PAYMENT</span>
@@ -651,176 +594,77 @@ const Registration = () => {
                   </button>
                 </>
               )}
+              
+              <button className="neon-shade-btn next-glow" onClick={() => setStep(7)}>PROCEED TO QR →</button>
+              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer' }} onClick={() => setStep(5)}>← BACK</p>
+            </div>
+          )}
 
-              <div
-                style={{
-                  textAlign: "center",
-                  margin: "15px 0",
-                  padding: "15px",
-                  background: "rgba(255,255,255,0.05)",
-                  borderRadius: "15px",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                }}
-              >
-                <p style={{ fontSize: "12px", opacity: 0.6 }}>Total Payable:</p>
-                <h2
-                  style={{
-                    fontSize: "28px",
-                    color: isDiscounted ? "#10b981" : "#fff",
-                  }}
-                >
-                  {isDiscounted ? (
-                    <>
-                      <span
-                        style={{
-                          textDecoration: "line-through",
-                          opacity: 0.4,
-                          fontSize: "16px",
-                          marginRight: "10px",
-                        }}
-                      >
-                        ₹450
-                      </span>
-                      ₹{finalPrice}
-                    </>
-                  ) : (
-                    `₹${finalPrice}`
-                  )}
+          {/* STEP 7: QR SCAN & UPLOAD */}
+          {step === 7 && (
+            <div className="animate-in creative-payment-container" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span className="label-detail" style={{ marginBottom: '2px' }}>SCAN & SUBMIT</span>
+              
+              <div style={{ textAlign: 'center', margin: '4px 0', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <p style={{ fontSize: '10px', opacity: 0.6, marginBottom: '2px' }}>Total Payable:</p>
+                <h2 style={{ fontSize: '24px', color: isDiscounted ? '#10b981' : '#fff', margin: 0 }}>
+                  {isDiscounted ? <><span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '14px', marginRight: '8px' }}>₹400</span>₹{finalPrice}</> : `₹${finalPrice}`}
                 </h2>
               </div>
 
-              {/* --- TERMS CHECKBOX FOR REGISTRATION --- */}
-              <div
-                className="input-group"
-                style={{
-                  marginBottom: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  justifyContent: "center",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  id="agree-reg"
-                  style={{ width: "18px", height: "18px", cursor: "pointer" }}
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                />
-                <label
-                  htmlFor="agree-reg"
-                  style={{
-                    color: "rgba(255,255,255,0.7)",
-                    fontSize: "11px",
-                    cursor: "pointer",
-                    fontFamily: "Orbitron",
-                  }}
-                >
-                  I AGREE TO ALL{" "}
-                  <a
-                    href="https://codehustle11.upeshypervision.in/#terms-conditions"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#38bdf8", textDecoration: "underline" }}
-                  >
-                    TERMS AND CONDITIONS
-                  </a>
-                  .
+              <div className="qr-portal-frame" style={{ padding: '8px', margin: '0 auto', maxWidth: '160px' }}>
+                  <div className="qr-scan-line"></div>
+                  <img 
+                    src={isDiscounted ? qr380 : qr400} 
+                    alt={`QR Code for ₹${finalPrice}`}
+                    className="qr-image-creative" 
+                    style={{ width: '100%', height: 'auto' }}
+                  />
+                  <p className="qr-hint" style={{ fontSize: '10px', marginTop: '4px' }}>Scan to Pay</p>
+              </div>
+
+              <div className="input-group" style={{ marginBottom: '4px' }}>
+                <div className="label-row"><span style={{ fontSize: '12px' }}>Transaction Proof</span></div>
+                <label className={`creative-upload-box ${screenshot ? 'file-uploaded' : ''}`} style={{ padding: '8px' }}>
+                    <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
+                    <div className="upload-content">
+                        <span className="upload-icon" style={{ fontSize: '14px' }}>{screenshot ? '✓' : '⇪'}</span>
+                        <span className="upload-text" style={{ fontSize: '11px' }}>{screenshot ? screenshot.name : "Tap to upload screenshot"}</span>
+                    </div>
                 </label>
               </div>
 
-              <button
-                className={`neon-shade-btn next-glow ${
-                  loading || !agreedToTerms ? "btn-locked" : ""
-                }`}
-                disabled={loading || !agreedToTerms}
-                onClick={handleRegistrationFlow}
-                style={{
-                  background:
-                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
-                }}
-              >
-                {loading ? "PROCESSING..." : "REGISTER & PAY"}
+              <div className="input-group" style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                  <input type="checkbox" id="agree-reg" style={{ width: '16px', height: '16px', cursor: 'pointer' }} checked={agreedToTerms} onChange={(e) => setAgreedToTerms(e.target.checked)} />
+                  <label htmlFor="agree-reg" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px', cursor: 'pointer', fontFamily: 'Orbitron' }}>
+                    I AGREE TO ALL <a href="https://codehustle11.upeshypervision.in/#terms-conditions" target="_blank" rel="noopener noreferrer" style={{color: '#38bdf8', textDecoration: 'underline'}}>TERMS AND CONDITIONS</a>.
+                  </label>
+              </div>
+
+              <button className={`neon-shade-btn next-glow ${(loading || !agreedToTerms || !screenshot) ? 'btn-locked' : ''}`} style={{ marginTop: '0' }} disabled={loading || !agreedToTerms || !screenshot} onClick={handleManualRegistration}>
+                {loading ? "PROCESSING..." : "SUBMIT REGISTRATION"}
               </button>
-              <p
-                className="signin-link"
-                style={{
-                  marginTop: "15px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                }}
-                onClick={() => setStep(2)}
-              >
-                ← BACK
+              
+              <p className="signin-link back-btn-creative" style={{ marginTop: '8px', cursor: 'pointer', fontSize: '12px' }} onClick={() => setStep(6)}>
+                <span>←</span> BACK
               </p>
             </div>
           )}
 
-          <footer className="footer-links">
-            <a href="/userlogin" className="footer-btn">
-              Sign In
-            </a>
+          <footer className="footer-links" style={{ marginTop: '10px' }}>
+            <a href="/userlogin" className="footer-btn">Sign In</a>
           </footer>
         </div>
       ) : (
-        <div
-          className="portal-card animate-in success-layout"
-          style={{ textAlign: "center" }}
-        >
-          <h2
-            className="syncopate-font"
-            style={{ color: "#10b981", fontSize: "1.4rem" }}
-          >
-            ✅ PAYMENT VERIFIED!
-          </h2>
-
-          <div
-            style={{
-              background: "rgba(16, 185, 129, 0.1)",
-              padding: "30px",
-              borderRadius: "12px",
-              border: "2px solid rgba(16, 185, 129, 0.5)",
-              margin: "30px 0",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "14px",
-                color: "#fff",
-                opacity: 0.9,
-                lineHeight: "1.8",
-              }}
-            >
-              Your registration is complete!
-              <br />
-              <strong style={{ color: "#10b981" }}>
-                Team credentials
-              </strong>{" "}
-              have been sent to your registered email address.
+        <div className="portal-card animate-in success-layout" style={{ textAlign: 'center' }}>
+          <h2 className="syncopate-font" style={{ color: '#10b981', fontSize: '1.4rem' }}>SUBMISSION SUCCESSFUL!</h2>
+          <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '30px', borderRadius: '12px', border: '2px solid rgba(16, 185, 129, 0.5)', margin: '30px 0' }}>
+            <p style={{ fontSize: '14px', color: '#fff', opacity: 0.9, lineHeight: '1.8' }}>
+              Your registration request has been received.<br />
+              <strong style={{ color: '#10b981' }}>Credentials</strong> will be sent to your email after admin verification.
             </p>
           </div>
-
-          <p
-            style={{
-              marginTop: "20px",
-              opacity: 0.7,
-              fontSize: "13px",
-              color: "#cbd5e1",
-              lineHeight: "1.6",
-            }}
-          >
-            Check your inbox for your Team ID and Password.
-            <br />
-            Use them to login to the User Portal.
-          </p>
-          <button
-            className="neon-shade-btn next-glow"
-            onClick={() => (window.location.href = "/userlogin")}
-            style={{
-              marginTop: "25px",
-              background: "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
-            }}
-          >
+          <button className="neon-shade-btn next-glow" onClick={() => window.location.href = '/userlogin'} style={{ marginTop: '25px' }}>
             GO TO LOGIN →
           </button>
         </div>

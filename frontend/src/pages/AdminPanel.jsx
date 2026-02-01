@@ -11,6 +11,7 @@ import Manualgithub from "../components/admin/Manualgithub";
 import ViewCreateTeams from "../components/admin/ViewCreateTeams";
 import ViewIndividuals from "../components/admin/ViewIndividuals";
 import ViewChatMessages from "../components/admin/ViewChatMessages";
+import PaymentValidation from "../components/admin/PaymentValidation"; // Add this import
 
 /* ✅ ORIGINAL IMPORTS KEPT STRICTLY INTACT */
 import Viewgithubsubmission from "../components/admin/Viewgithubsubmission";
@@ -41,81 +42,22 @@ export default function AdminPanel() {
   }, []);
 
   const adminMenuItems = [
-    {
-      id: "rounds",
-      label: "Round Management",
-      active: activeSection === "rounds",
-    },
-    {
-      id: "view-teams",
-      label: "View Teams",
-      active: activeSection === "view-teams",
-    },
-    {
-      id: "problem-statements",
-      label: "Problem Statements",
-      active: activeSection === "problem-statements",
-    },
-    {
-      id: "submissions",
-      label: "View PPT Submissions",
-      active: activeSection === "submissions",
-    },
-    {
-      id: "review-ppts",
-      label: "Review PPTs",
-      active: activeSection === "review-ppts",
-    },
-    {
-      id: "manual-ppt",
-      label: "Manual PPT",
-      active: activeSection === "manual-ppt",
-    },
-    {
-      id: "view-github-submissions",
-      label: "View GitHub Submissions",
-      active: activeSection === "view-github-submissions",
-    },
-    {
-      id: "manual-github",
-      label: "Manual GitHub Submission",
-      active: activeSection === "manual-github",
-    },
-    {
-      id: "manual-hackerrank",
-      label: "Manual Hackerrank",
-      active: activeSection === "manual-hackerrank",
-    },
-    {
-      id: "view-hackerrank",
-      label: "View Hackerrank",
-      active: activeSection === "view-hackerrank",
-    },
-    {
-      id: "selected-teams",
-      label: "Selected Teams",
-      active: activeSection === "selected-teams",
-    },
-    {
-      id: "view-create-teams",
-      label: "View Create Teams",
-      active: activeSection === "view-create-teams",
-    },
-    {
-      id: "view-individuals",
-      label: "View Individuals",
-      active: activeSection === "view-individuals",
-    },
-    {
-      id: "view-chat-messages",
-      label: "View Chat Messages",
-      active: activeSection === "view-chat-messages",
-    },
-    {
-      id: "add-participant",
-      label: "Add Participant",
-      active: activeSection === "add-participant",
-    },
+    { id: "rounds", label: "Round Management", active: activeSection === "rounds" },
+    { id: "view-teams", label: "View Teams", active: activeSection === "view-teams" },
+    { id: "problem-statements", label: "Problem Statements", active: activeSection === "problem-statements" },
+    { id: "submissions", label: "View PPT Submissions", active: activeSection === "submissions" },
+    { id: "review-ppts", label: "Review PPTs", active: activeSection === "review-ppts" },
+    { id: "manual-ppt", label: "Manual PPT", active: activeSection === "manual-ppt" },
+    { id: "view-github-submissions", label: "View GitHub Submissions", active: activeSection === "view-github-submissions" },
+    { id: "manual-github", label: "Manual GitHub Submission", active: activeSection === "manual-github" },
+    { id: "manual-hackerrank", label: "Manual Hackerrank", active: activeSection === "manual-hackerrank" },
+    { id: "view-hackerrank", label: "View Hackerrank", active: activeSection === "view-hackerrank" },
+    { id: "selected-teams", label: "Selected Teams", active: activeSection === "selected-teams" },
+    { id: "view-create-teams", label: "View Create Teams", active: activeSection === "view-create-teams" },
+    { id: "view-individuals", label: "View Individuals", active: activeSection === "view-individuals" },
+    { id: "view-chat-messages", label: "View Chat Messages", active: activeSection === "view-chat-messages" },
+    { id: "add-participant", label: "Add Participant", active: activeSection === "add-participant" },
+    { id: "payment-validation", label: "Payment Validation", active: activeSection === "payment-validation" }, // Add this
   ];
 
   const handleMenuItemClick = (item) => {
@@ -125,38 +67,23 @@ export default function AdminPanel() {
 
   const renderContent = () => {
     switch (activeSection) {
-      case "rounds":
-        return <RoundManagement />;
-      case "problem-statements":
-        return <ProblemStatements />;
-      case "add-participant":
-        return <AddParticipant />;
-      case "view-teams":
-        return <ViewTeams />;
-      case "submissions":
-        return <ViewSubmissions />;
-      case "manual-ppt":
-        return <ManualPPT />;
-      case "manual-github":
-        return <Manualgithub />;
-      case "view-github-submissions":
-        return <Viewgithubsubmission />;
-      case "manual-hackerrank":
-        return <ManualHackerrank />;
-      case "view-hackerrank":
-        return <ViewHackerrank />;
-      case "review-ppts":
-        return <ReviewEvaluatedPPTs />;
-      case "selected-teams":
-        return <SelectedTeam />;
-      case "view-create-teams":
-        return <ViewCreateTeams />;
-      case "view-individuals":
-        return <ViewIndividuals />;
-      case "view-chat-messages":
-        return <ViewChatMessages />;
-      default:
-        return null;
+      case "rounds": return <RoundManagement />;
+      case "problem-statements": return <ProblemStatements />;
+      case "add-participant": return <AddParticipant />;
+      case "view-teams": return <ViewTeams />;
+      case "submissions": return <ViewSubmissions />;
+      case "manual-ppt": return <ManualPPT />;
+      case "manual-github": return <Manualgithub />;
+      case "view-github-submissions": return <Viewgithubsubmission />;
+      case "manual-hackerrank": return <ManualHackerrank />;
+      case "view-hackerrank": return <ViewHackerrank />;
+      case "review-ppts": return <ReviewEvaluatedPPTs />;
+      case "selected-teams": return <SelectedTeam />;
+      case "view-create-teams": return <ViewCreateTeams />;
+      case "view-individuals": return <ViewIndividuals />;
+      case "view-chat-messages": return <ViewChatMessages />;
+      case "payment-validation": return <PaymentValidation />; // Add this case
+      default: return null;
     }
   };
 
