@@ -6,13 +6,17 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
   // Determine display name and IDs based on user type
   const isIndividual = userType === "individual";
   const displayName = isIndividual
-    ? (team?.teamName || team?.name || team?.leaderName || team?.full_name || "Chat Partner")
-    : (team?.full_name || team?.name || "Chat Partner");
+    ? team?.teamName ||
+      team?.name ||
+      team?.leaderName ||
+      team?.full_name ||
+      "Chat Partner"
+    : team?.full_name || team?.name || "Chat Partner";
 
   const userId = isIndividual ? userDetails?.id : userDetails?.teamId;
   const partnerId = isIndividual
-    ? (team?.teamId || team?.team_id)
-    : (team?.individual_id || team?.id);
+    ? team?.teamId || team?.team_id
+    : team?.individual_id || team?.id;
   const partnerType = isIndividual ? "team" : "individual";
 
   // Generate conversation ID
@@ -43,14 +47,17 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
     const fetchChatHistory = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/chat/history/${conversationId}`, {
-          credentials: "include"
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/chat/history/${conversationId}`,
+          {
+            credentials: "include",
+          },
+        );
 
         const data = await response.json();
 
         if (response.ok && data.success) {
-          const formattedMessages = data.messages.map(msg => ({
+          const formattedMessages = data.messages.map((msg) => ({
             id: msg.message_id,
             sender: msg.sender_type === userType ? "user" : "partner",
             name: msg.sender_type === userType ? "You" : displayName,
@@ -87,13 +94,16 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
           message: data.message,
           timestamp: new Date(data.timestamp),
         };
-        setMessages(prev => [...prev, newMessage]);
+        setMessages((prev) => [...prev, newMessage]);
       }
     };
 
     // Listen for typing indicators
     const handleTyping = (data) => {
-      if (data.conversation_id === conversationId && data.sender_type !== userType) {
+      if (
+        data.conversation_id === conversationId &&
+        data.sender_type !== userType
+      ) {
         setPartnerTyping(data.is_typing);
       }
     };
@@ -115,7 +125,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
     socket.emit("typing_indicator", {
       conversation_id: conversationId,
       sender_type: userType,
-      is_typing: true
+      is_typing: true,
     });
 
     // Clear previous timeout
@@ -128,7 +138,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
       socket.emit("typing_indicator", {
         conversation_id: conversationId,
         sender_type: userType,
-        is_typing: false
+        is_typing: false,
       });
     }, 2000);
   };
@@ -149,8 +159,8 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
         body: JSON.stringify({
           recipient_id: partnerId,
           recipient_type: partnerType,
-          message: messageText
-        })
+          message: messageText,
+        }),
       });
 
       const data = await response.json();
@@ -163,11 +173,13 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
         socket.emit("typing_indicator", {
           conversation_id: conversationId,
           sender_type: userType,
-          is_typing: false
+          is_typing: false,
         });
       } else {
         if (response.status === 429) {
-          setError("You're sending messages too quickly. Please wait a moment.");
+          setError(
+            "You're sending messages too quickly. Please wait a moment.",
+          );
         } else {
           setError(data.error || "Failed to send message");
         }
@@ -190,17 +202,15 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
   };
 
   return (
-    <div className={`chatbox-container ${isMaximized ? "chatbox-maximized" : ""}`}>
+    <div
+      className={`chatbox-container ${isMaximized ? "chatbox-maximized" : ""}`}
+    >
       {/* Chat Header */}
       <div className="chatbox-header">
         <div className="chatbox-header-left">
-          <div className="chatbox-avatar">
-            {getInitials(displayName)}
-          </div>
+          <div className="chatbox-avatar">{getInitials(displayName)}</div>
           <div className="chatbox-header-info">
-            <div className="chatbox-name">
-              {displayName}
-            </div>
+            <div className="chatbox-name">{displayName}</div>
             <div className="chatbox-status">
               <span className="status-dot"></span>
               <span>Online</span>
@@ -288,22 +298,30 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
       {/* Chat Messages Area */}
       <div className="chatbox-messages">
         {loading ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "#94a3b8" }}>
+          <div
+            style={{ textAlign: "center", padding: "20px", color: "#94a3b8" }}
+          >
             Loading messages...
           </div>
         ) : error && messages.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "#ef4444" }}>
+          <div
+            style={{ textAlign: "center", padding: "20px", color: "#ef4444" }}
+          >
             {error}
           </div>
         ) : messages.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "#94a3b8" }}>
+          <div
+            style={{ textAlign: "center", padding: "20px", color: "#94a3b8" }}
+          >
             No messages yet. Start the conversation!
           </div>
         ) : (
           messages.map((msg) => (
             <div
               key={msg.id}
-              className={`chatbox-message ${msg.sender === "user" ? "message-right" : "message-left"}`}
+              className={`chatbox-message ${
+                msg.sender === "user" ? "message-right" : "message-left"
+              }`}
             >
               <div className="chatbox-message-bubble">
                 <div className="chatbox-message-name">{msg.name}</div>
@@ -314,7 +332,10 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
         )}
         {partnerTyping && (
           <div className="chatbox-message message-left">
-            <div className="chatbox-message-bubble" style={{ fontStyle: "italic", opacity: 0.7 }}>
+            <div
+              className="chatbox-message-bubble"
+              style={{ fontStyle: "italic", opacity: 0.7 }}
+            >
               <div className="chatbox-message-text">typing...</div>
             </div>
           </div>
@@ -324,13 +345,15 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
 
       {/* Error Display */}
       {error && messages.length > 0 && (
-        <div style={{
-          padding: "8px 16px",
-          background: "rgba(239, 68, 68, 0.1)",
-          color: "#ef4444",
-          fontSize: "0.85rem",
-          borderTop: "1px solid rgba(239, 68, 68, 0.2)"
-        }}>
+        <div
+          style={{
+            padding: "8px 16px",
+            background: "rgba(239, 68, 68, 0.1)",
+            color: "#ef4444",
+            fontSize: "0.85rem",
+            borderTop: "1px solid rgba(239, 68, 68, 0.2)",
+          }}
+        >
           {error}
         </div>
       )}
@@ -352,7 +375,7 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
           disabled={sending || !inputMessage.trim()}
           style={{
             opacity: sending || !inputMessage.trim() ? 0.5 : 1,
-            cursor: sending || !inputMessage.trim() ? "not-allowed" : "pointer"
+            cursor: sending || !inputMessage.trim() ? "not-allowed" : "pointer",
           }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -371,4 +394,3 @@ const ChatBox = ({ team, userDetails, userType, onClose }) => {
 };
 
 export default ChatBox;
-

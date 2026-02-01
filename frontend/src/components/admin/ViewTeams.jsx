@@ -193,7 +193,7 @@ export default function ViewTeams() {
                           {new Date(
                             team.timestamp.endsWith("Z")
                               ? team.timestamp
-                              : team.timestamp + "Z"
+                              : team.timestamp + "Z",
                           ).toLocaleString("en-IN", {
                             timeZone: "Asia/Kolkata",
                             hour12: true,

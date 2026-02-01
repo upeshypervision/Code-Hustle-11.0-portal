@@ -28,10 +28,10 @@ export default function SelectedTeam() {
     }
 
     fetch(`http://localhost:5000${endpoint}`, {
-      credentials: "include"
+      credentials: "include",
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) {
           setTeams(data.teams || []);
         } else {
@@ -40,7 +40,7 @@ export default function SelectedTeam() {
         }
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(`Error fetching ${selectedRound} teams:`, err);
         setLoading(false);
       });
@@ -48,10 +48,14 @@ export default function SelectedTeam() {
 
   const getRoundTitle = () => {
     switch (selectedRound) {
-      case "round1": return "Round 1 – Hackerrank Selected Teams";
-      case "round2": return "Round 2 – PPT Selected Teams";
-      case "round3": return "Round 3 – GitHub Winners";
-      default: return "Selected Teams";
+      case "round1":
+        return "Round 1 – Hackerrank Selected Teams";
+      case "round2":
+        return "Round 2 – PPT Selected Teams";
+      case "round3":
+        return "Round 3 – GitHub Winners";
+      default:
+        return "Selected Teams";
     }
   };
 
@@ -252,8 +256,27 @@ export default function SelectedTeam() {
           }
         `}
       </style>
-      <div className="selected-teams-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", gap: "15px", flexWrap: "wrap" }}>
-        <h2 style={{ color: "#fff", margin: 0, fontSize: "1.5rem", fontWeight: "700", flex: "1", minWidth: "0" }}>
+      <div
+        className="selected-teams-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "30px",
+          gap: "15px",
+          flexWrap: "wrap",
+        }}
+      >
+        <h2
+          style={{
+            color: "#fff",
+            margin: 0,
+            fontSize: "1.5rem",
+            fontWeight: "700",
+            flex: "1",
+            minWidth: "0",
+          }}
+        >
           {getRoundTitle()}
         </h2>
 
@@ -283,36 +306,51 @@ export default function SelectedTeam() {
                 className="st-header"
                 onClick={() => toggleExpand(team.team_id)}
               >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <span style={{
-                    marginRight: "15px",
-                    opacity: 0.5,
-                    fontSize: "0.8rem",
-                    fontFamily: "monospace",
-                    width: "25px"
-                  }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <span
+                    style={{
+                      marginRight: "15px",
+                      opacity: 0.5,
+                      fontSize: "0.8rem",
+                      fontFamily: "monospace",
+                      width: "25px",
+                    }}
+                  >
                     {index + 1}.
                   </span>
-                  <span style={{ color: "#22c55e", marginRight: "10px", fontWeight: "bold" }}>
+                  <span
+                    style={{
+                      color: "#22c55e",
+                      marginRight: "10px",
+                      fontWeight: "bold",
+                    }}
+                  >
                     {team.team_id}
                   </span>
                   {team.team_name && (
-                    <span style={{ 
-                      color: "#fff", 
-                      fontWeight: "600", 
-                      fontSize: '1.1rem',
-                      wordWrap: 'break-word',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'break-word',
-                      whiteSpace: 'normal',
-                      lineHeight: '1.4',
-                      maxWidth: '100%',
-                      overflow: 'hidden',
-                      display: 'inline-block'
-                    }}> – {team.team_name}</span>
+                    <span
+                      style={{
+                        color: "#fff",
+                        fontWeight: "600",
+                        fontSize: "1.1rem",
+                        wordWrap: "break-word",
+                        wordBreak: "break-word",
+                        overflowWrap: "break-word",
+                        whiteSpace: "normal",
+                        lineHeight: "1.4",
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        display: "inline-block",
+                      }}
+                    >
+                      {" "}
+                      – {team.team_name}
+                    </span>
                   )}
                 </div>
-                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem" }}>
+                <span
+                  style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.8rem" }}
+                >
                   {expandedTeamId === team.team_id ? "▲ Collapse" : "▼ Details"}
                 </span>
               </div>
@@ -334,7 +372,9 @@ export default function SelectedTeam() {
                       {/* Leader */}
                       {team.leader && (
                         <tr>
-                          <td style={{ color: "#fff", fontWeight: 600 }}>{team.leader.fullName}</td>
+                          <td style={{ color: "#fff", fontWeight: 600 }}>
+                            {team.leader.fullName}
+                          </td>
                           <td style={{ color: "#38bdf8" }}>LEADER</td>
                           <td>{team.leader.email}</td>
                           <td>{team.leader.sapid}</td>
@@ -342,30 +382,40 @@ export default function SelectedTeam() {
                         </tr>
                       )}
                       {/* Members */}
-                      {team.members && team.members.map((m, idx) => (
-                        <tr key={idx}>
-                          <td>{m.fullName}</td>
-                          <td>MEMBER</td>
-                          <td>{m.email}</td>
-                          <td>{m.sapid}</td>
-                          <td>{m.phone}</td>
-                        </tr>
-                      ))}
+                      {team.members &&
+                        team.members.map((m, idx) => (
+                          <tr key={idx}>
+                            <td>{m.fullName}</td>
+                            <td>MEMBER</td>
+                            <td>{m.email}</td>
+                            <td>{m.sapid}</td>
+                            <td>{m.phone}</td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
 
                   {/* Info Grid (No Payment) */}
                   <div className="info-grid">
                     <div className="info-item">
-                      <span className="info-label">Assigned Problem Statement</span>
-                      <span className="info-val" style={{ color: team.selected_ps_id ? '#fbbf24' : '#94a3b8' }}>
+                      <span className="info-label">
+                        Assigned Problem Statement
+                      </span>
+                      <span
+                        className="info-val"
+                        style={{
+                          color: team.selected_ps_id ? "#fbbf24" : "#94a3b8",
+                        }}
+                      >
                         {team.selected_ps_id || "Not Selected"}
                       </span>
                     </div>
                     <div className="info-item">
                       <span className="info-label">Registration Date</span>
                       <span className="info-val">
-                        {team.timestamp ? new Date(team.timestamp).toLocaleDateString() : "N/A"}
+                        {team.timestamp
+                          ? new Date(team.timestamp).toLocaleDateString()
+                          : "N/A"}
                       </span>
                     </div>
                     {/* Add other non-payment fields if available */}

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import socket from "../../socket";
 import strangerThingsBg from "../../assets/StrangerThings-bg.png";
 
-export default function PSGallery({ setIsExpandedView }) { // Accept prop
+export default function PSGallery({ setIsExpandedView }) {
+  // Accept prop
   // --- STATE ---
   const [expandedId, setExpandedId] = useState(null);
   const [problemStatements, setProblemStatements] = useState([]);
@@ -45,9 +46,12 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   useEffect(() => {
     const checkHackerrankStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          },
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setHackerrankStatus(data.submission.approval_status);
@@ -67,9 +71,12 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   useEffect(() => {
     const handleApprovalUpdate = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          },
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setHackerrankStatus(data.submission.approval_status);
@@ -79,7 +86,8 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
       }
     };
     socket.on("hackerrank_approval_updated", handleApprovalUpdate);
-    return () => socket.off("hackerrank_approval_updated", handleApprovalUpdate);
+    return () =>
+      socket.off("hackerrank_approval_updated", handleApprovalUpdate);
   }, []);
 
   // Check round status
@@ -91,7 +99,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         });
         const data = await res.json();
         if (data.success) {
-          setRoundActive(data.rounds.ps_selection === 'live');
+          setRoundActive(data.rounds.ps_selection === "live");
         }
       } catch (err) {
         console.error("Error checking round status:", err);
@@ -105,8 +113,8 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   // Listen for round status
   useEffect(() => {
     const handleRoundChange = (data) => {
-      if (data.round_type === 'ps_selection') {
-        setRoundActive(data.state === 'live');
+      if (data.round_type === "ps_selection") {
+        setRoundActive(data.state === "live");
       }
     };
     socket.on("round_status_changed", handleRoundChange);
@@ -127,7 +135,9 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
       .catch((err) => console.error("Fetch error:", err));
   };
 
-  useEffect(() => { fetchProblemStatements(); }, []);
+  useEffect(() => {
+    fetchProblemStatements();
+  }, []);
 
   // Sockets
   useEffect(() => {
@@ -164,7 +174,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           body: JSON.stringify({
             problem_statement_id: pendingPs.problem_statement_id,
           }),
-        }
+        },
       );
       const data = await res.json();
 
@@ -176,17 +186,23 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           description: pendingPs.description,
           track: pendingPs.track,
           difficulty: pendingPs.difficulty,
-          selected_at: new Date().toISOString()
+          selected_at: new Date().toISOString(),
         });
         setPendingPs(null);
-        showNotification("success", "Target Locked! Problem statement selected successfully.");
+        showNotification(
+          "success",
+          "Target Locked! Problem statement selected successfully.",
+        );
         fetchProblemStatements();
       } else {
         setShowModal(false);
         if (res.status === 403) {
           showNotification("error", data.error || "Round closed.");
         } else {
-          showNotification("error", data.error || "Failed to select problem statement");
+          showNotification(
+            "error",
+            data.error || "Failed to select problem statement",
+          );
         }
       }
     } catch (err) {
@@ -197,13 +213,20 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   };
 
   // --- LAYOUT LOGIC ---
-  const showNotAllowedLayout = (!checkingRound && !checkingSelection && !selectedPS && hackerrankStatus && hackerrankStatus !== 'approved') || (!checkingRound && !selectedPS && !roundActive);
+  const showNotAllowedLayout =
+    (!checkingRound &&
+      !checkingSelection &&
+      !selectedPS &&
+      hackerrankStatus &&
+      hackerrankStatus !== "approved") ||
+    (!checkingRound && !selectedPS && !roundActive);
   const isFullScreenMode = showNotAllowedLayout || selectedPS;
 
   // Sync expanded view state with parent
   useEffect(() => {
     if (setIsExpandedView) {
-      const isGridView = !checkingRound && !checkingSelection && !isFullScreenMode;
+      const isGridView =
+        !checkingRound && !checkingSelection && !isFullScreenMode;
       setIsExpandedView(isGridView);
     }
   }, [setIsExpandedView, checkingRound, checkingSelection, isFullScreenMode]);
@@ -211,39 +234,43 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
   return (
     <div
       className="ps-root-container"
-      style={isFullScreenMode ? {
-        // ✅ FULL SCREEN MODE (Success / Closed / Not Allowed)
-        // Keeps the layout you liked
-        position: "fixed",
-        inset: 0,
-        zIndex: 2000,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "#0a0a0a",
-        overflowY: "auto",
-        fontFamily: '"Courier New", Courier, monospace',
-        padding: '20px',
-        boxSizing: 'border-box',
-        paddingTop: '120px' // High padding for full screen center mode
-      } : {
-        // ✅ NORMAL GRID MODE
-        // Reduced gap here so it looks correct on load
-        position: "relative",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        width: "100%",
-        paddingTop: "80px", // Reduced from 120px to 80px for better fit
-        paddingBottom: "40px",
-        boxSizing: "border-box",
-        fontFamily: '"Courier New", Courier, monospace',
-        backgroundColor: "#0a0a0a",
-        minHeight: "100vh",
-        overflowY: "auto",
-      }}
+      style={
+        isFullScreenMode
+          ? {
+              // ✅ FULL SCREEN MODE (Success / Closed / Not Allowed)
+              // Keeps the layout you liked
+              position: "fixed",
+              inset: 0,
+              zIndex: 2000,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "#0a0a0a",
+              overflowY: "auto",
+              fontFamily: '"Courier New", Courier, monospace',
+              padding: "20px",
+              boxSizing: "border-box",
+              paddingTop: "120px", // High padding for full screen center mode
+            }
+          : {
+              // ✅ NORMAL GRID MODE
+              // Reduced gap here so it looks correct on load
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              width: "100%",
+              paddingTop: "80px", // Reduced from 120px to 80px for better fit
+              paddingBottom: "40px",
+              boxSizing: "border-box",
+              fontFamily: '"Courier New", Courier, monospace',
+              backgroundColor: "#0a0a0a",
+              minHeight: "100vh",
+              overflowY: "auto",
+            }
+      }
     >
       {/* --- FIXED BACKGROUND --- */}
       <div
@@ -266,7 +293,8 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
         style={{
           position: "fixed",
           inset: 0,
-          background: "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
+          background:
+            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(31, 28, 28, 0.42) 100%)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -286,205 +314,251 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
           display: isFullScreenMode ? "flex" : "block",
           justifyContent: isFullScreenMode ? "center" : "unset",
           alignItems: isFullScreenMode ? "center" : "unset",
-          height: isFullScreenMode ? "100%" : "auto"
+          height: isFullScreenMode ? "100%" : "auto",
         }}
       >
-
         {checkingRound || checkingSelection ? (
           /* --- LOADING STATE --- */
-          <div style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            color: 'rgba(255,255,255,0.6)'
-          }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "60px 20px",
+              color: "rgba(255,255,255,0.6)",
+            }}
+          >
             <p>Loading...</p>
           </div>
         ) : selectedPS ? (
           /* --- PRIORITY 1: SUCCESS UI (TARGET LOCKED) --- */
-          <div style={{
-            background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid #10b981',
-            borderRadius: '8px',
-            padding: '40px',
-            textAlign: 'center',
-            animation: 'fadeIn 0.5s ease-out',
-            maxWidth: '600px',
-            width: '100%',
-            margin: 'auto',
-            boxShadow: '0 10px 40px rgba(16, 185, 129, 0.1)'
-          }}>
-            <h2 style={{
-              color: '#fff',
-              fontWeight: '900',
-              fontSize: '2rem',
-              letterSpacing: '3px',
-              marginBottom: '15px',
-              textShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
-            }}>
+          <div
+            style={{
+              background:
+                "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid #10b981",
+              borderRadius: "8px",
+              padding: "40px",
+              textAlign: "center",
+              animation: "fadeIn 0.5s ease-out",
+              maxWidth: "600px",
+              width: "100%",
+              margin: "auto",
+              boxShadow: "0 10px 40px rgba(16, 185, 129, 0.1)",
+            }}
+          >
+            <h2
+              style={{
+                color: "#fff",
+                fontWeight: "900",
+                fontSize: "2rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+                textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
+              }}
+            >
               COORDINATE LOCKED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '30px',
-              letterSpacing: '1px'
-            }}>
-              Problem Statement Selected: <strong>{selectedPS.problem_statement_id}</strong>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "30px",
+                letterSpacing: "1px",
+              }}
+            >
+              Problem Statement Selected:{" "}
+              <strong>{selectedPS.problem_statement_id}</strong>
             </p>
 
-            <div style={{
-              background: 'linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)',
-              border: '2px solid #22c55e',
-              borderRadius: '8px',
-              padding: '25px',
-              textAlign: 'left',
-              marginTop: '20px',
-              boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)'
-            }}>
-              <h3 style={{
-                color: '#22c55e',
-                fontSize: '1.5rem',
-                marginBottom: '15px',
-                fontWeight: '800'
-              }}>
+            <div
+              style={{
+                background:
+                  "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)",
+                border: "2px solid #22c55e",
+                borderRadius: "8px",
+                padding: "25px",
+                textAlign: "left",
+                marginTop: "20px",
+                boxShadow: "0 0 30px rgba(34, 197, 94, 0.2)",
+              }}
+            >
+              <h3
+                style={{
+                  color: "#22c55e",
+                  fontSize: "1.5rem",
+                  marginBottom: "15px",
+                  fontWeight: "800",
+                }}
+              >
                 {selectedPS.title}
               </h3>
-              <div style={{ marginBottom: '15px' }}>
-                <span style={{
-                  color: 'rgba(255,255,255,0.6)',
-                  fontSize: '0.9rem',
-                  marginRight: '15px'
-                }}>
-                  <strong>Track:</strong> {selectedPS.track || 'N/A'}
+              <div style={{ marginBottom: "15px" }}>
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "0.9rem",
+                    marginRight: "15px",
+                  }}
+                >
+                  <strong>Track:</strong> {selectedPS.track || "N/A"}
                 </span>
-                <span style={{
-                  color: 'rgba(255,255,255,0.6)',
-                  fontSize: '0.9rem'
-                }}>
-                  <strong>Difficulty:</strong> {selectedPS.difficulty || 'N/A'}
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <strong>Difficulty:</strong> {selectedPS.difficulty || "N/A"}
                 </span>
               </div>
-              <div style={{
-                color: 'rgba(255,255,255,0.8)',
-                fontSize: '1rem',
-                lineHeight: '1.6',
-                marginTop: '15px',
-                paddingTop: '15px',
-                borderTop: '1px solid rgba(34, 197, 94, 0.3)'
-              }}>
-                <strong style={{ color: '#22c55e' }}>Description:</strong>
-                <p style={{ marginTop: '10px' }}>{selectedPS.description}</p>
+              <div
+                style={{
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "1rem",
+                  lineHeight: "1.6",
+                  marginTop: "15px",
+                  paddingTop: "15px",
+                  borderTop: "1px solid rgba(34, 197, 94, 0.3)",
+                }}
+              >
+                <strong style={{ color: "#22c55e" }}>Description:</strong>
+                <p style={{ marginTop: "10px" }}>{selectedPS.description}</p>
               </div>
             </div>
 
-            <p style={{
-              color: 'rgba(255,255,255,0.5)',
-              fontSize: '0.85rem',
-              marginTop: '25px',
-              letterSpacing: '1px'
-            }}>
+            <p
+              style={{
+                color: "rgba(255,255,255,0.5)",
+                fontSize: "0.85rem",
+                marginTop: "25px",
+                letterSpacing: "1px",
+              }}
+            >
               ⚠️ SELECTION IS PERMANENT. PROCEED TO NEXT PHASE.
             </p>
           </div>
-        ) : hackerrankStatus && hackerrankStatus !== 'approved' ? (
+        ) : hackerrankStatus && hackerrankStatus !== "approved" ? (
           /* --- PRIORITY 2: NOT ALLOWED --- */
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-            padding: '40px',
-            textAlign: 'center',
-            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(220, 38, 38, 0.3)",
-            borderRadius: "4px",
-            animation: 'fadeIn 0.5s ease-out',
-            maxWidth: '800px',
-            margin: '0',
-            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
-            width: "100%",
-          }}>
-            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
-            <h2 style={{
-              color: '#ef4444',
-              fontWeight: '900',
-              fontSize: '2.5rem',
-              letterSpacing: '3px',
-              marginBottom: '15px'
-            }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "60vh",
+              padding: "40px",
+              textAlign: "center",
+              background:
+                "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(220, 38, 38, 0.3)",
+              borderRadius: "4px",
+              animation: "fadeIn 0.5s ease-out",
+              maxWidth: "800px",
+              margin: "0",
+              boxShadow:
+                "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+              width: "100%",
+            }}
+          >
+            <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🚫</div>
+            <h2
+              style={{
+                color: "#ef4444",
+                fontWeight: "900",
+                fontSize: "2.5rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+              }}
+            >
               NOT ALLOWED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '15px',
-              maxWidth: '600px'
-            }}>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "15px",
+                maxWidth: "600px",
+              }}
+            >
               Sorry, you are not allowed in this round.
             </p>
-            <p style={{
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: '1rem'
-            }}>
-              You must be approved in Round 1 (Hackerrank) to access Problem Statement selection.
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "1rem",
+              }}
+            >
+              You must be approved in Round 1 (Hackerrank) to access Problem
+              Statement selection.
             </p>
           </div>
         ) : !roundActive ? (
           /* --- PRIORITY 3: ROUND CLOSED UI --- */
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-            padding: '40px',
-            textAlign: 'center',
-            background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(220, 38, 38, 0.3)",
-            borderRadius: "4px",
-            animation: 'fadeIn 0.5s ease-out',
-            maxWidth: '800px',
-            margin: '0',
-            boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
-            width: "100%",
-          }}>
-            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
-            <h2 style={{
-              color: '#ef4444',
-              fontWeight: '900',
-              fontSize: '2.5rem',
-              letterSpacing: '3px',
-              marginBottom: '15px'
-            }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "60vh",
+              padding: "40px",
+              textAlign: "center",
+              background:
+                "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(220, 38, 38, 0.3)",
+              borderRadius: "4px",
+              animation: "fadeIn 0.5s ease-out",
+              maxWidth: "800px",
+              margin: "0",
+              boxShadow:
+                "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+              width: "100%",
+            }}
+          >
+            <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🔒</div>
+            <h2
+              style={{
+                color: "#ef4444",
+                fontWeight: "900",
+                fontSize: "2.5rem",
+                letterSpacing: "3px",
+                marginBottom: "15px",
+              }}
+            >
               ROUND CLOSED
             </h2>
-            <p style={{
-              color: '#fff',
-              fontSize: '1.2rem',
-              marginBottom: '15px',
-              maxWidth: '600px'
-            }}>
+            <p
+              style={{
+                color: "#fff",
+                fontSize: "1.2rem",
+                marginBottom: "15px",
+                maxWidth: "600px",
+              }}
+            >
               Problem Statement Selection is currently not available.
             </p>
-            <p style={{
-              color: 'rgba(255,255,255,0.6)',
-              fontSize: '1rem'
-            }}>
-              ⏳ Please wait for the organizing committee to activate this round.
+            <p
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: "1rem",
+              }}
+            >
+              ⏳ Please wait for the organizing committee to activate this
+              round.
             </p>
           </div>
         ) : (
           /* --- PRIORITY 4: ACTIVE SELECTION LIST (GRID MODE) --- */
-          <div style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
             <div
               className="caution-card"
               style={{
@@ -497,7 +571,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                 maxWidth: "80%",
                 width: "100%",
                 margin: "0 auto 40px auto",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
               }}
             >
               <p
@@ -508,20 +582,23 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                   letterSpacing: "2px",
                   textTransform: "uppercase",
                   margin: 0,
-                  textAlign: "center"
+                  textAlign: "center",
                 }}
               >
-                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION: COORDINATES CANNOT BE CHANGED ONCE LOCKED.
-
+                <span style={{ marginRight: "10px" }}>⚠️</span> CAUTION:
+                COORDINATES CANNOT BE CHANGED ONCE LOCKED.
               </p>
             </div>
 
-            <div className="ps-grid-container" style={{
-              gap: "20px",
-              padding: "0",
-              width: "100%",
-              boxSizing: "border-box"
-            }}>
+            <div
+              className="ps-grid-container"
+              style={{
+                gap: "20px",
+                padding: "0",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+            >
               {problemStatements.map((ps) => {
                 const count = ps.selections || 0;
                 const target = ps.max_count || 30;
@@ -617,7 +694,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                               marginBottom: "5px",
                             }}
                           >
-
                             <span
                               style={{
                                 fontSize: "16px",
@@ -651,7 +727,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                             setExpandedId(
                               expandedId === ps.problem_statement_id
                                 ? null
-                                : ps.problem_statement_id
+                                : ps.problem_statement_id,
                             )
                           }
                           className="view-btn-heist"
@@ -679,7 +755,9 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                             fontSize: "0.95rem",
                           }}
                         >
-                          <strong style={{ color: "#dc2626" }}>[BRIEFING]:</strong>{" "}
+                          <strong style={{ color: "#dc2626" }}>
+                            [BRIEFING]:
+                          </strong>{" "}
                           {ps.description}
                         </p>
                         <button
@@ -750,7 +828,7 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
                 fontSize: "14px",
               }}
             >
-              The {" "}
+              The{" "}
               <strong style={{ color: "#dc2626" }}>
                 {pendingPs?.problem_statement_id}
               </strong>
@@ -763,41 +841,36 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
               >
                 <span className="text">ABORT</span>
               </button>
-              <button
-                onClick={confirmLock}
-                className="modal-initialize-btn"
-              >
+              <button onClick={confirmLock} className="modal-initialize-btn">
                 <span className="text">INITIALIZE</span>
               </button>
             </div>
           </div>
         </div>
-      )
-      }
+      )}
 
       {/* --- NOTIFICATION UI --- */}
-      {
-        notification.show && (
-          <div
-            style={{
-              position: "fixed",
-              bottom: "30px",
-              right: "30px",
-              zIndex: 3000,
-              padding: "20px 40px",
-              background: "#0a0a0a",
-              borderLeft: `5px solid ${notification.type === "success" ? "#22c55e" : "#dc2626"
-                }`,
-              boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
-              animation: "fadeIn 0.3s ease",
-            }}
-          >
-            <p style={{ color: "#fff", margin: 0, fontWeight: "700" }}>
-              {notification.message}
-            </p>
-          </div>
-        )
-      }
+      {notification.show && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            right: "30px",
+            zIndex: 3000,
+            padding: "20px 40px",
+            background: "#0a0a0a",
+            borderLeft: `5px solid ${
+              notification.type === "success" ? "#22c55e" : "#dc2626"
+            }`,
+            boxShadow: "0 10px 40px rgba(0,0,0,0.8)",
+            animation: "fadeIn 0.3s ease",
+          }}
+        >
+          <p style={{ color: "#fff", margin: 0, fontWeight: "700" }}>
+            {notification.message}
+          </p>
+        </div>
+      )}
 
       {/* --- STYLES --- */}
       <style
@@ -1016,7 +1089,6 @@ export default function PSGallery({ setIsExpandedView }) { // Accept prop
             `,
         }}
       />
-
-    </div >
+    </div>
   );
 }

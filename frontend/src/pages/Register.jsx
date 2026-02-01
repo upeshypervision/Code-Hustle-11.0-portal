@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import './Registration.css';
+import React, { useState, useEffect } from "react";
+import "./Registration.css";
+import regiBg from "../assets/regi-bg.png";
 
 // Import Assets (QR Codes)
 import qr380 from '../assets/380.png';
@@ -16,12 +17,15 @@ const Registration = () => {
   const [finalPrice, setFinalPrice] = useState(400); 
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [hyperMemberData, setHyperMemberData] = useState(null);
+
+  // --- NEW STATE FOR TERMS AGREEMENT ---
   
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   
   // New state for payment screenshot file
   const [screenshot, setScreenshot] = useState(null);
 
+  // RESET checkbox of terms and conditions TERMS EVERY TIME STEP CHANGES
   // Reset terms agreement on step change
   useEffect(() => {
     setAgreedToTerms(false);
@@ -30,11 +34,17 @@ const Registration = () => {
   const API_BASE = "http://localhost:5000/api";
 
   const [team, setTeam] = useState({
-    leader: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
-    m1: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
-    m2: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
-    m3: { fullName: '', sapid: '', email: '', phone: '', universityType: '' },
-    m4: { fullName: '', sapid: '', email: '', phone: '', universityType: '' }
+    leader: {
+      fullName: "",
+      sapid: "",
+      email: "",
+      phone: "",
+      universityType: "",
+    },
+    m1: { fullName: "", sapid: "", email: "", phone: "", universityType: "" },
+    m2: { fullName: "", sapid: "", email: "", phone: "", universityType: "" },
+    m3: { fullName: "", sapid: "", email: "", phone: "", universityType: "" },
+    m4: { fullName: "", sapid: "", email: "", phone: "", universityType: "" },
   });
 
   const [teamName, setTeamName] = useState("");
@@ -47,20 +57,32 @@ const Registration = () => {
       if (!value) return memberData.universityType === 'UPES' ? "SAP ID is required" : "University Name is required";
       if (memberData.universityType === 'UPES' && value.length !== 9) return "SAP ID must be 9 digits";
     }
-    if (name === 'email' && !value.includes("@")) return "Invalid email format";
-    if (name === 'phone' && value.length !== 10) return "Phone must be 10 digits";
+    if (name === "email" && !value.includes("@")) return "Invalid email format";
+    if (name === "phone" && value.length !== 10)
+      return "Phone must be 10 digits";
     return "";
   };
 
   const handleBlur = (member, name, value) => {
     const error = validate(name, value, team[member]);
-    setValErrors(prev => ({ ...prev, [`${member}_${name}`]: error }));
+    setValErrors((prev) => ({ ...prev, [`${member}_${name}`]: error }));
   };
 
   const isStepValid = (memberKey) => {
     const m = team[memberKey];
-    const isSapValid = m.universityType === 'UPES' ? m.sapid.length === 9 : (m.universityType === 'Others' ? m.sapid.length > 0 : false);
-    return m.fullName && m.universityType && isSapValid && m.email.includes("@") && m.phone.length === 10;
+    const isSapValid =
+      m.universityType === "UPES"
+        ? m.sapid.length === 9
+        : m.universityType === "Others"
+          ? m.sapid.length > 0
+          : false;
+    return (
+      m.fullName &&
+      m.universityType &&
+      isSapValid &&
+      m.email.includes("@") &&
+      m.phone.length === 10
+    );
   };
 
   // --- DISCOUNT LOGIC ---
@@ -111,7 +133,7 @@ const Registration = () => {
       const res = await fetch(`${API_BASE}/check-team-name`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ team_name: teamName })
+        body: JSON.stringify({ team_name: teamName }),
       });
       const data = await res.json();
       if (data.exists) {
@@ -148,7 +170,9 @@ const Registration = () => {
 
     const membersList = [team.m1, team.m2, team.m3, team.m4].filter(m => m.fullName !== "");
     if (membersList.length < 2) {
-      setErrorBadge("⚠️ You need at least 2 Team Members besides the Leader (Total 3).");
+      setErrorBadge(
+        "⚠️ You need at least 2 Team Members besides the Leader (Total 3).",
+      );
       return;
     }
 
@@ -197,18 +221,33 @@ const Registration = () => {
 
     return (
       <div className="input-group">
-        <div className="label-row"><span>{label}</span></div>
-        <div className={`glow-input-container ${valErrors[`${member}_${name}`] ? 'error-border' : ''}`}>
+        <div className="label-row">
+          <span>{label}</span>
+        </div>
+        <div
+          className={`glow-input-container ${
+            valErrors[`${member}_${name}`] ? "error-border" : ""
+          }`}
+        >
           <input
             className="glow-input"
             placeholder={placeholder}
             value={team[member][name]}
             maxLength={maxLengths[name] || 200}
-            onChange={(e) => setTeam({ ...team, [member]: { ...team[member], [name]: e.target.value } })}
+            onChange={(e) =>
+              setTeam({
+                ...team,
+                [member]: { ...team[member], [name]: e.target.value },
+              })
+            }
             onBlur={(e) => handleBlur(member, name, e.target.value)}
           />
         </div>
-        {valErrors[`${member}_${name}`] && <p className="error-message-inline">{valErrors[`${member}_${name}`]}</p>}
+        {valErrors[`${member}_${name}`] && (
+          <p className="error-message-inline">
+            {valErrors[`${member}_${name}`]}
+          </p>
+        )}
       </div>
     );
   };
@@ -216,9 +255,13 @@ const Registration = () => {
   const renderUniversitySection = (member) => (
     <>
       <div className="input-group">
-        <div className="label-row"><span>Choose University</span></div>
+        <div className="label-row">
+          <span>Choose University</span>
+        </div>
         <div className="glow-input-container">
-          <select className="glow-input" value={team[member].universityType}
+          <select
+            className="glow-input"
+            value={team[member].universityType}
             onChange={(e) => {
               const newType = e.target.value;
               setTeam(prev => ({ ...prev, [member]: { ...prev[member], universityType: newType, sapid: '' } }));
@@ -237,24 +280,41 @@ const Registration = () => {
 
   return (
     <div className="app-viewport">
-      <div className="cosmic-bg"><div className="nebula-cloud-blue"></div><div className="nebula-cloud-purple"></div><div className="starfield"></div></div>
+      <div
+        className="cosmic-bg"
+        style={{
+          backgroundImage: `url(${regiBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
 
       {!submitted ? (
-        <div className="portal-card animate-in">
-          <header className="brand-header" style={{ marginBottom: '10px' }}>
+        <div
+          className="portal-card animate-in"
+          style={{ backgroundColor: "#0f172a" }}
+        >
+          <header className="brand-header">
             <div className="hypervision-badge">HYPERVISION</div>
             <p className="presents-text">PRESENTS</p>
-            <h1 className="main-logo syncopate-font">CODE HUSTLE <span className="v-tag">11.0</span></h1>
+            <h1 className="main-logo syncopate-font">
+              CODE HUSTLE <span className="v-tag">11.0</span>
+            </h1>
           </header>
 
-          {errorBadge && <div className="global-error-banner">{errorBadge}</div>}
+          {errorBadge && (
+            <div className="global-error-banner">{errorBadge}</div>
+          )}
 
           {/* STEP 1 */}
           {step === 1 && (
             <div className="animate-in">
               <span className="label-detail">TEAM NAME</span>
               <div className="input-group">
-                <div className="label-row"><span>Team Name</span></div>
+                <div className="label-row">
+                  <span>Team Name</span>
+                </div>
                 <div className="glow-input-container">
                   <input
                     className="glow-input"
@@ -267,11 +327,23 @@ const Registration = () => {
               </div>
 
               <span className="label-detail">TEAM LEADER</span>
-              {renderInput('leader', 'fullName', 'Full Name', 'Name')}
-              {renderUniversitySection('leader')}
-              {renderInput('leader', 'email', 'Email Address', 'Email')}
-              {renderInput('leader', 'phone', 'Phone Number', 'Phone')}
-              <button className={`neon-shade-btn next-glow ${(!isStepValid('leader') || !teamName) ? 'btn-locked' : ''}`} disabled={!isStepValid('leader') || !teamName} onClick={handleStep1Next}>{loading ? "Checking..." : "NEXT"}</button>
+              {renderInput("leader", "fullName", "Full Name", "Name")}
+              {renderUniversitySection("leader")}
+              {renderInput("leader", "email", "Email Address", "Email")}
+              {renderInput("leader", "phone", "Phone Number", "Phone")}
+              <button
+                className={`neon-shade-btn next-glow ${
+                  !isStepValid("leader") || !teamName ? "btn-locked" : ""
+                }`}
+                disabled={!isStepValid("leader") || !teamName}
+                onClick={handleStep1Next}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
+              >
+                {loading ? "Checking..." : "NEXT"}
+              </button>
             </div>
           )}
 
@@ -279,12 +351,36 @@ const Registration = () => {
           {step === 2 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 2</span>
-              {renderInput('m1', 'fullName', 'Full Name', 'Name')}
-              {renderUniversitySection('m1')}
-              {renderInput('m1', 'email', 'Email Address', 'Email')}
-              {renderInput('m1', 'phone', 'Phone Number', 'Phone')}
-              <button className={`neon-shade-btn next-glow ${!isStepValid('m1') ? 'btn-locked' : ''}`} disabled={!isStepValid('m1')} onClick={() => setStep(3)}>+ MEMBER 3</button>
-              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer', border: 'none', background: 'transparent' }} onClick={() => setStep(1)}>← BACK</p>
+              {renderInput("m1", "fullName", "Full Name", "Name")}
+              {renderUniversitySection("m1")}
+              {renderInput("m1", "email", "Email Address", "Email")}
+              {renderInput("m1", "phone", "Phone Number", "Phone")}
+              <button
+                className={`neon-shade-btn next-glow ${
+                  !isStepValid("m1") ? "btn-locked" : ""
+                }`}
+                disabled={!isStepValid("m1")}
+                onClick={() => setStep(3)}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
+              >
+                + MEMBER 3
+              </button>
+              <p
+                className="signin-link"
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                }}
+                onClick={() => setStep(1)}
+              >
+                ← BACK
+              </p>
             </div>
           )}
 
@@ -292,15 +388,55 @@ const Registration = () => {
           {step === 3 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 3</span>
-              {renderInput('m2', 'fullName', 'Full Name', 'Name')}
-              {renderUniversitySection('m2')}
-              {renderInput('m2', 'email', 'Email Address', 'Email')}
-              {renderInput('m2', 'phone', 'Phone Number', 'Phone')}
-              <div className="dual-button-row" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button className="neon-shade-btn next-glow" style={{ flex: 1, marginTop: 0 }} onClick={() => setStep(4)}>+ MEMBER 4</button>
-                <button className={`neon-shade-btn next-glow ${!isStepValid('m2') ? 'btn-locked' : ''}`} style={{ flex: 1, marginTop: 0 }} disabled={!isStepValid('m2')} onClick={() => setStep(6)}>PROCEED</button>
+              {renderInput("m2", "fullName", "Full Name", "Name")}
+              {renderUniversitySection("m2")}
+              {renderInput("m2", "email", "Email Address", "Email")}
+              {renderInput("m2", "phone", "Phone Number", "Phone")}
+              <div
+                className="dual-button-row"
+                style={{ display: "flex", gap: "10px", marginTop: "20px" }}
+              >
+                <button
+                  className="neon-shade-btn next-glow"
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  onClick={() => setStep(4)}
+                >
+                  + MEMBER 4
+                </button>
+                <button
+                  className={`neon-shade-btn next-glow ${
+                    !isStepValid("m2") ? "btn-locked" : ""
+                  }`}
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  disabled={!isStepValid("m2")}
+                  onClick={() => setStep(6)}
+                >
+                  PROCEED
+                </button>
               </div>
-              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer', border: 'none', background: 'transparent' }} onClick={() => setStep(2)}>← BACK</p>
+              <p
+                className="signin-link"
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                }}
+                onClick={() => setStep(2)}
+              >
+                ← BACK
+              </p>
             </div>
           )}
 
@@ -308,15 +444,52 @@ const Registration = () => {
           {step === 4 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 4 (OPTIONAL)</span>
-              {renderInput('m3', 'fullName', 'Full Name', 'Name')}
-              {renderUniversitySection('m3')}
-              {renderInput('m3', 'email', 'Email Address', 'Email')}
-              {renderInput('m3', 'phone', 'Phone Number', 'Phone')}
-              <div className="dual-button-row" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button className="neon-shade-btn next-glow" style={{ flex: 1, marginTop: 0 }} onClick={() => setStep(5)}>+ MEMBER 5</button>
-                <button className="neon-shade-btn next-glow" style={{ flex: 1, marginTop: 0 }} onClick={() => setStep(6)}>PROCEED</button>
+              {renderInput("m3", "fullName", "Full Name", "Name")}
+              {renderUniversitySection("m3")}
+              {renderInput("m3", "email", "Email Address", "Email")}
+              {renderInput("m3", "phone", "Phone Number", "Phone")}
+              <div
+                className="dual-button-row"
+                style={{ display: "flex", gap: "10px", marginTop: "20px" }}
+              >
+                <button
+                  className="neon-shade-btn next-glow"
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  onClick={() => setStep(5)}
+                >
+                  + MEMBER 5
+                </button>
+                <button
+                  className="neon-shade-btn next-glow"
+                  style={{
+                    flex: 1,
+                    marginTop: 0,
+                    background:
+                      "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                  }}
+                  onClick={() => setStep(6)}
+                >
+                  PROCEED
+                </button>
               </div>
-              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer', border: 'none', background: 'transparent' }} onClick={() => setStep(3)}>← BACK</p>
+              <p
+                className="signin-link"
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                }}
+                onClick={() => setStep(3)}
+              >
+                ← BACK
+              </p>
             </div>
           )}
 
@@ -324,12 +497,33 @@ const Registration = () => {
           {step === 5 && (
             <div className="animate-in">
               <span className="label-detail">MEMBER 5 (OPTIONAL)</span>
-              {renderInput('m4', 'fullName', 'Full Name', 'Name')}
-              {renderUniversitySection('m4')}
-              {renderInput('m4', 'email', 'Email Address', 'Email')}
-              {renderInput('m4', 'phone', 'Phone Number', 'Phone')}
-              <button className="neon-shade-btn next-glow" onClick={() => setStep(6)}>PROCEED TO PAY</button>
-              <p className="signin-link" style={{ marginTop: '15px', textAlign: 'center', cursor: 'pointer', border: 'none', background: 'transparent' }} onClick={() => setStep(4)}>← BACK</p>
+              {renderInput("m4", "fullName", "Full Name", "Name")}
+              {renderUniversitySection("m4")}
+              {renderInput("m4", "email", "Email Address", "Email")}
+              {renderInput("m4", "phone", "Phone Number", "Phone")}
+              <button
+                className="neon-shade-btn next-glow"
+                onClick={() => setStep(6)}
+                style={{
+                  background:
+                    "linear-gradient(270deg, #2563eb 0%, #dc2626 100%)",
+                }}
+              >
+                PROCEED TO PAY
+              </button>
+              <p
+                className="signin-link"
+                style={{
+                  marginTop: "15px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  border: "none",
+                  background: "transparent",
+                }}
+                onClick={() => setStep(4)}
+              >
+                ← BACK
+              </p>
             </div>
           )}
 
@@ -337,18 +531,67 @@ const Registration = () => {
           {step === 6 && (
             <div className="animate-in">
               <span className="label-detail">DISCOUNT & PAYMENT</span>
-              {(team.leader.universityType === 'UPES' || team.m1.universityType === 'UPES' || team.m2.universityType === 'UPES' || (team.m3.fullName && team.m3.universityType === 'UPES') || (team.m4.fullName && team.m4.universityType === 'UPES')) && (
+              {(team.leader.universityType === "UPES" ||
+                team.m1.universityType === "UPES" ||
+                team.m2.universityType === "UPES" ||
+                (team.m3.fullName && team.m3.universityType === "UPES") ||
+                (team.m4.fullName && team.m4.universityType === "UPES")) && (
                 <>
                   <div className="input-group">
-                    <div className="label-row"><span>HV ID (Optional)</span></div>
-                    <div className="glow-input-container"><input className="glow-input" placeholder="HV-XXXX" value={discount.hyperId} maxLength={20} onChange={(e) => setDiscount({ ...discount, hyperId: e.target.value.toUpperCase() })} /></div>
+                    <div className="label-row">
+                      <span>HV ID (Optional)</span>
+                    </div>
+                    <div className="glow-input-container">
+                      <input
+                        className="glow-input"
+                        placeholder="HV-XXXX"
+                        value={discount.hyperId}
+                        maxLength={20}
+                        onChange={(e) =>
+                          setDiscount({
+                            ...discount,
+                            hyperId: e.target.value.toUpperCase(),
+                          })
+                        }
+                      />
+                    </div>
                   </div>
                   <div className="input-group">
-                    <div className="label-row"><span>Verify Member SAP ID</span></div>
-                    <div className="glow-input-container"><input className="glow-input" placeholder="5900XXXXX" value={discount.verifySapId} maxLength={9} onChange={(e) => setDiscount({ ...discount, verifySapId: e.target.value })} /></div>
+                    <div className="label-row">
+                      <span>Verify Member SAP ID</span>
+                    </div>
+                    <div className="glow-input-container">
+                      <input
+                        className="glow-input"
+                        placeholder="5900XXXXX"
+                        value={discount.verifySapId}
+                        maxLength={9}
+                        onChange={(e) =>
+                          setDiscount({
+                            ...discount,
+                            verifySapId: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
                   </div>
 
-                  <button className="secondary-add-btn" style={{ width: '100%', padding: '12px', border: '1px solid #38bdf8', color: '#38bdf8', marginBottom: '15px', borderRadius: '30px', background: 'rgba(56, 189, 248, 0.1)', fontWeight: 800, cursor: 'pointer' }} onClick={handleVerifyDiscount}>{loading ? "VERIFYING..." : "APPLY DISCOUNT"}</button>
+                  <button
+                    className="secondary-add-btn"
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: "1px solid #38bdf8",
+                      color: "#38bdf8",
+                      marginBottom: "15px",
+                      borderRadius: "30px",
+                      background: "rgba(56, 189, 248, 0.1)",
+                      fontWeight: 800,
+                    }}
+                    onClick={handleVerifyDiscount}
+                  >
+                    APPLY DISCOUNT
+                  </button>
                 </>
               )}
               

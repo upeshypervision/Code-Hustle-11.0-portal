@@ -95,15 +95,12 @@ export default function AddParticipant() {
     };
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/admin/add-team",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch("http://localhost:5000/api/admin/add-team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json();
 
@@ -189,9 +186,7 @@ export default function AddParticipant() {
           <div className="input-row">
             <div className="cosmic-input-group">
               <label className="cosmic-label">
-                {m.university === "UPES"
-                  ? "SAP ID"
-                  : "Institute Name"}{" "}
+                {m.university === "UPES" ? "SAP ID" : "Institute Name"}{" "}
                 {required && <span className="req">*</span>}
               </label>
               <div className="cosmic-input-container">
@@ -216,9 +211,7 @@ export default function AddParticipant() {
               <input
                 className="cosmic-input"
                 value={m.email}
-                onChange={(e) =>
-                  handleTeamChange(key, "email", e.target.value)
-                }
+                onChange={(e) => handleTeamChange(key, "email", e.target.value)}
               />
             </div>
           </div>
@@ -231,9 +224,7 @@ export default function AddParticipant() {
               <input
                 className="cosmic-input"
                 value={m.phone}
-                onChange={(e) =>
-                  handleTeamChange(key, "phone", e.target.value)
-                }
+                onChange={(e) => handleTeamChange(key, "phone", e.target.value)}
               />
             </div>
           </div>
@@ -246,7 +237,6 @@ export default function AddParticipant() {
     <div className="admin-cosmic-wrapper">
       <div className="cosmic-card">
         <form onSubmit={handleAddParticipant} className="form-grid">
-
           {/* ✅ FIXED TEAM NAME */}
           <div className="member-section">
             <span className="section-label">

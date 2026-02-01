@@ -27,7 +27,7 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         const data = await res.json();
         if (data.success) {
           // Check if round is 'live' (enum state: 'live', 'closed', 'not_started')
-          setRoundActive(data.rounds.github_submission === 'live');
+          setRoundActive(data.rounds.github_submission === "live");
         }
       } catch (err) {
         console.error("Error checking round status:", err);
@@ -41,9 +41,9 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   // Listen for round status changes
   useEffect(() => {
     const handleRoundChange = (data) => {
-      if (data.round_type === 'github_submission') {
+      if (data.round_type === "github_submission") {
         // data.state is enum: 'live', 'closed', 'not_started'
-        setRoundActive(data.state === 'live');
+        setRoundActive(data.state === "live");
       }
     };
     socket.on("round_status_changed", handleRoundChange);
@@ -54,9 +54,12 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const checkSubmissionStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-github-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-github-submission",
+          {
+            credentials: "include",
+          },
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setSuccess(true);
@@ -76,9 +79,12 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
     const checkApprovalStatus = async () => {
       try {
         // Check Hackerrank
-        const hrRes = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const hrRes = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          },
+        );
         const hrData = await hrRes.json();
         if (hrData.success && hrData.is_submitted) {
           setHackerrankStatus(hrData.submission.approval_status);
@@ -87,9 +93,12 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         }
 
         // Check PPT
-        const pptRes = await fetch("http://localhost:5000/api/check-ppt-submission", {
-          credentials: "include",
-        });
+        const pptRes = await fetch(
+          "http://localhost:5000/api/check-ppt-submission",
+          {
+            credentials: "include",
+          },
+        );
         const pptData = await pptRes.json();
         if (pptData.success && pptData.is_submitted) {
           setPptStatus(pptData.submission.approval_status);
@@ -109,9 +118,12 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
   useEffect(() => {
     const handleHackerrankUpdate = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/check-hackerrank-submission", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          "http://localhost:5000/api/check-hackerrank-submission",
+          {
+            credentials: "include",
+          },
+        );
         const data = await res.json();
         if (data.success && data.is_submitted) {
           setHackerrankStatus(data.submission.approval_status);
@@ -121,7 +133,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
       }
     };
     socket.on("hackerrank_approval_updated", handleHackerrankUpdate);
-    return () => socket.off("hackerrank_approval_updated", handleHackerrankUpdate);
+    return () =>
+      socket.off("hackerrank_approval_updated", handleHackerrankUpdate);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -147,7 +160,10 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         setSuccess(true);
       } else {
         if (res.status === 403) {
-          setError(data.error || "Sorry, the submission cannot be made as the GitHub submission round is currently closed.");
+          setError(
+            data.error ||
+              "Sorry, the submission cannot be made as the GitHub submission round is currently closed.",
+          );
         } else {
           setError(data.error || "Failed to submit link");
         }
@@ -191,7 +207,8 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
         style={{
           position: "fixed",
           inset: 0,
-          background: "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
+          background:
+            "radial-gradient(circle at 40% 70%, transparent 10%, rgba(20, 16, 16, 0.42) 100%)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -220,20 +237,20 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
             zIndex: 10,
           }}
         >
-
           {/* LOGIC PRIORITY 1: LOADING */}
           {checkingRound || checkingStatus ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '60px 20px',
-              color: 'rgba(255,255,255,0.6)',
-              width: '100%',
-              maxWidth: '900px'
-            }}>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "60px 20px",
+                color: "rgba(255,255,255,0.6)",
+                width: "100%",
+                maxWidth: "900px",
+              }}
+            >
               <p>Loading...</p>
             </div>
-          ) : (isSubmitted || success) ? (
-
+          ) : isSubmitted || success ? (
             /* LOGIC PRIORITY 2: SUBMITTED (SUCCESS UI) */
             /* Shows even if round is closed */
             <div
@@ -242,195 +259,276 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 animation: "fadeIn 0.6s ease-out",
                 width: "100%",
                 maxWidth: "900px",
-                background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+                background:
+                  "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
                 backdropFilter: "blur(20px)",
                 borderRadius: "4px",
                 border: "1px solid rgba(220, 38, 38, 0.3)",
-                boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+                boxShadow:
+                  "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
               }}
             >
               {/* Header Section (Replicated for UI Consistency) */}
-              <div style={{ textAlign: "center", marginBottom: "45px", marginTop: "35px" }}>
-                <h2 style={{
-                  color: "#fff",
-                  fontFamily: '"Della Respira", serif',
-                  fontSize: "1.8rem",
-                  fontWeight: "700",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  margin: "0 0 10px 0",
-                  textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
-                }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginBottom: "45px",
+                  marginTop: "35px",
+                }}
+              >
+                <h2
+                  style={{
+                    color: "#fff",
+                    fontFamily: '"Della Respira", serif',
+                    fontSize: "1.8rem",
+                    fontWeight: "700",
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    margin: "0 0 10px 0",
+                    textShadow: "0 0 15px rgba(220, 38, 38, 0.5)",
+                  }}
+                >
                   Final Uplink
                 </h2>
-                <div style={{
-                  height: "2px",
-                  width: "60px",
-                  background: "#dc2626",
-                  margin: "0 auto 20px",
-                }}></div>
-                <p style={{
-                  color: "rgba(255,255,255,0.5)",
-                  fontSize: "0.85rem",
-                  letterSpacing: "1px",
-                }}>
+                <div
+                  style={{
+                    height: "2px",
+                    width: "60px",
+                    background: "#dc2626",
+                    margin: "0 auto 20px",
+                  }}
+                ></div>
+                <p
+                  style={{
+                    color: "rgba(255,255,255,0.5)",
+                    fontSize: "0.85rem",
+                    letterSpacing: "1px",
+                  }}
+                >
                   TRANSMIT YOUR ARCHITECTURE TO THE VAULT
                 </p>
               </div>
 
-
               {/* Success Message with Approval Status */}
-              <div style={{
-                padding: "40px",
-                background: submissionData?.approval_status === 'approved'
-                  ? "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)"
-                  : "rgba(255,255,255,0.03)",
-                border: submissionData?.approval_status === 'approved' ? "2px solid #22c55e" : "1px solid rgba(255,255,255,0.1)",
-                textAlign: "center",
-                borderRadius: "8px",
-                boxShadow: submissionData?.approval_status === 'approved' ? "0 0 30px rgba(34, 197, 94, 0.2)" : "none"
-              }}>
-                <div style={{
-                  fontSize: "3rem",
-                  marginBottom: "15px",
-                  color: submissionData?.approval_status === 'approved' ? '#22c55e' :
-                    submissionData?.approval_status === 'rejected' ? '#ef4444' : '#eab308'
-                }}>
-                  {submissionData?.approval_status === 'approved' ? '🏆' :
-                    submissionData?.approval_status === 'rejected' ? '❌' : '⏳'}
+              <div
+                style={{
+                  padding: "40px",
+                  background:
+                    submissionData?.approval_status === "approved"
+                      ? "linear-gradient(145deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 10, 10, 0.9) 100%)"
+                      : "rgba(255,255,255,0.03)",
+                  border:
+                    submissionData?.approval_status === "approved"
+                      ? "2px solid #22c55e"
+                      : "1px solid rgba(255,255,255,0.1)",
+                  textAlign: "center",
+                  borderRadius: "8px",
+                  boxShadow:
+                    submissionData?.approval_status === "approved"
+                      ? "0 0 30px rgba(34, 197, 94, 0.2)"
+                      : "none",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "3rem",
+                    marginBottom: "15px",
+                    color:
+                      submissionData?.approval_status === "approved"
+                        ? "#22c55e"
+                        : submissionData?.approval_status === "rejected"
+                          ? "#ef4444"
+                          : "#eab308",
+                  }}
+                >
+                  {submissionData?.approval_status === "approved"
+                    ? "🏆"
+                    : submissionData?.approval_status === "rejected"
+                      ? "❌"
+                      : "⏳"}
                 </div>
-                <h3 style={{
-                  color: submissionData?.approval_status === 'approved' ? "#22c55e" :
-                    submissionData?.approval_status === 'rejected' ? "#ef4444" : "#eab308",
-                  fontWeight: "900",
-                  letterSpacing: "2px",
-                  fontSize: '1.5rem',
-                  marginBottom: '15px'
-                }}>
-                  {submissionData?.approval_status === 'approved' ? 'CONGRATS! YOU HAVE WON CODE HUSTLE 11.0' :
-                    submissionData?.approval_status === 'rejected' ? 'SORRY, YOU ARE NOT THE WINNER' :
-                      'REVIEW PENDING'}
+                <h3
+                  style={{
+                    color:
+                      submissionData?.approval_status === "approved"
+                        ? "#22c55e"
+                        : submissionData?.approval_status === "rejected"
+                          ? "#ef4444"
+                          : "#eab308",
+                    fontWeight: "900",
+                    letterSpacing: "2px",
+                    fontSize: "1.5rem",
+                    marginBottom: "15px",
+                  }}
+                >
+                  {submissionData?.approval_status === "approved"
+                    ? "CONGRATS! YOU HAVE WON CODE HUSTLE 11.0"
+                    : submissionData?.approval_status === "rejected"
+                      ? "SORRY, YOU ARE NOT THE WINNER"
+                      : "REVIEW PENDING"}
                 </h3>
-                {submissionData?.approval_status === 'approved' && (
-                  <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
-                    Congratulations on your outstanding performance! You are the winner!
+                {submissionData?.approval_status === "approved" && (
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.9)",
+                      fontSize: "1rem",
+                      margin: "0 0 10px 0",
+                    }}
+                  >
+                    Congratulations on your outstanding performance! You are the
+                    winner!
                   </p>
                 )}
-                {submissionData?.approval_status === 'pending' && (
-                  <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1rem", margin: "0 0 10px 0" }}>
+                {submissionData?.approval_status === "pending" && (
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: "1rem",
+                      margin: "0 0 10px 0",
+                    }}
+                  >
                     Your submission is currently under review by our team.
                   </p>
                 )}
-                {submissionData?.approval_status === 'rejected' && (
-                  <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "1rem", margin: "0 0 10px 0" }}>
-                    Thank you for participating in Code Hustle 11.0. Better luck next time!
+                {submissionData?.approval_status === "rejected" && (
+                  <p
+                    style={{
+                      color: "rgba(255,255,255,0.9)",
+                      fontSize: "1rem",
+                      margin: "0 0 10px 0",
+                    }}
+                  >
+                    Thank you for participating in Code Hustle 11.0. Better luck
+                    next time!
                   </p>
                 )}
-                <p style={{
-                  color: "rgba(255,255,255,0.6)",
-                  fontSize: "0.8rem",
-                  marginTop: "10px",
-                }}>
-                  REPOSITORIES SECURED AT {submissionData?.submitted_at ? new Date(submissionData.submitted_at).toLocaleTimeString() : new Date().toLocaleTimeString()}
+                <p
+                  style={{
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "0.8rem",
+                    marginTop: "10px",
+                  }}
+                >
+                  REPOSITORIES SECURED AT{" "}
+                  {submissionData?.submitted_at
+                    ? new Date(submissionData.submitted_at).toLocaleTimeString()
+                    : new Date().toLocaleTimeString()}
                 </p>
               </div>
             </div>
-
-          ) : ((hackerrankStatus && hackerrankStatus !== 'approved') || (pptStatus && pptStatus !== 'approved')) ? (
+          ) : (hackerrankStatus && hackerrankStatus !== "approved") ||
+            (pptStatus && pptStatus !== "approved") ? (
             /* LOGIC PRIORITY 2: NOT ALLOWED (Round 1 or Round 2 Not Approved) */
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '60vh',
-              padding: '40px',
-              textAlign: 'center',
-              background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(220, 38, 38, 0.3)',
-              borderRadius: '8px',
-              animation: 'fadeIn 0.5s ease-out',
-              width: '100%',
-              maxWidth: '800px',
-              boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
-            }}>
-              <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🚫</div>
-              <h2 style={{
-                color: '#ef4444',
-                fontWeight: '900',
-                fontSize: '2.5rem',
-                letterSpacing: '3px',
-                marginBottom: '15px'
-              }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "60vh",
+                padding: "40px",
+                textAlign: "center",
+                background:
+                  "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(220, 38, 38, 0.3)",
+                borderRadius: "8px",
+                animation: "fadeIn 0.5s ease-out",
+                width: "100%",
+                maxWidth: "800px",
+                boxShadow:
+                  "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+              }}
+            >
+              <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🚫</div>
+              <h2
+                style={{
+                  color: "#ef4444",
+                  fontWeight: "900",
+                  fontSize: "2.5rem",
+                  letterSpacing: "3px",
+                  marginBottom: "15px",
+                }}
+              >
                 NOT ALLOWED
               </h2>
-              <p style={{
-                color: '#fff',
-                fontSize: '1.2rem',
-                marginBottom: '15px',
-                maxWidth: '600px'
-              }}>
+              <p
+                style={{
+                  color: "#fff",
+                  fontSize: "1.2rem",
+                  marginBottom: "15px",
+                  maxWidth: "600px",
+                }}
+              >
                 Sorry, you are not allowed in this round.
               </p>
-              <p style={{
-                color: 'rgba(255,255,255,0.6)',
-                fontSize: '1rem'
-              }}>
-                {hackerrankStatus !== 'approved'
-                  ? 'You must be approved in Round 1 (Hackerrank) to submit GitHub link.'
-                  : 'You must be approved in Round 2 (PPT Submission) to submit GitHub link.'}
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: "1rem",
+                }}
+              >
+                {hackerrankStatus !== "approved"
+                  ? "You must be approved in Round 1 (Hackerrank) to submit GitHub link."
+                  : "You must be approved in Round 2 (PPT Submission) to submit GitHub link."}
               </p>
             </div>
-
           ) : !roundActive ? (
-
             /* LOGIC PRIORITY 3: ROUND CLOSED (Only if NOT submitted) */
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '60vh',
-              padding: '40px',
-              textAlign: 'center',
-              background: 'linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(220, 38, 38, 0.3)',
-              borderRadius: '8px',
-              animation: 'fadeIn 0.5s ease-out',
-              width: '100%',
-              maxWidth: '800px',
-              boxShadow: '0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)'
-            }}>
-              <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔒</div>
-              <h2 style={{
-                color: '#ef4444',
-                fontWeight: '900',
-                fontSize: '2.5rem',
-                letterSpacing: '3px',
-                marginBottom: '15px'
-              }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "60vh",
+                padding: "40px",
+                textAlign: "center",
+                background:
+                  "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(220, 38, 38, 0.3)",
+                borderRadius: "8px",
+                animation: "fadeIn 0.5s ease-out",
+                width: "100%",
+                maxWidth: "800px",
+                boxShadow:
+                  "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+              }}
+            >
+              <div style={{ fontSize: "5rem", marginBottom: "20px" }}>🔒</div>
+              <h2
+                style={{
+                  color: "#ef4444",
+                  fontWeight: "900",
+                  fontSize: "2.5rem",
+                  letterSpacing: "3px",
+                  marginBottom: "15px",
+                }}
+              >
                 ROUND CLOSED
               </h2>
-              <p style={{
-                color: '#fff',
-                fontSize: '1.2rem',
-                marginBottom: '15px',
-                maxWidth: '600px'
-              }}>
+              <p
+                style={{
+                  color: "#fff",
+                  fontSize: "1.2rem",
+                  marginBottom: "15px",
+                  maxWidth: "600px",
+                }}
+              >
                 GitHub Submission is currently not available.
               </p>
-              <p style={{
-                color: 'rgba(255,255,255,0.6)',
-                fontSize: '1rem'
-              }}>
-                ⏳ Please wait for the organizing committee to activate this round.
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: "1rem",
+                }}
+              >
+                ⏳ Please wait for the organizing committee to activate this
+                round.
               </p>
             </div>
-
           ) : (
-
             /* LOGIC PRIORITY 4: ACTIVE FORM (Not submitted, Round Active) */
             <div
               className="github-submission-card"
@@ -438,16 +536,24 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 animation: "fadeIn 0.6s ease-out",
                 width: "100%",
                 maxWidth: "700px",
-                background: "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
+                background:
+                  "linear-gradient(145deg, rgba(30, 30, 30, 0.7) 0%, rgba(10, 10, 10, 0.85) 100%)",
                 backdropFilter: "blur(20px)",
                 borderRadius: "4px",
                 border: "1px solid rgba(220, 38, 38, 0.3)",
-                boxShadow: "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
+                boxShadow:
+                  "0 25px 50px rgba(0,0,0,0.9), inset 0 0 100px rgba(220, 38, 38, 0.05)",
                 padding: "40px 50px",
               }}
             >
               {/* Header Section */}
-              <div style={{ textAlign: "center", marginBottom: "45px", marginTop: "30px" }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginBottom: "45px",
+                  marginTop: "30px",
+                }}
+              >
                 <h2
                   style={{
                     color: "#fff",
@@ -482,49 +588,66 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
               </div>
 
               {error && (
-                <div style={{
-                  padding: "15px",
-                  background: "rgba(239, 68, 68, 0.1)",
-                  border: "1px solid #ef4444",
-                  borderRadius: "4px",
-                  color: "#ef4444",
-                  fontSize: "0.85rem",
-                  marginBottom: "20px",
-                  textAlign: "center",
-                }}>
+                <div
+                  style={{
+                    padding: "15px",
+                    background: "rgba(239, 68, 68, 0.1)",
+                    border: "1px solid #ef4444",
+                    borderRadius: "4px",
+                    color: "#ef4444",
+                    fontSize: "0.85rem",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                  }}
+                >
                   {error}
                 </div>
               )}
 
               <form
                 onSubmit={handleSubmit}
-                style={{ display: "flex", flexDirection: "column", gap: "30px" }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "30px",
+                }}
               >
                 <div style={{ position: "relative" }}>
-                  <label style={{
-                    color: "#dc2626",
-                    fontSize: "0.8rem",
-                    fontWeight: "900",
-                    letterSpacing: "2px",
-                    display: "block",
-                    marginBottom: "10px",
-                  }}>
+                  <label
+                    style={{
+                      color: "#dc2626",
+                      fontSize: "0.8rem",
+                      fontWeight: "900",
+                      letterSpacing: "2px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
+                  >
                     01. GITHUB REPOSITORY (MANDATORY)
                   </label>
-                  <div style={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                  }}>
-                    <div style={{
-                      position: "absolute",
-                      left: "15px",
+                  <div
+                    style={{
+                      position: "relative",
                       display: "flex",
                       alignItems: "center",
-                      borderRight: "1px solid rgba(220, 38, 38, 0.3)",
-                      paddingRight: "12px",
-                    }}>
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="#dc2626">
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "15px",
+                        display: "flex",
+                        alignItems: "center",
+                        borderRight: "1px solid rgba(220, 38, 38, 0.3)",
+                        paddingRight: "12px",
+                      }}
+                    >
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="#dc2626"
+                      >
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.042-1.416-4.042-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                       </svg>
                     </div>
@@ -552,14 +675,16 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                 </div>
 
                 <div>
-                  <label style={{
-                    color: "rgba(255,255,255,0.4)",
-                    fontSize: "0.8rem",
-                    fontWeight: "900",
-                    letterSpacing: "2px",
-                    display: "block",
-                    marginBottom: "10px",
-                  }}>
+                  <label
+                    style={{
+                      color: "rgba(255,255,255,0.4)",
+                      fontSize: "0.8rem",
+                      fontWeight: "900",
+                      letterSpacing: "2px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
+                  >
                     02. LIVE DEPLOYMENT (OPTIONAL)
                   </label>
                   <input
@@ -590,19 +715,23 @@ export default function SubmissionPortal({ onUpload, isSubmitted }) {
                   style={{
                     marginTop: "10px",
                     width: "fit-content",
-                    margin: "10px auto 0"
+                    margin: "10px auto 0",
                   }}
                 >
-                  <span className="text">{loading ? "TRANSMITTING..." : "SEND THE SIGNAL"}</span>
+                  <span className="text">
+                    {loading ? "TRANSMITTING..." : "SEND THE SIGNAL"}
+                  </span>
                 </button>
 
-                <div style={{
-                  textAlign: "center",
-                  fontSize: "0.6rem",
-                  color: "#444",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                }}>
+                <div
+                  style={{
+                    textAlign: "center",
+                    fontSize: "0.6rem",
+                    color: "#444",
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                  }}
+                >
                   Security Protocol: AES-256 Enabled // System: Operational
                 </div>
               </form>

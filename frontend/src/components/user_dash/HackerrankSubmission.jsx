@@ -53,7 +53,7 @@ export default function HackerrankSubmission({ teamName }) {
           "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const data = await res.json();
         if (data.success && data.is_submitted) {
@@ -78,7 +78,7 @@ export default function HackerrankSubmission({ teamName }) {
           "http://localhost:5000/api/check-hackerrank-submission",
           {
             credentials: "include",
-          }
+          },
         );
         const responseData = await res.json();
         if (responseData.success && responseData.is_submitted) {
@@ -123,7 +123,7 @@ export default function HackerrankSubmission({ teamName }) {
         if (res.status === 403) {
           setError(
             data.error ||
-            "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed."
+              "Sorry, the submission cannot be made as the Hackerrank submission round is currently closed.",
           );
         } else {
           setError(data.error || "Failed to submit link");
@@ -263,7 +263,7 @@ export default function HackerrankSubmission({ teamName }) {
                   letterSpacing: "1px",
                   margin: 0,
                   fontFamily: '"Rajdhani", sans-serif',
-                  fontWeight: "600"
+                  fontWeight: "600",
                 }}
               >
                 SOLVE CHALLENGES & SUBMIT YOUR PROFILE
@@ -310,7 +310,6 @@ export default function HackerrankSubmission({ teamName }) {
                     : "none",
               }}
             >
-
               <div style={{ width: "100%" }}>
                 <h3
                   style={{
@@ -498,7 +497,9 @@ export default function HackerrankSubmission({ teamName }) {
                     cursor: loading ? "wait" : "pointer",
                   }}
                 >
-                  <span className="text">{loading ? "SUBMITTING..." : "SUBMIT PROFILE"}</span>
+                  <span className="text">
+                    {loading ? "SUBMITTING..." : "SUBMIT PROFILE"}
+                  </span>
                 </button>
               </div>
             </form>
@@ -690,6 +691,6 @@ export default function HackerrankSubmission({ teamName }) {
           }}
         />
       </div>
-    </div >
+    </div>
   );
 }

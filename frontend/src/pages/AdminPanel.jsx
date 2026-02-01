@@ -88,7 +88,9 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className={`dashboard-page ${isMobileMenuOpen ? "sidebar-visible" : ""}`}>
+    <div
+      className={`dashboard-page ${isMobileMenuOpen ? "sidebar-visible" : ""}`}
+    >
       <style>{`
         @media (max-width: 1024px) {
           .hamburger-menu {
@@ -121,7 +123,11 @@ export default function AdminPanel() {
       `}</style>
 
       <GlobalNavbar
-        userInfo={<>Admin: <strong>{adminInfo.login_id}</strong></>}
+        userInfo={
+          <>
+            Admin: <strong>{adminInfo.login_id}</strong>
+          </>
+        }
         isAdmin={true}
         menuItems={adminMenuItems}
         onMenuItemClick={handleMenuItemClick}
@@ -145,11 +151,11 @@ export default function AdminPanel() {
             className="sidebar-overlay"
             onClick={() => setIsMobileMenuOpen(false)}
             style={{
-              display: 'block',
-              position: 'fixed',
+              display: "block",
+              position: "fixed",
               inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              zIndex: 1999
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: 1999,
             }}
           ></div>
         )}
